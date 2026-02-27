@@ -1152,53 +1152,142 @@ async function handleFullStock(symbol: string) {
     handleMassiveSnapshot(symbol).catch(() => null),
   ]);
 
-  // Fill missing overview fields from secondary sources
+  // Fill missing overview fields from ALL secondary sources (always, not conditionally)
   const filledOverview = { ...(overview || {}) } as Record<string, string>;
 
-  // If Alpha Vantage overview is sparse, supplement from SimFin/Eulerpool/Polygon
-  const hasCoreData = filledOverview.EPS && filledOverview.PERatio && filledOverview.MarketCapitalization;
-  if (!hasCoreData) {
-    // Try SimFin statements for financial data
-    try {
-      const simfin = await handleSimFinStatements(symbol).catch(() => null);
-      if (simfin?.statements) {
-        const latest = Array.isArray(simfin.statements) ? simfin.statements[0] : null;
-        if (latest) {
-          if (!filledOverview.RevenueTTM && latest.Revenue) filledOverview.RevenueTTM = String(latest.Revenue);
-          if (!filledOverview.GrossProfitTTM && latest["Gross Profit"]) filledOverview.GrossProfitTTM = String(latest["Gross Profit"]);
-          if (!filledOverview.EPS && latest["Earnings Per Share, Diluted"]) filledOverview.EPS = String(latest["Earnings Per Share, Diluted"]);
+  // --- Extract metrics from Polygon massiveFinancials (most recent quarter) ---
+  if (massiveFinancials && Array.isArray(massiveFinancials) && massiveFinancials.length > 0) {
+    const latest = massiveFinancials[0] as Record<string, any>;
+    const fin = latest?.financials as Record<string, Record<string, Record<string, any>>> | undefined;
+    if (fin) {
+      const is = fin.income_statement || {};
+      const bs = fin.balance_sheet || {};
+      const cf = fin.cash_flow_statement || {};
+
+      if (!filledOverview.EPS && (is.diluted_earnings_per_share?.value || is.basic_earnings_per_share?.value))
+        filledOverview.EPS = String(is.diluted_earnings_per_share?.value || is.basic_earnings_per_share?.value);
+      if (!filledOverview.RevenueTTM && is.revenues?.value)
+        filledOverview.RevenueTTM = String(is.revenues.value);
+      if (!filledOverview.GrossProfitTTM && is.gross_profit?.value)
+        filledOverview.GrossProfitTTM = String(is.gross_profit.value);
+      if (!filledOverview.OperatingMarginTTM && is.revenues?.value && is.operating_income_loss?.value) {
+        const opMargin = Number(is.operating_income_loss.value) / Number(is.revenues.value);
+        filledOverview.OperatingMarginTTM = String(opMargin);
+      }
+      if (!filledOverview.ProfitMargin && is.revenues?.value && is.net_income_loss?.value) {
+        const profitMargin = Number(is.net_income_loss.value) / Number(is.revenues.value);
+        filledOverview.ProfitMargin = String(profitMargin);
+      }
+      if (!filledOverview.EBITDATTM && !filledOverview.EBITDA) {
+        const opIncome = Number(is.operating_income_loss?.value || 0);
+        const dna = Number(cf.depreciation_and_amortization?.value || 0);
+        if (opIncome) filledOverview.EBITDATTM = String(opIncome + Math.abs(dna));
+      }
+      if (!filledOverview.OperatingCashflowTTM && cf.net_cash_flow_from_operating_activities?.value)
+        filledOverview.OperatingCashflowTTM = String(cf.net_cash_flow_from_operating_activities.value);
+      if (!filledOverview.BookValue && bs.equity?.value && filledOverview.SharesOutstanding) {
+        const bvps = Number(bs.equity.value) / Number(filledOverview.SharesOutstanding);
+        filledOverview.BookValue = String(bvps);
+      } else if (!filledOverview.BookValue && bs.equity?.value && (profile as any)?.shareOutstanding) {
+        const bvps = Number(bs.equity.value) / (Number((profile as any).shareOutstanding) * 1e6);
+        filledOverview.BookValue = String(bvps);
+      }
+      if (!filledOverview.TotalDebt && bs.long_term_debt?.value)
+        filledOverview.TotalDebt = String(bs.long_term_debt.value);
+      if (!filledOverview.CashAndCashEquivalentsAtCarryingValue && bs.current_assets?.value)
+        filledOverview.CashAndCashEquivalentsAtCarryingValue = String(bs.current_assets.value);
+      // Revenue growth YoY from last 2 quarters
+      if (!filledOverview.QuarterlyRevenueGrowthYOY && massiveFinancials.length >= 5) {
+        const curr = (massiveFinancials[0] as any)?.financials?.income_statement?.revenues?.value;
+        const prev = (massiveFinancials[4] as any)?.financials?.income_statement?.revenues?.value;
+        if (curr && prev && prev > 0) {
+          filledOverview.QuarterlyRevenueGrowthYOY = String((curr - prev) / prev);
         }
       }
-    } catch { /* ignore */ }
-
-    // Try Eulerpool for European / ISIN-available stocks
-    try {
-      const euler = await handleEulerpoolProfile(symbol).catch(() => null);
-      if (euler) {
-        if (!filledOverview.Name && euler.name) filledOverview.Name = euler.name;
-        if (!filledOverview.Sector && euler.sector) filledOverview.Sector = euler.sector;
-        if (!filledOverview.DividendYield && euler.dividendYield) filledOverview.DividendYield = String(euler.dividendYield);
-        if (!filledOverview.PERatio && euler.pe) filledOverview.PERatio = String(euler.pe);
+      // ROE & ROA
+      if (!filledOverview.ReturnOnEquityTTM && is.net_income_loss?.value && bs.equity?.value) {
+        const roe = Number(is.net_income_loss.value) / Number(bs.equity.value);
+        filledOverview.ReturnOnEquityTTM = String(roe);
       }
-    } catch { /* ignore */ }
-
-    // Fill from Polygon ticker details
-    if (massiveTicker) {
-      const mt = massiveTicker as Record<string, any>;
-      if (!filledOverview.MarketCapitalization && mt.market_cap) filledOverview.MarketCapitalization = String(mt.market_cap);
-      if (!filledOverview.SharesOutstanding && mt.share_class_shares_outstanding) filledOverview.SharesOutstanding = String(mt.share_class_shares_outstanding);
-      if (!filledOverview.Name && mt.name) filledOverview.Name = mt.name;
-      if (!filledOverview.Description && mt.description) filledOverview.Description = mt.description;
+      if (!filledOverview.ReturnOnAssetsTTM && is.net_income_loss?.value && bs.assets?.value) {
+        const roa = Number(is.net_income_loss.value) / Number(bs.assets.value);
+        filledOverview.ReturnOnAssetsTTM = String(roa);
+      }
+      // Payout ratio
+      if (!filledOverview.PayoutRatio && is.diluted_earnings_per_share?.value && massiveDividends?.length) {
+        const eps = Number(is.diluted_earnings_per_share.value);
+        const latestYear = (massiveDividends[0] as any)?.ex_dividend_date?.slice(0, 4);
+        if (eps > 0 && latestYear) {
+          const annualDiv = (massiveDividends as any[])
+            .filter((d: any) => d.ex_dividend_date?.startsWith(latestYear))
+            .reduce((sum: number, d: any) => sum + Number(d.cash_amount || 0), 0);
+          filledOverview.PayoutRatio = String(annualDiv / eps);
+        }
+      }
+      // Dividend per share
+      if (!filledOverview.DividendPerShare && massiveDividends?.length) {
+        const latestYear = (massiveDividends[0] as any)?.ex_dividend_date?.slice(0, 4);
+        if (latestYear) {
+          const annualDiv = (massiveDividends as any[])
+            .filter((d: any) => d.ex_dividend_date?.startsWith(latestYear))
+            .reduce((sum: number, d: any) => sum + Number(d.cash_amount || 0), 0);
+          filledOverview.DividendPerShare = String(annualDiv);
+        }
+      }
     }
+  }
 
-    // Fill from Finnhub profile
-    if (profile) {
-      const p = profile as Record<string, any>;
-      if (!filledOverview.MarketCapitalization && p.marketCapitalization) filledOverview.MarketCapitalization = String(p.marketCapitalization * 1e6);
-      if (!filledOverview.Name && p.name) filledOverview.Name = p.name;
-      if (!filledOverview.Industry && p.finnhubIndustry) filledOverview.Industry = p.finnhubIndustry;
-      if (!filledOverview.Country && p.country) filledOverview.Country = p.country;
+  // Try SimFin for any still-missing financial data
+  try {
+    const simfin = await handleSimFinStatements(symbol).catch(() => null);
+    if (simfin?.statements) {
+      const latest = Array.isArray(simfin.statements) ? simfin.statements[0] : null;
+      if (latest) {
+        if (!filledOverview.RevenueTTM && latest.Revenue) filledOverview.RevenueTTM = String(latest.Revenue);
+        if (!filledOverview.GrossProfitTTM && latest["Gross Profit"]) filledOverview.GrossProfitTTM = String(latest["Gross Profit"]);
+        if (!filledOverview.EPS && latest["Earnings Per Share, Diluted"]) filledOverview.EPS = String(latest["Earnings Per Share, Diluted"]);
+      }
     }
+  } catch { /* ignore */ }
+
+  // Eulerpool for European / ISIN-available stocks
+  try {
+    const euler = await handleEulerpoolProfile(symbol).catch(() => null);
+    if (euler) {
+      const e = euler as Record<string, any>;
+      if (!filledOverview.Name && e.name) filledOverview.Name = e.name;
+      if (!filledOverview.Sector && e.sector) filledOverview.Sector = e.sector;
+      if (!filledOverview.DividendYield && e.dividendYield) filledOverview.DividendYield = String(e.dividendYield);
+      if (!filledOverview.PERatio && e.pe) filledOverview.PERatio = String(e.pe);
+      if (!filledOverview.MarketCapitalization && e.mcap) filledOverview.MarketCapitalization = String(e.mcap * 1e6);
+      if (!filledOverview.Industry && e.industry) filledOverview.Industry = e.industry;
+      if (!filledOverview.Description && e.description) filledOverview.Description = e.description;
+      if (!filledOverview.SharesOutstanding && e.shares) filledOverview.SharesOutstanding = String(e.shares * 1e6);
+    }
+  } catch { /* ignore */ }
+
+  // Fill from Polygon ticker details
+  if (massiveTicker) {
+    const mt = massiveTicker as Record<string, any>;
+    if (!filledOverview.MarketCapitalization && mt.market_cap) filledOverview.MarketCapitalization = String(mt.market_cap);
+    if (!filledOverview.SharesOutstanding && mt.share_class_shares_outstanding) filledOverview.SharesOutstanding = String(mt.share_class_shares_outstanding);
+    if (!filledOverview.Name && mt.name) filledOverview.Name = mt.name;
+    if (!filledOverview.Description && mt.description) filledOverview.Description = mt.description;
+  }
+
+  // Fill from Finnhub profile
+  if (profile) {
+    const p = profile as Record<string, any>;
+    if (!filledOverview.MarketCapitalization && p.marketCapitalization) filledOverview.MarketCapitalization = String(p.marketCapitalization * 1e6);
+    if (!filledOverview.SharesOutstanding && p.shareOutstanding) filledOverview.SharesOutstanding = String(p.shareOutstanding * 1e6);
+    if (!filledOverview.Name && p.name) filledOverview.Name = p.name;
+    if (!filledOverview.Industry && p.finnhubIndustry) filledOverview.Industry = p.finnhubIndustry;
+    if (!filledOverview.Country && p.country) filledOverview.Country = p.country;
+  }
+
+  // Ensure SharesOutstanding is set for derived calc
+  if (!filledOverview.SharesOutstanding && (profile as any)?.shareOutstanding) {
+    filledOverview.SharesOutstanding = String((profile as any).shareOutstanding * 1e6);
   }
 
   const derived = calculateDerivedMetrics(filledOverview, quote || {});
@@ -1206,7 +1295,7 @@ async function handleFullStock(symbol: string) {
   // Supplement derived metrics from massiveTicker if still missing
   if (massiveTicker) {
     const mt = massiveTicker as Record<string, any>;
-    if (!derived.marketCap && mt.market_cap) derived.marketCap = mt.market_cap;
+    if ((!derived.marketCap || derived.marketCap === 0) && mt.market_cap) derived.marketCap = mt.market_cap;
   }
 
   return { profile, quote, overview: filledOverview, derived, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot };
