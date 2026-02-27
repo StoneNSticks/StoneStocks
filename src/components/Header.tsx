@@ -1,13 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3 } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3, Calculator } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { to: "/", label: "Markets", icon: TrendingUp },
   { to: "/news", label: "News", icon: Newspaper },
   { to: "/rankings", label: "Rankings", icon: BarChart3 },
+  { to: "/calculators", label: "Tools", icon: Calculator },
 ];
 
 export function Header() {
@@ -71,6 +73,7 @@ export function Header() {
             <SearchBar compact />
           </div>
           <CurrencyToggle />
+          <ThemeToggle />
         </div>
       </div>
     </header>

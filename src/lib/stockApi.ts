@@ -51,3 +51,4 @@ export const getTopCompanies = () => callStockApi({ action: "top_companies" });
 export const getCurrencyRates = () => callStockApi({ action: "currency_rates" });
 export const getSimFinStatements = (symbol: string) => callStockApi({ action: "simfin_statements", symbol });
 export const getEulerpoolProfile = (symbol: string) => callStockApi({ action: "eulerpool_profile", symbol });
+export const getHiddenGems = () => callStockApi({ action: "hidden_gems" });

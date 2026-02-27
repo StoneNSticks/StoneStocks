@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useMarketIndices } from "@/hooks/useStockData";
 import { priceChangeColor } from "@/lib/formatters";
 import { TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
@@ -40,9 +41,10 @@ export function MarketOverview() {
       {indices.map((idx: any) => {
         const isPositive = idx.changePercent >= 0;
         return (
-          <div
+          <Link
             key={idx.indexSymbol}
-            className={`flex-shrink-0 min-w-[190px] rounded-xl border px-4 py-3 transition-all ${
+            to={`/stock/${idx.etfSymbol || idx.indexSymbol}`}
+            className={`flex-shrink-0 min-w-[190px] rounded-xl border px-4 py-3 transition-all hover:scale-[1.02] cursor-pointer ${
               isPositive
                 ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
                 : "border-destructive/30 bg-destructive/[0.04]"
@@ -67,7 +69,7 @@ export function MarketOverview() {
             <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(idx.changePercent)}`}>
               {formatChange(idx.change)} ({formatChangePercent(idx.changePercent)})
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

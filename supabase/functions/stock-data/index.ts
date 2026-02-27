@@ -38,7 +38,7 @@ const TTL: Record<string, number> = {
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
   massive_news: 30, market_news: 15, gainers_losers: 30,
   most_active: 10, top_companies: 15, currency_rates: 60,
-  simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7,
+  simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
@@ -459,12 +459,14 @@ async function handleMassiveNews(symbol: string) {
 // === Homepage Data Handlers ===
 
 // ETF-to-Index approximate multipliers (ETF price × multiplier ≈ index points)
-// These are stable approximations updated periodically
-const INDEX_CONFIG: { indexSymbol: string; name: string; etf: string; etfMultiplier: number }[] = [
-  { indexSymbol: "SPX", name: "S&P 500", etf: "SPY", etfMultiplier: 10 },
-  { indexSymbol: "DJI", name: "Dow Jones", etf: "DIA", etfMultiplier: 100 },
-  { indexSymbol: "IXIC", name: "Nasdaq", etf: "QQQ", etfMultiplier: 32.1 },
-  { indexSymbol: "RUT", name: "Russell 2000", etf: "IWM", etfMultiplier: 8.31 },
+const INDEX_CONFIG: { indexSymbol: string; name: string; etf: string; etfMultiplier: number; etfSymbol?: string }[] = [
+  { indexSymbol: "SPX", name: "S&P 500", etf: "SPY", etfMultiplier: 10, etfSymbol: "SPY" },
+  { indexSymbol: "DJI", name: "Dow Jones", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
+  { indexSymbol: "IXIC", name: "Nasdaq", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
+  { indexSymbol: "RUT", name: "Russell 2000", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
+  { indexSymbol: "DAX", name: "DAX", etf: "DAX", etfMultiplier: 1, etfSymbol: "DAX" },
+  { indexSymbol: "N225", name: "Nikkei 225", etf: "N225", etfMultiplier: 1, etfSymbol: "EWJ" },
+  { indexSymbol: "FTSE", name: "FTSE 100", etf: "FTSE", etfMultiplier: 1, etfSymbol: "EWU" },
 ];
 
 async function handleMarketIndices() {
@@ -478,10 +480,11 @@ async function handleMarketIndices() {
       try {
         const q = await fetchTwelveData("quote", { symbol: cfg.indexSymbol });
         const price = parseFloat(q?.close || "0");
-        if (price > 100) { // Index values are always in hundreds/thousands
+        if (price > 100) {
           return {
             indexSymbol: cfg.indexSymbol,
             name: cfg.name,
+            etfSymbol: cfg.etfSymbol,
             price,
             prevClose: parseFloat(q.previous_close || "0"),
             change: parseFloat(q.change || "0"),
@@ -494,30 +497,35 @@ async function handleMarketIndices() {
       }
 
       // Fallback: Finnhub ETF quote → convert to approximate index points
-      try {
-        const q = await fetchFinnhub("quote", { symbol: cfg.etf });
-        if (q?.c > 0) {
-          const m = cfg.etfMultiplier;
-          return {
-            indexSymbol: cfg.indexSymbol,
-            name: cfg.name,
-            price: Math.round(q.c * m * 100) / 100,
-            prevClose: Math.round((q.pc || 0) * m * 100) / 100,
-            change: Math.round((q.d || 0) * m * 100) / 100,
-            changePercent: q.dp || 0, // percentage stays the same
-            isIndex: true,
-          };
+      if (cfg.etfMultiplier !== 1) {
+        try {
+          const q = await fetchFinnhub("quote", { symbol: cfg.etf });
+          if (q?.c > 0) {
+            const m = cfg.etfMultiplier;
+            return {
+              indexSymbol: cfg.indexSymbol,
+              name: cfg.name,
+              etfSymbol: cfg.etfSymbol,
+              price: Math.round(q.c * m * 100) / 100,
+              prevClose: Math.round((q.pc || 0) * m * 100) / 100,
+              change: Math.round((q.d || 0) * m * 100) / 100,
+              changePercent: q.dp || 0,
+              isIndex: true,
+            };
+          }
+        } catch {
+          // ignore
         }
-      } catch {
-        // ignore
       }
 
-      return { indexSymbol: cfg.indexSymbol, name: cfg.name, price: 0, prevClose: 0, change: 0, changePercent: 0, isIndex: true };
+      return { indexSymbol: cfg.indexSymbol, name: cfg.name, etfSymbol: cfg.etfSymbol, price: 0, prevClose: 0, change: 0, changePercent: 0, isIndex: true };
     })
   );
 
-  await setCache(cacheKey, indices, "multi", TTL.market_indices);
-  return indices;
+  // Filter out indices that returned 0 price
+  const valid = indices.filter(i => i.price > 0);
+  await setCache(cacheKey, valid.length > 0 ? valid : indices, "multi", TTL.market_indices);
+  return valid.length > 0 ? valid : indices;
 }
 
 // Combined market news from Finnhub + Polygon (covers Reuters, Bloomberg, CNBC, etc.)
@@ -576,6 +584,7 @@ async function handleGainersLosers() {
         .filter((s: any) => s.day?.c > 2 && s.day?.v > 200000)
         .map((s: any) => ({
           symbol: s.ticker,
+          name: s.ticker,
           price: s.day?.c || 0,
           change: s.todaysChange || 0,
           changePercent: s.todaysChangePerc || 0,
@@ -601,7 +610,7 @@ async function handleGainersLosers() {
     const stocks = data.results
       .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0)
       .map((s: any) => ({
-        symbol: s.T, price: s.c, change: s.c - s.o,
+        symbol: s.T, name: s.T, price: s.c, change: s.c - s.o,
         changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
       }))
       .filter((s: any) => Math.abs(s.changePercent) < 100);
@@ -643,7 +652,7 @@ async function handleMostActive() {
       const stocks = data.tickers
         .filter((s: any) => s.day?.c > 2 && s.day?.v > 500000)
         .map((s: any) => ({
-          symbol: s.ticker, price: s.day?.c || 0,
+          symbol: s.ticker, name: s.ticker, price: s.day?.c || 0,
           change: s.todaysChange || 0, changePercent: s.todaysChangePerc || 0,
           volume: s.day?.v || 0,
         }))
@@ -660,7 +669,7 @@ async function handleMostActive() {
     const stocks = fallback.results
       .filter((s: any) => s.c > 2 && s.v > 500000 && s.o > 0)
       .map((s: any) => ({
-        symbol: s.T, price: s.c, change: s.c - s.o,
+        symbol: s.T, name: s.T, price: s.c, change: s.c - s.o,
         changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
       }))
       .sort((a: any, b: any) => b.volume - a.volume)
@@ -753,7 +762,56 @@ async function handleEulerpoolProfile(symbol: string) {
   return null;
 }
 
-// === Derived metrics ===
+// === Hidden Gems - stocks with strong buy consensus + positive momentum ===
+const HIDDEN_GEM_CANDIDATES = [
+  { symbol: "PLTR", name: "Palantir" }, { symbol: "SOFI", name: "SoFi Technologies" },
+  { symbol: "NET", name: "Cloudflare" }, { symbol: "DDOG", name: "Datadog" },
+  { symbol: "CRWD", name: "CrowdStrike" }, { symbol: "SNOW", name: "Snowflake" },
+  { symbol: "AFRM", name: "Affirm" }, { symbol: "RBLX", name: "Roblox" },
+  { symbol: "U", name: "Unity Software" }, { symbol: "PINS", name: "Pinterest" },
+  { symbol: "ROKU", name: "Roku" }, { symbol: "COIN", name: "Coinbase" },
+  { symbol: "TTD", name: "The Trade Desk" }, { symbol: "MDB", name: "MongoDB" },
+  { symbol: "ZS", name: "Zscaler" }, { symbol: "BILL", name: "Bill Holdings" },
+];
+
+async function handleHiddenGems() {
+  const cacheKey = "market:hidden_gems:v1";
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const results = await Promise.all(
+    HIDDEN_GEM_CANDIDATES.map(async (c) => {
+      try {
+        const [q, rec, profile] = await Promise.all([
+          fetchFinnhub("quote", { symbol: c.symbol }).catch(() => null),
+          fetchFinnhub("stock/recommendation", { symbol: c.symbol }).catch(() => []),
+          fetchFinnhub("stock/profile2", { symbol: c.symbol }).catch(() => null),
+        ]);
+        const latest = Array.isArray(rec) && rec.length > 0 ? rec[0] : null;
+        const buyScore = latest ? (latest.strongBuy || 0) + (latest.buy || 0) : 0;
+        const totalAnalysts = latest ? buyScore + (latest.hold || 0) + (latest.sell || 0) + (latest.strongSell || 0) : 0;
+        const buyRatio = totalAnalysts > 0 ? buyScore / totalAnalysts : 0;
+        return {
+          symbol: c.symbol, name: c.name,
+          price: q?.c || 0, change: q?.d || 0, changePercent: q?.dp || 0,
+          logo: profile?.logo || "",
+          buyRatio, buyScore, totalAnalysts,
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  const gems = results
+    .filter((r): r is NonNullable<typeof r> => r != null && r.price > 0 && r.buyRatio > 0.5)
+    .sort((a, b) => b.buyRatio - a.buyRatio)
+    .slice(0, 12);
+
+  await setCache(cacheKey, gems, "finnhub", 30);
+  return gems;
+}
+
 
 function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null) {
   const price = parseFloat(quote?.c?.toString() || overview?.Price || "0");
@@ -839,6 +897,7 @@ Deno.serve(async (req) => {
       case "currency_rates": result = await handleCurrencyRates(); break;
       case "simfin_statements": result = await handleSimFinStatements(symbol!); break;
       case "eulerpool_profile": result = await handleEulerpoolProfile(symbol!); break;
+      case "hidden_gems": result = await handleHiddenGems(); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
