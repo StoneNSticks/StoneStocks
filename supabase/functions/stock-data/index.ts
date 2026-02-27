@@ -463,6 +463,17 @@ async function handleMassiveNews(symbol: string) {
 
 // === Homepage Data Handlers ===
 
+// Helper: filter to common stocks only (no ETFs, warrants, units, preferred shares)
+function isCommonStock(ticker: string): boolean {
+  if (!ticker || ticker.length > 5) return false;
+  // Exclude tickers with numbers, dots, dashes, or special suffixes (warrants, units, etc.)
+  if (/[0-9.\-+\/^]/.test(ticker)) return false;
+  // Exclude known ETF patterns
+  const etfPatterns = /^(SPY|QQQ|IWM|DIA|VOO|VTI|GLD|SLV|TLT|HYG|XL[A-Z]|ARKK?|SQQQ|TQQQ|UVXY|SPXS|VXX|SOXL|SOXS|LABU|LABD|JNUG|DUST|NUGT|FNGU|FAS|FAZ|TNA|TZA|UDOW|SDOW|UPRO|SPXU|SH|SSO|EW[A-Z]|FEZ|EEM|EFA|IEMG)$/;
+  if (etfPatterns.test(ticker)) return false;
+  return /^[A-Z]{1,5}$/.test(ticker);
+}
+
 // Helper to enrich stock lists with company names and logos
 async function enrichWithProfileData(stocks: any[]): Promise<any[]> {
   const enriched = await Promise.all(
@@ -605,7 +616,7 @@ async function handleGainersLosers() {
 
     const mapSnapshot = (items: any[]) =>
       (items || [])
-        .filter((s: any) => s.day?.c > 2 && s.day?.v > 200000)
+        .filter((s: any) => s.day?.c > 2 && s.day?.v > 200000 && isCommonStock(s.ticker))
         .map((s: any) => ({
           symbol: s.ticker,
           name: s.ticker,
@@ -639,7 +650,7 @@ async function handleGainersLosers() {
     if (!data?.results?.length) return { gainers: [], losers: [], date: lastDate };
 
     const stocks = data.results
-      .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0)
+      .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0 && isCommonStock(s.T))
       .map((s: any) => ({
         symbol: s.T, name: s.T, price: s.c, change: s.c - s.o,
         changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
@@ -681,7 +692,7 @@ async function handleMostActive() {
     const data = await fetchMassive("/v2/snapshot/locale/us/markets/stocks/tickers", { include_otc: "false" }).catch(() => null);
     if (data?.tickers?.length) {
       const rawStocks = data.tickers
-        .filter((s: any) => s.day?.c > 2 && s.day?.v > 500000)
+        .filter((s: any) => s.day?.c > 2 && s.day?.v > 500000 && isCommonStock(s.ticker))
         .map((s: any) => ({
           symbol: s.ticker, name: s.ticker, price: s.day?.c || 0,
           change: s.todaysChange || 0, changePercent: s.todaysChangePerc || 0,
@@ -699,7 +710,7 @@ async function handleMostActive() {
     const fallback = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" });
     if (!fallback?.results) return [];
     const stocks = fallback.results
-      .filter((s: any) => s.c > 2 && s.v > 500000 && s.o > 0)
+      .filter((s: any) => s.c > 2 && s.v > 500000 && s.o > 0 && isCommonStock(s.T))
       .map((s: any) => ({
         symbol: s.T, name: s.T, price: s.c, change: s.c - s.o,
         changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
