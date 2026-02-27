@@ -63,15 +63,24 @@ export function GainersLosers() {
               className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                  {item.symbol.slice(0, 2)}
-                </div>
+                {item.logo ? (
+                  <img
+                    src={item.logo}
+                    alt={item.symbol}
+                    className="w-8 h-8 rounded-lg object-contain bg-background border border-border/40"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                    {item.symbol?.slice(0, 2)}
+                  </div>
+                )}
                 <div className="min-w-0">
                   <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
-                    {item.symbol}
+                    {item.name || item.symbol}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    Vol: {formatNumber(item.volume)}
+                    {item.symbol} · Vol: {formatNumber(item.volume)}
                   </div>
                 </div>
               </div>
