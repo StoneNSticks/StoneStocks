@@ -737,74 +737,79 @@ async function enrichWithProfileData(stocks: any[]): Promise<any[]> {
   return enriched;
 }
 
-// ETF-to-Index approximate multipliers (ETF price × multiplier ≈ index points)
-const INDEX_CONFIG: { indexSymbol: string; name: string; twelveSymbol: string; etf: string; etfMultiplier: number; etfSymbol?: string }[] = [
-  { indexSymbol: "SPX", name: "S&P 500", twelveSymbol: "SPX", etf: "SPY", etfMultiplier: 10, etfSymbol: "SPY" },
-  { indexSymbol: "DJI", name: "Dow Jones", twelveSymbol: "DJI", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
-  { indexSymbol: "IXIC", name: "Nasdaq", twelveSymbol: "IXIC", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
-  { indexSymbol: "RUT", name: "Russell 2000", twelveSymbol: "RUT", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
-  { indexSymbol: "GDAXI", name: "DAX", twelveSymbol: "GDAXI", etf: "EWG", etfMultiplier: 640, etfSymbol: "EWG" },
-  { indexSymbol: "N225", name: "Nikkei 225", twelveSymbol: "N225", etf: "EWJ", etfMultiplier: 570, etfSymbol: "EWJ" },
-  { indexSymbol: "FTSE", name: "FTSE 100", twelveSymbol: "FTSE", etf: "EWU", etfMultiplier: 243, etfSymbol: "EWU" },
-  { indexSymbol: "FCHI", name: "CAC 40", twelveSymbol: "FCHI", etf: "EWQ", etfMultiplier: 215, etfSymbol: "EWQ" },
-  { indexSymbol: "HSI", name: "Hang Seng", twelveSymbol: "HSI", etf: "EWH", etfMultiplier: 1050, etfSymbol: "EWH" },
-  { indexSymbol: "STOXX50E", name: "Euro Stoxx 50", twelveSymbol: "STOXX50E", etf: "FEZ", etfMultiplier: 82, etfSymbol: "FEZ" },
+// Index configuration – yahooSymbol uses Yahoo Finance's ^ prefix for real index values
+const INDEX_CONFIG: { indexSymbol: string; name: string; yahooSymbol: string; etfSymbol: string }[] = [
+  { indexSymbol: "SPX", name: "S&P 500", yahooSymbol: "^GSPC", etfSymbol: "SPY" },
+  { indexSymbol: "DJI", name: "Dow Jones", yahooSymbol: "^DJI", etfSymbol: "DIA" },
+  { indexSymbol: "IXIC", name: "Nasdaq", yahooSymbol: "^IXIC", etfSymbol: "QQQ" },
+  { indexSymbol: "RUT", name: "Russell 2000", yahooSymbol: "^RUT", etfSymbol: "IWM" },
+  { indexSymbol: "DAX", name: "DAX", yahooSymbol: "^GDAXI", etfSymbol: "EWG" },
+  { indexSymbol: "N225", name: "Nikkei 225", yahooSymbol: "^N225", etfSymbol: "EWJ" },
+  { indexSymbol: "FTSE", name: "FTSE 100", yahooSymbol: "^FTSE", etfSymbol: "EWU" },
+  { indexSymbol: "CAC40", name: "CAC 40", yahooSymbol: "^FCHI", etfSymbol: "EWQ" },
+  { indexSymbol: "HSI", name: "Hang Seng", yahooSymbol: "^HSI", etfSymbol: "EWH" },
+  { indexSymbol: "STOXX50", name: "Euro Stoxx 50", yahooSymbol: "^STOXX50E", etfSymbol: "FEZ" },
 ];
 
+// Fetch real index data from Yahoo Finance (no API key required)
+async function fetchYahooQuote(yahooSymbol: string): Promise<{ price: number; prevClose: number; change: number; changePercent: number } | null> {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      console.warn(`Yahoo ${yahooSymbol} HTTP ${res.status}: ${text.substring(0, 200)}`);
+      return null;
+    }
+    const data = await res.json();
+    const meta = data?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+    const price = meta.regularMarketPrice || 0;
+    const prevClose = meta.chartPreviousClose || meta.previousClose || 0;
+    if (price <= 0) return null;
+    return {
+      price: Math.round(price * 100) / 100,
+      prevClose: Math.round(prevClose * 100) / 100,
+      change: Math.round((price - prevClose) * 100) / 100,
+      changePercent: prevClose > 0 ? Math.round(((price - prevClose) / prevClose) * 10000) / 100 : 0,
+    };
+  } catch (e) {
+    console.warn(`Yahoo ${yahooSymbol} failed:`, e);
+    return null;
+  }
+}
+
 async function handleMarketIndices() {
-  const cacheKey = "market:indices:v6";
+  const cacheKey = "market:indices:v8";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  const indices = await Promise.all(
+  // Fetch all indices in parallel from Yahoo Finance
+  const results = await Promise.all(
     INDEX_CONFIG.map(async (cfg) => {
-      // Try Twelve Data with proper symbol first
-      try {
-        const q = await fetchTwelveData("quote", { symbol: cfg.twelveSymbol });
-        const price = parseFloat(q?.close || "0");
-        if (price > 0) {
-          return {
-            indexSymbol: cfg.indexSymbol,
-            name: cfg.name,
-            etfSymbol: cfg.etfSymbol,
-            price,
-            prevClose: parseFloat(q.previous_close || "0"),
-            change: parseFloat(q.change || "0"),
-            changePercent: parseFloat(q.percent_change || "0"),
-            isIndex: true,
-          };
-        }
-      } catch (e) {
-        console.warn(`Twelve Data index ${cfg.twelveSymbol} failed:`, e);
+      const quote = await fetchYahooQuote(cfg.yahooSymbol);
+      if (quote) {
+        return {
+          indexSymbol: cfg.indexSymbol,
+          name: cfg.name,
+          etfSymbol: cfg.etfSymbol,
+          price: quote.price,
+          prevClose: quote.prevClose,
+          change: quote.change,
+          changePercent: quote.changePercent,
+          isIndex: true,
+        };
       }
-
-      // Fallback: Finnhub ETF quote → convert to approximate index points
-      try {
-        const q = await fetchFinnhub("quote", { symbol: cfg.etf });
-        if (q?.c > 0) {
-          const m = cfg.etfMultiplier;
-          return {
-            indexSymbol: cfg.indexSymbol,
-            name: cfg.name,
-            etfSymbol: cfg.etfSymbol,
-            price: Math.round(q.c * m * 100) / 100,
-            prevClose: Math.round((q.pc || 0) * m * 100) / 100,
-            change: Math.round((q.d || 0) * m * 100) / 100,
-            changePercent: q.dp || 0,
-            isIndex: true,
-          };
-        }
-      } catch {
-        // ignore
-      }
-
+      console.warn(`No data for index ${cfg.yahooSymbol} (${cfg.name})`);
       return { indexSymbol: cfg.indexSymbol, name: cfg.name, etfSymbol: cfg.etfSymbol, price: 0, prevClose: 0, change: 0, changePercent: 0, isIndex: true };
     })
   );
 
-  const valid = indices.filter(i => i.price > 0);
-  await setCache(cacheKey, valid.length > 0 ? valid : indices, "multi", TTL.market_indices);
-  return valid.length > 0 ? valid : indices;
+  const valid = results.filter(i => i.price > 0);
+  await setCache(cacheKey, valid.length > 0 ? valid : results, "multi", TTL.market_indices);
+  return valid.length > 0 ? valid : results;
 }
 
 // Combined market news from Finnhub + Polygon (covers Reuters, Bloomberg, CNBC, etc.)
