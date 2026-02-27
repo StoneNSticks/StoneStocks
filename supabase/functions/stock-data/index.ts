@@ -468,8 +468,10 @@ function isCommonStock(ticker: string): boolean {
   if (!ticker || ticker.length > 5) return false;
   // Exclude tickers with numbers, dots, dashes, or special suffixes (warrants, units, etc.)
   if (/[0-9.\-+\/^]/.test(ticker)) return false;
+  // Exclude tickers ending in W (warrants), U (units), or R (rights)
+  if (ticker.length >= 4 && /[WUR]$/.test(ticker)) return false;
   // Exclude known ETF patterns
-  const etfPatterns = /^(SPY|QQQ|IWM|DIA|VOO|VTI|GLD|SLV|TLT|HYG|XL[A-Z]|ARKK?|SQQQ|TQQQ|UVXY|SPXS|VXX|SOXL|SOXS|LABU|LABD|JNUG|DUST|NUGT|FNGU|FAS|FAZ|TNA|TZA|UDOW|SDOW|UPRO|SPXU|SH|SSO|EW[A-Z]|FEZ|EEM|EFA|IEMG)$/;
+  const etfPatterns = /^(SPY|QQQ|IWM|DIA|VOO|VTI|GLD|SLV|TLT|HYG|XL[A-Z]|ARKK?|SQQQ|TQQQ|UVXY|SPXS|VXX|SOXL|SOXS|LABU|LABD|JNUG|DUST|NUGT|FNGU|FAS|FAZ|TNA|TZA|UDOW|SDOW|UPRO|SPXU|SH|SSO|EW[A-Z]|FEZ|EEM|EFA|IEMG|BITO|EOSE|BOIL|KOLD|YINN|YANG)$/;
   if (etfPatterns.test(ticker)) return false;
   return /^[A-Z]{1,5}$/.test(ticker);
 }
@@ -658,7 +660,13 @@ async function handleGainersLosers() {
       .filter((s: any) => Math.abs(s.changePercent) < 100);
 
     stocks.sort((a: any, b: any) => b.changePercent - a.changePercent);
-    const result = { gainers: stocks.slice(0, 10), losers: stocks.slice(-10).reverse(), date: lastDate };
+    const rawGainers = stocks.slice(0, 10);
+    const rawLosers = stocks.slice(-10).reverse();
+    const [enrichedGainers, enrichedLosers] = await Promise.all([
+      enrichWithProfileData(rawGainers),
+      enrichWithProfileData(rawLosers),
+    ]);
+    const result = { gainers: enrichedGainers, losers: enrichedLosers, date: lastDate };
     await setCache(cacheKey, result, "massive", TTL.gainers_losers);
     return result;
   } catch (err) {
@@ -717,8 +725,9 @@ async function handleMostActive() {
       }))
       .sort((a: any, b: any) => b.volume - a.volume)
       .slice(0, 15);
-    await setCache(cacheKey, stocks, "massive", TTL.most_active);
-    return stocks;
+    const enrichedStocks = await enrichWithProfileData(stocks);
+    await setCache(cacheKey, enrichedStocks, "massive", TTL.most_active);
+    return enrichedStocks;
   } catch {
     return [];
   }
