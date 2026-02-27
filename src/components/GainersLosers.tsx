@@ -14,7 +14,7 @@ export function GainersLosers() {
       <div className="rounded-xl border border-border/60 bg-card p-5">
         <h2 className="font-display text-lg font-semibold mb-4">Winners & Losers</h2>
         <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-10 rounded-lg" />
           ))}
         </div>
@@ -23,11 +23,13 @@ export function GainersLosers() {
   }
 
   const list = tab === "gainers" ? data?.gainers : data?.losers;
+  const dateLabel = data?.date ? new Date(data.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h2 className="font-display text-lg font-semibold">Winners & Losers</h2>
+        {dateLabel && <span className="text-[11px] text-muted-foreground">{dateLabel}</span>}
       </div>
       <div className="flex gap-1 mb-3">
         <button
@@ -61,12 +63,17 @@ export function GainersLosers() {
               to={`/stock/${item.symbol}`}
               className="flex items-center justify-between rounded-lg px-2.5 py-2 -mx-1 transition-colors hover:bg-muted group"
             >
-              <span className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
-                {item.symbol}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-sm">{formatCurrency(item.price)}</span>
-                <span className={`text-xs font-medium w-16 text-right ${priceChangeColor(item.changePercent)}`}>
+              <div className="flex items-center gap-3">
+                <span className="font-display font-semibold text-sm group-hover:text-primary transition-colors w-14">
+                  {item.symbol}
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Vol: {formatNumber(item.volume)}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm tabular-nums">{formatCurrency(item.price)}</span>
+                <span className={`text-xs font-medium w-16 text-right tabular-nums ${priceChangeColor(item.changePercent)}`}>
                   {formatPercent(item.changePercent)}
                 </span>
               </div>
@@ -74,7 +81,9 @@ export function GainersLosers() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No data available yet.</p>
+        <p className="text-sm text-muted-foreground py-4 text-center">
+          Market data loading — available after market close.
+        </p>
       )}
     </div>
   );
