@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { WatchlistStar } from "@/components/WatchlistStar";
 import { SearchBar } from "@/components/SearchBar";
 import { StockChart } from "@/components/StockChart";
 import { MetricsGrid } from "@/components/MetricsGrid";
@@ -166,8 +167,11 @@ const StockDetail = () => {
                     className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0"
                   />
                 )}
-                <div className="min-w-0">
-                  <h1 className="font-display text-2xl font-bold truncate">{companyName}</h1>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h1 className="font-display text-2xl font-bold truncate">{companyName}</h1>
+                    <WatchlistStar symbol={upperSymbol} />
+                  </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
                 </div>
               </div>

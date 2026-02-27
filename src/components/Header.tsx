@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3, Calculator, Menu } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MarketClock } from "@/components/MarketClock";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +23,7 @@ const navItems = [
 
 export function Header() {
   const location = useLocation();
+  const { user, signOut } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -76,6 +78,19 @@ export function Header() {
               </Link>
             );
           })}
+          {user && (
+            <Link
+              to="/watchlist"
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                location.pathname === "/watchlist"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Star className="h-3.5 w-3.5" />
+              Watchlist
+            </Link>
+          )}
         </nav>
 
         <div className="flex-1 flex items-center gap-2 justify-end">
@@ -91,6 +106,23 @@ export function Header() {
             <CurrencyToggle />
           </div>
           <ThemeToggle />
+          {user ? (
+            <button
+              onClick={() => signOut()}
+              className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/60"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/60"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              Login
+            </Link>
+          )}
 
           {/* Mobile hamburger */}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -124,10 +156,40 @@ export function Header() {
                     </Link>
                   );
                 })}
+                {user && (
+                  <Link
+                    to="/watchlist"
+                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      location.pathname === "/watchlist"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Star className="h-4 w-4" />
+                    Watchlist
+                  </Link>
+                )}
               </nav>
               <div className="mt-6 pt-6 border-t border-border/60 flex flex-col gap-3">
                 <MarketClock />
                 <CurrencyToggle />
+                {user ? (
+                  <button
+                    onClick={() => signOut()}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    to="/auth"
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </Link>
+                )}
               </div>
             </SheetContent>
           </Sheet>
