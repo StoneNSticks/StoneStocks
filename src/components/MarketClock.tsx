@@ -129,7 +129,7 @@ export function MarketClock() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-72 rounded-xl border border-border/60 bg-card shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-border/60 bg-card shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-2.5 border-b border-border/40">
             <p className="text-xs font-semibold text-foreground">Market Hours</p>
             <p className="text-[10px] text-muted-foreground">

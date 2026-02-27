@@ -60,7 +60,7 @@ function PortfolioGrowth() {
           <Input type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-xl border border-border/60 bg-card p-4 text-center">
           <div className="text-xs text-muted-foreground mb-1">Total Invested</div>
           <div className="font-display font-bold text-lg text-foreground">{formatMoney(final?.invested || 0)}</div>
@@ -191,7 +191,7 @@ function DividendCalc() {
           <Input type="number" value={shares} onChange={(e) => setShares(Number(e.target.value))} className="mt-1" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-xl border border-border/60 bg-card p-4 text-center">
           <div className="text-xs text-muted-foreground mb-1">Yield on Cost (Yr {years})</div>
           <div className="font-display font-bold text-lg text-primary">{final?.yieldOnCost.toFixed(2)}%</div>
@@ -261,7 +261,7 @@ function FireCalc() {
           <Input type="number" value={withdrawal} onChange={(e) => setWithdrawal(Number(e.target.value))} className="mt-1" step="0.5" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-xl border border-border/60 bg-card p-4 text-center">
           <div className="text-xs text-muted-foreground mb-1">FIRE Number</div>
           <div className="font-display font-bold text-xl text-primary">{formatMoney(result.needed)}</div>

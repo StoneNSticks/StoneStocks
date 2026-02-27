@@ -55,12 +55,12 @@ const IndexDetail = () => {
                   <p className="text-sm text-muted-foreground">Market Index · {index.indexSymbol}</p>
                 </div>
               </div>
-              <div className="flex items-end gap-4">
-                <div className="font-display text-4xl font-bold tabular-nums">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4">
+                <div className="font-display text-2xl sm:text-4xl font-bold tabular-nums">
                   {formatPoints(index.price)}
                   <span className="text-sm font-normal text-muted-foreground ml-1">pts</span>
                 </div>
-                <div className={`flex items-center gap-1 text-lg font-medium ${priceChangeColor(index.changePercent)}`}>
+                <div className={`flex items-center gap-1 text-base sm:text-lg font-medium ${priceChangeColor(index.changePercent)}`}>
                   {index.changePercent >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                   {index.change >= 0 ? "+" : ""}{index.change?.toFixed(2)} ({index.changePercent >= 0 ? "+" : ""}{index.changePercent?.toFixed(2)}%)
                 </div>
