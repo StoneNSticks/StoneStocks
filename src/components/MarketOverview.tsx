@@ -30,14 +30,20 @@ export function MarketOverview() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || paused) return;
+
+    // Start from the midpoint (second copy) so we can scroll leftward
+    const half = el.scrollWidth / 2;
+    if (el.scrollLeft === 0) {
+      el.scrollLeft = half;
+    }
+
     let raf: number;
     const speed = 0.15;
     const step = () => {
-      if (el.scrollLeft <= 0) {
-        el.scrollLeft = el.scrollWidth / 2;
-      } else {
-        el.scrollLeft -= speed;
+      if (el.scrollLeft <= 1) {
+        el.scrollLeft = half;
       }
+      el.scrollLeft -= speed;
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
