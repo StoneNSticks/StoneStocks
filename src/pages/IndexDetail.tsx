@@ -11,10 +11,11 @@ function formatPoints(num: number): string {
   return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Map index symbols to ETFs that have chart data
+// Map display index symbols to ETFs that have chart data
 const INDEX_ETF_MAP: Record<string, string> = {
   SPX: "SPY", DJI: "DIA", IXIC: "QQQ", RUT: "IWM",
-  GDAXI: "EWG", N225: "EWJ", FTSE: "EWU",
+  DAX: "EWG", N225: "EWJ", FTSE: "EWU", CAC40: "EWQ",
+  HSI: "EWH", STOXX50: "FEZ",
 };
 
 const IndexDetail = () => {
