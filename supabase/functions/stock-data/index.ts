@@ -459,29 +459,48 @@ async function handleMassiveNews(symbol: string) {
 
 // === Homepage Data Handlers ===
 
+// Helper to enrich stock lists with company names and logos
+async function enrichWithProfileData(stocks: any[]): Promise<any[]> {
+  const enriched = await Promise.all(
+    stocks.map(async (s: any) => {
+      try {
+        const profile = await fetchFinnhub("stock/profile2", { symbol: s.symbol });
+        return {
+          ...s,
+          name: profile?.name || s.name || s.symbol,
+          logo: profile?.logo || "",
+        };
+      } catch {
+        return { ...s, name: s.name || s.symbol, logo: "" };
+      }
+    })
+  );
+  return enriched;
+}
+
 // ETF-to-Index approximate multipliers (ETF price × multiplier ≈ index points)
-const INDEX_CONFIG: { indexSymbol: string; name: string; etf: string; etfMultiplier: number; etfSymbol?: string }[] = [
-  { indexSymbol: "SPX", name: "S&P 500", etf: "SPY", etfMultiplier: 10, etfSymbol: "SPY" },
-  { indexSymbol: "DJI", name: "Dow Jones", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
-  { indexSymbol: "IXIC", name: "Nasdaq", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
-  { indexSymbol: "RUT", name: "Russell 2000", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
-  { indexSymbol: "GDAXI", name: "DAX", etf: "EWG", etfMultiplier: 1, etfSymbol: "EWG" },
-  { indexSymbol: "N225", name: "Nikkei 225", etf: "EWJ", etfMultiplier: 1, etfSymbol: "EWJ" },
-  { indexSymbol: "FTSE", name: "FTSE 100", etf: "EWU", etfMultiplier: 1, etfSymbol: "EWU" },
+const INDEX_CONFIG: { indexSymbol: string; name: string; twelveSymbol: string; etf: string; etfMultiplier: number; etfSymbol?: string }[] = [
+  { indexSymbol: "SPX", name: "S&P 500", twelveSymbol: "SPX", etf: "SPY", etfMultiplier: 10, etfSymbol: "SPY" },
+  { indexSymbol: "DJI", name: "Dow Jones", twelveSymbol: "DJI", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
+  { indexSymbol: "IXIC", name: "Nasdaq", twelveSymbol: "IXIC", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
+  { indexSymbol: "RUT", name: "Russell 2000", twelveSymbol: "RUT", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
+  { indexSymbol: "GDAXI", name: "DAX", twelveSymbol: "DAX", etf: "EWG", etfMultiplier: 750, etfSymbol: "EWG" },
+  { indexSymbol: "N225", name: "Nikkei 225", twelveSymbol: "N225", etf: "EWJ", etfMultiplier: 570, etfSymbol: "EWJ" },
+  { indexSymbol: "FTSE", name: "FTSE 100", twelveSymbol: "FTSE", etf: "EWU", etfMultiplier: 243, etfSymbol: "EWU" },
 ];
 
 async function handleMarketIndices() {
-  const cacheKey = "market:indices:v5";
+  const cacheKey = "market:indices:v6";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
   const indices = await Promise.all(
     INDEX_CONFIG.map(async (cfg) => {
-      // Try Twelve Data with real index symbol first
+      // Try Twelve Data with proper symbol first
       try {
-        const q = await fetchTwelveData("quote", { symbol: cfg.indexSymbol });
+        const q = await fetchTwelveData("quote", { symbol: cfg.twelveSymbol });
         const price = parseFloat(q?.close || "0");
-        if (price > 100) {
+        if (price > 0) {
           return {
             indexSymbol: cfg.indexSymbol,
             name: cfg.name,
@@ -494,36 +513,33 @@ async function handleMarketIndices() {
           };
         }
       } catch (e) {
-        console.warn(`Twelve Data index ${cfg.indexSymbol} failed:`, e);
+        console.warn(`Twelve Data index ${cfg.twelveSymbol} failed:`, e);
       }
 
       // Fallback: Finnhub ETF quote → convert to approximate index points
-      if (cfg.etfMultiplier !== 1) {
-        try {
-          const q = await fetchFinnhub("quote", { symbol: cfg.etf });
-          if (q?.c > 0) {
-            const m = cfg.etfMultiplier;
-            return {
-              indexSymbol: cfg.indexSymbol,
-              name: cfg.name,
-              etfSymbol: cfg.etfSymbol,
-              price: Math.round(q.c * m * 100) / 100,
-              prevClose: Math.round((q.pc || 0) * m * 100) / 100,
-              change: Math.round((q.d || 0) * m * 100) / 100,
-              changePercent: q.dp || 0,
-              isIndex: true,
-            };
-          }
-        } catch {
-          // ignore
+      try {
+        const q = await fetchFinnhub("quote", { symbol: cfg.etf });
+        if (q?.c > 0) {
+          const m = cfg.etfMultiplier;
+          return {
+            indexSymbol: cfg.indexSymbol,
+            name: cfg.name,
+            etfSymbol: cfg.etfSymbol,
+            price: Math.round(q.c * m * 100) / 100,
+            prevClose: Math.round((q.pc || 0) * m * 100) / 100,
+            change: Math.round((q.d || 0) * m * 100) / 100,
+            changePercent: q.dp || 0,
+            isIndex: true,
+          };
         }
+      } catch {
+        // ignore
       }
 
       return { indexSymbol: cfg.indexSymbol, name: cfg.name, etfSymbol: cfg.etfSymbol, price: 0, prevClose: 0, change: 0, changePercent: 0, isIndex: true };
     })
   );
 
-  // Filter out indices that returned 0 price
   const valid = indices.filter(i => i.price > 0);
   await setCache(cacheKey, valid.length > 0 ? valid : indices, "multi", TTL.market_indices);
   return valid.length > 0 ? valid : indices;
@@ -594,9 +610,16 @@ async function handleGainersLosers() {
         .slice(0, 10);
 
     if (gainersData?.tickers?.length || losersData?.tickers?.length) {
+      const rawGainers = mapSnapshot(gainersData?.tickers || []);
+      const rawLosers = mapSnapshot(losersData?.tickers || []);
+      // Enrich with company names and logos
+      const [gainers, losers] = await Promise.all([
+        enrichWithProfileData(rawGainers),
+        enrichWithProfileData(rawLosers),
+      ]);
       const result = {
-        gainers: mapSnapshot(gainersData?.tickers || []),
-        losers: mapSnapshot(losersData?.tickers || []),
+        gainers,
+        losers,
         date: new Date().toISOString().split("T")[0],
       };
       await setCache(cacheKey, result, "massive", TTL.gainers_losers);
@@ -650,7 +673,7 @@ async function handleMostActive() {
     // Try real-time snapshot
     const data = await fetchMassive("/v2/snapshot/locale/us/markets/stocks/tickers", { include_otc: "false" }).catch(() => null);
     if (data?.tickers?.length) {
-      const stocks = data.tickers
+      const rawStocks = data.tickers
         .filter((s: any) => s.day?.c > 2 && s.day?.v > 500000)
         .map((s: any) => ({
           symbol: s.ticker, name: s.ticker, price: s.day?.c || 0,
@@ -659,6 +682,7 @@ async function handleMostActive() {
         }))
         .sort((a: any, b: any) => b.volume - a.volume)
         .slice(0, 15);
+      const stocks = await enrichWithProfileData(rawStocks);
       await setCache(cacheKey, stocks, "massive", TTL.most_active);
       return stocks;
     }
@@ -701,14 +725,16 @@ async function handleTopCompanies() {
           fetchFinnhub("quote", { symbol: c.symbol }),
           fetchFinnhub("stock/profile2", { symbol: c.symbol }),
         ]);
+        // Compute market cap from price × shares outstanding (most accurate)
+        const shareOutstanding = profile?.shareOutstanding || 0; // in millions
+        const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
+        // Fallback to Finnhub's marketCapitalization (in millions USD)
+        const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
+        const marketCap = computedMarketCap > 0 ? computedMarketCap : finnhubMarketCap;
         return {
           symbol: c.symbol, name: c.name, price: q.c || 0,
           change: q.d || 0, changePercent: q.dp || 0,
-          marketCap: profile?.marketCapitalization
-            ? (profile.marketCapitalization > 1e9
-              ? profile.marketCapitalization  // Already in USD (some ADRs)
-              : profile.marketCapitalization * 1e6)  // Finnhub standard: millions
-            : 0,
+          marketCap,
           logo: profile?.logo || "",
         };
       } catch {
