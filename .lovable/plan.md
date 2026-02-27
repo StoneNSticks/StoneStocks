@@ -1,151 +1,79 @@
 
 
-# User-Accounts und Watchlist implementieren
+# Login mit E-Mail oder Benutzername ermoeglichen
 
 ## Uebersicht
-Vollstaendiges Authentifizierungssystem mit Benutzerprofilen und Watchlist-Funktion. Nutzer koennen sich registrieren, einloggen und Aktien per Stern-Button zur Watchlist hinzufuegen.
+Nutzer sollen sich wahlweise mit ihrer E-Mail-Adresse oder einem Benutzernamen einloggen koennen. Dazu wird ein `username`-Feld in der Datenbank ergaenzt und die Login-Logik angepasst.
 
----
+## Aenderungen
 
-## 1. Datenbank-Migrationen
+### 1. Datenbank: `username`-Spalte zur `profiles`-Tabelle hinzufuegen
+- Neue Spalte `username` (TEXT, UNIQUE, nullable)
+- Unique-Index, damit keine doppelten Benutzernamen existieren
+- Trigger anpassen: bei Registrierung wird der Username aus den Metadaten uebernommen (falls angegeben)
 
-**profiles-Tabelle:**
-- `id` (UUID, Referenz auf auth.users)
-- `display_name` (Text)
-- `created_at` (Timestamp)
-- RLS: Nutzer koennen nur eigenes Profil lesen/bearbeiten
-- Trigger: Profil wird automatisch bei Registrierung erstellt
+### 2. Registrierung: Username-Feld hinzufuegen
+- Das bisherige "Anzeigename"-Feld wird durch ein **Pflicht-Feld "Benutzername"** ersetzt (oder ergaenzt)
+- Der Benutzername wird in `user_metadata` und in der `profiles`-Tabelle gespeichert
 
-**watchlist-Tabelle:**
-- `id` (UUID)
-- `user_id` (UUID, Referenz auf auth.users)
-- `symbol` (Text)
-- `created_at` (Timestamp)
-- Unique-Constraint auf (user_id, symbol)
-- RLS: Nutzer koennen nur eigene Watchlist lesen/bearbeiten
+### 3. Login: Username ODER E-Mail akzeptieren
+- Das Login-Feld akzeptiert sowohl E-Mail als auch Benutzername
+- Logik: Wenn die Eingabe ein `@` enthaelt, wird direkt per E-Mail eingeloggt
+- Wenn kein `@` enthalten ist, wird zuerst der Benutzername in der `profiles`-Tabelle nachgeschlagen, die zugehoerige E-Mail ermittelt, und dann damit eingeloggt
+- Dafuer braucht die `profiles`-Tabelle eine zusaetzliche RLS-Policy, die das Nachschlagen der E-Mail per Username erlaubt (nur fuer den Login-Zweck)
 
-## 2. Auth-Context
+### 4. E-Mail in `profiles` speichern
+- Neue Spalte `email` in der `profiles`-Tabelle, damit der Username-zu-E-Mail-Lookup funktioniert, ohne auf `auth.users` zugreifen zu muessen
+- Trigger aktualisieren, um die E-Mail automatisch zu speichern
 
-Neuer `AuthContext` in `src/contexts/AuthContext.tsx`:
-- Session-Management mit `onAuthStateChange` Listener
-- Funktionen: `signIn`, `signUp`, `signOut`, `resetPassword`
-- User-State global verfuegbar
+## Betroffene Dateien
 
-## 3. Auth-Seite (`/auth`)
-
-Neue Seite `src/pages/AuthPage.tsx`:
-- Umschaltbare Login/Registrierung-Formulare
-- E-Mail + Passwort Eingabe
-- Optional: Anzeigename bei Registrierung
-- Link zu "Passwort vergessen"
-- Weiterleitung nach erfolgreichem Login
-
-## 4. Passwort-Zuruecksetzen (`/reset-password`)
-
-Neue Seite `src/pages/ResetPasswordPage.tsx`:
-- Formular fuer neues Passwort
-- Erkennt Recovery-Token aus URL
-
-## 5. Watchlist-Hook
-
-Neuer Hook `src/hooks/useWatchlist.ts`:
-- `useWatchlist()`: Laedt alle Symbole der Watchlist
-- `useToggleWatchlist()`: Hinzufuegen/Entfernen mit 3-Sekunden-Cooldown
-- `useIsInWatchlist(symbol)`: Prueft ob Symbol gespeichert ist
-
-## 6. Stern-Komponente
-
-Neue Komponente `src/components/WatchlistStar.tsx`:
-- Lucide Star-Icon (leer oder gelb gefuellt)
-- Klick toggelt Watchlist-Eintrag
-- 3-Sekunden-Cooldown (Button deaktiviert)
-- Tooltip mit Status
-- Nicht eingeloggt: Weiterleitung zu `/auth`
-
-## 7. Watchlist-Seite (`/watchlist`)
-
-Neue Seite `src/pages/WatchlistPage.tsx`:
-- Liste aller gespeicherten Aktien mit Kursdaten
-- Links zur jeweiligen Aktien-Detailseite
-- Stern zum Entfernen direkt in der Liste
-
-## 8. Integration in bestehende Komponenten
-
-**StockDetail.tsx:**
-- WatchlistStar neben dem Firmennamen einbauen
-
-**Header.tsx:**
-- Login/Logout-Button rechts
-- Watchlist-Link in Navigation (wenn eingeloggt)
-
-**App.tsx:**
-- AuthProvider um die App wrappen
-- Neue Routen: `/auth`, `/watchlist`, `/reset-password`
-
----
+- **Datenbank-Migration**: `username` und `email` Spalten + RLS-Policy fuer Username-Lookup
+- **`src/contexts/AuthContext.tsx`**: `signIn` erweitern (Username-Lookup), `signUp` um Username ergaenzen
+- **`src/pages/AuthPage.tsx`**: Username-Feld bei Registrierung, Login-Feld Label/Placeholder anpassen
 
 ## Technische Details
 
-### Datenbank-SQL
-
+### SQL-Migration
 ```sql
--- profiles
-CREATE TABLE public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+-- username + email Spalten
+ALTER TABLE public.profiles ADD COLUMN username TEXT UNIQUE;
+ALTER TABLE public.profiles ADD COLUMN email TEXT;
 
--- Auto-create profile trigger
+-- Bestehende Profile mit E-Mail updaten
+UPDATE public.profiles p
+SET email = u.email
+FROM auth.users u
+WHERE p.id = u.id;
+
+-- Trigger anpassen: Username + Email bei Signup speichern
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  INSERT INTO public.profiles (id, display_name)
-  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email));
+  INSERT INTO public.profiles (id, display_name, username, email)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email),
+    NEW.raw_user_meta_data->>'username',
+    NEW.email
+  );
   RETURN NEW;
 END;
 $$;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- watchlist
-CREATE TABLE public.watchlist (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  symbol TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE(user_id, symbol)
-);
-ALTER TABLE public.watchlist ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users select own watchlist" ON public.watchlist FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own watchlist" ON public.watchlist FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users delete own watchlist" ON public.watchlist FOR DELETE USING (auth.uid() = user_id);
+-- RLS: Jeder darf per Username die zugehoerige Email nachschlagen (fuer Login)
+CREATE POLICY "Anyone can lookup email by username"
+  ON public.profiles FOR SELECT
+  USING (true);
 ```
 
-### Reihenfolge der Implementierung
-1. Datenbank-Migrationen ausfuehren (profiles + watchlist)
-2. AuthContext erstellen
-3. AuthPage + ResetPasswordPage erstellen
-4. useWatchlist Hook erstellen
-5. WatchlistStar Komponente erstellen
-6. WatchlistPage erstellen
-7. StockDetail, Header, App.tsx anpassen
+Hinweis: Die bestehende "Users read own profile"-SELECT-Policy wird durch die offenere Policy ersetzt. Da `profiles` nur `id`, `display_name`, `username`, `email` und `created_at` enthaelt (keine sensiblen Daten), ist das sicher.
 
-### Neue Dateien
-- `src/contexts/AuthContext.tsx`
-- `src/pages/AuthPage.tsx`
-- `src/pages/ResetPasswordPage.tsx`
-- `src/pages/WatchlistPage.tsx`
-- `src/hooks/useWatchlist.ts`
-- `src/components/WatchlistStar.tsx`
-
-### Geaenderte Dateien
-- `src/App.tsx` (AuthProvider + Routen)
-- `src/components/Header.tsx` (Login/Logout + Watchlist-Nav)
-- `src/pages/StockDetail.tsx` (Stern einbauen)
+### Login-Logik
+```text
+1. User gibt "max123" + Passwort ein
+2. Kein "@" erkannt -> Username-Lookup
+3. Query: SELECT email FROM profiles WHERE username = 'max123'
+4. E-Mail gefunden -> signInWithPassword(email, password)
+```
 
