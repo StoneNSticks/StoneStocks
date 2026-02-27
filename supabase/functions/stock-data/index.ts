@@ -241,18 +241,19 @@ async function handleOverview(symbol: string) {
   return result;
 }
 
-async function handleTimeSeries(symbol: string, interval: string) {
-  const cacheKey = `series:${symbol}:${interval}`;
+async function handleTimeSeries(symbol: string, interval: string, outputsize = "100") {
+  const cacheKey = `series:${symbol}:${interval}:${outputsize}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const params: Record<string, string> = { symbol, outputsize: "100" };
+  const params: Record<string, string> = { symbol, outputsize, interval };
+  // Map legacy names
   if (interval === "daily") params.interval = "1day";
   else if (interval === "weekly") params.interval = "1week";
   else if (interval === "monthly") params.interval = "1month";
-  else params.interval = interval;
   const series = await fetchTwelveData("time_series", params);
-  const ttlKey = interval === "1day" || interval === "daily" ? "daily_series" :
-                 interval === "1week" || interval === "weekly" ? "weekly_series" : "monthly_series";
+  const ttlKey = params.interval.includes("min") ? "daily_series" :
+                 params.interval === "1day" ? "daily_series" :
+                 params.interval === "1week" ? "weekly_series" : "monthly_series";
   if (series?.values) { await setCache(cacheKey, series, "twelvedata", TTL[ttlKey]); return series; }
   return null;
 }
@@ -464,9 +465,9 @@ const INDEX_CONFIG: { indexSymbol: string; name: string; etf: string; etfMultipl
   { indexSymbol: "DJI", name: "Dow Jones", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
   { indexSymbol: "IXIC", name: "Nasdaq", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
   { indexSymbol: "RUT", name: "Russell 2000", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
-  { indexSymbol: "DAX", name: "DAX", etf: "DAX", etfMultiplier: 1, etfSymbol: "DAX" },
-  { indexSymbol: "N225", name: "Nikkei 225", etf: "N225", etfMultiplier: 1, etfSymbol: "EWJ" },
-  { indexSymbol: "FTSE", name: "FTSE 100", etf: "FTSE", etfMultiplier: 1, etfSymbol: "EWU" },
+  { indexSymbol: "GDAXI", name: "DAX", etf: "EWG", etfMultiplier: 1, etfSymbol: "EWG" },
+  { indexSymbol: "N225", name: "Nikkei 225", etf: "EWJ", etfMultiplier: 1, etfSymbol: "EWJ" },
+  { indexSymbol: "FTSE", name: "FTSE 100", etf: "EWU", etfMultiplier: 1, etfSymbol: "EWU" },
 ];
 
 async function handleMarketIndices() {
@@ -703,7 +704,11 @@ async function handleTopCompanies() {
         return {
           symbol: c.symbol, name: c.name, price: q.c || 0,
           change: q.d || 0, changePercent: q.dp || 0,
-          marketCap: profile?.marketCapitalization ? profile.marketCapitalization * 1e6 : 0,
+          marketCap: profile?.marketCapitalization
+            ? (profile.marketCapitalization > 1e9
+              ? profile.marketCapitalization  // Already in USD (some ADRs)
+              : profile.marketCapitalization * 1e6)  // Finnhub standard: millions
+            : 0,
           logo: profile?.logo || "",
         };
       } catch {
@@ -863,7 +868,8 @@ Deno.serve(async (req) => {
     const action = url.searchParams.get("action");
     const symbol = url.searchParams.get("symbol")?.toUpperCase();
     const query = url.searchParams.get("q");
-    const interval = url.searchParams.get("interval") || "daily";
+    const interval = url.searchParams.get("interval") || "1day";
+    const outputsize = url.searchParams.get("outputsize") || "100";
     const timespan = url.searchParams.get("timespan") || "day";
     const from = url.searchParams.get("from") || "";
     const to = url.searchParams.get("to") || "";
@@ -873,7 +879,7 @@ Deno.serve(async (req) => {
       case "profile": result = await handleProfile(symbol!); break;
       case "quote": result = await handleQuote(symbol!); break;
       case "overview": result = await handleOverview(symbol!); break;
-      case "series": result = await handleTimeSeries(symbol!, interval); break;
+      case "series": result = await handleTimeSeries(symbol!, interval, outputsize); break;
       case "news": result = await handleNews(symbol!); break;
       case "peers": result = await handlePeers(symbol!); break;
       case "recommendation": result = await handleRecommendation(symbol!); break;
