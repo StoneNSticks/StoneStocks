@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useMostActive } from "@/hooks/useStockData";
-import { formatCurrency, formatPercent, formatNumber, priceChangeColor } from "@/lib/formatters";
+import { formatPercent, formatNumber, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Activity } from "lucide-react";
 
 export function MostActive() {
   const { data: stocks, isLoading } = useMostActive();
+  const fc = useFormattedCurrency();
 
   if (isLoading) {
     return (
@@ -28,7 +29,7 @@ export function MostActive() {
           <h2 className="font-display text-lg font-semibold">Most Traded</h2>
         </div>
         <p className="text-sm text-muted-foreground py-4 text-center">
-          Volume data loading — available after market close.
+          Volume data loading…
         </p>
       </div>
     );
@@ -57,7 +58,7 @@ export function MostActive() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm tabular-nums">{formatCurrency(s.price)}</span>
+              <span className="text-sm tabular-nums">{fc(s.price)}</span>
               <span className={`text-xs font-medium w-16 text-right tabular-nums ${priceChangeColor(s.changePercent)}`}>
                 {formatPercent(s.changePercent)}
               </span>

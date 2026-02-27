@@ -7,6 +7,7 @@ import {
   getMassiveSplits, getMassiveAggregates, getMassiveSnapshot,
   getMassiveRelated, getMassiveNews,
   getMarketNews, getGainersLosers, getMostActive, getTopCompanies,
+  getCurrencyRates, getSimFinStatements, getEulerpoolProfile,
 } from "@/lib/stockApi";
 
 export const useSearchStocks = (query: string) => useQuery({ queryKey: ["search", query], queryFn: () => searchStocks(query), enabled: query.length >= 1, staleTime: 1000 * 60 * 30 });
@@ -37,3 +38,6 @@ export const useMarketNews = () => useQuery({ queryKey: ["marketNews"], queryFn:
 export const useGainersLosers = () => useQuery({ queryKey: ["gainersLosers"], queryFn: getGainersLosers, staleTime: 1000 * 60 * 5, refetchInterval: 1000 * 60 * 10 });
 export const useMostActive = () => useQuery({ queryKey: ["mostActive"], queryFn: getMostActive, staleTime: 1000 * 60 * 5, refetchInterval: 1000 * 60 * 10 });
 export const useTopCompanies = () => useQuery({ queryKey: ["topCompanies"], queryFn: getTopCompanies, staleTime: 1000 * 60 * 10, refetchInterval: 1000 * 60 * 15 });
+export const useCurrencyRates = () => useQuery({ queryKey: ["currencyRates"], queryFn: getCurrencyRates, staleTime: 1000 * 60 * 60 });
+export const useSimFinStatements = (symbol: string) => useQuery({ queryKey: ["simfinStatements", symbol], queryFn: () => getSimFinStatements(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 * 7 });
+export const useEulerpoolProfile = (symbol: string) => useQuery({ queryKey: ["eulerpoolProfile", symbol], queryFn: () => getEulerpoolProfile(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 * 7 });
