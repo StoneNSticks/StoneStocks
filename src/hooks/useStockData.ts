@@ -12,6 +12,14 @@ import {
   getMarketIndices,
   getTechnicals,
   getFullStock,
+  getMassiveFinancials,
+  getMassiveTickerDetails,
+  getMassiveDividends,
+  getMassiveSplits,
+  getMassiveAggregates,
+  getMassiveSnapshot,
+  getMassiveRelated,
+  getMassiveNews,
 } from "@/lib/stockApi";
 
 export function useSearchStocks(query: string) {
@@ -120,5 +128,79 @@ export function useFullStock(symbol: string) {
     queryFn: () => getFullStock(symbol),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 3,
+  });
+}
+
+// Massive API hooks
+
+export function useMassiveFinancials(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveFinancials", symbol],
+    queryFn: () => getMassiveFinancials(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+export function useMassiveTickerDetails(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveTicker", symbol],
+    queryFn: () => getMassiveTickerDetails(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
+  });
+}
+
+export function useMassiveDividends(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveDividends", symbol],
+    queryFn: () => getMassiveDividends(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
+  });
+}
+
+export function useMassiveSplits(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveSplits", symbol],
+    queryFn: () => getMassiveSplits(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
+  });
+}
+
+export function useMassiveAggregates(symbol: string, timespan = "day", from = "", to = "") {
+  return useQuery({
+    queryKey: ["massiveAggs", symbol, timespan, from, to],
+    queryFn: () => getMassiveAggregates(symbol, timespan, from, to),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 4,
+  });
+}
+
+export function useMassiveSnapshot(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveSnapshot", symbol],
+    queryFn: () => getMassiveSnapshot(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useMassiveRelated(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveRelated", symbol],
+    queryFn: () => getMassiveRelated(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
+  });
+}
+
+export function useMassiveNews(symbol: string) {
+  return useQuery({
+    queryKey: ["massiveNews", symbol],
+    queryFn: () => getMassiveNews(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 30,
   });
 }

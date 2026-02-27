@@ -64,3 +64,39 @@ export async function getTechnicals(symbol: string) {
 export async function getFullStock(symbol: string) {
   return callStockApi({ action: "full", symbol });
 }
+
+// Massive API endpoints
+export async function getMassiveFinancials(symbol: string) {
+  return callStockApi({ action: "massive_financials", symbol });
+}
+
+export async function getMassiveTickerDetails(symbol: string) {
+  return callStockApi({ action: "massive_ticker", symbol });
+}
+
+export async function getMassiveDividends(symbol: string) {
+  return callStockApi({ action: "massive_dividends", symbol });
+}
+
+export async function getMassiveSplits(symbol: string) {
+  return callStockApi({ action: "massive_splits", symbol });
+}
+
+export async function getMassiveAggregates(symbol: string, timespan = "day", from = "", to = "") {
+  const params: Record<string, string> = { action: "massive_aggs", symbol, timespan };
+  if (from) params.from = from;
+  if (to) params.to = to;
+  return callStockApi(params);
+}
+
+export async function getMassiveSnapshot(symbol: string) {
+  return callStockApi({ action: "massive_snapshot", symbol });
+}
+
+export async function getMassiveRelated(symbol: string) {
+  return callStockApi({ action: "massive_related", symbol });
+}
+
+export async function getMassiveNews(symbol: string) {
+  return callStockApi({ action: "massive_news", symbol });
+}
