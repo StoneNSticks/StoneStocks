@@ -145,7 +145,7 @@ const StockDetail = () => {
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-20 rounded-xl" />
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
             </div>
             <Skeleton className="h-72 rounded-xl" />
@@ -157,19 +157,21 @@ const StockDetail = () => {
         ) : (
           <div className="space-y-5">
             {/* Company Header */}
-            <div className="flex items-center gap-4 rounded-xl border border-border/60 bg-card p-5">
-              {logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={companyName}
-                  className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5"
-                />
-              )}
-              <div className="flex-1">
-                <h1 className="font-display text-2xl font-bold">{companyName}</h1>
-                <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border/60 bg-card p-5">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {logoUrl && (
+                  <img
+                    src={logoUrl}
+                    alt={companyName}
+                    className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0"
+                  />
+                )}
+                <div className="min-w-0">
+                  <h1 className="font-display text-2xl font-bold truncate">{companyName}</h1>
+                  <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
+                </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {profile?.finnhubIndustry && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-xs text-muted-foreground">
                     <Building2 className="h-3 w-3" />
