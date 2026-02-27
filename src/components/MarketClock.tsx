@@ -86,12 +86,13 @@ function formatLocalTime(tz: string): string {
 }
 
 export function MarketClock() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 10_000);
+    // Tick every second using a local offset for smooth display
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -104,7 +105,7 @@ export function MarketClock() {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const localTime = now.toLocaleTimeString(navigator.language || "en-US", {
+  const localTime = new Date(now).toLocaleTimeString(navigator.language || "en-US", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
