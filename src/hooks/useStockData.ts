@@ -14,7 +14,7 @@ export const useSearchStocks = (query: string) => useQuery({ queryKey: ["search"
 export const useQuote = (symbol: string) => useQuery({ queryKey: ["quote", symbol], queryFn: () => getQuote(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 2, refetchInterval: 1000 * 60 * 5 });
 export const useProfile = (symbol: string) => useQuery({ queryKey: ["profile", symbol], queryFn: () => getProfile(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 });
 export const useOverview = (symbol: string) => useQuery({ queryKey: ["overview", symbol], queryFn: () => getOverview(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 });
-export const useTimeSeries = (symbol: string, interval = "daily") => useQuery({ queryKey: ["series", symbol, interval], queryFn: () => getTimeSeries(symbol, interval), enabled: !!symbol, staleTime: 1000 * 60 * 60 });
+export const useTimeSeries = (symbol: string, interval = "1day", outputsize = "100") => useQuery({ queryKey: ["series", symbol, interval, outputsize], queryFn: () => getTimeSeries(symbol, interval, outputsize), enabled: !!symbol, staleTime: 1000 * 60 * 60 });
 export const useNews = (symbol: string) => useQuery({ queryKey: ["news", symbol], queryFn: () => getNews(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 15 });
 export const usePeers = (symbol: string) => useQuery({ queryKey: ["peers", symbol], queryFn: () => getPeers(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 });
 export const useRecommendation = (symbol: string) => useQuery({ queryKey: ["recommendation", symbol], queryFn: () => getRecommendation(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 12 });

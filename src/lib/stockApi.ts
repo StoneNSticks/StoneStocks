@@ -19,7 +19,7 @@ export const searchStocks = (query: string) => callStockApi({ action: "search", 
 export const getQuote = (symbol: string) => callStockApi({ action: "quote", symbol });
 export const getProfile = (symbol: string) => callStockApi({ action: "profile", symbol });
 export const getOverview = (symbol: string) => callStockApi({ action: "overview", symbol });
-export const getTimeSeries = (symbol: string, interval = "daily") => callStockApi({ action: "series", symbol, interval });
+export const getTimeSeries = (symbol: string, interval = "1day", outputsize = "100") => callStockApi({ action: "series", symbol, interval, outputsize });
 export const getNews = (symbol: string) => callStockApi({ action: "news", symbol });
 export const getPeers = (symbol: string) => callStockApi({ action: "peers", symbol });
 export const getRecommendation = (symbol: string) => callStockApi({ action: "recommendation", symbol });

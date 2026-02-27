@@ -14,7 +14,7 @@ function formatPoints(num: number): string {
 // Map index symbols to ETFs that have chart data
 const INDEX_ETF_MAP: Record<string, string> = {
   SPX: "SPY", DJI: "DIA", IXIC: "QQQ", RUT: "IWM",
-  DAX: "EWG", N225: "EWJ", FTSE: "EWU",
+  GDAXI: "EWG", N225: "EWJ", FTSE: "EWU",
 };
 
 const IndexDetail = () => {
