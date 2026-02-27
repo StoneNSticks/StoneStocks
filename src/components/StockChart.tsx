@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "rec
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTimeSeries } from "@/lib/stockApi";
 import { useQuery } from "@tanstack/react-query";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const intervals = [
   { label: "1D", value: "1d", outputsize: "78", interval: "5min" },
@@ -16,6 +17,7 @@ const intervals = [
 
 export function StockChart({ symbol }: { symbol: string }) {
   const [selected, setSelected] = useState("1y");
+  const { convert, symbol: currSymbol } = useCurrency();
 
   const config = intervals.find((i) => i.value === selected) || intervals[4];
 
@@ -104,7 +106,7 @@ export function StockChart({ symbol }: { symbol: string }) {
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }}
-              tickFormatter={(v: number) => `$${v.toFixed(0)}`}
+              tickFormatter={(v: number) => `${currSymbol}${(convert(v) ?? v).toFixed(0)}`}
               width={55}
             />
             <Tooltip
@@ -115,7 +117,7 @@ export function StockChart({ symbol }: { symbol: string }) {
                 fontSize: 12,
                 color: "hsl(var(--foreground))",
               }}
-              formatter={(v: number) => [`$${v.toFixed(2)}`, "Close"]}
+              formatter={(v: number) => [`${currSymbol}${(convert(v) ?? v).toFixed(2)}`, "Close"]}
               labelFormatter={(l: string) => {
                 const d = new Date(l);
                 if (isIntraday) {

@@ -11,13 +11,13 @@ import { RecommendationChart } from "@/components/RecommendationChart";
 import { StockPerformance } from "@/components/StockPerformance";
 import { CompanyInfoCard } from "@/components/CompanyInfoCard";
 import { useFullStock } from "@/hooks/useStockData";
-import { formatCurrency, formatPercent, priceChangeColor } from "@/lib/formatters";
+import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, Globe } from "lucide-react";
 import { useMemo } from "react";
 
-function formatDividendValue(num: number): string {
-  return `$${num.toFixed(2)}`;
+function formatDividendValue(num: number, sym = "$"): string {
+  return `${sym}${num.toFixed(2)}`;
 }
 
 const StockDetail = () => {

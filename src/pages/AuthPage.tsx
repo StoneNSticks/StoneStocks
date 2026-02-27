@@ -33,7 +33,7 @@ export default function AuthPage() {
       const { error } = await resetPassword(email);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("E-Mail zum Zurücksetzen gesendet. Prüfe dein Postfach.");
+      toast.success("Password reset email sent. Check your inbox.");
       setShowForgot(false);
       return;
     }
@@ -41,14 +41,14 @@ export default function AuthPage() {
       const { error } = await signIn(identifier, password);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("Erfolgreich eingeloggt!");
+      toast.success("Successfully signed in!");
       navigate("/");
     } else {
-      if (!username.trim()) { toast.error("Benutzername ist erforderlich."); setLoading(false); return; }
+      if (!username.trim()) { toast.error("Username is required."); setLoading(false); return; }
       const { error } = await signUp(email, password, displayName || undefined, username);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("Bestätigungsmail gesendet! Prüfe dein Postfach.");
+      toast.success("Confirmation email sent! Check your inbox.");
     }
   };
 
@@ -59,14 +59,14 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">
-              {showForgot ? "Passwort zurücksetzen" : isLogin ? "Einloggen" : "Registrieren"}
+              {showForgot ? "Reset Password" : isLogin ? "Sign In" : "Sign Up"}
             </CardTitle>
             <CardDescription>
               {showForgot
-                ? "Gib deine E-Mail ein, um einen Reset-Link zu erhalten."
+                ? "Enter your email to receive a reset link."
                 : isLogin
-                ? "Melde dich an, um deine Watchlist zu nutzen."
-                : "Erstelle einen Account für deine persönliche Watchlist."}
+                ? "Sign in to access your watchlist."
+                : "Create an account for your personal watchlist."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -74,33 +74,33 @@ export default function AuthPage() {
               {!isLogin && !showForgot && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="username">Benutzername</Label>
+                    <Label htmlFor="username">Username</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input id="username" required placeholder="max123" value={username} onChange={e => setUsername(e.target.value)} className="pl-10" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="displayName">Anzeigename (optional)</Label>
+                    <Label htmlFor="displayName">Display Name (optional)</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input id="displayName" placeholder="Max Mustermann" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-10" />
+                      <Input id="displayName" placeholder="John Doe" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-10" />
                     </div>
                   </div>
                 </>
               )}
               {isLogin && !showForgot ? (
                 <div className="space-y-2">
-                  <Label htmlFor="identifier">E-Mail oder Benutzername</Label>
+                  <Label htmlFor="identifier">Email or Username</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="identifier" type="text" required placeholder="email@example.com oder max123" value={identifier} onChange={e => setIdentifier(e.target.value)} className="pl-10" />
+                    <Input id="identifier" type="text" required placeholder="email@example.com or max123" value={identifier} onChange={e => setIdentifier(e.target.value)} className="pl-10" />
                   </div>
                 </div>
               ) : (
                 !isLogin && (
                   <div className="space-y-2">
-                    <Label htmlFor="email">E-Mail</Label>
+                    <Label htmlFor="email">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
@@ -110,7 +110,7 @@ export default function AuthPage() {
               )}
               {showForgot && (
                 <div className="space-y-2">
-                  <Label htmlFor="email">E-Mail</Label>
+                  <Label htmlFor="email">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
@@ -119,7 +119,7 @@ export default function AuthPage() {
               )}
               {!showForgot && (
                 <div className="space-y-2">
-                  <Label htmlFor="password">Passwort</Label>
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input id="password" type="password" required minLength={6} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
@@ -127,14 +127,14 @@ export default function AuthPage() {
                 </div>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Laden..." : showForgot ? "Link senden" : isLogin ? "Einloggen" : "Registrieren"}
+                {loading ? "Loading..." : showForgot ? "Send Link" : isLogin ? "Sign In" : "Sign Up"}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </form>
             <div className="mt-4 text-center text-sm space-y-2">
               {!showForgot && isLogin && (
                 <button onClick={() => setShowForgot(true)} className="text-muted-foreground hover:text-primary transition-colors">
-                  Passwort vergessen?
+                  Forgot password?
                 </button>
               )}
               <div>
@@ -142,7 +142,7 @@ export default function AuthPage() {
                   onClick={() => { setShowForgot(false); setIsLogin(!isLogin); }}
                   className="text-primary hover:underline font-medium"
                 >
-                  {showForgot ? "Zurück zum Login" : isLogin ? "Noch keinen Account? Registrieren" : "Bereits registriert? Einloggen"}
+                  {showForgot ? "Back to Sign In" : isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
                 </button>
               </div>
             </div>
