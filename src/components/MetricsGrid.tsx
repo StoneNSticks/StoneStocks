@@ -1,4 +1,5 @@
 import { formatNumber, formatCurrency, formatPercent } from "@/lib/formatters";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface MetricCardProps {
   items: Array<{ label: string; value: string; color?: string }>;
@@ -37,6 +38,8 @@ export function MetricsGrid({
   profile: Record<string, unknown> | null;
   massiveTicker: Record<string, unknown> | null;
 }) {
+  const { convert, symbol: currSymbol } = useCurrency();
+  const fmtCur = (v: number | null | undefined) => formatCurrency(convert(v), currSymbol);
   const price = quote?.c;
   const change = quote?.d;
   const changePercent = quote?.dp;
@@ -68,7 +71,7 @@ export function MetricsGrid({
   const revenueTTM = safeNum(overview?.RevenueTTM);
   const freeCashflow = safeNum(derived?.freeCashflow);
 
-  const fmtV = (v: number, isCurrency = false) => v ? (isCurrency ? formatCurrency(v) : formatNumber(v)) : "—";
+  const fmtV = (v: number, isCurrency = false) => v ? (isCurrency ? fmtCur(v) : formatNumber(v)) : "—";
   const fmtP = (v: number) => v ? formatPercent(v) : "—";
   const pctColor = (v: number) => v > 0 ? "text-gain" : v < 0 ? "text-loss" : "";
 
@@ -77,10 +80,10 @@ export function MetricsGrid({
       {/* Card 1: Price & Market Cap */}
       <MetricCard
         items={[
-          { label: "Price", value: `${changePercent ? formatPercent(changePercent) : ""} ${formatCurrency(price)}`, color: changeColor },
-          { label: marketCap >= 1e12 ? "Mega Cap" : marketCap >= 1e11 ? "Large Cap" : marketCap >= 1e10 ? "Mid Cap" : "Small Cap", value: formatCurrency(marketCap) },
+          { label: "Price", value: `${changePercent ? formatPercent(changePercent) : ""} ${fmtCur(price)}`, color: changeColor },
+          { label: marketCap >= 1e12 ? "Mega Cap" : marketCap >= 1e11 ? "Large Cap" : marketCap >= 1e10 ? "Mid Cap" : "Small Cap", value: fmtCur(marketCap) },
           ...(employees > 0 ? [{ label: "Employees", value: formatNumber(employees) }] : []),
-          ...(eps ? [{ label: "EPS", value: formatCurrency(eps) }] : []),
+          ...(eps ? [{ label: "EPS", value: fmtCur(eps) }] : []),
           ...(beta ? [{ label: "Beta", value: formatNumber(beta) }] : []),
         ]}
       />
@@ -103,7 +106,7 @@ export function MetricsGrid({
           { label: "Dividend Yield", value: fmtP(dividendYield) },
           { label: "Payout Ratio", value: fmtP(payoutRatio) },
           { label: "FCF Yield", value: fmtP(fcfYield) },
-          ...(freeCashflow ? [{ label: "Free Cash Flow", value: formatCurrency(freeCashflow), color: pctColor(freeCashflow) }] : []),
+          ...(freeCashflow ? [{ label: "Free Cash Flow", value: fmtCur(freeCashflow), color: pctColor(freeCashflow) }] : []),
         ]}
       />
 
@@ -115,7 +118,7 @@ export function MetricsGrid({
           { label: "Profit Margin", value: fmtP(profitMargin) },
           { label: "ROE", value: fmtP(roe), color: pctColor(roe) },
           { label: "ROA", value: fmtP(roa), color: pctColor(roa) },
-          ...(revenueTTM ? [{ label: "Revenue TTM", value: formatCurrency(revenueTTM) }] : []),
+          ...(revenueTTM ? [{ label: "Revenue TTM", value: fmtCur(revenueTTM) }] : []),
         ]}
       />
     </div>

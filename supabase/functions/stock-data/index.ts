@@ -700,10 +700,32 @@ function isCommonStock(ticker: string): boolean {
     "SPHD","SPLV","USMV","MTUM","QUAL","VLUE","SIZE",
     "MOAT","COWZ","FTCS","XMLV","XSLV",
     "AMLP","MLPA","TPYP",
+    // Additional leveraged/inverse single-stock ETFs
+    "NVD","NVDL","NVDS","CRCG","MSTX","TSLS","COHX","IONZ","LUNL","CONL","MSTZ","MSTU",
+    "TSLL","AAPD","AAPU","AMZU","AMZD","GOOX","GOOGL","MSFU","MSFD","METD","NFLX",
+    "BITX","BITU","SBIT","ETHD",
   ]);
 
   if (ETF_BLACKLIST.has(ticker)) return false;
   return /^[A-Z]{1,5}$/.test(ticker);
+}
+
+// Name-based ETF/ETP filter (applied after enrichment when we have company names)
+function isETFByName(name: string): boolean {
+  if (!name) return false;
+  const lower = name.toLowerCase();
+  return lower.includes(" etf") ||
+    /\b[23]x\b/i.test(lower) ||
+    lower.includes("leveraged") ||
+    lower.includes("direxion") ||
+    lower.includes("proshares") ||
+    lower.includes("graniteshares") ||
+    lower.includes("defiance") ||
+    lower.includes("tradr") ||
+    lower.includes("t-rex") ||
+    lower.includes("yieldmax") ||
+    lower.includes("microsectors") ||
+    (lower.includes("daily") && (lower.includes("short") || lower.includes("long") || lower.includes("bull") || lower.includes("bear")));
 }
 
 // Helper to enrich stock lists with company names and logos (multi-source fallback)
@@ -885,8 +907,8 @@ async function handleGainersLosers() {
         enrichWithProfileData(rawLosers),
       ]);
       const result = {
-        gainers,
-        losers,
+        gainers: gainers.filter((s: any) => !isETFByName(s.name)),
+        losers: losers.filter((s: any) => !isETFByName(s.name)),
         date: new Date().toISOString().split("T")[0],
       };
       await setCache(cacheKey, result, "massive", TTL.gainers_losers);
@@ -913,7 +935,7 @@ async function handleGainersLosers() {
       enrichWithProfileData(rawGainers),
       enrichWithProfileData(rawLosers),
     ]);
-    const result = { gainers: enrichedGainers, losers: enrichedLosers, date: lastDate };
+    const result = { gainers: enrichedGainers.filter((s: any) => !isETFByName(s.name)), losers: enrichedLosers.filter((s: any) => !isETFByName(s.name)), date: lastDate };
     await setCache(cacheKey, result, "massive", TTL.gainers_losers);
     return result;
   } catch (err) {
@@ -955,7 +977,7 @@ async function handleMostActive() {
         }))
         .sort((a: any, b: any) => b.volume - a.volume)
         .slice(0, 15);
-      const stocks = await enrichWithProfileData(rawStocks);
+      const stocks = (await enrichWithProfileData(rawStocks)).filter((s: any) => !isETFByName(s.name));
       await setCache(cacheKey, stocks, "massive", TTL.most_active);
       return stocks;
     }
@@ -972,7 +994,7 @@ async function handleMostActive() {
       }))
       .sort((a: any, b: any) => b.volume - a.volume)
       .slice(0, 15);
-    const enrichedStocks = await enrichWithProfileData(stocks);
+    const enrichedStocks = (await enrichWithProfileData(stocks)).filter((s: any) => !isETFByName(s.name));
     await setCache(cacheKey, enrichedStocks, "massive", TTL.most_active);
     return enrichedStocks;
   } catch {

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Legend } from "recharts";
 import { ArrowRight } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface FinancialChartProps {
   title: string;
@@ -16,12 +17,12 @@ interface FinancialChartProps {
   badgeColor?: string;
 }
 
-function formatLargeNumber(num: number): string {
-  if (Math.abs(num) >= 1e12) return `$${(num / 1e12).toFixed(0)}T`;
-  if (Math.abs(num) >= 1e9) return `$${(num / 1e9).toFixed(0)}B`;
-  if (Math.abs(num) >= 1e6) return `$${(num / 1e6).toFixed(0)}M`;
-  if (Math.abs(num) >= 1e3) return `$${(num / 1e3).toFixed(0)}K`;
-  return `$${num.toFixed(0)}`;
+function formatLargeNumber(num: number, sym = "$"): string {
+  if (Math.abs(num) >= 1e12) return `${sym}${(num / 1e12).toFixed(0)}T`;
+  if (Math.abs(num) >= 1e9) return `${sym}${(num / 1e9).toFixed(0)}B`;
+  if (Math.abs(num) >= 1e6) return `${sym}${(num / 1e6).toFixed(0)}M`;
+  if (Math.abs(num) >= 1e3) return `${sym}${(num / 1e3).toFixed(0)}K`;
+  return `${sym}${num.toFixed(0)}`;
 }
 
 function formatPercent(num: number): string {
@@ -41,6 +42,15 @@ export function FinancialChart({
   badge,
   badgeColor = "hsl(210, 80%, 55%)",
 }: FinancialChartProps) {
+  const { convert, symbol: currSymbol } = useCurrency();
+  const effectiveFormat = (v: number) => {
+    const converted = convert(v) ?? v;
+    if (formatValue !== formatLargeNumber) {
+      // Custom format (like EPS/dividends) - use currency symbol
+      return `${currSymbol}${converted.toFixed(2)}`;
+    }
+    return formatLargeNumber(converted, currSymbol);
+  };
   if (!data || data.length === 0) {
     return (
       <div className="rounded-xl border border-border/60 bg-card p-5 flex flex-col h-[280px]">
@@ -102,7 +112,7 @@ export function FinancialChart({
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }}
-                tickFormatter={formatValue}
+                tickFormatter={effectiveFormat}
                 width={50}
               />
               <Tooltip
@@ -113,7 +123,7 @@ export function FinancialChart({
                   fontSize: 11,
                   color: "hsl(210, 20%, 92%)",
                 }}
-                formatter={(v: number) => [formatValue(v), title]}
+                formatter={(v: number) => [effectiveFormat(v), title]}
               />
               <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} fill={`url(#grad-${dataKey})`} />
             </AreaChart>
@@ -131,7 +141,7 @@ export function FinancialChart({
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }}
-                tickFormatter={formatValue}
+                tickFormatter={effectiveFormat}
                 width={50}
               />
               <Tooltip
@@ -142,7 +152,7 @@ export function FinancialChart({
                   fontSize: 11,
                   color: "hsl(210, 20%, 92%)",
                 }}
-                formatter={(v: number, name: string) => [formatValue(v), name === dataKey ? title : secondaryLabel || name]}
+                formatter={(v: number, name: string) => [effectiveFormat(v), name === dataKey ? title : secondaryLabel || name]}
               />
               <Bar dataKey={dataKey} fill={color} radius={[2, 2, 0, 0]} />
               {secondaryKey && (
