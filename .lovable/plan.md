@@ -1,79 +1,92 @@
 
 
-# Login mit E-Mail oder Benutzername ermoeglichen
+# Vier Aenderungen umsetzen
 
-## Uebersicht
-Nutzer sollen sich wahlweise mit ihrer E-Mail-Adresse oder einem Benutzernamen einloggen koennen. Dazu wird ein `username`-Feld in der Datenbank ergaenzt und die Login-Logik angepasst.
+## 1. Auth-Seite auf Englisch umstellen
 
-## Aenderungen
+Alle deutschen Texte in `src/pages/AuthPage.tsx` werden ins Englische uebersetzt:
+- "Einloggen" -> "Sign In"
+- "Registrieren" -> "Sign Up"
+- "Passwort zuruecksetzen" -> "Reset Password"
+- "Benutzername" -> "Username"
+- "Anzeigename" -> "Display Name"
+- "Laden..." -> "Loading..."
+- Toast-Meldungen, Platzhalter, Labels, Links
 
-### 1. Datenbank: `username`-Spalte zur `profiles`-Tabelle hinzufuegen
-- Neue Spalte `username` (TEXT, UNIQUE, nullable)
-- Unique-Index, damit keine doppelten Benutzernamen existieren
-- Trigger anpassen: bei Registrierung wird der Username aus den Metadaten uebernommen (falls angegeben)
+## 2. ETFs/Leveraged Products aus Listen filtern
 
-### 2. Registrierung: Username-Feld hinzufuegen
-- Das bisherige "Anzeigename"-Feld wird durch ein **Pflicht-Feld "Benutzername"** ersetzt (oder ergaenzt)
-- Der Benutzername wird in `user_metadata` und in der `profiles`-Tabelle gespeichert
+Das Problem: Produkte wie NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL sind Leveraged/Inverse ETFs, die den `isCommonStock`-Filter passieren, weil sie kurze Ticker haben und nicht in der Blacklist stehen.
 
-### 3. Login: Username ODER E-Mail akzeptieren
-- Das Login-Feld akzeptiert sowohl E-Mail als auch Benutzername
-- Logik: Wenn die Eingabe ein `@` enthaelt, wird direkt per E-Mail eingeloggt
-- Wenn kein `@` enthalten ist, wird zuerst der Benutzername in der `profiles`-Tabelle nachgeschlagen, die zugehoerige E-Mail ermittelt, und dann damit eingeloggt
-- Dafuer braucht die `profiles`-Tabelle eine zusaetzliche RLS-Policy, die das Nachschlagen der E-Mail per Username erlaubt (nur fuer den Login-Zweck)
+Loesung in `supabase/functions/stock-data/index.ts`:
+- Blacklist erweitern um bekannte Ticker: NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL, NVD, NVDL, NVDS, CONL, MSTZ, MSTU
+- Zusaetzlichen **Name-basierten Filter** nach dem Enrichment einbauen: Eintraege deren Name Begriffe wie "ETF", "2x", "2X", "3x", "3X", "Leveraged", "Short", "Long Daily", "Direxion", "Defiance", "GraniteShares", "Tradr", "ProShares", "Trust" + "ETF" enthaelt, werden entfernt
+- Diesen Filter auf `handleGainersLosers` und `handleMostActive` anwenden (nach `enrichWithProfileData`)
 
-### 4. E-Mail in `profiles` speichern
-- Neue Spalte `email` in der `profiles`-Tabelle, damit der Username-zu-E-Mail-Lookup funktioniert, ohne auf `auth.users` zugreifen zu muessen
-- Trigger aktualisieren, um die E-Mail automatisch zu speichern
+## 3. User-Datenbank leeren
 
-## Betroffene Dateien
+Per SQL alle bestehenden Eintraege aus der `profiles`-Tabelle loeschen. Da `profiles.id` per `ON DELETE CASCADE` an `auth.users` haengt, muss zuerst der Eintrag in `auth.users` (ueber Lovable Cloud) oder die `profiles`-Tabelle direkt geleert werden.
 
-- **Datenbank-Migration**: `username` und `email` Spalten + RLS-Policy fuer Username-Lookup
-- **`src/contexts/AuthContext.tsx`**: `signIn` erweitern (Username-Lookup), `signUp` um Username ergaenzen
-- **`src/pages/AuthPage.tsx`**: Username-Feld bei Registrierung, Login-Feld Label/Placeholder anpassen
+Konkret: `DELETE FROM profiles;` und `DELETE FROM watchlist;` ausfuehren.
+
+## 4. Waehrungsumrechnung auf Stock-Detail-Seiten
+
+Folgende Komponenten zeigen Preise aktuell immer in USD (`$`) an und muessen die Waehrungsumrechnung nutzen:
+
+### StockChart.tsx
+- `useCurrency` importieren
+- Y-Achse: `$` durch `symbol` ersetzen und Werte konvertieren
+- Tooltip: Konvertierte Werte mit korrektem Waehrungssymbol anzeigen
+- Chartdaten: `close`-Werte bei der Anzeige konvertieren
+
+### FinancialChart.tsx
+- `useCurrency` importieren
+- `formatLargeNumber` dynamisch mit Waehrungssymbol versehen
+- Y-Achse und Tooltip nutzen konvertierte Werte
+
+### MetricsGrid.tsx
+- `useFormattedCurrency` und `useCurrency` importieren
+- Alle `formatCurrency`-Aufrufe durch die Hook-basierte Version ersetzen
+
+### KeyMetrics.tsx
+- `useFormattedCurrency` importieren
+- Alle Waehrungswerte (Market Cap, EPS, 52W High/Low, Revenue, Gross Profit) konvertieren
+
+### StockDetail.tsx
+- `formatDividendValue` mit dem Waehrungssymbol versehen
+- Preis-Header-Anzeige mit Konvertierung
+
+---
 
 ## Technische Details
 
-### SQL-Migration
-```sql
--- username + email Spalten
-ALTER TABLE public.profiles ADD COLUMN username TEXT UNIQUE;
-ALTER TABLE public.profiles ADD COLUMN email TEXT;
+### Betroffene Dateien
+- `src/pages/AuthPage.tsx` (Texte uebersetzen)
+- `supabase/functions/stock-data/index.ts` (ETF-Filter erweitern)
+- `src/components/StockChart.tsx` (Waehrung)
+- `src/components/FinancialChart.tsx` (Waehrung)
+- `src/components/MetricsGrid.tsx` (Waehrung)
+- `src/components/KeyMetrics.tsx` (Waehrung)
+- `src/pages/StockDetail.tsx` (Waehrung)
 
--- Bestehende Profile mit E-Mail updaten
-UPDATE public.profiles p
-SET email = u.email
-FROM auth.users u
-WHERE p.id = u.id;
-
--- Trigger anpassen: Username + Email bei Signup speichern
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-BEGIN
-  INSERT INTO public.profiles (id, display_name, username, email)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email),
-    NEW.raw_user_meta_data->>'username',
-    NEW.email
-  );
-  RETURN NEW;
-END;
-$$;
-
--- RLS: Jeder darf per Username die zugehoerige Email nachschlagen (fuer Login)
-CREATE POLICY "Anyone can lookup email by username"
-  ON public.profiles FOR SELECT
-  USING (true);
-```
-
-Hinweis: Die bestehende "Users read own profile"-SELECT-Policy wird durch die offenere Policy ersetzt. Da `profiles` nur `id`, `display_name`, `username`, `email` und `created_at` enthaelt (keine sensiblen Daten), ist das sicher.
-
-### Login-Logik
+### Name-basierter ETF-Filter (Pseudocode)
 ```text
-1. User gibt "max123" + Passwort ein
-2. Kein "@" erkannt -> Username-Lookup
-3. Query: SELECT email FROM profiles WHERE username = 'max123'
-4. E-Mail gefunden -> signInWithPassword(email, password)
+function isETFByName(name: string): boolean {
+  const lower = name.toLowerCase();
+  return lower.includes(" etf") ||
+    /\b[23]x\b/.test(lower) ||
+    lower.includes("leveraged") ||
+    lower.includes("direxion") ||
+    lower.includes("proshares") ||
+    lower.includes("graniteshares") ||
+    lower.includes("defiance") ||
+    lower.includes("tradr") ||
+    (lower.includes("daily") && (lower.includes("short") || lower.includes("long")));
+}
 ```
+
+### Reihenfolge
+1. Auth-Seite uebersetzen
+2. ETF-Filter in Edge Function erweitern + deployen
+3. User-Daten loeschen
+4. Waehrungsumrechnung in alle Stock-Detail-Komponenten einbauen
 
