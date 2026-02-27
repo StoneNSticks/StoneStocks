@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Wallet } from "lucide-react";
 
 interface DividendGrowthProps {
@@ -11,7 +11,6 @@ export function DividendGrowth({ dividends, dividendYield }: DividendGrowthProps
   const annualData = useMemo(() => {
     if (!dividends || !Array.isArray(dividends) || dividends.length === 0) return [];
 
-    // Group by year
     const byYear: Record<string, number> = {};
     dividends.forEach((d: any) => {
       const year = (d.pay_date || d.ex_dividend_date || "")?.slice(0, 4);
@@ -25,7 +24,6 @@ export function DividendGrowth({ dividends, dividendYield }: DividendGrowthProps
       .map(([year, total]) => ({ year, total: Math.round(total * 100) / 100 }));
   }, [dividends]);
 
-  // Calculate CAGR
   const cagr = useMemo(() => {
     if (annualData.length < 2) return 0;
     const first = annualData[0].total;
@@ -61,13 +59,7 @@ export function DividendGrowth({ dividends, dividendYield }: DividendGrowthProps
       </div>
 
       <ResponsiveContainer width="100%" height={160}>
-        <AreaChart data={annualData}>
-          <defs>
-            <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(145, 63%, 42%)" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="hsl(145, 63%, 42%)" stopOpacity={0} />
-            </linearGradient>
-          </defs>
+        <BarChart data={annualData}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
           <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
           <YAxis hide />
@@ -81,11 +73,10 @@ export function DividendGrowth({ dividends, dividendYield }: DividendGrowthProps
             }}
             formatter={(v: number) => [`$${v.toFixed(2)}/share`, "Annual Dividend"]}
           />
-          <Area type="monotone" dataKey="total" stroke="hsl(145, 63%, 42%)" strokeWidth={2} fill="url(#divGrad)" />
-        </AreaChart>
+          <Bar dataKey="total" fill="hsl(145, 63%, 42%)" radius={[4, 4, 0, 0]} />
+        </BarChart>
       </ResponsiveContainer>
 
-      {/* Future projection hint */}
       {cagr > 0 && (
         <div className="mt-2 text-[11px] text-muted-foreground text-center">
           At current {cagr.toFixed(1)}% growth rate, dividend could reach ~${(annualData[annualData.length - 1].total * Math.pow(1 + cagr / 100, 5)).toFixed(2)}/share by {parseInt(annualData[annualData.length - 1].year) + 5}
