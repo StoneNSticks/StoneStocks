@@ -10,93 +10,41 @@ async function callStockApi(params: Record<string, string>) {
       "Authorization": `Bearer ${ANON_KEY}`,
     },
   });
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
-  }
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }
 
-export async function searchStocks(query: string) {
-  return callStockApi({ action: "search", q: query });
-}
-
-export async function getQuote(symbol: string) {
-  return callStockApi({ action: "quote", symbol });
-}
-
-export async function getProfile(symbol: string) {
-  return callStockApi({ action: "profile", symbol });
-}
-
-export async function getOverview(symbol: string) {
-  return callStockApi({ action: "overview", symbol });
-}
-
-export async function getTimeSeries(symbol: string, interval = "daily") {
-  return callStockApi({ action: "series", symbol, interval });
-}
-
-export async function getNews(symbol: string) {
-  return callStockApi({ action: "news", symbol });
-}
-
-export async function getPeers(symbol: string) {
-  return callStockApi({ action: "peers", symbol });
-}
-
-export async function getRecommendation(symbol: string) {
-  return callStockApi({ action: "recommendation", symbol });
-}
-
-export async function getEarnings(symbol: string) {
-  return callStockApi({ action: "earnings", symbol });
-}
-
-export async function getMarketIndices() {
-  return callStockApi({ action: "indices" });
-}
-
-export async function getTechnicals(symbol: string) {
-  return callStockApi({ action: "technicals", symbol });
-}
-
-export async function getFullStock(symbol: string) {
-  return callStockApi({ action: "full", symbol });
-}
+// Existing endpoints
+export const searchStocks = (query: string) => callStockApi({ action: "search", q: query });
+export const getQuote = (symbol: string) => callStockApi({ action: "quote", symbol });
+export const getProfile = (symbol: string) => callStockApi({ action: "profile", symbol });
+export const getOverview = (symbol: string) => callStockApi({ action: "overview", symbol });
+export const getTimeSeries = (symbol: string, interval = "daily") => callStockApi({ action: "series", symbol, interval });
+export const getNews = (symbol: string) => callStockApi({ action: "news", symbol });
+export const getPeers = (symbol: string) => callStockApi({ action: "peers", symbol });
+export const getRecommendation = (symbol: string) => callStockApi({ action: "recommendation", symbol });
+export const getEarnings = (symbol: string) => callStockApi({ action: "earnings", symbol });
+export const getMarketIndices = () => callStockApi({ action: "indices" });
+export const getTechnicals = (symbol: string) => callStockApi({ action: "technicals", symbol });
+export const getFullStock = (symbol: string) => callStockApi({ action: "full", symbol });
 
 // Massive API endpoints
-export async function getMassiveFinancials(symbol: string) {
-  return callStockApi({ action: "massive_financials", symbol });
-}
-
-export async function getMassiveTickerDetails(symbol: string) {
-  return callStockApi({ action: "massive_ticker", symbol });
-}
-
-export async function getMassiveDividends(symbol: string) {
-  return callStockApi({ action: "massive_dividends", symbol });
-}
-
-export async function getMassiveSplits(symbol: string) {
-  return callStockApi({ action: "massive_splits", symbol });
-}
-
-export async function getMassiveAggregates(symbol: string, timespan = "day", from = "", to = "") {
+export const getMassiveFinancials = (symbol: string) => callStockApi({ action: "massive_financials", symbol });
+export const getMassiveTickerDetails = (symbol: string) => callStockApi({ action: "massive_ticker", symbol });
+export const getMassiveDividends = (symbol: string) => callStockApi({ action: "massive_dividends", symbol });
+export const getMassiveSplits = (symbol: string) => callStockApi({ action: "massive_splits", symbol });
+export const getMassiveAggregates = (symbol: string, timespan = "day", from = "", to = "") => {
   const params: Record<string, string> = { action: "massive_aggs", symbol, timespan };
   if (from) params.from = from;
   if (to) params.to = to;
   return callStockApi(params);
-}
+};
+export const getMassiveSnapshot = (symbol: string) => callStockApi({ action: "massive_snapshot", symbol });
+export const getMassiveRelated = (symbol: string) => callStockApi({ action: "massive_related", symbol });
+export const getMassiveNews = (symbol: string) => callStockApi({ action: "massive_news", symbol });
 
-export async function getMassiveSnapshot(symbol: string) {
-  return callStockApi({ action: "massive_snapshot", symbol });
-}
-
-export async function getMassiveRelated(symbol: string) {
-  return callStockApi({ action: "massive_related", symbol });
-}
-
-export async function getMassiveNews(symbol: string) {
-  return callStockApi({ action: "massive_news", symbol });
-}
+// Homepage endpoints
+export const getMarketNews = () => callStockApi({ action: "market_news" });
+export const getGainersLosers = () => callStockApi({ action: "gainers_losers" });
+export const getMostActive = () => callStockApi({ action: "most_active" });
+export const getTopCompanies = () => callStockApi({ action: "top_companies" });
