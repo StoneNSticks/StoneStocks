@@ -31,12 +31,12 @@ export function MarketOverview() {
     const el = scrollRef.current;
     if (!el || paused) return;
     let raf: number;
-    const speed = 0.15; // px per frame (smooth, 1/3 of original)
+    const speed = 0.15;
     const step = () => {
-      if (el.scrollLeft >= el.scrollWidth / 2) {
-        el.scrollLeft = 0;
+      if (el.scrollLeft <= 0) {
+        el.scrollLeft = el.scrollWidth / 2;
       } else {
-        el.scrollLeft += speed;
+        el.scrollLeft -= speed;
       }
       raf = requestAnimationFrame(step);
     };
