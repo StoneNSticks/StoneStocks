@@ -14,7 +14,6 @@ export default function AuthPage() {
   const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
@@ -45,7 +44,7 @@ export default function AuthPage() {
       navigate("/");
     } else {
       if (!username.trim()) { toast.error("Username is required."); setLoading(false); return; }
-      const { error } = await signUp(email, password, displayName || undefined, username);
+      const { error } = await signUp(email, password, username);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
       toast.success("Confirmation email sent! Check your inbox.");
@@ -72,22 +71,13 @@ export default function AuthPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && !showForgot && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input id="username" required placeholder="max123" value={username} onChange={e => setUsername(e.target.value)} className="pl-10" />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="username" required placeholder="max123" value={username} onChange={e => setUsername(e.target.value)} className="pl-10" />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="displayName">Display Name (optional)</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input id="displayName" placeholder="John Doe" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-10" />
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
               {isLogin && !showForgot ? (
                 <div className="space-y-2">

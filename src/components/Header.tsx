@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,12 +13,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { to: "/", label: "Markets", icon: TrendingUp },
   { to: "/news", label: "News", icon: Newspaper },
   { to: "/rankings", label: "Rankings", icon: BarChart3 },
   { to: "/calculators", label: "Tools", icon: Calculator },
+  { to: "/watchlist", label: "Watchlist", icon: Star },
 ];
 
 export function Header() {
@@ -26,6 +34,8 @@ export function Header() {
   const { user, signOut } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "User";
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -78,19 +88,6 @@ export function Header() {
               </Link>
             );
           })}
-          {user && (
-            <Link
-              to="/watchlist"
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                location.pathname === "/watchlist"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
-              <Star className="h-3.5 w-3.5" />
-              Watchlist
-            </Link>
-          )}
         </nav>
 
         <div className="flex-1 flex items-center gap-2 justify-end">
@@ -106,14 +103,43 @@ export function Header() {
             <CurrencyToggle />
           </div>
           <ThemeToggle />
+
+          {/* Desktop: User dropdown or Login */}
           {user ? (
-            <button
-              onClick={() => signOut()}
-              className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/60"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Logout
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors border border-border/60">
+                  <User className="h-3.5 w-3.5" />
+                  <span className="max-w-[100px] truncate">{username}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/watchlist" className="flex items-center gap-2 cursor-pointer">
+                    <Star className="h-4 w-4" />
+                    Watchlist
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex items-center gap-2 cursor-pointer">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()} className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link
               to="/auth"
@@ -156,31 +182,32 @@ export function Header() {
                     </Link>
                   );
                 })}
-                {user && (
-                  <Link
-                    to="/watchlist"
-                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                      location.pathname === "/watchlist"
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Star className="h-4 w-4" />
-                    Watchlist
-                  </Link>
-                )}
               </nav>
               <div className="mt-6 pt-6 border-t border-border/60 flex flex-col gap-3">
                 <MarketClock />
                 <CurrencyToggle />
                 {user ? (
-                  <button
-                    onClick={() => signOut()}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </button>
+                  <>
+                    <div className="px-3 py-2 text-sm font-medium text-foreground flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {username}
+                    </div>
+                    <Link to="/profile" className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                      <User className="h-4 w-4" />
+                      Profile
+                    </Link>
+                    <Link to="/settings" className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => signOut()}
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive hover:bg-muted transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </>
                 ) : (
                   <Link
                     to="/auth"

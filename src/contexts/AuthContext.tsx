@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, displayName?: string, username?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, username?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq("username", identifier)
         .single();
       if (lookupError || !data?.email) {
-        return { error: new Error("Benutzername nicht gefunden.") };
+        return { error: new Error("Username not found.") };
       }
       email = data.email;
     }
@@ -53,15 +53,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null };
   };
 
-  const signUp = async (email: string, password: string, displayName?: string, username?: string) => {
+  const signUp = async (email: string, password: string, username?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: {
-          ...(displayName ? { display_name: displayName } : {}),
-          ...(username ? { username } : {}),
+          username: username || email.split("@")[0],
+          display_name: username || email.split("@")[0],
         },
       },
     });

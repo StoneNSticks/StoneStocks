@@ -1,32 +1,57 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { WatchlistStar } from "@/components/WatchlistStar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Star, LogIn, ArrowLeft } from "lucide-react";
 
 export default function WatchlistPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: watchlist, isLoading } = useWatchlist();
 
-  if (!authLoading && !user) return <Navigate to="/auth" replace />;
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-8 max-w-2xl">
-        <h1 className="font-display text-2xl font-bold mb-6">Meine Watchlist</h1>
+        <h1 className="font-display text-2xl font-bold mb-6">My Watchlist</h1>
 
-        {isLoading || authLoading ? (
+        {authLoading ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
+          </div>
+        ) : !user ? (
+          <div className="text-center py-16">
+            <Star className="h-12 w-12 mx-auto mb-4 text-muted-foreground/30" />
+            <h2 className="font-display text-lg font-semibold mb-2">Please sign in</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              You need to be logged in to use your personal watchlist.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <Button asChild variant="outline">
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4 mr-1.5" />
+                  Back to Markets
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to="/auth">
+                  <LogIn className="h-4 w-4 mr-1.5" />
+                  Sign In
+                </Link>
+              </Button>
+            </div>
+          </div>
+        ) : isLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
           </div>
         ) : !watchlist || watchlist.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <Star className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>Deine Watchlist ist leer.</p>
-            <p className="text-sm mt-1">Klicke den Stern auf einer Aktien-Seite, um sie hinzuzufügen.</p>
+            <p>Your watchlist is empty.</p>
+            <p className="text-sm mt-1">Click the star on a stock page to add it.</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -37,7 +62,7 @@ export default function WatchlistPage() {
                   {item.symbol}
                 </Link>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(item.created_at).toLocaleDateString("de-DE")}
+                  {new Date(item.created_at).toLocaleDateString("en-US")}
                 </span>
               </div>
             ))}
