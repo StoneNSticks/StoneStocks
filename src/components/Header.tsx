@@ -80,7 +80,7 @@ export function Header() {
 
         <div className="flex-1 flex items-center gap-2 justify-end">
           <div
-            className={`max-w-sm flex-1 transition-all duration-300 hidden md:block ${
+            className={`max-w-sm flex-1 transition-all duration-300 ${
               showSearch ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}
           >
