@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, username?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string | undefined, password: string, username?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error: lookupError } = await supabase
         .from("profiles")
         .select("email")
-        .eq("username", identifier)
+        .eq("username", identifier.toLowerCase())
         .single();
       if (lookupError || !data?.email) {
         return { error: new Error("Username not found.") };
@@ -53,14 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null };
   };
 
-  const signUp = async (email: string, password: string, username?: string) => {
+  const signUp = async (emailInput: string | undefined, password: string, username?: string) => {
+    const lowerUsername = username ? username.toLowerCase() : undefined;
+    // If no email provided, generate a placeholder email from the username
+    const email = emailInput || `${lowerUsername}@noemail.local`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: {
-          username: username || email.split("@")[0],
+          username: lowerUsername || email.split("@")[0],
           display_name: username || email.split("@")[0],
         },
       },
