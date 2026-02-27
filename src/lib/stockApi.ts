@@ -48,3 +48,6 @@ export const getMarketNews = () => callStockApi({ action: "market_news" });
 export const getGainersLosers = () => callStockApi({ action: "gainers_losers" });
 export const getMostActive = () => callStockApi({ action: "most_active" });
 export const getTopCompanies = () => callStockApi({ action: "top_companies" });
+export const getCurrencyRates = () => callStockApi({ action: "currency_rates" });
+export const getSimFinStatements = (symbol: string) => callStockApi({ action: "simfin_statements", symbol });
+export const getEulerpoolProfile = (symbol: string) => callStockApi({ action: "eulerpool_profile", symbol });

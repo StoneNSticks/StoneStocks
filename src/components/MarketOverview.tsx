@@ -54,10 +54,10 @@ export function MarketOverview() {
               <TrendingDown className="h-3.5 w-3.5 text-loss flex-shrink-0" />
             )}
           </div>
-          <div className="font-display font-bold text-lg">
-            {formatPoints(idx.price)}
+          <div className="font-display font-bold text-lg tabular-nums">
+            {formatPoints(idx.price)} <span className="text-[10px] font-normal text-muted-foreground">pts</span>
           </div>
-          <div className={`text-[11px] font-medium ${priceChangeColor(idx.changePercent)}`}>
+          <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(idx.changePercent)}`}>
             {formatChange(idx.change)} ({formatChangePercent(idx.changePercent)})
           </div>
         </Link>

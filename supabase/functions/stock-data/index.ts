@@ -9,6 +9,8 @@ const corsHeaders = {
 const ALPHA_VANTAGE_KEY = Deno.env.get("ALPHA_VANTAGE_API_KEY")!;
 const TWELVE_DATA_KEY = Deno.env.get("TWELVE_DATA_API_KEY")!;
 const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY")!;
+const EULERPOOL_KEY = Deno.env.get("EULERPOOL_API_KEY")!;
+const SIMFIN_KEY = Deno.env.get("SIMFIN_API_KEY")!;
 const MASSIVE_KEYS = [
   Deno.env.get("MASSIVE_API_KEY_1")!,
   Deno.env.get("MASSIVE_API_KEY_2")!,
@@ -34,8 +36,9 @@ const TTL: Record<string, number> = {
   massive_financials: 60 * 24, massive_ticker: 60 * 24 * 7,
   massive_dividends: 60 * 24 * 7, massive_splits: 60 * 24 * 7,
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
-  massive_news: 30, market_news: 15, gainers_losers: 60 * 4,
-  most_active: 10, top_companies: 15,
+  massive_news: 30, market_news: 15, gainers_losers: 30,
+  most_active: 10, top_companies: 15, currency_rates: 60,
+  simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
@@ -91,33 +94,151 @@ async function fetchMassive(endpoint: string, params: Record<string, string> = {
   return res.json();
 }
 
-// === Stock Handlers ===
+async function fetchEulerpool(endpoint: string) {
+  const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Eulerpool error: ${res.status}`);
+  return res.json();
+}
+
+async function fetchSimFin(endpoint: string, params: Record<string, string> = {}) {
+  const url = new URL(`https://backend.simfin.com/api/v3${endpoint}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  const res = await fetch(url.toString(), {
+    headers: { "Authorization": `api-key ${SIMFIN_KEY}` },
+  });
+  if (!res.ok) throw new Error(`SimFin error: ${res.status}`);
+  return res.json();
+}
+
+// === ISIN lookup helper (cached mapping) ===
+const TICKER_ISIN_MAP: Record<string, string> = {
+  AAPL: "US0378331005", MSFT: "US5949181045", GOOG: "US02079K3059",
+  AMZN: "US0231351067", NVDA: "US67066G1040", META: "US30303M1027",
+  TSLA: "US88160R1014", AVGO: "US11135F1012", TSM: "US8740391003",
+  "BRK.B": "US0846707026", JPM: "US46625H1005", V: "US92826C8394",
+  UNH: "US91324P1021", JNJ: "US4781601046", XOM: "US30231G1022",
+};
+
+function getIsin(symbol: string): string | null {
+  return TICKER_ISIN_MAP[symbol] || null;
+}
+
+// === Smart fallback helper ===
+async function tryInOrder<T>(fns: (() => Promise<T>)[], validate: (r: T) => boolean): Promise<T | null> {
+  for (const fn of fns) {
+    try {
+      const result = await fn();
+      if (validate(result)) return result;
+    } catch (e) {
+      console.warn("Fallback attempt failed:", e);
+    }
+  }
+  return null;
+}
+
+// === Stock Handlers with smart fallback ===
 
 async function handleProfile(symbol: string) {
   const cacheKey = `profile:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const profile = await fetchFinnhub("stock/profile2", { symbol });
-  if (profile?.name) { await setCache(cacheKey, profile, "finnhub", TTL.profile); return profile; }
-  return null;
+
+  const result = await tryInOrder([
+    // 1. Finnhub (strongest for profiles)
+    async () => {
+      const p = await fetchFinnhub("stock/profile2", { symbol });
+      return p?.name ? p : null;
+    },
+    // 2. Eulerpool (if ISIN available)
+    async () => {
+      const isin = getIsin(symbol);
+      if (!isin) throw new Error("No ISIN");
+      const p = await fetchEulerpool(`/equity/profile/${isin}`);
+      return p?.name ? { ...p, ticker: symbol, source: "eulerpool" } : null;
+    },
+    // 3. SimFin
+    async () => {
+      const data = await fetchSimFin("/companies/general", { ticker: symbol });
+      if (data?.[0]) {
+        const c = data[0];
+        return { name: c.companyName, ticker: symbol, industry: c.industryName, country: "US", source: "simfin" };
+      }
+      return null;
+    },
+    // 4. Polygon/Massive
+    async () => {
+      const data = await fetchMassive(`/v3/reference/tickers/${symbol}`);
+      return data?.results ? { name: data.results.name, ticker: symbol, industry: data.results.sic_description, source: "massive" } : null;
+    },
+  ], (r) => r != null);
+
+  if (result) await setCache(cacheKey, result, "multi", TTL.profile);
+  return result;
 }
 
 async function handleQuote(symbol: string) {
   const cacheKey = `quote:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const quote = await fetchFinnhub("quote", { symbol });
-  if (quote?.c) { await setCache(cacheKey, quote, "finnhub", TTL.quote); return quote; }
-  return null;
+
+  const result = await tryInOrder([
+    // 1. Finnhub (real-time)
+    async () => {
+      const q = await fetchFinnhub("quote", { symbol });
+      return q?.c ? q : null;
+    },
+    // 2. Twelve Data
+    async () => {
+      const q = await fetchTwelveData("quote", { symbol });
+      return q?.close ? { c: parseFloat(q.close), d: parseFloat(q.change || "0"), dp: parseFloat(q.percent_change || "0"), h: parseFloat(q.high || "0"), l: parseFloat(q.low || "0"), o: parseFloat(q.open || "0"), pc: parseFloat(q.previous_close || "0") } : null;
+    },
+    // 3. Polygon snapshot
+    async () => {
+      const data = await fetchMassive(`/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}`);
+      if (data?.ticker?.day) {
+        const t = data.ticker;
+        return { c: t.day.c, d: t.todaysChange, dp: t.todaysChangePerc, h: t.day.h, l: t.day.l, o: t.day.o, pc: t.prevDay?.c || 0 };
+      }
+      return null;
+    },
+  ], (r) => r != null);
+
+  if (result) await setCache(cacheKey, result, "multi", TTL.quote);
+  return result;
 }
 
 async function handleOverview(symbol: string) {
   const cacheKey = `overview:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const overview = await fetchAlphaVantage("OVERVIEW", { symbol });
-  if (overview?.Symbol) { await setCache(cacheKey, overview, "alphavantage", TTL.overview); return overview; }
-  return null;
+
+  const result = await tryInOrder([
+    // 1. Alpha Vantage (most comprehensive)
+    async () => {
+      const o = await fetchAlphaVantage("OVERVIEW", { symbol });
+      return o?.Symbol ? o : null;
+    },
+    // 2. SimFin fundamentals
+    async () => {
+      const data = await fetchSimFin("/companies/general", { ticker: symbol });
+      if (data?.[0]) {
+        const c = data[0];
+        return { Symbol: symbol, Name: c.companyName, Sector: c.sectorName, Industry: c.industryName, source: "simfin" };
+      }
+      return null;
+    },
+    // 3. Eulerpool
+    async () => {
+      const isin = getIsin(symbol);
+      if (!isin) throw new Error("No ISIN");
+      const p = await fetchEulerpool(`/equity/profile/${isin}`);
+      return p ? { Symbol: symbol, Name: p.name, source: "eulerpool", ...p } : null;
+    },
+  ], (r) => r != null);
+
+  if (result) await setCache(cacheKey, result, "multi", TTL.overview);
+  return result;
 }
 
 async function handleTimeSeries(symbol: string, interval: string) {
@@ -140,15 +261,41 @@ async function handleNews(symbol: string) {
   const cacheKey = `news:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
+
   const from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
   const to = new Date().toISOString().split("T")[0];
-  const news = await fetchFinnhub("company-news", { symbol, from, to });
-  if (Array.isArray(news)) {
-    const trimmed = news.slice(0, 20);
-    await setCache(cacheKey, trimmed, "finnhub", TTL.news);
-    return trimmed;
-  }
-  return [];
+
+  // Fetch from multiple sources in parallel
+  const [finnhubNews, polygonNews] = await Promise.all([
+    fetchFinnhub("company-news", { symbol, from, to }).catch(() => []),
+    fetchMassive("/v2/reference/news", { ticker: symbol, limit: "15", order: "desc" }).catch(() => ({ results: [] })),
+  ]);
+
+  const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
+    headline: n.headline, summary: n.summary, url: n.url, image: n.image,
+    source: n.source, datetime: n.datetime, related: n.related || "", origin: "finnhub",
+  }));
+
+  const pgItems = (polygonNews?.results || []).map((n: any) => ({
+    headline: n.title, summary: n.description || "", url: n.article_url,
+    image: n.image_url || "", source: n.publisher?.name || "Polygon",
+    datetime: Math.floor(new Date(n.published_utc).getTime() / 1000),
+    related: n.tickers?.[0] || "", origin: "polygon",
+  }));
+
+  const seen = new Set<string>();
+  const combined = [...fhItems, ...pgItems]
+    .filter((n: any) => {
+      const key = n.headline?.toLowerCase().slice(0, 50);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a: any, b: any) => b.datetime - a.datetime)
+    .slice(0, 25);
+
+  await setCache(cacheKey, combined, "combined", TTL.news);
+  return combined;
 }
 
 async function handlePeers(symbol: string) {
@@ -173,9 +320,20 @@ async function handleEarnings(symbol: string) {
   const cacheKey = `earnings:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const earnings = await fetchAlphaVantage("EARNINGS", { symbol });
-  if (earnings) { await setCache(cacheKey, earnings, "alphavantage", TTL.earnings); return earnings; }
-  return null;
+
+  const result = await tryInOrder([
+    async () => {
+      const e = await fetchAlphaVantage("EARNINGS", { symbol });
+      return e?.quarterlyEarnings ? e : null;
+    },
+    async () => {
+      const data = await fetchSimFin("/companies/statements", { ticker: symbol, statement: "pl", period: "q1,q2,q3,q4" });
+      return data?.[0]?.statements ? { quarterlyEarnings: data[0].statements, source: "simfin" } : null;
+    },
+  ], (r) => r != null);
+
+  if (result) await setCache(cacheKey, result, "multi", TTL.earnings);
+  return result;
 }
 
 async function handleSearch(query: string) {
@@ -221,11 +379,25 @@ async function handleMassiveFinancials(symbol: string) {
   const cacheKey = `massive_financials:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive("/vX/reference/financials", {
-    ticker: symbol, limit: "20", sort: "filing_date", order: "desc", timeframe: "quarterly",
-  });
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_financials); return data.results; }
-  return [];
+
+  // Try Polygon first, then SimFin
+  const result = await tryInOrder([
+    async () => {
+      const data = await fetchMassive("/vX/reference/financials", {
+        ticker: symbol, limit: "20", sort: "filing_date", order: "desc", timeframe: "quarterly",
+      });
+      return data?.results?.length ? data.results : null;
+    },
+    async () => {
+      const data = await fetchSimFin("/companies/statements", {
+        ticker: symbol, statement: "pl,bs,cf", period: "q1,q2,q3,q4",
+      });
+      return data?.[0]?.statements ? data[0].statements : null;
+    },
+  ], (r) => r != null);
+
+  if (result) await setCache(cacheKey, result, "multi", TTL.massive_financials);
+  return result || [];
 }
 
 async function handleMassiveDividends(symbol: string) {
@@ -286,7 +458,6 @@ async function handleMassiveNews(symbol: string) {
 
 // === Homepage Data Handlers ===
 
-// Real index point values using Twelve Data + ETF route mapping
 const INDEX_CONFIG: Record<string, { name: string; etf: string }> = {
   "SPX": { name: "S&P 500", etf: "SPY" },
   "DJI": { name: "Dow Jones", etf: "DIA" },
@@ -295,7 +466,7 @@ const INDEX_CONFIG: Record<string, { name: string; etf: string }> = {
 };
 
 async function handleMarketIndices() {
-  const cacheKey = "market:indices:v2";
+  const cacheKey = "market:indices:v3";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
@@ -304,31 +475,21 @@ async function handleMarketIndices() {
     symbols.map(async (sym) => {
       try {
         const q = await fetchTwelveData("quote", { symbol: sym });
-        const price = parseFloat(q.close || "0");
-        const prevClose = parseFloat(q.previous_close || "0");
-        const change = parseFloat(q.change || "0");
-        const changePercent = parseFloat(q.percent_change || "0");
         return {
           symbol: INDEX_CONFIG[sym].etf,
           indexSymbol: sym,
           name: INDEX_CONFIG[sym].name,
-          price,
-          prevClose,
-          change,
-          changePercent,
+          price: parseFloat(q.close || "0"),
+          prevClose: parseFloat(q.previous_close || "0"),
+          change: parseFloat(q.change || "0"),
+          changePercent: parseFloat(q.percent_change || "0"),
         };
       } catch {
-        // Fallback to Finnhub ETF quote
         try {
           const q = await fetchFinnhub("quote", { symbol: INDEX_CONFIG[sym].etf });
           return {
-            symbol: INDEX_CONFIG[sym].etf,
-            indexSymbol: sym,
-            name: INDEX_CONFIG[sym].name,
-            price: q.c || 0,
-            prevClose: q.pc || 0,
-            change: q.d || 0,
-            changePercent: q.dp || 0,
+            symbol: INDEX_CONFIG[sym].etf, indexSymbol: sym, name: INDEX_CONFIG[sym].name,
+            price: q.c || 0, prevClose: q.pc || 0, change: q.d || 0, changePercent: q.dp || 0,
           };
         } catch {
           return { symbol: INDEX_CONFIG[sym].etf, indexSymbol: sym, name: INDEX_CONFIG[sym].name, price: 0, prevClose: 0, change: 0, changePercent: 0 };
@@ -341,42 +502,29 @@ async function handleMarketIndices() {
   return indices;
 }
 
-// Combined market news from Finnhub + Polygon
+// Combined market news from Finnhub + Polygon (covers Reuters, Bloomberg, CNBC, etc.)
 async function handleMarketNews() {
-  const cacheKey = "market:news:combined";
+  const cacheKey = "market:news:combined:v2";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
   const [finnhubNews, polygonNews] = await Promise.all([
     fetchFinnhub("news", { category: "general" }).catch(() => []),
-    fetchMassive("/v2/reference/news", { limit: "15", order: "desc" }).catch(() => ({ results: [] })),
+    fetchMassive("/v2/reference/news", { limit: "20", order: "desc" }).catch(() => ({ results: [] })),
   ]);
 
-  // Normalize Finnhub news
   const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
-    headline: n.headline,
-    summary: n.summary,
-    url: n.url,
-    image: n.image,
-    source: n.source,
-    datetime: n.datetime,
-    related: n.related || "",
-    origin: "finnhub",
+    headline: n.headline, summary: n.summary, url: n.url, image: n.image,
+    source: n.source, datetime: n.datetime, related: n.related || "", origin: "finnhub",
   }));
 
-  // Normalize Polygon news
   const pgItems = (polygonNews?.results || []).map((n: any) => ({
-    headline: n.title,
-    summary: n.description || "",
-    url: n.article_url,
-    image: n.image_url || "",
-    source: n.publisher?.name || "Polygon",
+    headline: n.title, summary: n.description || "", url: n.article_url,
+    image: n.image_url || "", source: n.publisher?.name || "Polygon",
     datetime: Math.floor(new Date(n.published_utc).getTime() / 1000),
-    related: n.tickers?.[0] || "",
-    origin: "polygon",
+    related: n.tickers?.[0] || "", origin: "polygon",
   }));
 
-  // Merge & deduplicate by headline similarity, sort by datetime desc
   const seen = new Set<string>();
   const combined = [...fhItems, ...pgItems]
     .filter((n: any) => {
@@ -386,105 +534,119 @@ async function handleMarketNews() {
       return true;
     })
     .sort((a: any, b: any) => b.datetime - a.datetime)
-    .slice(0, 25);
+    .slice(0, 30);
 
   await setCache(cacheKey, combined, "combined", TTL.market_news);
   return combined;
 }
 
-// Get last trading date
+// Gainers/Losers - available anytime using Polygon snapshot
+async function handleGainersLosers() {
+  const cacheKey = "market:gainers_losers:realtime";
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  try {
+    // Try real-time snapshots first (works anytime)
+    const [gainersData, losersData] = await Promise.all([
+      fetchMassive("/v2/snapshot/locale/us/markets/stocks/gainers", {}).catch(() => null),
+      fetchMassive("/v2/snapshot/locale/us/markets/stocks/losers", {}).catch(() => null),
+    ]);
+
+    const mapSnapshot = (items: any[]) =>
+      (items || [])
+        .filter((s: any) => s.day?.c > 2 && s.day?.v > 200000)
+        .map((s: any) => ({
+          symbol: s.ticker,
+          price: s.day?.c || 0,
+          change: s.todaysChange || 0,
+          changePercent: s.todaysChangePerc || 0,
+          volume: s.day?.v || 0,
+        }))
+        .slice(0, 10);
+
+    if (gainersData?.tickers?.length || losersData?.tickers?.length) {
+      const result = {
+        gainers: mapSnapshot(gainersData?.tickers || []),
+        losers: mapSnapshot(losersData?.tickers || []),
+        date: new Date().toISOString().split("T")[0],
+      };
+      await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+      return result;
+    }
+
+    // Fallback: grouped daily bars for last trading date
+    const lastDate = getLastTradingDate();
+    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" });
+    if (!data?.results?.length) return { gainers: [], losers: [], date: lastDate };
+
+    const stocks = data.results
+      .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0)
+      .map((s: any) => ({
+        symbol: s.T, price: s.c, change: s.c - s.o,
+        changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
+      }))
+      .filter((s: any) => Math.abs(s.changePercent) < 100);
+
+    stocks.sort((a: any, b: any) => b.changePercent - a.changePercent);
+    const result = { gainers: stocks.slice(0, 10), losers: stocks.slice(-10).reverse(), date: lastDate };
+    await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+    return result;
+  } catch (err) {
+    console.error("Gainers/losers error:", err);
+    return { gainers: [], losers: [], date: "" };
+  }
+}
+
 function getLastTradingDate(): string {
   const now = new Date();
-  // Adjust for EST (UTC-5)
   const est = new Date(now.getTime() - 5 * 60 * 60 * 1000);
   const hour = est.getHours();
   const day = est.getDay();
-
-  // If it's a weekday and after 4pm, use today
-  // If before 4pm, use previous trading day
-  // If weekend, use Friday
   let daysBack = 0;
-  if (day === 0) daysBack = 2; // Sunday -> Friday
-  else if (day === 6) daysBack = 1; // Saturday -> Friday
-  else if (day === 1 && hour < 16) daysBack = 3; // Monday before close -> Friday
-  else if (hour < 16) daysBack = 1; // Before close -> yesterday
-  // After close -> today (daysBack = 0)
-
+  if (day === 0) daysBack = 2;
+  else if (day === 6) daysBack = 1;
+  else if (day === 1 && hour < 16) daysBack = 3;
+  else if (hour < 16) daysBack = 1;
   const d = new Date(est);
   d.setDate(d.getDate() - daysBack);
   return d.toISOString().split("T")[0];
 }
 
-async function handleGainersLosers() {
-  const lastDate = getLastTradingDate();
-  const cacheKey = `market:gainers_losers:${lastDate}`;
+async function handleMostActive() {
+  const cacheKey = "market:most_active:realtime";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
   try {
-    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, {
-      adjusted: "true",
-    });
-
-    if (!data?.results || data.results.length === 0) {
-      return { gainers: [], losers: [], date: lastDate };
+    // Try real-time snapshot
+    const data = await fetchMassive("/v2/snapshot/locale/us/markets/stocks/tickers", { include_otc: "false" }).catch(() => null);
+    if (data?.tickers?.length) {
+      const stocks = data.tickers
+        .filter((s: any) => s.day?.c > 2 && s.day?.v > 500000)
+        .map((s: any) => ({
+          symbol: s.ticker, price: s.day?.c || 0,
+          change: s.todaysChange || 0, changePercent: s.todaysChangePerc || 0,
+          volume: s.day?.v || 0,
+        }))
+        .sort((a: any, b: any) => b.volume - a.volume)
+        .slice(0, 15);
+      await setCache(cacheKey, stocks, "massive", TTL.most_active);
+      return stocks;
     }
 
-    const stocks = data.results
-      .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0) // $2+ price, 200k+ volume
-      .map((s: any) => ({
-        symbol: s.T,
-        price: s.c,
-        open: s.o,
-        high: s.h,
-        low: s.l,
-        change: s.c - s.o,
-        changePercent: ((s.c - s.o) / s.o) * 100,
-        volume: s.v,
-      }))
-      .filter((s: any) => Math.abs(s.changePercent) < 100); // filter out glitches
-
-    stocks.sort((a: any, b: any) => b.changePercent - a.changePercent);
-
-    const result = {
-      gainers: stocks.slice(0, 10),
-      losers: stocks.slice(-10).reverse(),
-      date: lastDate,
-    };
-
-    await setCache(cacheKey, result, "massive", TTL.gainers_losers);
-    return result;
-  } catch (err) {
-    console.error("Gainers/losers error:", err);
-    return { gainers: [], losers: [], date: lastDate };
-  }
-}
-
-async function handleMostActive() {
-  const lastDate = getLastTradingDate();
-  const cacheKey = `market:most_active:${lastDate}`;
-  const cached = await getCached(cacheKey);
-  if (cached) return cached;
-
-  try {
-    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, {
-      adjusted: "true",
-    });
-
-    if (!data?.results) return [];
-
-    const stocks = data.results
+    // Fallback: grouped daily
+    const lastDate = getLastTradingDate();
+    const fallback = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" });
+    if (!fallback?.results) return [];
+    const stocks = fallback.results
       .filter((s: any) => s.c > 2 && s.v > 500000 && s.o > 0)
       .map((s: any) => ({
-        symbol: s.T,
-        price: s.c,
-        change: s.c - s.o,
-        changePercent: ((s.c - s.o) / s.o) * 100,
-        volume: s.v,
+        symbol: s.T, price: s.c, change: s.c - s.o,
+        changePercent: ((s.c - s.o) / s.o) * 100, volume: s.v,
       }))
       .sort((a: any, b: any) => b.volume - a.volume)
       .slice(0, 15);
-
     await setCache(cacheKey, stocks, "massive", TTL.most_active);
     return stocks;
   } catch {
@@ -527,6 +689,52 @@ async function handleTopCompanies() {
   return quotes;
 }
 
+// === Currency Conversion ===
+async function handleCurrencyRates() {
+  const cacheKey = "currency:rates";
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const res = await fetch("https://cdn.moneyconvert.net/api/latest.json");
+  if (!res.ok) throw new Error("Currency API error");
+  const data = await res.json();
+  const rates = data?.rates || {};
+  await setCache(cacheKey, rates, "moneyconvert", TTL.currency_rates);
+  return rates;
+}
+
+// === SimFin Statements ===
+async function handleSimFinStatements(symbol: string) {
+  const cacheKey = `simfin:statements:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const data = await fetchSimFin("/companies/statements", {
+    ticker: symbol, statement: "pl,bs,cf", period: "fy",
+  });
+  if (data?.[0]) {
+    await setCache(cacheKey, data[0], "simfin", TTL.simfin_statements);
+    return data[0];
+  }
+  return null;
+}
+
+// === Eulerpool Profile ===
+async function handleEulerpoolProfile(symbol: string) {
+  const isin = getIsin(symbol);
+  if (!isin) return null;
+  const cacheKey = `eulerpool:profile:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const data = await fetchEulerpool(`/equity/profile/${isin}`);
+  if (data?.name) {
+    await setCache(cacheKey, data, "eulerpool", TTL.eulerpool_profile);
+    return data;
+  }
+  return null;
+}
+
 // === Derived metrics ===
 
 function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null) {
@@ -554,7 +762,7 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
   };
 }
 
-// === Full Stock (orchestrator) ===
+// === Full Stock ===
 
 async function handleFullStock(symbol: string) {
   const [profile, quote, overview, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot] = await Promise.all([
@@ -610,6 +818,9 @@ Deno.serve(async (req) => {
       case "gainers_losers": result = await handleGainersLosers(); break;
       case "most_active": result = await handleMostActive(); break;
       case "top_companies": result = await handleTopCompanies(); break;
+      case "currency_rates": result = await handleCurrencyRates(); break;
+      case "simfin_statements": result = await handleSimFinStatements(symbol!); break;
+      case "eulerpool_profile": result = await handleEulerpoolProfile(symbol!); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

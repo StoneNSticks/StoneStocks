@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGainersLosers } from "@/hooks/useStockData";
-import { formatCurrency, formatPercent, formatNumber, priceChangeColor } from "@/lib/formatters";
+import { formatPercent, formatNumber, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 export function GainersLosers() {
   const [tab, setTab] = useState<"gainers" | "losers">("gainers");
   const { data, isLoading } = useGainersLosers();
+  const fc = useFormattedCurrency();
 
   if (isLoading) {
     return (
@@ -23,13 +24,11 @@ export function GainersLosers() {
   }
 
   const list = tab === "gainers" ? data?.gainers : data?.losers;
-  const dateLabel = data?.date ? new Date(data.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-display text-lg font-semibold">Winners & Losers</h2>
-        {dateLabel && <span className="text-[11px] text-muted-foreground">{dateLabel}</span>}
       </div>
       <div className="flex gap-1 mb-3">
         <button
@@ -72,7 +71,7 @@ export function GainersLosers() {
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-sm tabular-nums">{formatCurrency(item.price)}</span>
+                <span className="text-sm tabular-nums">{fc(item.price)}</span>
                 <span className={`text-xs font-medium w-16 text-right tabular-nums ${priceChangeColor(item.changePercent)}`}>
                   {formatPercent(item.changePercent)}
                 </span>
@@ -82,7 +81,7 @@ export function GainersLosers() {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground py-4 text-center">
-          Market data loading — available after market close.
+          Market data loading…
         </p>
       )}
     </div>

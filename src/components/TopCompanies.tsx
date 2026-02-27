@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import { useTopCompanies } from "@/hooks/useStockData";
-import { formatCurrency, formatNumber, formatPercent, priceChangeColor } from "@/lib/formatters";
+import { formatNumber, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Crown } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export function TopCompanies() {
   const { data: companies, isLoading } = useTopCompanies();
+  const fc = useFormattedCurrency();
+  const { convert, symbol: cs } = useCurrency();
 
   if (isLoading) {
     return (
@@ -63,14 +66,14 @@ export function TopCompanies() {
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <div className="text-sm font-medium">{formatCurrency(c.price)}</div>
+              <div className="text-sm font-medium">{fc(c.price)}</div>
               <div className={`text-[11px] font-medium ${priceChangeColor(c.changePercent)}`}>
                 {formatPercent(c.changePercent)}
               </div>
             </div>
             <div className="text-right flex-shrink-0 hidden sm:block w-20">
               <div className="text-xs text-muted-foreground">
-                ${formatNumber(c.marketCap)}
+                {cs}{formatNumber(convert(c.marketCap))}
               </div>
             </div>
           </Link>

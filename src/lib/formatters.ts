@@ -1,3 +1,5 @@
+import { useCurrency } from "@/contexts/CurrencyContext";
+
 export function formatNumber(num: number | null | undefined): string {
   if (num == null || isNaN(num)) return "—";
   if (Math.abs(num) >= 1e12) return (num / 1e12).toFixed(2) + "T";
@@ -7,9 +9,9 @@ export function formatNumber(num: number | null | undefined): string {
   return num.toFixed(2);
 }
 
-export function formatCurrency(num: number | null | undefined): string {
+export function formatCurrency(num: number | null | undefined, currencySymbol = "$"): string {
   if (num == null || isNaN(num)) return "—";
-  return "$" + formatNumber(num);
+  return currencySymbol + formatNumber(num);
 }
 
 export function formatPercent(num: number | null | undefined): string {
@@ -28,4 +30,14 @@ export function formatDate(dateStr: string): string {
 export function priceChangeColor(change: number | null | undefined): string {
   if (change == null || change === 0) return "text-muted-foreground";
   return change > 0 ? "text-gain" : "text-loss";
+}
+
+// Hook-based currency formatting
+export function useFormattedCurrency() {
+  const { convert, symbol } = useCurrency();
+  
+  return (num: number | null | undefined): string => {
+    const converted = convert(num);
+    return formatCurrency(converted, symbol);
+  };
 }

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, Newspaper, BarChart3, Activity } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3 } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
+import { CurrencyToggle } from "@/components/CurrencyToggle";
 
 const navItems = [
   { to: "/", label: "Markets", icon: TrendingUp },
@@ -44,8 +45,11 @@ export function Header() {
           })}
         </nav>
 
-        <div className="flex-1 max-w-sm ml-auto">
-          <SearchBar compact />
+        <div className="flex-1 flex items-center gap-2 justify-end">
+          <div className="max-w-sm flex-1">
+            <SearchBar compact />
+          </div>
+          <CurrencyToggle />
         </div>
       </div>
     </header>
