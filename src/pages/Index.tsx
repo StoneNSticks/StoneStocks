@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { SearchBar } from "@/components/SearchBar";
 import { MarketOverview } from "@/components/MarketOverview";
 import { MarketNewsSection } from "@/components/MarketNewsSection";
 import { TopCompanies } from "@/components/TopCompanies";
@@ -10,6 +11,17 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-6">
+        {/* Hero Search */}
+        <section className="mb-8">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1">
+            Stock Market <span className="text-primary">Overview</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mb-4">
+            Real-time quotes, news, and market data
+          </p>
+          <SearchBar />
+        </section>
+
         {/* Market Indices Bar */}
         <section className="mb-6">
           <MarketOverview />

@@ -1,12 +1,11 @@
-import { Link } from "react-router-dom";
 import { useMarketIndices } from "@/hooks/useStockData";
 import { priceChangeColor } from "@/lib/formatters";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function formatPoints(num: number): string {
-  if (num == null || isNaN(num)) return "—";
-  return num.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  if (num == null || isNaN(num) || num === 0) return "—";
+  return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatChange(num: number): string {
@@ -27,8 +26,8 @@ export function MarketOverview() {
   if (isLoading) {
     return (
       <div className="flex gap-3 overflow-x-auto pb-1">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 min-w-[180px] rounded-xl flex-shrink-0" />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-[72px] min-w-[190px] rounded-xl flex-shrink-0" />
         ))}
       </div>
     );
@@ -38,30 +37,39 @@ export function MarketOverview() {
 
   return (
     <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
-      {indices.map((idx: any) => (
-        <Link
-          key={idx.symbol}
-          to={`/stock/${idx.symbol}`}
-          className="flex-shrink-0 min-w-[180px] rounded-xl border border-border/60 bg-card px-4 py-3 transition-all hover:border-primary/40 hover:shadow-sm group"
-        >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
-              {idx.name}
-            </span>
-            {idx.changePercent >= 0 ? (
-              <TrendingUp className="h-3.5 w-3.5 text-gain flex-shrink-0" />
-            ) : (
-              <TrendingDown className="h-3.5 w-3.5 text-loss flex-shrink-0" />
-            )}
+      {indices.map((idx: any) => {
+        const isPositive = idx.changePercent >= 0;
+        return (
+          <div
+            key={idx.indexSymbol}
+            className={`flex-shrink-0 min-w-[190px] rounded-xl border px-4 py-3 transition-all ${
+              isPositive
+                ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
+                : "border-destructive/30 bg-destructive/[0.04]"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-1.5">
+                <BarChart2 className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {idx.name}
+                </span>
+              </div>
+              {isPositive ? (
+                <TrendingUp className="h-3.5 w-3.5 text-gain flex-shrink-0" />
+              ) : (
+                <TrendingDown className="h-3.5 w-3.5 text-loss flex-shrink-0" />
+              )}
+            </div>
+            <div className="font-display font-bold text-lg tabular-nums">
+              {formatPoints(idx.price)}
+            </div>
+            <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(idx.changePercent)}`}>
+              {formatChange(idx.change)} ({formatChangePercent(idx.changePercent)})
+            </div>
           </div>
-          <div className="font-display font-bold text-lg tabular-nums">
-            {formatPoints(idx.price)} <span className="text-[10px] font-normal text-muted-foreground">pts</span>
-          </div>
-          <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(idx.changePercent)}`}>
-            {formatChange(idx.change)} ({formatChangePercent(idx.changePercent)})
-          </div>
-        </Link>
-      ))}
+        );
+      })}
     </div>
   );
 }
