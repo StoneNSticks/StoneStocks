@@ -4,6 +4,7 @@ import { TrendingUp, Newspaper, BarChart3, Calculator } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MarketClock } from "@/components/MarketClock";
 
 const navItems = [
   { to: "/", label: "Markets", icon: TrendingUp },
@@ -72,6 +73,7 @@ export function Header() {
           >
             <SearchBar compact />
           </div>
+          <MarketClock />
           <CurrencyToggle />
           <ThemeToggle />
         </div>
