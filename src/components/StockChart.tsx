@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const intervals = [
   { label: "1D", value: "1d", outputsize: "78", interval: "5min" },
-  { label: "5D", value: "5d", outputsize: "390", interval: "15min" },
+  { label: "5D", value: "5d", outputsize: "130", interval: "15min" },
   { label: "1M", value: "1m", outputsize: "22", interval: "1day" },
   { label: "6M", value: "6m", outputsize: "130", interval: "1day" },
   { label: "1Y", value: "1y", outputsize: "252", interval: "1day" },
@@ -44,15 +44,18 @@ export function StockChart({ symbol }: { symbol: string }) {
 
   const isIntraday = selected === "1d" || selected === "5d";
 
+  const userLocale = navigator.language || "en-US";
+  const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const formatXLabel = (d: string) => {
     const date = new Date(d);
     if (isIntraday) {
-      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      return date.toLocaleTimeString(userLocale, { hour: "numeric", minute: "2-digit", timeZone: userTz });
     }
     if (selected === "max" || selected === "5y") {
-      return date.toLocaleDateString("en-US", { year: "numeric" });
+      return date.toLocaleDateString(userLocale, { year: "numeric", timeZone: userTz });
     }
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return date.toLocaleDateString(userLocale, { month: "short", day: "numeric", timeZone: userTz });
   };
 
   if (isLoading) {
@@ -116,9 +119,9 @@ export function StockChart({ symbol }: { symbol: string }) {
               labelFormatter={(l: string) => {
                 const d = new Date(l);
                 if (isIntraday) {
-                  return d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+                  return d.toLocaleString(userLocale, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: userTz });
                 }
-                return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+                return d.toLocaleDateString(userLocale, { month: "long", day: "numeric", year: "numeric", timeZone: userTz });
               }}
             />
             <Area

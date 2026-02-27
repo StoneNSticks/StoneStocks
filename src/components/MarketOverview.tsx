@@ -31,7 +31,7 @@ export function MarketOverview() {
     const el = scrollRef.current;
     if (!el || paused) return;
     let raf: number;
-    const speed = 0.5; // px per frame
+    const speed = 0.15; // px per frame (smooth, 1/3 of original)
     const step = () => {
       if (el.scrollLeft >= el.scrollWidth / 2) {
         el.scrollLeft = 0;
