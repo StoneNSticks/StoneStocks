@@ -66,17 +66,17 @@ export function GainersLosers() {
                 {item.logo ? (
                   <img
                     src={item.logo}
-                    alt={item.symbol}
+                    alt={item.name || item.symbol}
                     className="w-8 h-8 rounded-lg object-contain bg-background border border-border/40"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                    {item.symbol?.slice(0, 2)}
+                    {(item.name || item.symbol)?.slice(0, 2)}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
+                  <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors truncate">
                     {item.name || item.symbol}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
