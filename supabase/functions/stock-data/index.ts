@@ -487,6 +487,9 @@ const INDEX_CONFIG: { indexSymbol: string; name: string; twelveSymbol: string; e
   { indexSymbol: "GDAXI", name: "DAX", twelveSymbol: "DAX", etf: "EWG", etfMultiplier: 750, etfSymbol: "EWG" },
   { indexSymbol: "N225", name: "Nikkei 225", twelveSymbol: "N225", etf: "EWJ", etfMultiplier: 570, etfSymbol: "EWJ" },
   { indexSymbol: "FTSE", name: "FTSE 100", twelveSymbol: "FTSE", etf: "EWU", etfMultiplier: 243, etfSymbol: "EWU" },
+  { indexSymbol: "FCHI", name: "CAC 40", twelveSymbol: "FCHI", etf: "EWQ", etfMultiplier: 215, etfSymbol: "EWQ" },
+  { indexSymbol: "HSI", name: "Hang Seng", twelveSymbol: "HSI", etf: "EWH", etfMultiplier: 1050, etfSymbol: "EWH" },
+  { indexSymbol: "STOXX50E", name: "Euro Stoxx 50", twelveSymbol: "STOXX50E", etf: "FEZ", etfMultiplier: 82, etfSymbol: "FEZ" },
 ];
 
 async function handleMarketIndices() {

@@ -3,6 +3,7 @@ import { useMarketIndices } from "@/hooks/useStockData";
 import { priceChangeColor } from "@/lib/formatters";
 import { TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useRef, useState } from "react";
 
 function formatPoints(num: number): string {
   if (num == null || isNaN(num) || num === 0) return "—";
@@ -23,12 +24,31 @@ function formatChangePercent(num: number): string {
 
 export function MarketOverview() {
   const { data: indices, isLoading } = useMarketIndices();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || paused) return;
+    let raf: number;
+    const speed = 0.5; // px per frame
+    const step = () => {
+      if (el.scrollLeft >= el.scrollWidth / 2) {
+        el.scrollLeft = 0;
+      } else {
+        el.scrollLeft += speed;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [paused, indices]);
 
   if (isLoading) {
     return (
-      <div className="flex gap-3 overflow-x-auto pb-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-[72px] min-w-[190px] rounded-xl flex-shrink-0" />
+      <div className="flex gap-3 overflow-hidden pb-1">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-[72px] min-w-[180px] rounded-xl flex-shrink-0" />
         ))}
       </div>
     );
@@ -36,15 +56,23 @@ export function MarketOverview() {
 
   if (!indices || indices.length === 0) return null;
 
+  // Duplicate for infinite scroll illusion
+  const items = [...indices, ...indices];
+
   return (
-    <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
-      {indices.map((idx: any) => {
+    <div
+      ref={scrollRef}
+      className="flex gap-3 overflow-x-hidden pb-1 -mx-1 px-1"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {items.map((idx: any, i: number) => {
         const isPositive = idx.changePercent >= 0;
         return (
           <Link
-            key={idx.indexSymbol}
+            key={`${idx.indexSymbol}-${i}`}
             to={`/index/${idx.indexSymbol}`}
-            className={`flex-shrink-0 min-w-[190px] rounded-xl border px-4 py-3 transition-all hover:scale-[1.02] cursor-pointer ${
+            className={`flex-shrink-0 min-w-[180px] rounded-xl border px-4 py-3 transition-all hover:scale-[1.02] cursor-pointer ${
               isPositive
                 ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
                 : "border-destructive/30 bg-destructive/[0.04]"
