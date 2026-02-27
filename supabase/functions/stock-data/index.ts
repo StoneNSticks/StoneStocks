@@ -732,12 +732,12 @@ async function handleTopCompanies() {
           fetchFinnhub("quote", { symbol: c.symbol }),
           fetchFinnhub("stock/profile2", { symbol: c.symbol }),
         ]);
-        // Compute market cap from price × shares outstanding (most accurate)
+        // Use Finnhub's marketCapitalization (in millions USD) - most reliable, especially for ADRs like TSM
+        const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
+        // Fallback: compute from price × shares outstanding
         const shareOutstanding = profile?.shareOutstanding || 0; // in millions
         const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
-        // Fallback to Finnhub's marketCapitalization (in millions USD)
-        const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
-        const marketCap = computedMarketCap > 0 ? computedMarketCap : finnhubMarketCap;
+        const marketCap = finnhubMarketCap > 0 ? finnhubMarketCap : computedMarketCap;
         return {
           symbol: c.symbol, name: c.name, price: q.c || 0,
           change: q.d || 0, changePercent: q.dp || 0,
