@@ -7,10 +7,12 @@ import { FinancialChart, extractFinancialSeries } from "@/components/FinancialCh
 import { NewsList } from "@/components/NewsList";
 import { PeersList } from "@/components/PeersList";
 import { RecommendationChart } from "@/components/RecommendationChart";
+import { StockPerformance } from "@/components/StockPerformance";
+import { DividendGrowth } from "@/components/DividendGrowth";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Globe, MapPin } from "lucide-react";
+import { Building2, Globe } from "lucide-react";
 import { useMemo } from "react";
 
 const StockDetail = () => {
@@ -28,6 +30,7 @@ const StockDetail = () => {
   const massiveFinancials = data?.massiveFinancials;
   const massiveTicker = data?.massiveTicker;
   const massiveDividends = data?.massiveDividends;
+  const massiveSnapshot = data?.massiveSnapshot;
 
   // Extract financial chart data
   const revenueData = useMemo(() => extractFinancialSeries(massiveFinancials || [], "revenues", "income_statement"), [massiveFinancials]);
@@ -49,10 +52,7 @@ const StockDetail = () => {
         const fcf = ocf - capex;
         const period = f.fiscal_period as string;
         const year = f.fiscal_year as string;
-        return {
-          label: period ? `${period} ${year?.slice(-2)}` : "",
-          value: fcf,
-        };
+        return { label: period ? `${period} ${year?.slice(-2)}` : "", value: fcf };
       })
       .reverse();
   }, [massiveFinancials]);
@@ -70,25 +70,10 @@ const StockDetail = () => {
         const liabilities = Number(fin.balance_sheet.liabilities?.value || 0);
         const period = f.fiscal_period as string;
         const year = f.fiscal_year as string;
-        return {
-          label: period ? `${period} ${year?.slice(-2)}` : "",
-          assets,
-          liabilities,
-        };
+        return { label: period ? `${period} ${year?.slice(-2)}` : "", assets, liabilities };
       })
       .reverse();
   }, [massiveFinancials]);
-
-  const dividendData = useMemo(() => {
-    if (!massiveDividends || !Array.isArray(massiveDividends)) return [];
-    return massiveDividends
-      .slice(0, 20)
-      .map((d: Record<string, unknown>) => ({
-        label: (d.pay_date as string)?.slice(0, 7) || (d.ex_dividend_date as string)?.slice(0, 7) || "",
-        value: Number(d.cash_amount || 0),
-      }))
-      .reverse();
-  }, [massiveDividends]);
 
   const companyName = profile?.name || overview?.Name || (massiveTicker?.name as string) || upperSymbol;
   const exchange = profile?.exchange || (massiveTicker?.primary_exchange as string) || "";
@@ -146,7 +131,7 @@ const StockDetail = () => {
               </div>
             </div>
 
-            {/* Metrics Grid (Profitviz-style) */}
+            {/* Metrics Grid */}
             <MetricsGrid
               overview={overview}
               quote={quote}
@@ -155,41 +140,21 @@ const StockDetail = () => {
               massiveTicker={massiveTicker}
             />
 
-            {/* Price Chart */}
-            <StockChart symbol={upperSymbol} />
+            {/* Price Chart + Performance side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2">
+                <StockChart symbol={upperSymbol} />
+              </div>
+              <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
+            </div>
 
-            {/* Financial Charts Grid (Profitviz-style) */}
+            {/* Financial Charts Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <FinancialChart
-                title="Revenue"
-                data={revenueData}
-                dataKey="value"
-                color="hsl(210, 80%, 55%)"
-              />
-              <FinancialChart
-                title="Net Income"
-                data={netIncomeData}
-                dataKey="value"
-                color="hsl(38, 92%, 50%)"
-              />
-              <FinancialChart
-                title="Operating Income"
-                data={opIncomeData}
-                dataKey="value"
-                color="hsl(25, 95%, 53%)"
-              />
-              <FinancialChart
-                title="Free Cash Flow"
-                data={capexData}
-                dataKey="value"
-                color="hsl(145, 63%, 42%)"
-              />
-              <FinancialChart
-                title="Operating Cash Flow"
-                data={ocfData}
-                dataKey="value"
-                color="hsl(80, 60%, 45%)"
-              />
+              <FinancialChart title="Revenue" data={revenueData} dataKey="value" color="hsl(210, 80%, 55%)" />
+              <FinancialChart title="Net Income" data={netIncomeData} dataKey="value" color="hsl(38, 92%, 50%)" />
+              <FinancialChart title="Operating Income" data={opIncomeData} dataKey="value" color="hsl(25, 95%, 53%)" />
+              <FinancialChart title="Free Cash Flow" data={capexData} dataKey="value" color="hsl(145, 63%, 42%)" />
+              <FinancialChart title="Operating Cash Flow" data={ocfData} dataKey="value" color="hsl(80, 60%, 45%)" />
               <FinancialChart
                 title="Assets & Liabilities"
                 data={assetsData}
@@ -199,17 +164,15 @@ const StockDetail = () => {
                 color="hsl(210, 80%, 55%)"
                 secondaryColor="hsl(0, 72%, 51%)"
               />
-              {dividendData.length > 0 && (
-                <FinancialChart
-                  title="Quarterly Dividends"
-                  data={dividendData}
-                  dataKey="value"
-                  color="hsl(145, 63%, 42%)"
-                  formatValue={(v) => `$${v.toFixed(2)}`}
-                  badge={`${(derived?.dividendYield || 0).toFixed(2)}% Yield`}
-                />
-              )}
             </div>
+
+            {/* Dividend Growth */}
+            {massiveDividends && massiveDividends.length > 0 && (
+              <DividendGrowth
+                dividends={massiveDividends}
+                dividendYield={derived?.dividendYield || 0}
+              />
+            )}
 
             {/* About */}
             {overview?.Description && (
@@ -221,7 +184,7 @@ const StockDetail = () => {
               </div>
             )}
 
-            {/* Two column layout */}
+            {/* Two column layout: Recommendations + Peers */}
             <div className="grid md:grid-cols-2 gap-5">
               <RecommendationChart data={recommendation} />
               <PeersList peers={peers} currentSymbol={upperSymbol} />
