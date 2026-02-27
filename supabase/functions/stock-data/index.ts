@@ -622,16 +622,52 @@ async function handleMassiveNews(symbol: string) {
 
 // === Homepage Data Handlers ===
 
-// Helper: filter to common stocks only (no ETFs, warrants, units, preferred shares)
+// Helper: filter to common stocks only (no ETFs, ETPs, leveraged/inverse products, warrants, units, preferred shares)
 function isCommonStock(ticker: string): boolean {
   if (!ticker || ticker.length > 5) return false;
-  // Exclude tickers with numbers, dots, dashes, or special suffixes (warrants, units, etc.)
+  // Exclude tickers with numbers, dots, dashes, or special suffixes
   if (/[0-9.\-+\/^]/.test(ticker)) return false;
   // Exclude tickers ending in W (warrants), U (units), or R (rights)
   if (ticker.length >= 4 && /[WUR]$/.test(ticker)) return false;
-  // Exclude known ETF patterns
-  const etfPatterns = /^(SPY|QQQ|IWM|DIA|VOO|VTI|GLD|SLV|TLT|HYG|XL[A-Z]|ARKK?|SQQQ|TQQQ|UVXY|SPXS|VXX|SOXL|SOXS|LABU|LABD|JNUG|DUST|NUGT|FNGU|FAS|FAZ|TNA|TZA|UDOW|SDOW|UPRO|SPXU|SH|SSO|EW[A-Z]|FEZ|EEM|EFA|IEMG|BITO|EOSE|BOIL|KOLD|YINN|YANG)$/;
-  if (etfPatterns.test(ticker)) return false;
+
+  // Comprehensive ETF / ETP / leveraged & inverse product blacklist
+  const ETF_BLACKLIST = new Set([
+    // Major index ETFs
+    "SPY","QQQ","IWM","DIA","VOO","VTI","IVV","RSP","MDY","IJH","IJR","VB","VTV","VUG","SCHD","SCHX","SCHB",
+    // Sector ETFs (XL* family + others)
+    "XLB","XLC","XLE","XLF","XLI","XLK","XLP","XLRE","XLU","XLV","XLY","VGT","VHT","VNQ","VFH","VIS","VAW","VCR","VPU","VOX",
+    // ARK ETFs
+    "ARKK","ARKW","ARKQ","ARKG","ARKF","ARKX","ARKB",
+    // Leveraged & Inverse (2x/3x)
+    "TQQQ","SQQQ","UPRO","SPXU","UDOW","SDOW","TNA","TZA","FAS","FAZ","SOXL","SOXS","LABU","LABD","JNUG","DUST","NUGT",
+    "FNGU","FNGD","TECL","TECS","SPXS","SSO","SH","SDS","QLD","QID","DDM","DXD","MVV","MZZ","UWM","TWM",
+    "UVXY","SVXY","VXX","VIXY","UVIX","SVIX",
+    "BOIL","KOLD","UCO","SCO","GUSH","DRIP","NAIL","DRV","CURE","PILL","ERX","ERY","DFEN","WEBS",
+    "YINN","YANG","INDL","SMIN","BNKU","BNKD","DPST","WEAT","CORN","SOYB",
+    "BULL","BEAR","SPXL",
+    // Crypto / Commodity ETFs
+    "BITO","GBTC","ETHE","IBIT","FBTC","BITB","HODL","BTCO","GLD","SLV","IAU","SGOL","PPLT","PALL","SLX","COPX","GLTR","DBA","DBC","GSG","PDBC","USO","UNG","BNO",
+    // Bond / Fixed Income ETFs
+    "TLT","TLH","IEF","SHY","BND","AGG","LQD","HYG","JNK","EMB","MUB","TIP","BNDX","VCSH","VCIT","VMBS","MBB","GOVT","FLOT",
+    // International / Country ETFs
+    "EFA","EEM","IEMG","VEA","VWO","IXUS","ACWI","VXUS","HEFA","SCZ","IEFA",
+    "EWA","EWC","EWG","EWH","EWI","EWJ","EWL","EWN","EWP","EWQ","EWS","EWT","EWU","EWW","EWY","EWZ","EWK","EWD","EWM","EWO",
+    "FEZ","FXI","KWEB","MCHI","ASHR","GXC","INDA","INDY","THD","VNM","EPHE","EPU","ECH","ENZL","NORW","EDEN",
+    // Dividend / Strategy ETFs
+    "DVY","HDV","VIG","DGRO","NOBL","SDY","DGRW","JEPI","JEPQ","QYLD","XYLD","RYLD","DIVO","NUSI",
+    // Thematic / Specialty ETFs
+    "HACK","ROBO","BOTZ","IRBO","LIT","TAN","ICLN","QCLN","PBW","FAN","ACES","DRIV","IDRV","CARZ","JETS","UFO","MOON","HERO","ESPO","GAMR","NERD","BETZ","PAVE","IFRA","WOOD","PHO","REMX","URA",
+    // Misc popular ETFs
+    "IYR","XLRE","REM","MORT","RWR","USRT","ICF",
+    "IBB","XBI","ARKG","IDNA","GNOM",
+    "GDX","GDXJ","SIL","SILJ",
+    "KBE","KRE","IAI","XHB","ITB",
+    "SPHD","SPLV","USMV","MTUM","QUAL","VLUE","SIZE",
+    "MOAT","COWZ","FTCS","XMLV","XSLV",
+    "AMLP","MLPA","TPYP",
+  ]);
+
+  if (ETF_BLACKLIST.has(ticker)) return false;
   return /^[A-Z]{1,5}$/.test(ticker);
 }
 
