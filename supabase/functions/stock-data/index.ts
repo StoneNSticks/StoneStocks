@@ -246,15 +246,39 @@ async function handleTimeSeries(symbol: string, interval: string, outputsize = "
   const cached = await getCached(cacheKey);
   if (cached) return cached;
   const params: Record<string, string> = { symbol, outputsize, interval };
-  // Map legacy names
   if (interval === "daily") params.interval = "1day";
   else if (interval === "weekly") params.interval = "1week";
   else if (interval === "monthly") params.interval = "1month";
-  const series = await fetchTwelveData("time_series", params);
   const ttlKey = params.interval.includes("min") ? "daily_series" :
                  params.interval === "1day" ? "daily_series" :
                  params.interval === "1week" ? "weekly_series" : "monthly_series";
-  if (series?.values) { await setCache(cacheKey, series, "twelvedata", TTL[ttlKey]); return series; }
+
+  const result = await tryInOrder([
+    // 1. Twelve Data
+    async () => {
+      const series = await fetchTwelveData("time_series", params);
+      return series?.values ? series : null;
+    },
+    // 2. Polygon aggregates → convert to Twelve Data format
+    async () => {
+      const timespanMap: Record<string, string> = { "1day": "day", "1week": "week", "1month": "month", "1min": "minute", "5min": "minute", "15min": "minute", "30min": "minute", "1h": "hour" };
+      const multiplierMap: Record<string, number> = { "1min": 1, "5min": 5, "15min": 15, "30min": 30, "1h": 1, "1day": 1, "1week": 1, "1month": 1 };
+      const ts = timespanMap[params.interval] || "day";
+      const mult = multiplierMap[params.interval] || 1;
+      const fromDate = new Date(); fromDate.setFullYear(fromDate.getFullYear() - 2);
+      const data = await fetchMassive(`/v2/aggs/ticker/${symbol}/range/${mult}/${ts}/${fromDate.toISOString().split("T")[0]}/${new Date().toISOString().split("T")[0]}`, { adjusted: "true", sort: "desc", limit: outputsize });
+      if (!data?.results?.length) return null;
+      return {
+        values: data.results.map((r: any) => ({
+          datetime: new Date(r.t).toISOString().split("T")[0],
+          open: String(r.o), high: String(r.h), low: String(r.l), close: String(r.c), volume: String(r.v),
+        })),
+        meta: { symbol, interval: params.interval, source: "polygon" },
+      };
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL[ttlKey]); return result; }
   return null;
 }
 
@@ -307,8 +331,21 @@ async function handlePeers(symbol: string) {
   const cacheKey = `peers:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const peers = await fetchFinnhub("stock/peers", { symbol });
-  if (Array.isArray(peers)) { await setCache(cacheKey, peers, "finnhub", TTL.peers); return peers; }
+
+  const result = await tryInOrder([
+    // 1. Finnhub
+    async () => {
+      const peers = await fetchFinnhub("stock/peers", { symbol });
+      return Array.isArray(peers) && peers.length > 1 ? peers : null;
+    },
+    // 2. Polygon related companies
+    async () => {
+      const data = await fetchMassive(`/v1/related-companies/${symbol}`);
+      return data?.results?.length ? data.results.map((r: any) => r.ticker) : null;
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.peers); return result; }
   return [];
 }
 
@@ -345,14 +382,35 @@ async function handleSearch(query: string) {
   const cacheKey = `search:${query.toLowerCase()}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const results = await fetchFinnhub("search", { q: query });
-  if (results?.result) {
-    const filtered = results.result
-      .filter((r: Record<string, unknown>) => r.type === "Common Stock" || r.type === "ETP" || r.type === "ADR")
-      .slice(0, 10);
-    await setCache(cacheKey, filtered, "finnhub", TTL.search);
-    return filtered;
-  }
+
+  const result = await tryInOrder([
+    // 1. Finnhub
+    async () => {
+      const results = await fetchFinnhub("search", { q: query });
+      if (!results?.result?.length) return null;
+      return results.result
+        .filter((r: Record<string, unknown>) => r.type === "Common Stock" || r.type === "ETP" || r.type === "ADR")
+        .slice(0, 10);
+    },
+    // 2. Polygon tickers search
+    async () => {
+      const data = await fetchMassive("/v3/reference/tickers", { search: query, active: "true", limit: "10", market: "stocks" });
+      if (!data?.results?.length) return null;
+      return data.results.map((r: any) => ({
+        description: r.name, displaySymbol: r.ticker, symbol: r.ticker, type: r.type === "CS" ? "Common Stock" : r.type,
+      }));
+    },
+    // 3. Twelve Data symbol search
+    async () => {
+      const data = await fetchTwelveData("symbol_search", { symbol: query, outputsize: "10" });
+      if (!data?.data?.length) return null;
+      return data.data.map((r: any) => ({
+        description: r.instrument_name, displaySymbol: r.symbol, symbol: r.symbol, type: r.instrument_type === "Common Stock" ? "Common Stock" : r.instrument_type,
+      }));
+    },
+  ], (r) => r != null && (r as any[]).length > 0);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.search); return result; }
   return [];
 }
 
@@ -375,8 +433,36 @@ async function handleMassiveTickerDetails(symbol: string) {
   const cacheKey = `massive_ticker:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive(`/v3/reference/tickers/${symbol}`);
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_ticker); return data.results; }
+
+  const result = await tryInOrder([
+    // 1. Polygon
+    async () => {
+      const data = await fetchMassive(`/v3/reference/tickers/${symbol}`);
+      return data?.results ? data.results : null;
+    },
+    // 2. Finnhub profile → convert to Polygon-like format
+    async () => {
+      const p = await fetchFinnhub("stock/profile2", { symbol });
+      if (!p?.name) return null;
+      return {
+        name: p.name, ticker: symbol, market_cap: (p.marketCapitalization || 0) * 1e6,
+        total_employees: p.employeeTotal || 0, sic_description: p.finnhubIndustry || "",
+        homepage_url: p.weburl || "", locale: p.country || "", source: "finnhub",
+      };
+    },
+    // 3. SimFin general info
+    async () => {
+      const data = await fetchSimFin("/companies/general", { ticker: symbol });
+      if (!data?.[0]) return null;
+      const c = data[0];
+      return {
+        name: c.companyName, ticker: symbol, sic_description: c.industryName || "",
+        total_employees: c.numEmployees || 0, source: "simfin",
+      };
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_ticker); return result; }
   return null;
 }
 
@@ -429,8 +515,27 @@ async function handleMassiveAggregates(symbol: string, timespan = "day", from = 
   const cacheKey = `massive_aggs:${symbol}:${timespan}:${from}:${to}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive(`/v2/aggs/ticker/${symbol}/range/1/${timespan}/${from}/${to}`, { adjusted: "true", sort: "asc", limit: "5000" });
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_aggs); return data.results; }
+
+  const result = await tryInOrder([
+    // 1. Polygon aggregates
+    async () => {
+      const data = await fetchMassive(`/v2/aggs/ticker/${symbol}/range/1/${timespan}/${from}/${to}`, { adjusted: "true", sort: "asc", limit: "5000" });
+      return data?.results?.length ? data.results : null;
+    },
+    // 2. Twelve Data time series → convert to Polygon agg format
+    async () => {
+      const intervalMap: Record<string, string> = { day: "1day", week: "1week", month: "1month", hour: "1h", minute: "1min" };
+      const tdInterval = intervalMap[timespan] || "1day";
+      const series = await fetchTwelveData("time_series", { symbol, interval: tdInterval, outputsize: "500", start_date: from, end_date: to });
+      if (!series?.values?.length) return null;
+      return series.values.reverse().map((v: any) => ({
+        t: new Date(v.datetime).getTime(), o: parseFloat(v.open), h: parseFloat(v.high),
+        l: parseFloat(v.low), c: parseFloat(v.close), v: parseInt(v.volume || "0"),
+      }));
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_aggs); return result; }
   return [];
 }
 
@@ -438,8 +543,25 @@ async function handleMassiveSnapshot(symbol: string) {
   const cacheKey = `massive_snapshot:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive(`/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}`);
-  if (data?.ticker) { await setCache(cacheKey, data.ticker, "massive", TTL.massive_snapshot); return data.ticker; }
+
+  const result = await tryInOrder([
+    // 1. Polygon snapshot
+    async () => {
+      const data = await fetchMassive(`/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}`);
+      return data?.ticker ? data.ticker : null;
+    },
+    // 2. Finnhub quote → convert to snapshot-like format
+    async () => {
+      const q = await fetchFinnhub("quote", { symbol });
+      if (!q?.c) return null;
+      return {
+        ticker: symbol, day: { c: q.c, h: q.h, l: q.l, o: q.o, v: 0 },
+        prevDay: { c: q.pc }, todaysChange: q.d, todaysChangePerc: q.dp, source: "finnhub",
+      };
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_snapshot); return result; }
   return null;
 }
 
@@ -447,8 +569,22 @@ async function handleMassiveRelated(symbol: string) {
   const cacheKey = `massive_related:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive(`/v1/related-companies/${symbol}`);
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_related); return data.results; }
+
+  const result = await tryInOrder([
+    // 1. Polygon related
+    async () => {
+      const data = await fetchMassive(`/v1/related-companies/${symbol}`);
+      return data?.results?.length ? data.results : null;
+    },
+    // 2. Finnhub peers → convert to related format
+    async () => {
+      const peers = await fetchFinnhub("stock/peers", { symbol });
+      if (!Array.isArray(peers) || peers.length <= 1) return null;
+      return peers.filter((p: string) => p !== symbol).map((ticker: string) => ({ ticker }));
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_related); return result; }
   return [];
 }
 
@@ -456,8 +592,28 @@ async function handleMassiveNews(symbol: string) {
   const cacheKey = `massive_news:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive("/v2/reference/news", { ticker: symbol, limit: "20", order: "desc" });
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_news); return data.results; }
+
+  const result = await tryInOrder([
+    // 1. Polygon news
+    async () => {
+      const data = await fetchMassive("/v2/reference/news", { ticker: symbol, limit: "20", order: "desc" });
+      return data?.results?.length ? data.results : null;
+    },
+    // 2. Finnhub company news → convert to Polygon-like format
+    async () => {
+      const from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const to = new Date().toISOString().split("T")[0];
+      const news = await fetchFinnhub("company-news", { symbol, from, to });
+      if (!Array.isArray(news) || !news.length) return null;
+      return news.slice(0, 20).map((n: any) => ({
+        title: n.headline, description: n.summary, article_url: n.url,
+        image_url: n.image, publisher: { name: n.source },
+        published_utc: new Date(n.datetime * 1000).toISOString(), tickers: [symbol],
+      }));
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_news); return result; }
   return [];
 }
 
@@ -476,20 +632,32 @@ function isCommonStock(ticker: string): boolean {
   return /^[A-Z]{1,5}$/.test(ticker);
 }
 
-// Helper to enrich stock lists with company names and logos
+// Helper to enrich stock lists with company names and logos (multi-source fallback)
 async function enrichWithProfileData(stocks: any[]): Promise<any[]> {
   const enriched = await Promise.all(
     stocks.map(async (s: any) => {
+      // Try Finnhub first
       try {
         const profile = await fetchFinnhub("stock/profile2", { symbol: s.symbol });
-        return {
-          ...s,
-          name: profile?.name || s.name || s.symbol,
-          logo: profile?.logo || "",
-        };
-      } catch {
-        return { ...s, name: s.name || s.symbol, logo: "" };
-      }
+        if (profile?.name) {
+          return { ...s, name: profile.name, logo: profile.logo || "" };
+        }
+      } catch { /* fall through */ }
+      // Fallback: Polygon ticker details
+      try {
+        const data = await fetchMassive(`/v3/reference/tickers/${s.symbol}`);
+        if (data?.results?.name) {
+          return { ...s, name: data.results.name, logo: data.results.branding?.icon_url ? `${data.results.branding.icon_url}?apiKey=${getMassiveKey()}` : "" };
+        }
+      } catch { /* fall through */ }
+      // Fallback: Twelve Data
+      try {
+        const data = await fetchTwelveData("stocks", { symbol: s.symbol });
+        if (data?.data?.[0]?.name) {
+          return { ...s, name: data.data[0].name, logo: "" };
+        }
+      } catch { /* fall through */ }
+      return { ...s, name: s.name || s.symbol, logo: "" };
     })
   );
   return enriched;
@@ -896,7 +1064,7 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
   };
 }
 
-// === Full Stock ===
+// === Full Stock (with cross-source gap filling) ===
 
 async function handleFullStock(symbol: string) {
   const [profile, quote, overview, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot] = await Promise.all([
@@ -907,8 +1075,65 @@ async function handleFullStock(symbol: string) {
     handleMassiveDividends(symbol).catch(() => []),
     handleMassiveSnapshot(symbol).catch(() => null),
   ]);
-  const derived = calculateDerivedMetrics(overview || {}, quote || {});
-  return { profile, quote, overview, derived, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot };
+
+  // Fill missing overview fields from secondary sources
+  const filledOverview = { ...(overview || {}) } as Record<string, string>;
+
+  // If Alpha Vantage overview is sparse, supplement from SimFin/Eulerpool/Polygon
+  const hasCoreData = filledOverview.EPS && filledOverview.PERatio && filledOverview.MarketCapitalization;
+  if (!hasCoreData) {
+    // Try SimFin statements for financial data
+    try {
+      const simfin = await handleSimFinStatements(symbol).catch(() => null);
+      if (simfin?.statements) {
+        const latest = Array.isArray(simfin.statements) ? simfin.statements[0] : null;
+        if (latest) {
+          if (!filledOverview.RevenueTTM && latest.Revenue) filledOverview.RevenueTTM = String(latest.Revenue);
+          if (!filledOverview.GrossProfitTTM && latest["Gross Profit"]) filledOverview.GrossProfitTTM = String(latest["Gross Profit"]);
+          if (!filledOverview.EPS && latest["Earnings Per Share, Diluted"]) filledOverview.EPS = String(latest["Earnings Per Share, Diluted"]);
+        }
+      }
+    } catch { /* ignore */ }
+
+    // Try Eulerpool for European / ISIN-available stocks
+    try {
+      const euler = await handleEulerpoolProfile(symbol).catch(() => null);
+      if (euler) {
+        if (!filledOverview.Name && euler.name) filledOverview.Name = euler.name;
+        if (!filledOverview.Sector && euler.sector) filledOverview.Sector = euler.sector;
+        if (!filledOverview.DividendYield && euler.dividendYield) filledOverview.DividendYield = String(euler.dividendYield);
+        if (!filledOverview.PERatio && euler.pe) filledOverview.PERatio = String(euler.pe);
+      }
+    } catch { /* ignore */ }
+
+    // Fill from Polygon ticker details
+    if (massiveTicker) {
+      const mt = massiveTicker as Record<string, any>;
+      if (!filledOverview.MarketCapitalization && mt.market_cap) filledOverview.MarketCapitalization = String(mt.market_cap);
+      if (!filledOverview.SharesOutstanding && mt.share_class_shares_outstanding) filledOverview.SharesOutstanding = String(mt.share_class_shares_outstanding);
+      if (!filledOverview.Name && mt.name) filledOverview.Name = mt.name;
+      if (!filledOverview.Description && mt.description) filledOverview.Description = mt.description;
+    }
+
+    // Fill from Finnhub profile
+    if (profile) {
+      const p = profile as Record<string, any>;
+      if (!filledOverview.MarketCapitalization && p.marketCapitalization) filledOverview.MarketCapitalization = String(p.marketCapitalization * 1e6);
+      if (!filledOverview.Name && p.name) filledOverview.Name = p.name;
+      if (!filledOverview.Industry && p.finnhubIndustry) filledOverview.Industry = p.finnhubIndustry;
+      if (!filledOverview.Country && p.country) filledOverview.Country = p.country;
+    }
+  }
+
+  const derived = calculateDerivedMetrics(filledOverview, quote || {});
+
+  // Supplement derived metrics from massiveTicker if still missing
+  if (massiveTicker) {
+    const mt = massiveTicker as Record<string, any>;
+    if (!derived.marketCap && mt.market_cap) derived.marketCap = mt.market_cap;
+  }
+
+  return { profile, quote, overview: filledOverview, derived, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot };
 }
 
 // === Main Handler ===
