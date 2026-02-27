@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { TrendingUp, Newspaper, BarChart3 } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
@@ -11,6 +12,22 @@ const navItems = [
 
 export function Header() {
   const location = useLocation();
+  const [showSearch, setShowSearch] = useState(false);
+
+  useEffect(() => {
+    // Only show compact search on homepage when scrolled past the hero search bar
+    if (location.pathname !== "/") {
+      setShowSearch(true);
+      return;
+    }
+
+    const handleScroll = () => {
+      setShowSearch(window.scrollY > 180);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -46,7 +63,11 @@ export function Header() {
         </nav>
 
         <div className="flex-1 flex items-center gap-2 justify-end">
-          <div className="max-w-sm flex-1">
+          <div
+            className={`max-w-sm flex-1 transition-all duration-300 ${
+              showSearch ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+            }`}
+          >
             <SearchBar compact />
           </div>
           <CurrencyToggle />

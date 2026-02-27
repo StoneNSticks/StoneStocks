@@ -14,9 +14,9 @@ export function GainersLosers() {
     return (
       <div className="rounded-xl border border-border/60 bg-card p-5">
         <h2 className="font-display text-lg font-semibold mb-4">Winners & Losers</h2>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 rounded-lg" />
+            <Skeleton key={i} className="h-14 rounded-lg" />
           ))}
         </div>
       </div>
@@ -55,26 +55,31 @@ export function GainersLosers() {
         </button>
       </div>
       {list && list.length > 0 ? (
-        <div className="space-y-0.5">
-          {list.slice(0, 8).map((item: any) => (
+        <div className="space-y-1">
+          {list.slice(0, 8).map((item: any, i: number) => (
             <Link
               key={item.symbol}
               to={`/stock/${item.symbol}`}
-              className="flex items-center justify-between rounded-lg px-2.5 py-2 -mx-1 transition-colors hover:bg-muted group"
+              className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group"
             >
-              <div className="flex items-center gap-3">
-                <span className="font-display font-semibold text-sm group-hover:text-primary transition-colors w-14">
-                  {item.symbol}
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  Vol: {formatNumber(item.volume)}
-                </span>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                  {item.symbol.slice(0, 2)}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
+                    {item.symbol}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Vol: {formatNumber(item.volume)}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm tabular-nums">{fc(item.price)}</span>
-                <span className={`text-xs font-medium w-16 text-right tabular-nums ${priceChangeColor(item.changePercent)}`}>
+              <div className="text-right flex-shrink-0">
+                <div className="text-sm font-medium tabular-nums">{fc(item.price)}</div>
+                <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(item.changePercent)}`}>
                   {formatPercent(item.changePercent)}
-                </span>
+                </div>
               </div>
             </Link>
           ))}

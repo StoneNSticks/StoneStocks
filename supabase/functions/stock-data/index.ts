@@ -458,47 +458,65 @@ async function handleMassiveNews(symbol: string) {
 
 // === Homepage Data Handlers ===
 
-const INDEX_CONFIG: Record<string, { name: string; etf: string }> = {
-  "SPX": { name: "S&P 500", etf: "SPY" },
-  "DJI": { name: "Dow Jones", etf: "DIA" },
-  "IXIC": { name: "Nasdaq", etf: "QQQ" },
-  "RUT": { name: "Russell 2000", etf: "IWM" },
-};
+// ETF-to-Index approximate multipliers (ETF price × multiplier ≈ index points)
+// These are stable approximations updated periodically
+const INDEX_CONFIG: { indexSymbol: string; name: string; etf: string; etfMultiplier: number }[] = [
+  { indexSymbol: "SPX", name: "S&P 500", etf: "SPY", etfMultiplier: 10 },
+  { indexSymbol: "DJI", name: "Dow Jones", etf: "DIA", etfMultiplier: 100 },
+  { indexSymbol: "IXIC", name: "Nasdaq", etf: "QQQ", etfMultiplier: 32.1 },
+  { indexSymbol: "RUT", name: "Russell 2000", etf: "IWM", etfMultiplier: 8.31 },
+];
 
 async function handleMarketIndices() {
-  const cacheKey = "market:indices:v3";
+  const cacheKey = "market:indices:v5";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  const symbols = Object.keys(INDEX_CONFIG);
   const indices = await Promise.all(
-    symbols.map(async (sym) => {
+    INDEX_CONFIG.map(async (cfg) => {
+      // Try Twelve Data with real index symbol first
       try {
-        const q = await fetchTwelveData("quote", { symbol: sym });
-        return {
-          symbol: INDEX_CONFIG[sym].etf,
-          indexSymbol: sym,
-          name: INDEX_CONFIG[sym].name,
-          price: parseFloat(q.close || "0"),
-          prevClose: parseFloat(q.previous_close || "0"),
-          change: parseFloat(q.change || "0"),
-          changePercent: parseFloat(q.percent_change || "0"),
-        };
-      } catch {
-        try {
-          const q = await fetchFinnhub("quote", { symbol: INDEX_CONFIG[sym].etf });
+        const q = await fetchTwelveData("quote", { symbol: cfg.indexSymbol });
+        const price = parseFloat(q?.close || "0");
+        if (price > 100) { // Index values are always in hundreds/thousands
           return {
-            symbol: INDEX_CONFIG[sym].etf, indexSymbol: sym, name: INDEX_CONFIG[sym].name,
-            price: q.c || 0, prevClose: q.pc || 0, change: q.d || 0, changePercent: q.dp || 0,
+            indexSymbol: cfg.indexSymbol,
+            name: cfg.name,
+            price,
+            prevClose: parseFloat(q.previous_close || "0"),
+            change: parseFloat(q.change || "0"),
+            changePercent: parseFloat(q.percent_change || "0"),
+            isIndex: true,
           };
-        } catch {
-          return { symbol: INDEX_CONFIG[sym].etf, indexSymbol: sym, name: INDEX_CONFIG[sym].name, price: 0, prevClose: 0, change: 0, changePercent: 0 };
         }
+      } catch (e) {
+        console.warn(`Twelve Data index ${cfg.indexSymbol} failed:`, e);
       }
+
+      // Fallback: Finnhub ETF quote → convert to approximate index points
+      try {
+        const q = await fetchFinnhub("quote", { symbol: cfg.etf });
+        if (q?.c > 0) {
+          const m = cfg.etfMultiplier;
+          return {
+            indexSymbol: cfg.indexSymbol,
+            name: cfg.name,
+            price: Math.round(q.c * m * 100) / 100,
+            prevClose: Math.round((q.pc || 0) * m * 100) / 100,
+            change: Math.round((q.d || 0) * m * 100) / 100,
+            changePercent: q.dp || 0, // percentage stays the same
+            isIndex: true,
+          };
+        }
+      } catch {
+        // ignore
+      }
+
+      return { indexSymbol: cfg.indexSymbol, name: cfg.name, price: 0, prevClose: 0, change: 0, changePercent: 0, isIndex: true };
     })
   );
 
-  await setCache(cacheKey, indices, "twelvedata", TTL.market_indices);
+  await setCache(cacheKey, indices, "multi", TTL.market_indices);
   return indices;
 }
 

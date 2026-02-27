@@ -11,10 +11,13 @@ export function MostActive() {
   if (isLoading) {
     return (
       <div className="rounded-xl border border-border/60 bg-card p-5">
-        <h2 className="font-display text-lg font-semibold mb-4">Most Traded</h2>
-        <div className="space-y-2">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="h-4 w-4 text-primary" />
+          <h2 className="font-display text-lg font-semibold">Most Traded</h2>
+        </div>
+        <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 rounded-lg" />
+            <Skeleton key={i} className="h-14 rounded-lg" />
           ))}
         </div>
       </div>
@@ -41,27 +44,31 @@ export function MostActive() {
         <Activity className="h-4 w-4 text-primary" />
         <h2 className="font-display text-lg font-semibold">Most Traded</h2>
       </div>
-      <div className="space-y-0.5">
+      <div className="space-y-1">
         {stocks.slice(0, 10).map((s: any, i: number) => (
           <Link
             key={s.symbol}
             to={`/stock/${s.symbol}`}
-            className="flex items-center justify-between rounded-lg px-2.5 py-2 -mx-1 transition-colors hover:bg-muted group"
+            className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] text-muted-foreground w-4">{i + 1}</span>
-              <span className="font-display font-semibold text-sm group-hover:text-primary transition-colors w-14">
-                {s.symbol}
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                {formatNumber(s.volume)}
-              </span>
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                {i + 1}
+              </div>
+              <div className="min-w-0">
+                <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
+                  {s.symbol}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  Vol: {formatNumber(s.volume)}
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm tabular-nums">{fc(s.price)}</span>
-              <span className={`text-xs font-medium w-16 text-right tabular-nums ${priceChangeColor(s.changePercent)}`}>
+            <div className="text-right flex-shrink-0">
+              <div className="text-sm font-medium tabular-nums">{fc(s.price)}</div>
+              <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(s.changePercent)}`}>
                 {formatPercent(s.changePercent)}
-              </span>
+              </div>
             </div>
           </Link>
         ))}
