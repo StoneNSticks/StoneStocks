@@ -6,8 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, displayName?: string, username?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -35,18 +35,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (identifier: string, password: string) => {
+    let email = identifier;
+    // If no @ sign, treat as username and look up email
+    if (!identifier.includes("@")) {
+      const { data, error: lookupError } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("username", identifier)
+        .single();
+      if (lookupError || !data?.email) {
+        return { error: new Error("Benutzername nicht gefunden.") };
+      }
+      email = data.email;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
-  const signUp = async (email: string, password: string, displayName?: string) => {
+  const signUp = async (email: string, password: string, displayName?: string, username?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: displayName ? { display_name: displayName } : undefined,
+        data: {
+          ...(displayName ? { display_name: displayName } : {}),
+          ...(username ? { username } : {}),
+        },
       },
     });
     return { error: error as Error | null };

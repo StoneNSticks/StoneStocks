@@ -11,9 +11,11 @@ import { Mail, Lock, User, ArrowRight } from "lucide-react";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const { signIn, signUp, resetPassword, user } = useAuth();
@@ -36,13 +38,14 @@ export default function AuthPage() {
       return;
     }
     if (isLogin) {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(identifier, password);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
       toast.success("Erfolgreich eingeloggt!");
       navigate("/");
     } else {
-      const { error } = await signUp(email, password, displayName || undefined);
+      if (!username.trim()) { toast.error("Benutzername ist erforderlich."); setLoading(false); return; }
+      const { error } = await signUp(email, password, displayName || undefined, username);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
       toast.success("Bestätigungsmail gesendet! Prüfe dein Postfach.");
@@ -69,21 +72,51 @@ export default function AuthPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && !showForgot && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Benutzername</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input id="username" required placeholder="max123" value={username} onChange={e => setUsername(e.target.value)} className="pl-10" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="displayName">Anzeigename (optional)</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input id="displayName" placeholder="Max Mustermann" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-10" />
+                    </div>
+                  </div>
+                </>
+              )}
+              {isLogin && !showForgot ? (
                 <div className="space-y-2">
-                  <Label htmlFor="displayName">Anzeigename (optional)</Label>
+                  <Label htmlFor="identifier">E-Mail oder Benutzername</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="displayName" placeholder="Max Mustermann" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-10" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="identifier" type="text" required placeholder="email@example.com oder max123" value={identifier} onChange={e => setIdentifier(e.target.value)} className="pl-10" />
+                  </div>
+                </div>
+              ) : (
+                !isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-Mail</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
+                    </div>
+                  </div>
+                )
+              )}
+              {showForgot && (
+                <div className="space-y-2">
+                  <Label htmlFor="email">E-Mail</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
                   </div>
                 </div>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="email">E-Mail</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
-                </div>
-              </div>
               {!showForgot && (
                 <div className="space-y-2">
                   <Label htmlFor="password">Passwort</Label>
