@@ -290,7 +290,11 @@ async function handleNews(symbol: string) {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
       seen.add(key);
-      return true;
+      // Filter: must mention the symbol or be directly related
+      const rel = (n.related || "").toUpperCase();
+      const headlineLower = (n.headline || "").toLowerCase();
+      const symbolLower = symbol.toLowerCase();
+      return rel.includes(symbol) || headlineLower.includes(symbolLower);
     })
     .sort((a: any, b: any) => b.datetime - a.datetime)
     .slice(0, 25);
