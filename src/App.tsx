@@ -10,6 +10,7 @@ import NewsPage from "./pages/NewsPage";
 import RankingsPage from "./pages/RankingsPage";
 import CalculatorPage from "./pages/CalculatorPage";
 import NotFound from "./pages/NotFound";
+import IndexDetail from "./pages/IndexDetail";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/stock/:symbol" element={<StockDetail />} />
+            <Route path="/index/:symbol" element={<IndexDetail />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/rankings" element={<RankingsPage />} />
             <Route path="/calculators" element={<CalculatorPage />} />

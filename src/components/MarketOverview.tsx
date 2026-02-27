@@ -43,7 +43,7 @@ export function MarketOverview() {
         return (
           <Link
             key={idx.indexSymbol}
-            to={`/stock/${idx.etfSymbol || idx.indexSymbol}`}
+            to={`/index/${idx.indexSymbol}`}
             className={`flex-shrink-0 min-w-[190px] rounded-xl border px-4 py-3 transition-all hover:scale-[1.02] cursor-pointer ${
               isPositive
                 ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
