@@ -743,7 +743,7 @@ const INDEX_CONFIG: { indexSymbol: string; name: string; twelveSymbol: string; e
   { indexSymbol: "DJI", name: "Dow Jones", twelveSymbol: "DJI", etf: "DIA", etfMultiplier: 100, etfSymbol: "DIA" },
   { indexSymbol: "IXIC", name: "Nasdaq", twelveSymbol: "IXIC", etf: "QQQ", etfMultiplier: 32.1, etfSymbol: "QQQ" },
   { indexSymbol: "RUT", name: "Russell 2000", twelveSymbol: "RUT", etf: "IWM", etfMultiplier: 8.31, etfSymbol: "IWM" },
-  { indexSymbol: "GDAXI", name: "DAX", twelveSymbol: "DAX", etf: "EWG", etfMultiplier: 750, etfSymbol: "EWG" },
+  { indexSymbol: "GDAXI", name: "DAX", twelveSymbol: "GDAXI", etf: "EWG", etfMultiplier: 640, etfSymbol: "EWG" },
   { indexSymbol: "N225", name: "Nikkei 225", twelveSymbol: "N225", etf: "EWJ", etfMultiplier: 570, etfSymbol: "EWJ" },
   { indexSymbol: "FTSE", name: "FTSE 100", twelveSymbol: "FTSE", etf: "EWU", etfMultiplier: 243, etfSymbol: "EWU" },
   { indexSymbol: "FCHI", name: "CAC 40", twelveSymbol: "FCHI", etf: "EWQ", etfMultiplier: 215, etfSymbol: "EWQ" },
