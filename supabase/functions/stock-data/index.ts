@@ -286,30 +286,69 @@ async function handleTimeSeries(symbol: string, interval: string, outputsize = "
 }
 
 async function handleNews(symbol: string) {
-  const cacheKey = `news:${symbol}`;
+  const cacheKey = `news:v2:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
   const from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
   const to = new Date().toISOString().split("T")[0];
 
-  // Fetch from multiple sources in parallel
+  // Fetch company name for relevance filtering
+  let companyName = "";
+  try {
+    const profile = await fetchFinnhub("stock/profile2", { symbol });
+    companyName = (profile?.name || "").replace(/\s*(Inc\.?|Corp\.?|Ltd\.?|Co\.?|plc|SA|SE|AG|NV|Group|Holdings?|Platforms?|Technologies?|Semiconductor|Systems)\s*/gi, "").trim().toLowerCase();
+  } catch { /* ignore */ }
+
   const [finnhubNews, polygonNews] = await Promise.all([
     fetchFinnhub("company-news", { symbol, from, to }).catch(() => []),
-    fetchMassive("/v2/reference/news", { ticker: symbol, limit: "15", order: "desc" }).catch(() => ({ results: [] })),
+    fetchMassive("/v2/reference/news", { ticker: symbol, limit: "20", order: "desc" }).catch(() => ({ results: [] })),
   ]);
 
   const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
     headline: n.headline, summary: n.summary, url: n.url, image: n.image,
     source: n.source, datetime: n.datetime, related: n.related || "", origin: "finnhub",
+    tickerCount: 1, primaryTicker: n.related || "",
   }));
 
   const pgItems = (polygonNews?.results || []).map((n: any) => ({
     headline: n.title, summary: n.description || "", url: n.article_url,
     image: n.image_url || "", source: n.publisher?.name || "Polygon",
     datetime: Math.floor(new Date(n.published_utc).getTime() / 1000),
-    related: n.tickers?.[0] || "", origin: "polygon",
+    related: (n.tickers || []).join(","), origin: "polygon",
+    tickerCount: (n.tickers || []).length,
+    primaryTicker: (n.tickers || [])[0] || "",
   }));
+
+  const symbolUpper = symbol.toUpperCase();
+  const symLower = symbol.toLowerCase();
+
+  function isDirectlyRelevant(n: any): boolean {
+    const hl = (n.headline || "").toLowerCase();
+    const sum = (n.summary || "").toLowerCase();
+    const text = hl + " " + sum;
+    const rel = (n.related || "").toUpperCase();
+
+    // Polygon: only accept if ticker is primary or among ≤3 tickers
+    if (n.origin === "polygon") {
+      const isPrimary = (n.primaryTicker || "").toUpperCase() === symbolUpper;
+      const isFewTickers = (n.tickerCount || 0) <= 3 && rel.includes(symbolUpper);
+      if (!isPrimary && !isFewTickers) return false;
+    }
+
+    // Finnhub: related field should match
+    if (n.origin === "finnhub" && !rel.includes(symbolUpper)) return false;
+
+    // Must mention ticker or company name in headline or summary
+    const mentionsTicker = text.includes(symLower);
+    const mentionsName = companyName.length >= 3 && text.includes(companyName);
+    if (!mentionsTicker && !mentionsName) return false;
+
+    // Reject generic roundup articles
+    if (/most active stocks|top stocks|stocks to watch|market wrap|market today|stocks moving|here are the|round-?up/i.test(hl)) return false;
+
+    return true;
+  }
 
   const seen = new Set<string>();
   const combined = [...fhItems, ...pgItems]
@@ -317,14 +356,10 @@ async function handleNews(symbol: string) {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
       seen.add(key);
-      // Filter: must mention the symbol or be directly related
-      const rel = (n.related || "").toUpperCase();
-      const headlineLower = (n.headline || "").toLowerCase();
-      const symbolLower = symbol.toLowerCase();
-      return rel.includes(symbol) || headlineLower.includes(symbolLower);
+      return isDirectlyRelevant(n);
     })
     .sort((a: any, b: any) => b.datetime - a.datetime)
-    .slice(0, 25);
+    .slice(0, 20);
 
   await setCache(cacheKey, combined, "combined", TTL.news);
   return combined;
