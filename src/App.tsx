@@ -15,6 +15,7 @@ import IndexDetail from "./pages/IndexDetail";
 import AuthPage from "./pages/AuthPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import LearnPage from "./pages/LearnPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/learn" element={<LearnPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
