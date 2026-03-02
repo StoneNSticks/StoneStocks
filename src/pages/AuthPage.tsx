@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { useT } from "@/contexts/LanguageContext";
 
 export default function AuthPage() {
+  const t = useT();
   const [isLogin, setIsLogin] = useState(true);
   const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
@@ -21,13 +23,9 @@ export default function AuthPage() {
   const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
 
-  if (user) {
-    navigate("/", { replace: true });
-    return null;
-  }
+  if (user) { navigate("/", { replace: true }); return null; }
 
   const usernameRegex = /^[a-zA-Z0-9]*$/;
-
   const handleUsernameChange = (val: string) => {
     if (val.length > 15) return;
     if (!usernameRegex.test(val)) return;
@@ -41,7 +39,7 @@ export default function AuthPage() {
       const { error } = await resetPassword(email);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("Password reset email sent. Check your inbox.");
+      toast.success(t("auth.resetSuccess"));
       setShowForgot(false);
       return;
     }
@@ -49,16 +47,16 @@ export default function AuthPage() {
       const { error } = await signIn(identifier, password);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("Successfully signed in!");
+      toast.success(t("auth.signInSuccess"));
       navigate("/");
     } else {
       const trimmed = username.trim();
-      if (!trimmed) { toast.error("Username is required."); setLoading(false); return; }
-      if (trimmed.length < 3) { toast.error("Username must be at least 3 characters."); setLoading(false); return; }
+      if (!trimmed) { toast.error(t("auth.usernameRequired")); setLoading(false); return; }
+      if (trimmed.length < 3) { toast.error(t("auth.usernameTooShort")); setLoading(false); return; }
       const { error } = await signUp(email || undefined, password, trimmed);
       setLoading(false);
       if (error) { toast.error(error.message); return; }
-      toast.success("Account created successfully!");
+      toast.success(t("auth.signUpSuccess"));
       navigate("/");
     }
   };
@@ -70,60 +68,44 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">
-              {showForgot ? "Reset Password" : isLogin ? "Sign In" : "Sign Up"}
+              {showForgot ? t("auth.resetPassword") : isLogin ? t("auth.signIn") : t("auth.signUp")}
             </CardTitle>
             <CardDescription>
-              {showForgot
-                ? "Enter your email to receive a reset link."
-                : isLogin
-                ? "Sign in to access your watchlist."
-                : "Create an account for your personal watchlist."}
+              {showForgot ? t("auth.resetDesc") : isLogin ? t("auth.signInDesc") : t("auth.signUpDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && !showForgot && (
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username">{t("auth.username")}</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="username"
-                      required
-                      placeholder="max123"
-                      maxLength={15}
-                      value={username}
-                      onChange={e => handleUsernameChange(e.target.value)}
-                      className="pl-10"
-                    />
+                    <Input id="username" required placeholder="max123" maxLength={15} value={username} onChange={e => handleUsernameChange(e.target.value)} className="pl-10" />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Letters and numbers only, max 15 characters. ({username.length}/15)
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t("auth.usernameHint")} ({username.length}/15)</p>
                 </div>
               )}
               {isLogin && !showForgot ? (
                 <div className="space-y-2">
-                  <Label htmlFor="identifier">Email or Username</Label>
+                  <Label htmlFor="identifier">{t("auth.emailOrUsername")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="identifier" type="text" required placeholder="email@example.com or max123" value={identifier} onChange={e => setIdentifier(e.target.value)} className="pl-10" />
+                    <Input id="identifier" type="text" required placeholder="email@example.com" value={identifier} onChange={e => setIdentifier(e.target.value)} className="pl-10" />
                   </div>
                 </div>
-              ) : (
-                !isLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email <span className="text-muted-foreground">(optional)</span></Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input id="email" type="email" placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
-                    </div>
+              ) : !isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t("auth.emailOptional")}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="email" type="email" placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
                   </div>
-                )
+                </div>
               )}
               {showForgot && (
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("auth.email")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input id="email" type="email" required placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
@@ -132,46 +114,28 @@ export default function AuthPage() {
               )}
               {!showForgot && (
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t("auth.password")}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      minLength={6}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      className="pl-10 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                    <Input id="password" type={showPassword ? "text" : "password"} required minLength={6} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 pr-10" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Loading..." : showForgot ? "Send Link" : isLogin ? "Sign In" : "Sign Up"}
+                {loading ? t("auth.loading") : showForgot ? t("auth.sendLink") : isLogin ? t("auth.signIn") : t("auth.signUp")}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </form>
             <div className="mt-4 text-center text-sm space-y-2">
               {!showForgot && isLogin && (
-                <button onClick={() => setShowForgot(true)} className="text-muted-foreground hover:text-primary transition-colors">
-                  Forgot password?
-                </button>
+                <button onClick={() => setShowForgot(true)} className="text-muted-foreground hover:text-primary transition-colors">{t("auth.forgotPassword")}</button>
               )}
               <div>
-                <button
-                  onClick={() => { setShowForgot(false); setIsLogin(!isLogin); }}
-                  className="text-primary hover:underline font-medium"
-                >
-                  {showForgot ? "Back to Sign In" : isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+                <button onClick={() => { setShowForgot(false); setIsLogin(!isLogin); }} className="text-primary hover:underline font-medium">
+                  {showForgot ? t("auth.backToSignIn") : isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
                 </button>
               </div>
             </div>
