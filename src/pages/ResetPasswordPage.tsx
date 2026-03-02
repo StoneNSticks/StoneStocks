@@ -8,18 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
+import { useT } from "@/contexts/LanguageContext";
 
 export default function ResetPasswordPage() {
+  const t = useT();
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setReady(true);
-    }
+    if (window.location.hash.includes("type=recovery")) setReady(true);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +27,7 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Passwort erfolgreich geändert!");
+    toast.success(t("reset.success"));
     navigate("/");
   };
 
@@ -39,8 +38,8 @@ export default function ResetPasswordPage() {
         <main className="container flex items-center justify-center py-16">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <CardTitle>Ungültiger Link</CardTitle>
-              <CardDescription>Dieser Reset-Link ist ungültig oder abgelaufen.</CardDescription>
+              <CardTitle>{t("reset.invalidLink")}</CardTitle>
+              <CardDescription>{t("reset.invalidLinkDesc")}</CardDescription>
             </CardHeader>
           </Card>
         </main>
@@ -54,20 +53,20 @@ export default function ResetPasswordPage() {
       <main className="container flex items-center justify-center py-16">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="font-display text-2xl">Neues Passwort</CardTitle>
-            <CardDescription>Gib dein neues Passwort ein.</CardDescription>
+            <CardTitle className="font-display text-2xl">{t("reset.title")}</CardTitle>
+            <CardDescription>{t("reset.desc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password">Neues Passwort</Label>
+                <Label htmlFor="password">{t("reset.newPassword")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input id="password" type="password" required minLength={6} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Laden..." : "Passwort ändern"}
+                {loading ? t("auth.loading") : t("reset.submit")}
               </Button>
             </form>
           </CardContent>

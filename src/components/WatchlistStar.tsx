@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsInWatchlist, useToggleWatchlist } from "@/hooks/useWatchlist";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useT } from "@/contexts/LanguageContext";
 
 export function WatchlistStar({ symbol }: { symbol: string }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
   const isInList = useIsInWatchlist(symbol);
   const { toggle, cooldown, isLoading } = useToggleWatchlist();
 
@@ -22,17 +24,13 @@ export function WatchlistStar({ symbol }: { symbol: string }) {
           onClick={handleClick}
           disabled={cooldown || isLoading}
           className="p-1.5 rounded-lg transition-colors hover:bg-muted disabled:opacity-50"
-          aria-label={isInList ? "Aus Watchlist entfernen" : "Zur Watchlist hinzufügen"}
+          aria-label={isInList ? t("watchlist.removeFromWatchlist") : t("watchlist.addToWatchlist")}
         >
-          <Star
-            className={`h-5 w-5 transition-colors ${
-              isInList ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
-            }`}
-          />
+          <Star className={`h-5 w-5 transition-colors ${isInList ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
         </button>
       </TooltipTrigger>
       <TooltipContent>
-        {!user ? "Einloggen für Watchlist" : isInList ? "Aus Watchlist entfernen" : "Zur Watchlist hinzufügen"}
+        {!user ? t("watchlist.loginForWatchlist") : isInList ? t("watchlist.removeFromWatchlist") : t("watchlist.addToWatchlist")}
       </TooltipContent>
     </Tooltip>
   );
