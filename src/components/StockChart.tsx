@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getTimeSeries } from "@/lib/stockApi";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useT } from "@/contexts/LanguageContext";
 
 const intervals = [
   { label: "1D", value: "1d", outputsize: "78", interval: "5min" },
@@ -18,7 +19,7 @@ const intervals = [
 export function StockChart({ symbol }: { symbol: string }) {
   const [selected, setSelected] = useState("1y");
   const { convert, symbol: currSymbol } = useCurrency();
-
+  const t = useT();
   const config = intervals.find((i) => i.value === selected) || intervals[4];
 
   const { data: series, isLoading } = useQuery({
@@ -30,57 +31,31 @@ export function StockChart({ symbol }: { symbol: string }) {
 
   const chartData = useMemo(() => {
     if (!series?.values) return [];
-    return [...series.values]
-      .reverse()
-      .map((v: any) => ({
-        date: v.datetime,
-        close: parseFloat(v.close),
-        high: parseFloat(v.high),
-        low: parseFloat(v.low),
-        volume: parseInt(v.volume),
-      }));
+    return [...series.values].reverse().map((v: any) => ({ date: v.datetime, close: parseFloat(v.close), high: parseFloat(v.high), low: parseFloat(v.low), volume: parseInt(v.volume) }));
   }, [series]);
 
   const isPositive = chartData.length >= 2 && chartData[chartData.length - 1].close >= chartData[0].close;
   const color = isPositive ? "hsl(145, 63%, 42%)" : "hsl(0, 72%, 51%)";
-
   const isIntraday = selected === "1d" || selected === "5d";
-
   const userLocale = navigator.language || "en-US";
   const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const formatXLabel = (d: string) => {
     const date = new Date(d);
-    if (isIntraday) {
-      return date.toLocaleTimeString(userLocale, { hour: "numeric", minute: "2-digit", timeZone: userTz });
-    }
-    if (selected === "max" || selected === "5y") {
-      return date.toLocaleDateString(userLocale, { year: "numeric", timeZone: userTz });
-    }
+    if (isIntraday) return date.toLocaleTimeString(userLocale, { hour: "numeric", minute: "2-digit", timeZone: userTz });
+    if (selected === "max" || selected === "5y") return date.toLocaleDateString(userLocale, { year: "numeric", timeZone: userTz });
     return date.toLocaleDateString(userLocale, { month: "short", day: "numeric", timeZone: userTz });
   };
 
-  if (isLoading) {
-    return <Skeleton className="h-72 rounded-xl" />;
-  }
+  if (isLoading) return <Skeleton className="h-72 rounded-xl" />;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display font-semibold text-sm text-muted-foreground">Price Chart</h3>
+        <h3 className="font-display font-semibold text-sm text-muted-foreground">{t("chart.title")}</h3>
         <div className="flex gap-0.5">
           {intervals.map((i) => (
-            <button
-              key={i.value}
-              onClick={() => setSelected(i.value)}
-              className={`px-2 py-1 rounded-md text-[11px] font-medium transition-colors ${
-                selected === i.value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              {i.label}
-            </button>
+            <button key={i.value} onClick={() => setSelected(i.value)} className={`px-2 py-1 rounded-md text-[11px] font-medium transition-colors ${selected === i.value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{i.label}</button>
           ))}
         </div>
       </div>
@@ -93,52 +68,22 @@ export function StockChart({ symbol }: { symbol: string }) {
                 <stop offset="95%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis
-              dataKey="date"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }}
-              tickFormatter={formatXLabel}
-              minTickGap={40}
-            />
-            <YAxis
-              domain={["auto", "auto"]}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }}
-              tickFormatter={(v: number) => `${currSymbol}${(convert(v) ?? v).toFixed(0)}`}
-              width={55}
-            />
+            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }} tickFormatter={formatXLabel} minTickGap={40} />
+            <YAxis domain={["auto", "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }} tickFormatter={(v: number) => `${currSymbol}${(convert(v) ?? v).toFixed(0)}`} width={55} />
             <Tooltip
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "8px",
-                fontSize: 12,
-                color: "hsl(var(--foreground))",
-              }}
-              formatter={(v: number) => [`${currSymbol}${(convert(v) ?? v).toFixed(2)}`, "Close"]}
+              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }}
+              formatter={(v: number) => [`${currSymbol}${(convert(v) ?? v).toFixed(2)}`, t("chart.close")]}
               labelFormatter={(l: string) => {
                 const d = new Date(l);
-                if (isIntraday) {
-                  return d.toLocaleString(userLocale, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: userTz });
-                }
+                if (isIntraday) return d.toLocaleString(userLocale, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: userTz });
                 return d.toLocaleDateString(userLocale, { month: "long", day: "numeric", year: "numeric", timeZone: userTz });
               }}
             />
-            <Area
-              type="monotone"
-              dataKey="close"
-              stroke={color}
-              strokeWidth={2}
-              fill={`url(#colorClose-${symbol})`}
-            />
+            <Area type="monotone" dataKey="close" stroke={color} strokeWidth={2} fill={`url(#colorClose-${symbol})`} />
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-          No chart data available
-        </div>
+        <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">{t("chart.noData")}</div>
       )}
     </div>
   );
