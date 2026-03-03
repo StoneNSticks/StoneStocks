@@ -138,7 +138,7 @@ const StockDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8">
+      <main className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8">
         <div className="mb-6">
           <SearchBar />
         </div>
@@ -156,7 +156,7 @@ const StockDetail = () => {
             <p className="text-muted-foreground">Failed to load data for {upperSymbol}.</p>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5">
             {/* Company Header */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border/60 bg-card p-5">
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -169,7 +169,7 @@ const StockDetail = () => {
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h1 className="font-display text-2xl font-bold truncate">{companyName}</h1>
+                    <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
                     <WatchlistStar symbol={upperSymbol} />
                   </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
@@ -202,7 +202,7 @@ const StockDetail = () => {
             />
 
             {/* Price Chart + Performance side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="lg:col-span-2">
                 <StockChart symbol={upperSymbol} />
               </div>
@@ -210,7 +210,7 @@ const StockDetail = () => {
             </div>
 
             {/* Financial Charts Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <FinancialChart title="Revenue" data={revenueData} dataKey="value" color="hsl(210, 80%, 55%)" />
               <FinancialChart title="Gross Profit" data={grossProfitData} dataKey="value" color="hsl(280, 65%, 55%)" />
               <FinancialChart title="Net Income" data={netIncomeData} dataKey="value" color="hsl(38, 92%, 50%)" />
@@ -248,7 +248,7 @@ const StockDetail = () => {
             />
 
             {/* Two column layout: Recommendations + Peers */}
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <RecommendationChart data={recommendation} />
               <PeersList peers={peers} currentSymbol={upperSymbol} />
             </div>

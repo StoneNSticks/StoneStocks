@@ -35,8 +35,8 @@ export function HiddenGems() {
         </div>
         <span className="text-xs text-muted-foreground">Strong buy consensus with momentum</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-        {stocks.slice(0, 9).map((s: any) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        {stocks.slice(0, 12).map((s: any) => (
           <Link
             key={s.symbol}
             to={`/stock/${s.symbol}`}

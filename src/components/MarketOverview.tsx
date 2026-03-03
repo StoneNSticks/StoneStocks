@@ -63,7 +63,7 @@ export function MarketOverview() {
             <Link
               key={`${idx.indexSymbol}-${i}`}
               to={`/index/${idx.indexSymbol}`}
-              className={`flex-shrink-0 min-w-[180px] rounded-xl border px-4 py-3 transition-all hover:scale-[1.02] cursor-pointer ${
+              className={`flex-shrink-0 min-w-[150px] sm:min-w-[180px] rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 transition-all hover:scale-[1.02] cursor-pointer ${
                 isPositive
                   ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
                   : "border-destructive/30 bg-destructive/[0.04]"
@@ -82,7 +82,7 @@ export function MarketOverview() {
                   <TrendingDown className="h-3.5 w-3.5 text-loss flex-shrink-0" />
                 )}
               </div>
-              <div className="font-display font-bold text-lg tabular-nums">
+              <div className="font-display font-bold text-base sm:text-lg tabular-nums">
                 {formatPoints(idx.price)}
               </div>
               <div className={`text-[11px] font-medium tabular-nums ${priceChangeColor(idx.changePercent)}`}>

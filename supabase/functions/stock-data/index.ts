@@ -1035,13 +1035,21 @@ async function handleTopCompanies() {
           fetchFinnhub("stock/profile2", { symbol: c.symbol }),
           fetchMassive(`/v3/reference/tickers/${c.symbol}`).catch(() => null),
         ]);
-        // Polygon market_cap is generally the most accurate (reflects full company, not just ADR float)
+        // Polygon market_cap can be wildly wrong for ADRs (e.g. TSM returns TWD-based cap)
+        const MAX_REASONABLE_MCAP = 8e12; // $8T sanity cap
         const polygonMarketCap = polygonTicker?.results?.market_cap || 0;
         const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
         const shareOutstanding = profile?.shareOutstanding || 0;
         const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
-        // Prefer Polygon > Finnhub > computed
-        const marketCap = polygonMarketCap > 0 ? polygonMarketCap : (finnhubMarketCap > 0 ? finnhubMarketCap : computedMarketCap);
+        // Prefer Finnhub for accuracy, only use Polygon if reasonable, fallback to computed
+        let marketCap = 0;
+        if (finnhubMarketCap > 0) {
+          marketCap = finnhubMarketCap;
+        } else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
+          marketCap = polygonMarketCap;
+        } else {
+          marketCap = computedMarketCap;
+        }
         return {
           symbol: c.symbol, name: c.name, price: q.c || 0,
           change: q.d || 0, changePercent: q.dp || 0,
@@ -1310,10 +1318,11 @@ async function handleFullStock(symbol: string) {
     }
   } catch { /* ignore */ }
 
-  // Fill from Polygon ticker details
+  // Fill from Polygon ticker details (with sanity check for ADR market caps)
+  const MAX_REASONABLE_MCAP_DETAIL = 8e12;
   if (massiveTicker) {
     const mt = massiveTicker as Record<string, any>;
-    if (!filledOverview.MarketCapitalization && mt.market_cap) filledOverview.MarketCapitalization = String(mt.market_cap);
+    if (!filledOverview.MarketCapitalization && mt.market_cap && mt.market_cap < MAX_REASONABLE_MCAP_DETAIL) filledOverview.MarketCapitalization = String(mt.market_cap);
     if (!filledOverview.SharesOutstanding && mt.share_class_shares_outstanding) filledOverview.SharesOutstanding = String(mt.share_class_shares_outstanding);
     if (!filledOverview.Name && mt.name) filledOverview.Name = mt.name;
     if (!filledOverview.Description && mt.description) filledOverview.Description = mt.description;
@@ -1336,10 +1345,10 @@ async function handleFullStock(symbol: string) {
 
   const derived = calculateDerivedMetrics(filledOverview, quote || {});
 
-  // Supplement derived metrics from massiveTicker if still missing
+  // Supplement derived metrics from massiveTicker if still missing (with sanity check)
   if (massiveTicker) {
     const mt = massiveTicker as Record<string, any>;
-    if ((!derived.marketCap || derived.marketCap === 0) && mt.market_cap) derived.marketCap = mt.market_cap;
+    if ((!derived.marketCap || derived.marketCap === 0) && mt.market_cap && mt.market_cap < MAX_REASONABLE_MCAP_DETAIL) derived.marketCap = mt.market_cap;
   }
 
   return { profile, quote, overview: filledOverview, derived, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot };
