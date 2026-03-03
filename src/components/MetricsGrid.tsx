@@ -1,9 +1,8 @@
 import { formatNumber, formatCurrency, formatPercent } from "@/lib/formatters";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useT } from "@/contexts/LanguageContext";
 
-interface MetricCardProps {
-  items: Array<{ label: string; value: string; color?: string }>;
-}
+interface MetricCardProps { items: Array<{ label: string; value: string; color?: string }>; }
 
 function MetricCard({ items }: MetricCardProps) {
   return (
@@ -11,27 +10,16 @@ function MetricCard({ items }: MetricCardProps) {
       {items.map((item) => (
         <div key={item.label} className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">{item.label}</span>
-          <span className={`font-display font-semibold text-sm ${item.color || ""}`}>
-            {item.value}
-          </span>
+          <span className={`font-display font-semibold text-sm ${item.color || ""}`}>{item.value}</span>
         </div>
       ))}
     </div>
   );
 }
 
-function safeNum(val: unknown): number {
-  const n = Number(val);
-  return isNaN(n) ? 0 : n;
-}
+function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
 
-export function MetricsGrid({
-  overview,
-  quote,
-  derived,
-  profile,
-  massiveTicker,
-}: {
+export function MetricsGrid({ overview, quote, derived, profile, massiveTicker }: {
   overview: Record<string, string> | null;
   quote: Record<string, number> | null;
   derived: Record<string, number | null> | null;
@@ -39,6 +27,7 @@ export function MetricsGrid({
   massiveTicker: Record<string, unknown> | null;
 }) {
   const { convert, symbol: currSymbol } = useCurrency();
+  const t = useT();
   const fmtCur = (v: number | null | undefined) => formatCurrency(convert(v), currSymbol);
   const price = quote?.c;
   const change = quote?.d;
@@ -55,19 +44,15 @@ export function MetricsGrid({
   const pb = safeNum(derived?.calculatedPB) || safeNum(overview?.PriceToBookRatio);
   const ps = safeNum(derived?.calculatedPS) || safeNum(overview?.PriceToSalesRatioTTM);
   const peYield = pe > 0 ? (1 / pe) * 100 : 0;
-  
   const fcfYield = safeNum(derived?.fcfYield);
   const pfcf = fcfYield && fcfYield > 0 ? 100 / fcfYield : 0;
   const evEbitda = safeNum(derived?.evToEbitda) || safeNum(overview?.EVToEBITDA);
-
   const dividendYield = safeNum(derived?.dividendYield) || (overview?.DividendYield ? safeNum(overview.DividendYield) * 100 : 0);
   const payoutRatio = overview?.PayoutRatio ? safeNum(overview.PayoutRatio) * 100 : 0;
-
   const operatingMargin = overview?.OperatingMarginTTM ? safeNum(overview.OperatingMarginTTM) * 100 : 0;
   const profitMargin = overview?.ProfitMargin ? safeNum(overview.ProfitMargin) * 100 : 0;
   const roe = overview?.ReturnOnEquityTTM ? safeNum(overview.ReturnOnEquityTTM) * 100 : 0;
   const roa = overview?.ReturnOnAssetsTTM ? safeNum(overview.ReturnOnAssetsTTM) * 100 : 0;
-
   const revGrowth = overview?.QuarterlyRevenueGrowthYOY ? safeNum(overview.QuarterlyRevenueGrowthYOY) * 100 : 0;
   const eps = safeNum(overview?.EPS);
   const beta = safeNum(overview?.Beta);
@@ -78,52 +63,39 @@ export function MetricsGrid({
   const fmtP = (v: number) => v ? formatPercent(v) : "—";
   const pctColor = (v: number) => v > 0 ? "text-gain" : v < 0 ? "text-loss" : "";
 
+  const capLabel = marketCap >= 1e12 ? t("m.megaCap") : marketCap >= 1e11 ? t("m.largeCap") : marketCap >= 1e10 ? t("m.midCap") : t("m.smallCap");
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {/* Card 1: Price & Market Cap */}
-      <MetricCard
-        items={[
-          { label: "Price", value: `${changePercent ? formatPercent(changePercent) : ""} ${fmtCur(price)}`, color: changeColor },
-          { label: marketCap >= 1e12 ? "Mega Cap" : marketCap >= 1e11 ? "Large Cap" : marketCap >= 1e10 ? "Mid Cap" : "Small Cap", value: fmtCur(marketCap) },
-          ...(employees > 0 ? [{ label: "Employees", value: formatNumber(employees) }] : []),
-          ...(eps ? [{ label: "EPS", value: fmtCur(eps) }] : []),
-          ...(beta ? [{ label: "Beta", value: formatNumber(beta) }] : []),
-        ]}
-      />
-
-      {/* Card 2: Valuation Ratios */}
-      <MetricCard
-        items={[
-          { label: "P/E", value: fmtV(pe) },
-          { label: "P/B", value: fmtV(pb) },
-          { label: "P/S", value: fmtV(ps) },
-          { label: "P/FCF", value: pfcf > 0 ? formatNumber(pfcf) : "—" },
-          { label: "EV/EBITDA", value: fmtV(evEbitda) },
-        ]}
-      />
-
-      {/* Card 3: Yields & Dividends */}
-      <MetricCard
-        items={[
-          { label: "Earnings Yield", value: fmtP(peYield) },
-          { label: "Dividend Yield", value: fmtP(dividendYield) },
-          { label: "Payout Ratio", value: fmtP(payoutRatio) },
-          { label: "FCF Yield", value: fmtP(fcfYield) },
-          ...(freeCashflow ? [{ label: "Free Cash Flow", value: fmtCur(freeCashflow), color: pctColor(freeCashflow) }] : []),
-        ]}
-      />
-
-      {/* Card 4: Growth & Margins & Returns */}
-      <MetricCard
-        items={[
-          { label: "Rev Growth YoY", value: fmtP(revGrowth), color: pctColor(revGrowth) },
-          { label: "Operating Margin", value: fmtP(operatingMargin) },
-          { label: "Profit Margin", value: fmtP(profitMargin) },
-          { label: "ROE", value: fmtP(roe), color: pctColor(roe) },
-          { label: "ROA", value: fmtP(roa), color: pctColor(roa) },
-          ...(revenueTTM ? [{ label: "Revenue TTM", value: fmtCur(revenueTTM) }] : []),
-        ]}
-      />
+      <MetricCard items={[
+        { label: t("m.price"), value: `${changePercent ? formatPercent(changePercent) : ""} ${fmtCur(price)}`, color: changeColor },
+        { label: capLabel, value: fmtCur(marketCap) },
+        ...(employees > 0 ? [{ label: t("m.employees"), value: formatNumber(employees) }] : []),
+        ...(eps ? [{ label: t("m.eps"), value: fmtCur(eps) }] : []),
+        ...(beta ? [{ label: t("m.beta"), value: formatNumber(beta) }] : []),
+      ]} />
+      <MetricCard items={[
+        { label: t("m.pe"), value: fmtV(pe) },
+        { label: t("m.pb"), value: fmtV(pb) },
+        { label: t("m.ps"), value: fmtV(ps) },
+        { label: t("m.pfcf"), value: pfcf > 0 ? formatNumber(pfcf) : "—" },
+        { label: t("m.evEbitda"), value: fmtV(evEbitda) },
+      ]} />
+      <MetricCard items={[
+        { label: t("m.earningsYield"), value: fmtP(peYield) },
+        { label: t("m.dividendYield"), value: fmtP(dividendYield) },
+        { label: t("m.payoutRatio"), value: fmtP(payoutRatio) },
+        { label: t("m.fcfYield"), value: fmtP(fcfYield) },
+        ...(freeCashflow ? [{ label: t("m.freeCashFlow"), value: fmtCur(freeCashflow), color: pctColor(freeCashflow) }] : []),
+      ]} />
+      <MetricCard items={[
+        { label: t("m.revGrowth"), value: fmtP(revGrowth), color: pctColor(revGrowth) },
+        { label: t("m.operatingMargin"), value: fmtP(operatingMargin) },
+        { label: t("m.profitMargin"), value: fmtP(profitMargin) },
+        { label: t("m.roe"), value: fmtP(roe), color: pctColor(roe) },
+        { label: t("m.roa"), value: fmtP(roa), color: pctColor(roa) },
+        ...(revenueTTM ? [{ label: t("m.revenueTTM"), value: fmtCur(revenueTTM) }] : []),
+      ]} />
     </div>
   );
 }

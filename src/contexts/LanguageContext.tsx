@@ -64,6 +64,163 @@ const translations: Record<string, Record<Language, string>> = {
   "index.subtitle": { de: "Echtzeitkurse, Nachrichten und Marktdaten", en: "Real-time quotes, news, and market data" },
   "index.footer": { de: "Daten: Finnhub, Alpha Vantage, Twelve Data, Polygon, Eulerpool, SimFin", en: "Data: Finnhub, Alpha Vantage, Twelve Data, Polygon, Eulerpool, SimFin" },
 
+  // ── TopCompanies ──
+  "top.title": { de: "Top Unternehmen", en: "Top Companies" },
+  "top.byMarketCap": { de: "nach Marktkapitalisierung", en: "by market cap" },
+
+  // ── GainersLosers ──
+  "gl.title": { de: "Gewinner & Verlierer", en: "Winners & Losers" },
+  "gl.winners": { de: "Gewinner", en: "Winners" },
+  "gl.losers": { de: "Verlierer", en: "Losers" },
+  "gl.loading": { de: "Marktdaten werden geladen…", en: "Market data loading…" },
+
+  // ── MostActive ──
+  "active.title": { de: "Meistgehandelt", en: "Most Traded" },
+  "active.loading": { de: "Volumendaten werden geladen…", en: "Volume data loading…" },
+
+  // ── HiddenGems ──
+  "gems.title": { de: "Geheimtipps", en: "Hidden Gems" },
+  "gems.subtitle": { de: "Starke Kaufempfehlung mit Momentum", en: "Strong buy consensus with momentum" },
+
+  // ── MarketNewsSection ──
+  "news.title": { de: "Marktnachrichten", en: "Market News" },
+  "news.viewAll": { de: "Alle anzeigen →", en: "View all →" },
+
+  // ── SearchBar ──
+  "search.placeholder": { de: "Aktien suchen…", en: "Search stocks..." },
+  "search.placeholderFull": { de: "Aktien, ETFs, Indizes suchen…", en: "Search stocks, ETFs, indices..." },
+  "search.recent": { de: "Letzte Suchen", en: "Recent searches" },
+  "search.clear": { de: "Löschen", en: "Clear" },
+  "search.searching": { de: "Suche…", en: "Searching..." },
+  "search.noResults": { de: "Keine Ergebnisse gefunden", en: "No results found" },
+
+  // ── CompanyInfoCard ──
+  "info.sector": { de: "Sektor", en: "Sector" },
+  "info.industry": { de: "Branche", en: "Industry" },
+  "info.country": { de: "Land", en: "Country" },
+  "info.employees": { de: "Mitarbeiter", en: "Employees" },
+  "info.ipoDate": { de: "IPO-Datum", en: "IPO Date" },
+  "info.currency": { de: "Währung", en: "Currency" },
+  "info.exchange": { de: "Börse", en: "Stock Exchange" },
+  "info.description": { de: "Beschreibung", en: "Description" },
+  "info.us": { de: "Vereinigte Staaten", en: "United States" },
+  "info.de": { de: "Deutschland", en: "Germany" },
+  "info.jp": { de: "Japan", en: "Japan" },
+  "info.cn": { de: "China", en: "China" },
+  "info.gb": { de: "Vereinigtes Königreich", en: "United Kingdom" },
+  "info.tw": { de: "Taiwan", en: "Taiwan" },
+  "info.kr": { de: "Südkorea", en: "South Korea" },
+  "info.fr": { de: "Frankreich", en: "France" },
+  "info.ca": { de: "Kanada", en: "Canada" },
+  "info.nl": { de: "Niederlande", en: "Netherlands" },
+  "info.ch": { de: "Schweiz", en: "Switzerland" },
+
+  // ── StockPerformance ──
+  "perf.title": { de: "Performance & Spanne", en: "Performance & Range" },
+  "perf.dayRange": { de: "Tagesspanne", en: "Day Range" },
+  "perf.weekRange": { de: "52-Wochen-Spanne", en: "52-Week Range" },
+  "perf.fromLow": { de: "vom Tief", en: "from low" },
+  "perf.fromHigh": { de: "vom Hoch", en: "from high" },
+  "perf.dayChange": { de: "Tagesänderung", en: "Day Change" },
+  "perf.beta": { de: "Beta", en: "Beta" },
+  "perf.targetPrice": { de: "Kursziel", en: "Target Price" },
+  "perf.upside": { de: "Potenzial", en: "Upside" },
+
+  // ── RecommendationChart ──
+  "rec.title": { de: "Analysten-Konsens", en: "Analyst Consensus" },
+  "rec.strongBuy": { de: "Starker Kauf", en: "Strong Buy" },
+  "rec.buy": { de: "Kauf", en: "Buy" },
+  "rec.hold": { de: "Halten", en: "Hold" },
+  "rec.sell": { de: "Verkauf", en: "Sell" },
+  "rec.strongSell": { de: "Starker Verkauf", en: "Strong Sell" },
+  "rec.score": { de: "Bewertung", en: "Score" },
+  "rec.analysts": { de: "Analysten", en: "analysts" },
+  "rec.bullish": { de: "Bullisch", en: "Bullish" },
+  "rec.bearish": { de: "Bärisch", en: "Bearish" },
+  "rec.history": { de: "12-Monats-Verlauf", en: "12-Month History" },
+  "rec.showBreakdown": { de: "Monatliche Aufschlüsselung anzeigen", en: "Show monthly breakdown" },
+  "rec.hideBreakdown": { de: "Monatliche Aufschlüsselung ausblenden", en: "Hide monthly breakdown" },
+
+  // ── NewsList ──
+  "newsList.title": { de: "Nachrichten", en: "News" },
+  "newsList.latest": { de: "Aktuelle Nachrichten", en: "Latest News" },
+  "newsList.none": { de: "Keine aktuellen Nachrichten verfügbar.", en: "No recent news available." },
+
+  // ── PeersList ──
+  "peers.title": { de: "Ähnliche Aktien", en: "Similar Stocks" },
+
+  // ── MarketClock ──
+  "clock.title": { de: "Börsenzeiten", en: "Market Hours" },
+  "clock.yourTime": { de: "Deine Zeit", en: "Your time" },
+  "clock.open": { de: "Offen", en: "Open" },
+  "clock.closed": { de: "Geschlossen", en: "Closed" },
+  "clock.closesIn": { de: "schließt in", en: "closes in" },
+  "clock.opensIn": { de: "öffnet in", en: "opens in" },
+  "clock.local": { de: "Ortszeit", en: "local" },
+
+  // ── StockChart ──
+  "chart.title": { de: "Kursverlauf", en: "Price Chart" },
+  "chart.noData": { de: "Keine Chartdaten verfügbar", en: "No chart data available" },
+  "chart.close": { de: "Schluss", en: "Close" },
+
+  // ── FinancialChart ──
+  "fc.noData": { de: "Keine Daten verfügbar", en: "No data available" },
+
+  // ── MetricsGrid ──
+  "m.price": { de: "Kurs", en: "Price" },
+  "m.megaCap": { de: "Mega Cap", en: "Mega Cap" },
+  "m.largeCap": { de: "Large Cap", en: "Large Cap" },
+  "m.midCap": { de: "Mid Cap", en: "Mid Cap" },
+  "m.smallCap": { de: "Small Cap", en: "Small Cap" },
+  "m.employees": { de: "Mitarbeiter", en: "Employees" },
+  "m.eps": { de: "EPS", en: "EPS" },
+  "m.beta": { de: "Beta", en: "Beta" },
+  "m.pe": { de: "KGV", en: "P/E" },
+  "m.pb": { de: "KBV", en: "P/B" },
+  "m.ps": { de: "KUV", en: "P/S" },
+  "m.pfcf": { de: "K/FCF", en: "P/FCF" },
+  "m.evEbitda": { de: "EV/EBITDA", en: "EV/EBITDA" },
+  "m.earningsYield": { de: "Gewinnrendite", en: "Earnings Yield" },
+  "m.dividendYield": { de: "Dividendenrendite", en: "Dividend Yield" },
+  "m.payoutRatio": { de: "Ausschüttungsquote", en: "Payout Ratio" },
+  "m.fcfYield": { de: "FCF-Rendite", en: "FCF Yield" },
+  "m.freeCashFlow": { de: "Freier Cashflow", en: "Free Cash Flow" },
+  "m.revGrowth": { de: "Umsatzwachstum YoY", en: "Rev Growth YoY" },
+  "m.operatingMargin": { de: "Operative Marge", en: "Operating Margin" },
+  "m.profitMargin": { de: "Gewinnmarge", en: "Profit Margin" },
+  "m.roe": { de: "EKR", en: "ROE" },
+  "m.roa": { de: "GKR", en: "ROA" },
+  "m.revenueTTM": { de: "Umsatz TTM", en: "Revenue TTM" },
+
+  // ── StockDetail ──
+  "sd.website": { de: "Webseite", en: "Website" },
+  "sd.failedToLoad": { de: "Daten konnten nicht geladen werden für", en: "Failed to load data for" },
+  "sd.revenue": { de: "Umsatz", en: "Revenue" },
+  "sd.grossProfit": { de: "Bruttogewinn", en: "Gross Profit" },
+  "sd.netIncome": { de: "Nettogewinn", en: "Net Income" },
+  "sd.operatingIncome": { de: "Betriebsergebnis", en: "Operating Income" },
+  "sd.ebitda": { de: "EBITDA", en: "EBITDA" },
+  "sd.freeCashFlow": { de: "Freier Cashflow", en: "Free Cash Flow" },
+  "sd.operatingCashFlow": { de: "Operativer Cashflow", en: "Operating Cash Flow" },
+  "sd.epsDiluted": { de: "EPS (verwässert)", en: "EPS (Diluted)" },
+  "sd.dividendPerShare": { de: "Dividende je Aktie", en: "Dividend per Share" },
+  "sd.assetsLiabilities": { de: "Vermögen & Verbindlichkeiten", en: "Assets & Liabilities" },
+  "sd.liabilities": { de: "Verbindlichkeiten", en: "Liabilities" },
+
+  // ── IndexDetail ──
+  "idx.back": { de: "Zurück zur Übersicht", en: "Back to Overview" },
+  "idx.marketIndex": { de: "Marktindex", en: "Market Index" },
+  "idx.pts": { de: "Pkt.", en: "pts" },
+  "idx.chartProxy": { de: "Chart zeigt {etf} ETF als Proxy für {name}", en: "Chart shows {etf} ETF as proxy for {name} performance" },
+  "idx.otherIndices": { de: "Weitere Marktindizes", en: "Other Market Indices" },
+  "idx.notFound": { de: "Index {symbol} nicht gefunden.", en: "Index {symbol} not found." },
+
+  // ── DividendGrowth ──
+  "div.title": { de: "Dividendenwachstum", en: "Dividend Growth" },
+  "div.yield": { de: "Rendite", en: "Yield" },
+  "div.annualDividend": { de: "Jährl. Dividende", en: "Annual Dividend" },
+  "div.growthForecast": { de: "Bei aktuellem Wachstum von {rate}% könnte die Dividende bis {year} ~${amount}/Aktie erreichen", en: "At current {rate}% growth rate, dividend could reach ~${amount}/share by {year}" },
+
   // ── Watchlist ──
   "watchlist.title": { de: "Meine Watchlist", en: "My Watchlist" },
   "watchlist.empty": { de: "Deine Watchlist ist leer", en: "Your watchlist is empty" },
@@ -163,6 +320,8 @@ const translations: Record<string, Record<Language, string>> = {
   "learn.toc1": { de: "1. Grundlagen", en: "1. Basics" },
   "learn.toc2": { de: "2. Aktien & ETFs", en: "2. Stocks & ETFs" },
   "learn.toc3": { de: "3. Finanzprodukte", en: "3. Financial Products" },
+  "learn.toc4": { de: "4. Strategien & Tipps", en: "4. Strategies & Tips" },
+  "learn.toc5": { de: "5. Steuern & Kosten", en: "5. Taxes & Costs" },
   "learn.section1Title": { de: "Grundlagen der Finanzen", en: "Financial Basics" },
   "learn.marketsTitle": { de: "Was sind Finanzmärkte?", en: "What Are Financial Markets?" },
   "learn.marketsP1": { de: "Finanzmärkte sind Orte, an denen Käufer und Verkäufer Finanzinstrumente wie Aktien, Anleihen, Währungen und Rohstoffe handeln. Sie ermöglichen Unternehmen, Kapital aufzunehmen, und Investoren, ihr Vermögen zu vermehren.", en: "Financial markets are places where buyers and sellers trade financial instruments such as stocks, bonds, currencies, and commodities. They enable companies to raise capital and investors to grow their wealth." },
@@ -181,6 +340,10 @@ const translations: Record<string, Record<Language, string>> = {
   "learn.term.liquidityDesc": { de: "Wie leicht ein Wertpapier gekauft oder verkauft werden kann, ohne den Preis stark zu beeinflussen.", en: "How easily a security can be bought or sold without significantly affecting its price." },
   "learn.term.bullBear": { de: "Bull Market / Bear Market", en: "Bull Market / Bear Market" },
   "learn.term.bullBearDesc": { de: "Bull Market = steigende Kurse, Bear Market = fallende Kurse über einen längeren Zeitraum.", en: "Bull market = rising prices, bear market = falling prices over an extended period." },
+  "learn.term.roe": { de: "Eigenkapitalrendite (ROE)", en: "Return on Equity (ROE)" },
+  "learn.term.roeDesc": { de: "Zeigt, wie effizient ein Unternehmen das Eigenkapital der Aktionäre einsetzt, um Gewinne zu erzielen.", en: "Shows how efficiently a company uses shareholder equity to generate profits." },
+  "learn.term.freeCashFlow": { de: "Freier Cashflow (FCF)", en: "Free Cash Flow (FCF)" },
+  "learn.term.freeCashFlowDesc": { de: "Das Geld, das einem Unternehmen nach Abzug aller operativen Ausgaben und Investitionen zur Verfügung steht.", en: "The cash available to a company after deducting all operating expenses and capital expenditures." },
   "learn.riskTitle": { de: "Risiko & Diversifikation", en: "Risk & Diversification" },
   "learn.riskP1": { de: "<strong>Risiko</strong> beschreibt die Möglichkeit, dass eine Investition an Wert verliert. Verschiedene Anlagen haben unterschiedliche Risikoprofile.", en: "<strong>Risk</strong> describes the possibility that an investment loses value. Different assets have different risk profiles." },
   "learn.riskP2": { de: "<strong>Diversifikation</strong> ist die wichtigste Strategie zur Risikominimierung: Verteile dein Geld auf verschiedene Anlageklassen, Branchen und Regionen. So können Verluste in einem Bereich durch Gewinne in einem anderen ausgeglichen werden.", en: "<strong>Diversification</strong> is the most important strategy for minimizing risk: spread your money across different asset classes, sectors, and regions. Losses in one area can be offset by gains in another." },
@@ -228,6 +391,47 @@ const translations: Record<string, Record<Language, string>> = {
   "learn.goldenRule": { de: "Goldene Regel", en: "Golden Rule" },
   "learn.popularEtfs": { de: "Beliebte ETFs", en: "Popular ETFs" },
   "learn.warning": { de: "⚠️ Warnung", en: "⚠️ Warning" },
+
+  // ── Learn Page - Section 4: Strategies ──
+  "learn.section4Title": { de: "Strategien & Tipps", en: "Strategies & Tips" },
+  "learn.buyHoldTitle": { de: "Buy & Hold – Langfristiges Investieren", en: "Buy & Hold – Long-Term Investing" },
+  "learn.buyHoldP1": { de: "Die <strong>Buy & Hold</strong>-Strategie bedeutet, Aktien zu kaufen und über viele Jahre zu halten, unabhängig von kurzfristigen Schwankungen. Historisch gesehen hat der Aktienmarkt langfristig im Durchschnitt 7–10% pro Jahr zugelegt.", en: "The <strong>Buy & Hold</strong> strategy means buying stocks and holding them for many years, regardless of short-term fluctuations. Historically, the stock market has averaged 7–10% annual returns over the long term." },
+  "learn.buyHoldP2": { de: 'Warren Buffett, einer der erfolgreichsten Investoren aller Zeiten, ist ein berühmter Verfechter dieser Strategie: „Unsere bevorzugte Haltedauer ist: für immer."', en: 'Warren Buffett, one of the most successful investors of all time, is a famous proponent of this strategy: "Our favorite holding period is forever."' },
+  "learn.buyHoldInfo": { de: "Wer 1980 $10.000 in den S&P 500 investiert hätte, hätte heute über $1 Million – allein durch Halten und Reinvestieren der Dividenden.", en: "If you had invested $10,000 in the S&P 500 in 1980, you would have over $1 million today – just by holding and reinvesting dividends." },
+  "learn.dcaTitle": { de: "Cost-Average-Effekt (Sparplan)", en: "Dollar-Cost Averaging (DCA)" },
+  "learn.dcaP1": { de: "Beim <strong>Cost-Average-Effekt</strong> investierst du regelmäßig einen festen Betrag, z. B. monatlich per ETF-Sparplan. Bei niedrigen Kursen kaufst du mehr Anteile, bei hohen Kursen weniger. So glättest du deinen Einstiegspreis über die Zeit.", en: "With <strong>Dollar-Cost Averaging</strong>, you invest a fixed amount regularly, e.g. monthly into an ETF savings plan. When prices are low, you buy more shares; when high, fewer. This smooths your entry price over time." },
+  "learn.dcaP2": { de: "Sparpläne ab 25€/Monat sind bei den meisten Brokern möglich und eine der besten Strategien für Einsteiger.", en: "Savings plans starting at $25/month are available at most brokers and are one of the best strategies for beginners." },
+  "learn.dcaInfo": { de: "Ein monatlicher Sparplan von 200€ in einen MSCI World ETF hätte in den letzten 20 Jahren ein Vermögen von über 100.000€ aufgebaut.", en: "A monthly savings plan of $200 into an MSCI World ETF would have built a portfolio of over $100,000 in the last 20 years." },
+  "learn.valueTitle": { de: "Value Investing", en: "Value Investing" },
+  "learn.valueP1": { de: "<strong>Value Investing</strong> bedeutet, unterbewertete Aktien zu finden – Unternehmen, deren Aktienkurs unter ihrem eigentlichen Wert liegt. Man analysiert Kennzahlen wie KGV, KBV und den Substanzwert eines Unternehmens.", en: "<strong>Value Investing</strong> means finding undervalued stocks – companies whose stock price is below their intrinsic value. You analyze metrics like P/E ratio, P/B ratio, and a company's book value." },
+  "learn.valueP2": { de: 'Berühmte Value-Investoren: Benjamin Graham ("Der intelligente Investor"), Warren Buffett, Charlie Munger.', en: 'Famous value investors: Benjamin Graham ("The Intelligent Investor"), Warren Buffett, Charlie Munger.' },
+  "learn.growthTitle": { de: "Growth Investing", en: "Growth Investing" },
+  "learn.growthP1": { de: "<strong>Growth Investing</strong> fokussiert sich auf Unternehmen mit überdurchschnittlichem Umsatz- und Gewinnwachstum. Diese Aktien haben oft hohe Bewertungen (hohes KGV), aber das Potenzial für starke Kurssteigerungen.", en: "<strong>Growth Investing</strong> focuses on companies with above-average revenue and earnings growth. These stocks often have high valuations (high P/E ratios), but potential for strong price appreciation." },
+  "learn.growthP2": { de: "Beispiele für historisch erfolgreiche Growth-Aktien: Apple, Amazon, Nvidia, Tesla.", en: "Examples of historically successful growth stocks: Apple, Amazon, Nvidia, Tesla." },
+  "learn.psychTitle": { de: "Börsenpsychologie", en: "Market Psychology" },
+  "learn.psychP1": { de: "Emotionen sind der größte Feind des Investors. <strong>Angst</strong> führt zu Panikverkäufen bei fallenden Kursen, <strong>Gier</strong> zu überhöhten Einstiegen bei Hypes.", en: "Emotions are the investor's greatest enemy. <strong>Fear</strong> leads to panic selling during market drops, <strong>greed</strong> leads to buying at inflated prices during hypes." },
+  "learn.psychP2": { de: 'Warren Buffett: „Sei ängstlich, wenn andere gierig sind, und gierig, wenn andere ängstlich sind."', en: 'Warren Buffett: "Be fearful when others are greedy, and greedy when others are fearful."' },
+  "learn.psychInfo": { de: "Die meisten Privatanleger erzielen unterdurchschnittliche Renditen, weil sie in Panik verkaufen und bei Euphorie kaufen. Disziplin schlägt Timing.", en: "Most retail investors achieve below-average returns because they sell in panic and buy during euphoria. Discipline beats timing." },
+
+  // ── Learn Page - Section 5: Taxes & Costs ──
+  "learn.section5Title": { de: "Steuern & Kosten", en: "Taxes & Costs" },
+  "learn.taxTitle": { de: "Kapitalertragsteuer", en: "Capital Gains Tax" },
+  "learn.taxP1": { de: "In Deutschland werden Kapitalerträge (Dividenden, Kursgewinne) mit der <strong>Abgeltungsteuer</strong> von 25% + Solidaritätszuschlag + ggf. Kirchensteuer besteuert. Der effektive Steuersatz liegt bei ca. 26,375%.", en: "Capital gains (dividends, price gains) are subject to tax. In the US, long-term capital gains are taxed at 0%, 15%, or 20% depending on your income bracket. Short-term gains are taxed as ordinary income." },
+  "learn.taxP2": { de: "Jeder Bürger hat einen <strong>Sparerpauschbetrag</strong> von 1.000€ (2.000€ für Ehepaare), bis zu dem Kapitalerträge steuerfrei sind. Stelle sicher, dass du einen Freistellungsauftrag bei deinem Broker einrichtest!", en: "Tax-advantaged accounts like <strong>401(k)s, IRAs, and Roth IRAs</strong> in the US (or ISAs in the UK, Depotkonten in Germany with Sparerpauschbetrag) can significantly reduce your tax burden. Make sure to utilize them!" },
+  "learn.taxInfo": { de: "Vergiss nicht den Freistellungsauftrag! Ohne ihn werden dir sofort Steuern auf alle Erträge abgezogen, auch unterhalb des Pauschbetrags.", en: "Don't forget to set up tax-loss harvesting! Selling investments at a loss to offset gains can reduce your tax bill significantly." },
+  "learn.costsTitle": { de: "Gebühren & Kosten", en: "Fees & Costs" },
+  "learn.costsP1": { de: "Gebühren fressen Rendite – besonders bei langfristigem Investieren. Achte auf: <strong>Ordergebühren</strong> (je Trade), <strong>Depotgebühren</strong> (jährlich), <strong>Spread</strong> (Differenz Kauf-/Verkaufskurs) und <strong>TER</strong> (Total Expense Ratio bei ETFs/Fonds).", en: "Fees eat into returns – especially with long-term investing. Watch out for: <strong>Trading commissions</strong> (per trade), <strong>Account fees</strong> (annual), <strong>Spread</strong> (bid-ask difference), and <strong>TER</strong> (Total Expense Ratio for ETFs/funds)." },
+  "learn.costsP2": { de: "Vergleiche Broker sorgfältig: Neobroker wie Trade Republic oder Scalable Capital bieten oft günstigere Konditionen als traditionelle Banken.", en: "Compare brokers carefully: discount brokers like Fidelity, Schwab, or interactive platforms like Robinhood and IBKR often offer lower fees than traditional banks." },
+  "learn.costsInfo": { de: "Ein ETF mit 0,2% TER kostet dich bei 100.000€ Investition nur 200€/Jahr. Ein aktiver Fonds mit 1,5% TER: 1.500€/Jahr. Über 30 Jahre summiert sich das zu zehntausenden Euro Unterschied!", en: "An ETF with 0.2% TER costs you only $200/year on a $100,000 investment. An active fund with 1.5% TER: $1,500/year. Over 30 years, this difference amounts to tens of thousands of dollars!" },
+  "learn.compoundTitle": { de: "Die Macht des Zinseszins", en: "The Power of Compound Interest" },
+  "learn.compoundP1": { de: "Albert Einstein nannte den Zinseszins das \"achte Weltwunder\". Wenn du Gewinne reinvestierst, wächst dein Vermögen exponentiell – nicht linear.", en: "Albert Einstein called compound interest the \"eighth wonder of the world.\" When you reinvest your gains, your wealth grows exponentially – not linearly." },
+  "learn.compoundP2": { de: "Beispiel: 10.000€ mit 8% Rendite werden nach 10 Jahren zu ~21.600€, nach 20 Jahren zu ~46.600€, nach 30 Jahren zu ~100.600€. Ohne zusätzliche Einzahlung!", en: "Example: $10,000 at 8% return grows to ~$21,600 after 10 years, ~$46,600 after 20 years, ~$100,600 after 30 years. Without any additional contributions!" },
+  "learn.compoundInfo": { de: "Nutze unseren Zinseszins-Rechner unter \"Rechner\" um dein persönliches Wachstum zu simulieren!", en: "Use our compound interest calculator under \"Tools\" to simulate your personal growth!" },
+  "learn.brokerTitle": { de: "Den richtigen Broker wählen", en: "Choosing the Right Broker" },
+  "learn.brokerP1": { de: "Ein Broker ist der Vermittler, über den du Aktien, ETFs und andere Wertpapiere kaufst und verkaufst. Die Wahl des richtigen Brokers kann langfristig tausende Euro sparen.", en: "A broker is the intermediary through which you buy and sell stocks, ETFs, and other securities. Choosing the right broker can save you thousands of dollars in the long run." },
+  "learn.brokerP2": { de: "Achte auf: Ordergebühren, Sparplan-Konditionen, verfügbare Handelsplätze, Benutzerfreundlichkeit und Sicherheit (Einlagensicherung).", en: "Pay attention to: trading fees, savings plan options, available exchanges, user-friendliness, and security (deposit protection)." },
+  "learn.tipTitle": { de: "💡 Tipp", en: "💡 Tip" },
+  "learn.quoteTitle": { de: "📌 Zitat", en: "📌 Quote" },
 
   // ── 404 ──
   "notfound.title": { de: "Seite nicht gefunden", en: "Page not found" },
