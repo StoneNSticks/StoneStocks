@@ -391,8 +391,12 @@ async function handleRecommendation(symbol: string) {
   const cacheKey = `recommendation:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const rec = await fetchFinnhub("stock/recommendation", { symbol });
-  if (Array.isArray(rec)) { await setCache(cacheKey, rec, "finnhub", TTL.recommendation); return rec; }
+  try {
+    const rec = await fetchFinnhub("stock/recommendation", { symbol });
+    if (Array.isArray(rec)) { await setCache(cacheKey, rec, "finnhub", TTL.recommendation); return rec; }
+  } catch (e) {
+    console.warn("Recommendation fetch failed:", e);
+  }
   return [];
 }
 
@@ -456,13 +460,18 @@ async function handleTechnicals(symbol: string) {
   const cacheKey = `technicals:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const [rsi, macd] = await Promise.all([
-    fetchTwelveData("rsi", { symbol, interval: "1day", time_period: "14", outputsize: "30" }),
-    fetchTwelveData("macd", { symbol, interval: "1day", outputsize: "30" }),
-  ]);
-  const result = { rsi: rsi?.values || [], macd: macd?.values || [] };
-  await setCache(cacheKey, result, "twelvedata", TTL.technicals);
-  return result;
+  try {
+    const [rsi, macd] = await Promise.all([
+      fetchTwelveData("rsi", { symbol, interval: "1day", time_period: "14", outputsize: "30" }).catch(() => null),
+      fetchTwelveData("macd", { symbol, interval: "1day", outputsize: "30" }).catch(() => null),
+    ]);
+    const result = { rsi: rsi?.values || [], macd: macd?.values || [] };
+    await setCache(cacheKey, result, "twelvedata", TTL.technicals);
+    return result;
+  } catch (e) {
+    console.warn("Technicals fetch failed:", e);
+    return { rsi: [], macd: [] };
+  }
 }
 
 // === Massive API Handlers ===
@@ -533,8 +542,10 @@ async function handleMassiveDividends(symbol: string) {
   const cacheKey = `massive_dividends:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_dividends); return data.results; }
+  try {
+    const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
+    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_dividends); return data.results; }
+  } catch (e) { console.warn("Dividends fetch failed:", e); }
   return [];
 }
 
@@ -542,8 +553,10 @@ async function handleMassiveSplits(symbol: string) {
   const cacheKey = `massive_splits:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
-  if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_splits); return data.results; }
+  try {
+    const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
+    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_splits); return data.results; }
+  } catch (e) { console.warn("Splits fetch failed:", e); }
   return [];
 }
 
@@ -1171,8 +1184,12 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
 
 async function handleFullStock(symbol: string) {
   const [profile, quote, overview, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot] = await Promise.all([
-    handleProfile(symbol), handleQuote(symbol), handleOverview(symbol),
-    handleNews(symbol), handlePeers(symbol), handleRecommendation(symbol),
+    handleProfile(symbol).catch(() => null),
+    handleQuote(symbol).catch(() => null),
+    handleOverview(symbol).catch(() => null),
+    handleNews(symbol).catch(() => []),
+    handlePeers(symbol).catch(() => []),
+    handleRecommendation(symbol).catch(() => []),
     handleMassiveFinancials(symbol).catch(() => []),
     handleMassiveTickerDetails(symbol).catch(() => null),
     handleMassiveDividends(symbol).catch(() => []),
