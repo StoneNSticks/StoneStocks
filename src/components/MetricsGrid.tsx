@@ -45,7 +45,10 @@ export function MetricsGrid({
   const changePercent = quote?.dp;
   const changeColor = change && change > 0 ? "text-gain" : change && change < 0 ? "text-loss" : "";
 
-  const marketCap = safeNum(derived?.marketCap) || safeNum(massiveTicker?.market_cap) || safeNum(overview?.MarketCapitalization);
+  const MAX_REASONABLE_MCAP = 8e12;
+  const rawMassiveMcap = safeNum(massiveTicker?.market_cap);
+  const safeMassiveMcap = rawMassiveMcap > 0 && rawMassiveMcap < MAX_REASONABLE_MCAP ? rawMassiveMcap : 0;
+  const marketCap = safeNum(derived?.marketCap) || safeMassiveMcap || safeNum(overview?.MarketCapitalization);
   const employees = safeNum(massiveTicker?.total_employees) || safeNum(overview?.FullTimeEmployees);
 
   const pe = safeNum(derived?.calculatedPE) || safeNum(overview?.PERatio);

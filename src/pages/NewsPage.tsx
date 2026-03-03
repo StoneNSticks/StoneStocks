@@ -6,8 +6,8 @@ const NewsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6">
-        <section className="mb-6">
+      <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
+        <section className="mb-4 sm:mb-6">
           <MarketOverview />
         </section>
         <div className="max-w-4xl">

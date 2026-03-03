@@ -1,0 +1,1 @@
+DELETE FROM api_cache WHERE cache_key LIKE '%top_companies%' OR cache_key LIKE '%TSM%' OR cache_key LIKE '%massive_ticker:TSM%';
