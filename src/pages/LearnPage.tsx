@@ -45,9 +45,9 @@ export default function LearnPage() {
           <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t("learn.title")}</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("learn.subtitle")}</p>
           <div className="flex justify-center gap-2 flex-wrap pt-2">
-            <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-600">{t("learn.levelBeginner")}</span>
-            <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-600">{t("learn.levelIntermediate")}</span>
-            <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-600">{t("learn.levelAdvanced")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">{t("learn.levelBeginner")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground">{t("learn.levelIntermediate")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-destructive/10 text-destructive">{t("learn.levelAdvanced")}</span>
           </div>
         </motion.div>
 
