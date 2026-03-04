@@ -1,32 +1,8 @@
 import { Header } from "@/components/Header";
-import { BookOpen, TrendingUp, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Lightbulb, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator } from "lucide-react";
+import { BookOpen, TrendingUp, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
-
-const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
-const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
-
-interface SectionCardProps { icon: React.ReactNode; title: string; children: React.ReactNode; }
-function SectionCard({ icon, title, children }: SectionCardProps) {
-  return (
-    <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-6 md:p-8">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
-        <h3 className="text-xl font-display font-semibold text-foreground">{title}</h3>
-      </div>
-      <div className="space-y-3 text-muted-foreground text-sm leading-relaxed">{children}</div>
-    </motion.div>
-  );
-}
-
-function InfoBox({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-lg bg-primary/5 border border-primary/10 p-4">
-      <p className="font-medium text-foreground mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-primary" />{title}</p>
-      <p className="text-muted-foreground text-sm">{children}</p>
-    </div>
-  );
-}
+import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, fadeIn, stagger } from "@/components/learn/LearnComponents";
 
 export default function LearnPage() {
   const t = useT();
@@ -35,33 +11,47 @@ export default function LearnPage() {
     { term: t("learn.term.marketCap"), desc: t("learn.term.marketCapDesc") },
     { term: t("learn.term.dividend"), desc: t("learn.term.dividendDesc") },
     { term: t("learn.term.pe"), desc: t("learn.term.peDesc") },
+    { term: t("learn.term.eps"), desc: t("learn.term.epsDesc") },
+    { term: t("learn.term.beta"), desc: t("learn.term.betaDesc") },
     { term: t("learn.term.volatility"), desc: t("learn.term.volatilityDesc") },
     { term: t("learn.term.liquidity"), desc: t("learn.term.liquidityDesc") },
     { term: t("learn.term.bullBear"), desc: t("learn.term.bullBearDesc") },
     { term: t("learn.term.roe"), desc: t("learn.term.roeDesc") },
     { term: t("learn.term.freeCashFlow"), desc: t("learn.term.freeCashFlowDesc") },
+    { term: t("learn.term.spread"), desc: t("learn.term.spreadDesc") },
   ];
 
   const toc = [
     { label: t("learn.toc1"), href: "#grundlagen" },
     { label: t("learn.toc2"), href: "#aktien-etfs" },
-    { label: t("learn.toc3"), href: "#finanzprodukte" },
-    { label: t("learn.toc4"), href: "#strategien" },
-    { label: t("learn.toc5"), href: "#steuern" },
+    { label: t("learn.toc3"), href: "#anleihen-fonds" },
+    { label: t("learn.toc4"), href: "#derivate" },
+    { label: t("learn.toc5"), href: "#krypto-alternativen" },
+    { label: t("learn.toc6"), href: "#strategien" },
+    { label: t("learn.toc7"), href: "#technische-analyse" },
+    { label: t("learn.toc8"), href: "#portfolio" },
+    { label: t("learn.toc9"), href: "#steuern" },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
+        {/* Hero */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
             <BookOpen className="h-4 w-4" />{t("learn.badge")}
           </div>
           <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t("learn.title")}</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("learn.subtitle")}</p>
+          <div className="flex justify-center gap-2 flex-wrap pt-2">
+            <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-600">{t("learn.levelBeginner")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-600">{t("learn.levelIntermediate")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-600">{t("learn.levelAdvanced")}</span>
+          </div>
         </motion.div>
 
+        {/* TOC */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-6">
           <h2 className="font-display font-semibold text-foreground mb-3">{t("learn.toc")}</h2>
           <nav className="grid sm:grid-cols-3 gap-2">
@@ -73,167 +63,347 @@ export default function LearnPage() {
           </nav>
         </motion.div>
 
-        {/* Section 1 */}
+        {/* ═══ SECTION 1: BASICS ═══ */}
         <motion.section id="grundlagen" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-          <motion.div variants={fadeIn} className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">1</div>
-            <h2 className="text-2xl font-display font-bold text-foreground">{t("learn.section1Title")}</h2>
-          </motion.div>
+          <SectionHeader num={1} title={t("learn.section1Title")} level={t("learn.levelBeginner")} />
+          
           <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.marketsTitle")}>
             <p>{t("learn.marketsP1")}</p>
             <p dangerouslySetInnerHTML={{ __html: t("learn.marketsP2") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.marketsP3") }} />
             <InfoBox title={t("learn.goodToKnow")}>{t("learn.marketsInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.basicsTitle")}>
             <div className="grid gap-3">
-              {terms.map((item) => (
-                <div key={item.term} className="rounded-lg bg-muted/50 p-3">
-                  <p className="font-medium text-foreground text-sm">{item.term}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
-                </div>
-              ))}
+              {terms.map((item) => <TermCard key={item.term} term={item.term} desc={item.desc} />)}
             </div>
           </SectionCard>
+
           <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.riskTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.riskP1") }} />
             <p dangerouslySetInnerHTML={{ __html: t("learn.riskP2") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.riskP3") }} />
             <InfoBox title={t("learn.goldenRule")}>{t("learn.riskInfo")}</InfoBox>
+          </SectionCard>
+
+          <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.orderTypesTitle")}>
+            <p>{t("learn.orderTypesP1")}</p>
+            <div className="grid gap-3 mt-2">
+              <TermCard term={t("learn.orderMarket")} desc={t("learn.orderMarketDesc")} />
+              <TermCard term={t("learn.orderLimit")} desc={t("learn.orderLimitDesc")} />
+              <TermCard term={t("learn.orderStopLoss")} desc={t("learn.orderStopLossDesc")} />
+              <TermCard term={t("learn.orderTrailingStop")} desc={t("learn.orderTrailingStopDesc")} />
+            </div>
           </SectionCard>
         </motion.section>
 
-        {/* Section 2 */}
+        {/* ═══ SECTION 2: STOCKS & ETFs ═══ */}
         <motion.section id="aktien-etfs" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-          <motion.div variants={fadeIn} className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">2</div>
-            <h2 className="text-2xl font-display font-bold text-foreground">{t("learn.section2Title")}</h2>
-          </motion.div>
+          <SectionHeader num={2} title={t("learn.section2Title")} level={t("learn.levelBeginner")} />
+
           <SectionCard icon={<TrendingUp className="h-5 w-5" />} title={t("learn.stocksTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.stocksP1") }} />
             <p>{t("learn.stocksP2")}</p>
-            <div className="grid sm:grid-cols-2 gap-3 mt-2">
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="font-medium text-foreground text-sm flex items-center gap-1.5"><span className="text-chart-2">▲</span> {t("learn.stocksPros")}</p>
-                <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
-                  <li>{t("learn.stocksPro1")}</li><li>{t("learn.stocksPro2")}</li><li>{t("learn.stocksPro3")}</li><li>{t("learn.stocksPro4")}</li>
-                </ul>
-              </div>
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="font-medium text-foreground text-sm flex items-center gap-1.5"><span className="text-destructive">▼</span> {t("learn.stocksCons")}</p>
-                <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
-                  <li>{t("learn.stocksCon1")}</li><li>{t("learn.stocksCon2")}</li><li>{t("learn.stocksCon3")}</li><li>{t("learn.stocksCon4")}</li>
-                </ul>
-              </div>
+            <ProConGrid
+              prosTitle={t("learn.stocksPros")}
+              consTitle={t("learn.stocksCons")}
+              pros={[t("learn.stocksPro1"), t("learn.stocksPro2"), t("learn.stocksPro3"), t("learn.stocksPro4")]}
+              cons={[t("learn.stocksCon1"), t("learn.stocksCon2"), t("learn.stocksCon3"), t("learn.stocksCon4")]}
+            />
+          </SectionCard>
+
+          <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.stockTypesTitle")}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.blueChip")} desc={t("learn.blueChipDesc")} />
+              <TermCard term={t("learn.growthStocks")} desc={t("learn.growthStocksDesc")} />
+              <TermCard term={t("learn.dividendStocks")} desc={t("learn.dividendStocksDesc")} />
+              <TermCard term={t("learn.pennyStocks")} desc={t("learn.pennyStocksDesc")} />
             </div>
           </SectionCard>
+
           <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.etfTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.etfP1") }} />
             <p>{t("learn.etfP2")}</p>
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.etfTypes")}</p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.etfIndex")} desc={t("learn.etfIndexDesc")} />
+              <TermCard term={t("learn.etfSector")} desc={t("learn.etfSectorDesc")} />
+              <TermCard term={t("learn.etfBond")} desc={t("learn.etfBondDesc")} />
+              <TermCard term={t("learn.etfThematic")} desc={t("learn.etfThematicDesc")} />
+            </div>
             <InfoBox title={t("learn.popularEtfs")}>{t("learn.etfInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<CandlestickChart className="h-5 w-5" />} title={t("learn.analysisTitle")}>
             <p>{t("learn.analysisIntro")}</p>
             <div className="grid sm:grid-cols-2 gap-3 mt-2">
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="font-medium text-foreground text-sm">{t("learn.fundamentalTitle")}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t("learn.fundamentalDesc")}</p>
-              </div>
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="font-medium text-foreground text-sm">{t("learn.technicalTitle")}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t("learn.technicalDesc")}</p>
-              </div>
+              <TermCard term={t("learn.fundamentalTitle")} desc={t("learn.fundamentalDesc")} />
+              <TermCard term={t("learn.technicalTitle")} desc={t("learn.technicalDesc")} />
             </div>
           </SectionCard>
         </motion.section>
 
-        {/* Section 3 */}
-        <motion.section id="finanzprodukte" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-          <motion.div variants={fadeIn} className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">3</div>
-            <h2 className="text-2xl font-display font-bold text-foreground">{t("learn.section3Title")}</h2>
-          </motion.div>
+        {/* ═══ SECTION 3: BONDS & FUNDS ═══ */}
+        <motion.section id="anleihen-fonds" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={3} title={t("learn.section3Title")} level={t("learn.levelIntermediate")} />
+
           <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.bondsTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.bondsP1") }} />
-            <p>{t("learn.bondsP2")}</p>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.bondsP2") }} />
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.bondsTypes")}</p>
+            <div className="grid gap-3">
+              <TermCard term={t("learn.govBonds")} desc={t("learn.govBondsDesc")} />
+              <TermCard term={t("learn.corpBonds")} desc={t("learn.corpBondsDesc")} />
+              <TermCard term={t("learn.highYield")} desc={t("learn.highYieldDesc")} />
+            </div>
+            <InfoBox title={t("learn.goodToKnow")}>{t("learn.bondsInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.fundsTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.fundsP1") }} />
-            <div className="rounded-lg bg-muted/50 p-3">
-              <p className="font-medium text-foreground text-sm">{t("learn.fundsComparison")}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t("learn.fundsComparisonDesc")}</p>
-            </div>
+            <TermCard term={t("learn.fundsComparison")} desc={t("learn.fundsComparisonDesc")} />
           </SectionCard>
-          <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.derivativesTitle")}>
-            <p dangerouslySetInnerHTML={{ __html: t("learn.derivativesP1") }} />
-            <InfoBox title={t("learn.warning")}>{t("learn.derivativesWarning")}</InfoBox>
-          </SectionCard>
-          <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.cryptoTitle")}>
-            <p dangerouslySetInnerHTML={{ __html: t("learn.cryptoP1") }} />
-            <p>{t("learn.cryptoP2")}</p>
+
+          <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.reitsTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.reitsP1") }} />
+            <p>{t("learn.reitsP2")}</p>
           </SectionCard>
         </motion.section>
 
-        {/* Section 4: Strategies */}
-        <motion.section id="strategien" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-          <motion.div variants={fadeIn} className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">4</div>
-            <h2 className="text-2xl font-display font-bold text-foreground">{t("learn.section4Title")}</h2>
+        {/* ═══ SECTION 4: DERIVATIVES ═══ */}
+        <motion.section id="derivate" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={4} title={t("learn.section4Title")} level={t("learn.levelAdvanced")} />
+
+          <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
+            <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.derivativesIntro") }} />
           </motion.div>
+
+          <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.optionsTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.optionsP1") }} />
+            <div className="grid sm:grid-cols-2 gap-3 mt-2">
+              <TermCard term={t("learn.optionsCall")} desc={t("learn.optionsCallDesc")} />
+              <TermCard term={t("learn.optionsPut")} desc={t("learn.optionsPutDesc")} />
+            </div>
+            <div className="mt-3 rounded-lg bg-muted/50 p-3">
+              <p className="font-medium text-foreground text-sm">{t("learn.optionsGreeks")}</p>
+              <p className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: t("learn.optionsGreeksDesc") }} />
+            </div>
+            <p className="font-medium text-foreground text-sm mt-3">{t("learn.optionsStrategies")}</p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.coveredCall")} desc={t("learn.coveredCallDesc")} />
+              <TermCard term={t("learn.protectivePut")} desc={t("learn.protectivePutDesc")} />
+              <TermCard term={t("learn.straddle")} desc={t("learn.straddleDesc")} />
+              <TermCard term={t("learn.ironCondor")} desc={t("learn.ironCondorDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.futuresTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.futuresP1") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.futuresP2") }} />
+            <WarningBox title={t("learn.warning")}>{t("learn.futuresWarning")}</WarningBox>
+          </SectionCard>
+
+          <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.cfdsTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.cfdsP1") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.cfdsP2") }} />
+            <WarningBox title={t("learn.warning")}>{t("learn.cfdsWarning")}</WarningBox>
+          </SectionCard>
+
+          <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.warrantsTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.warrantsP1") }} />
+            <p>{t("learn.warrantsP2")}</p>
+          </SectionCard>
+
+          <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.certificatesTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.certificatesP1") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.certificatesP2") }} />
+          </SectionCard>
+
+          <motion.div variants={fadeIn}>
+            <InfoBox title={t("learn.goodToKnow")}>{t("learn.derivativesSummary")}</InfoBox>
+          </motion.div>
+        </motion.section>
+
+        {/* ═══ SECTION 5: CRYPTO & ALTERNATIVES ═══ */}
+        <motion.section id="krypto-alternativen" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={5} title={t("learn.section5Title")} level={t("learn.levelIntermediate")} />
+
+          <SectionCard icon={<Coins className="h-5 w-5" />} title={t("learn.cryptoTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.cryptoP1") }} />
+            <p>{t("learn.cryptoP2")}</p>
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.cryptoTypes")}</p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.cryptoBtc")} desc={t("learn.cryptoBtcDesc")} />
+              <TermCard term={t("learn.cryptoEth")} desc={t("learn.cryptoEthDesc")} />
+              <TermCard term={t("learn.cryptoAlt")} desc={t("learn.cryptoAltDesc")} />
+              <TermCard term={t("learn.cryptoStable")} desc={t("learn.cryptoStableDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<Gem className="h-5 w-5" />} title={t("learn.commoditiesTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.commoditiesP1") }} />
+            <p>{t("learn.commoditiesP2")}</p>
+          </SectionCard>
+
+          <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.altInvestTitle")}>
+            <div className="grid gap-3">
+              <TermCard term={t("learn.altP2P")} desc={t("learn.altP2PDesc")} />
+              <TermCard term={t("learn.altPE")} desc={t("learn.altPEDesc")} />
+              <TermCard term={t("learn.altCollectibles")} desc={t("learn.altCollectiblesDesc")} />
+            </div>
+          </SectionCard>
+        </motion.section>
+
+        {/* ═══ SECTION 6: STRATEGIES ═══ */}
+        <motion.section id="strategien" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={6} title={t("learn.section6Title")} level={t("learn.levelIntermediate")} />
+
           <SectionCard icon={<TrendingUp className="h-5 w-5" />} title={t("learn.buyHoldTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.buyHoldP1") }} />
-            <div className="rounded-lg bg-muted/50 p-3 italic">
-              <p className="text-sm text-foreground">{t("learn.buyHoldP2")}</p>
-            </div>
+            <div className="rounded-lg bg-muted/50 p-3 italic"><p className="text-sm text-foreground">{t("learn.buyHoldP2")}</p></div>
             <InfoBox title={t("learn.goodToKnow")}>{t("learn.buyHoldInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.dcaTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.dcaP1") }} />
             <p>{t("learn.dcaP2")}</p>
             <InfoBox title={t("learn.tipTitle")}>{t("learn.dcaInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.valueTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.valueP1") }} />
             <p>{t("learn.valueP2")}</p>
           </SectionCard>
+
           <SectionCard icon={<TrendingUp className="h-5 w-5" />} title={t("learn.growthTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.growthP1") }} />
             <p>{t("learn.growthP2")}</p>
           </SectionCard>
+
+          <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.dividendStratTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.dividendStratP1") }} />
+            <p>{t("learn.dividendStratP2")}</p>
+          </SectionCard>
+
+          <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.momentumTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.momentumP1") }} />
+          </SectionCard>
+
           <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.psychTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.psychP1") }} />
-            <div className="rounded-lg bg-muted/50 p-3 italic">
-              <p className="text-sm text-foreground">{t("learn.psychP2")}</p>
+            <div className="rounded-lg bg-muted/50 p-3 italic"><p className="text-sm text-foreground">{t("learn.psychP2")}</p></div>
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.psychBiases")}</p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.biasConfirmation")} desc={t("learn.biasConfirmationDesc")} />
+              <TermCard term={t("learn.biasLossAversion")} desc={t("learn.biasLossAversionDesc")} />
+              <TermCard term={t("learn.biasRecency")} desc={t("learn.biasRecencyDesc")} />
+              <TermCard term={t("learn.biasHerd")} desc={t("learn.biasHerdDesc")} />
             </div>
             <InfoBox title={t("learn.goodToKnow")}>{t("learn.psychInfo")}</InfoBox>
           </SectionCard>
         </motion.section>
 
-        {/* Section 5: Taxes & Costs */}
-        <motion.section id="steuern" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-          <motion.div variants={fadeIn} className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">5</div>
-            <h2 className="text-2xl font-display font-bold text-foreground">{t("learn.section5Title")}</h2>
+        {/* ═══ SECTION 7: TECHNICAL ANALYSIS ═══ */}
+        <motion.section id="technische-analyse" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={7} title={t("learn.section7Title")} level={t("learn.levelAdvanced")} />
+
+          <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
+            <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.taIntro") }} />
           </motion.div>
+
+          <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.chartPatternsTitle")}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.headShoulders")} desc={t("learn.headShouldersDesc")} />
+              <TermCard term={t("learn.doubleTop")} desc={t("learn.doubleTopDesc")} />
+              <TermCard term={t("learn.triangles")} desc={t("learn.trianglesDesc")} />
+              <TermCard term={t("learn.flagsPennants")} desc={t("learn.flagsPennantsDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.indicatorsTitle")}>
+            <div className="grid gap-3">
+              <TermCard term={t("learn.smaEma")} desc={t("learn.smaEmaDesc")} />
+              <TermCard term={t("learn.rsi")} desc={t("learn.rsiDesc")} />
+              <TermCard term={t("learn.macd")} desc={t("learn.macdDesc")} />
+              <TermCard term={t("learn.bollinger")} desc={t("learn.bollingerDesc")} />
+              <TermCard term={t("learn.volume")} desc={t("learn.volumeDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.supportResistance")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.supportResistanceP1") }} />
+          </SectionCard>
+
+          <motion.div variants={fadeIn}>
+            <WarningBox title={t("learn.warning")}>{t("learn.taWarning")}</WarningBox>
+          </motion.div>
+        </motion.section>
+
+        {/* ═══ SECTION 8: PORTFOLIO MANAGEMENT ═══ */}
+        <motion.section id="portfolio" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={8} title={t("learn.section8Title")} level={t("learn.levelAdvanced")} />
+
+          <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.assetAllocTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.assetAllocP1") }} />
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.assetAllocModels")}</p>
+            <div className="grid gap-3">
+              <TermCard term={t("learn.model6040")} desc={t("learn.model6040Desc")} />
+              <TermCard term={t("learn.modelAge")} desc={t("learn.modelAgeDesc")} />
+              <TermCard term={t("learn.modelAllWeather")} desc={t("learn.modelAllWeatherDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.rebalancingTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.rebalancingP1") }} />
+            <p>{t("learn.rebalancingP2")}</p>
+          </SectionCard>
+
+          <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.riskMgmtTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.riskMgmtP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.emergencyFundTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.emergencyFundP1") }} />
+          </SectionCard>
+        </motion.section>
+
+        {/* ═══ SECTION 9: TAXES & COSTS ═══ */}
+        <motion.section id="steuern" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={9} title={t("learn.section9Title")} level={t("learn.levelBeginner")} />
+
           <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.taxTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.taxP1") }} />
             <p dangerouslySetInnerHTML={{ __html: t("learn.taxP2") }} />
+            <TermCard term={t("learn.taxLossHarvesting")} desc={t("learn.taxLossHarvestingDesc")} />
             <InfoBox title={t("learn.tipTitle")}>{t("learn.taxInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.costsTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.costsP1") }} />
             <p>{t("learn.costsP2")}</p>
             <InfoBox title={t("learn.goodToKnow")}>{t("learn.costsInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<GraduationCap className="h-5 w-5" />} title={t("learn.compoundTitle")}>
             <p>{t("learn.compoundP1")}</p>
             <p>{t("learn.compoundP2")}</p>
             <InfoBox title={t("learn.tipTitle")}>{t("learn.compoundInfo")}</InfoBox>
           </SectionCard>
+
           <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.brokerTitle")}>
             <p>{t("learn.brokerP1")}</p>
             <p>{t("learn.brokerP2")}</p>
+            <p className="font-medium text-foreground text-sm mt-2">{t("learn.brokerTypes")}</p>
+            <div className="grid gap-3">
+              <TermCard term={t("learn.neobroker")} desc={t("learn.neobrokerDesc")} />
+              <TermCard term={t("learn.onlinebroker")} desc={t("learn.onlinebrokerDesc")} />
+              <TermCard term={t("learn.probroker")} desc={t("learn.probrokerDesc")} />
+            </div>
           </SectionCard>
         </motion.section>
 
+        {/* Disclaimer */}
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center text-xs text-muted-foreground pb-8 border-t border-border/40 pt-8">
           <p>{t("learn.disclaimer")}</p>
         </motion.div>
