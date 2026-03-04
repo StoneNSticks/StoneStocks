@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode, useMemo } from "react";
+import { learnTranslations } from "@/i18n/learnTranslations";
 
 export type Language = "de" | "en";
 
