@@ -32,11 +32,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("app_lang", l);
   }, []);
 
+  const allTranslations = useMemo(() => ({ ...translations, ...learnTranslations }), []);
+
   const t = useCallback((key: string): string => {
-    const entry = translations[key];
+    const entry = allTranslations[key];
     if (!entry) return key;
     return entry[lang] || entry["en"] || key;
-  }, [lang]);
+  }, [lang, allTranslations]);
 
   return (
     <LanguageContext.Provider value={{ lang, setLang: handleSetLang, t }}>
