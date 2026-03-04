@@ -395,7 +395,7 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
 
   "learn.psychTitle": t("Börsenpsychologie", "Market Psychology"),
   "learn.psychP1": t("Emotionen sind der größte Feind des Investors. <strong>Angst</strong> führt zu Panikverkäufen, <strong>Gier</strong> zu überhöhten Einstiegen bei Hypes.", "Emotions are the investor's greatest enemy. <strong>Fear</strong> leads to panic selling, <strong>greed</strong> leads to buying at inflated prices during hypes."),
-  "learn.psychP2": t("Warren Buffett: „Sei ängstlich, wenn andere gierig sind, und gierig, wenn andere ängstlich sind."", "Warren Buffett: \"Be fearful when others are greedy, and greedy when others are fearful.\""),
+  "learn.psychP2": t('Warren Buffett: \u201ESei \u00E4ngstlich, wenn andere gierig sind, und gierig, wenn andere \u00E4ngstlich sind.\u201C', 'Warren Buffett: "Be fearful when others are greedy, and greedy when others are fearful."'),
   "learn.psychBiases": t("Kognitive Verzerrungen (Biases)", "Cognitive Biases"),
   "learn.biasConfirmation": t("Bestätigungsfehler", "Confirmation Bias"),
   "learn.biasConfirmationDesc": t("Du suchst nur nach Informationen, die deine Meinung bestätigen, und ignorierst Gegenargumente.", "You only seek information that confirms your opinion and ignore counterarguments."),
