@@ -361,7 +361,7 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
 
   "learn.buyHoldTitle": t("Buy & Hold – Langfristiges Investieren", "Buy & Hold – Long-Term Investing"),
   "learn.buyHoldP1": t("Die <strong>Buy & Hold</strong>-Strategie bedeutet, Aktien zu kaufen und über viele Jahre zu halten, unabhängig von kurzfristigen Schwankungen. Historisch hat der Aktienmarkt langfristig im Durchschnitt 7–10% pro Jahr zugelegt.", "The <strong>Buy & Hold</strong> strategy means buying stocks and holding them for many years, regardless of short-term fluctuations. Historically, the stock market has averaged 7–10% annual returns over the long term."),
-  "learn.buyHoldP2": t("Warren Buffett: „Unsere bevorzugte Haltedauer ist: für immer."", "Warren Buffett: \"Our favorite holding period is forever.\""),
+  "learn.buyHoldP2": t('Warren Buffett: \u201EUnsere bevorzugte Haltedauer ist: f\u00FCr immer.\u201C', 'Warren Buffett: "Our favorite holding period is forever."'),
   "learn.buyHoldInfo": t("Wer 1980 $10.000 in den S&P 500 investiert hätte, hätte heute über $1 Million – allein durch Halten und Reinvestieren der Dividenden.", "If you had invested $10,000 in the S&P 500 in 1980, you would have over $1 million today – just by holding and reinvesting dividends."),
 
   "learn.dcaTitle": t("Cost-Average-Effekt (Sparplan)", "Dollar-Cost Averaging (DCA)"),
