@@ -42,6 +42,8 @@ const App = () => (
               <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/learn" element={<LearnPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
