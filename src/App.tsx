@@ -17,6 +17,8 @@ import AuthPage from "./pages/AuthPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LearnPage from "./pages/LearnPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
