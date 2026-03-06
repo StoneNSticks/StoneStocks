@@ -1401,6 +1401,7 @@ Deno.serve(async (req) => {
       case "simfin_statements": result = await handleSimFinStatements(symbol!); break;
       case "eulerpool_profile": result = await handleEulerpoolProfile(symbol!); break;
       case "hidden_gems": result = await handleHiddenGems(); break;
+      case "commodities": result = await handleCommodities(); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
