@@ -44,6 +44,31 @@ export function TermCard({ term, desc }: { term: string; desc: string }) {
   );
 }
 
+export function FormulaBox({ title, formula, explanation }: { title: string; formula: string; explanation: string }) {
+  return (
+    <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-4 my-2">
+      <p className="font-semibold text-foreground text-sm mb-2 flex items-center gap-2">📐 {title}</p>
+      <div className="bg-background/80 rounded-md p-3 font-mono text-sm text-primary text-center border border-border/30 mb-2 overflow-x-auto">
+        {formula}
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed">{explanation}</p>
+    </div>
+  );
+}
+
+export function StepList({ steps }: { steps: string[] }) {
+  return (
+    <div className="space-y-2 mt-2">
+      {steps.map((step, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs mt-0.5">{i + 1}</div>
+          <p className="text-sm text-muted-foreground">{step}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ProConGrid({ pros, cons, prosTitle, consTitle }: { pros: string[]; cons: string[]; prosTitle: string; consTitle: string }) {
   return (
     <div className="grid sm:grid-cols-2 gap-3 mt-2">
