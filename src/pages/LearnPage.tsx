@@ -32,6 +32,7 @@ export default function LearnPage() {
     { label: t("learn.toc8"), href: "#portfolio" },
     { label: t("learn.toc9"), href: "#steuern" },
     { label: t("learn.toc10"), href: "#formeln" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
