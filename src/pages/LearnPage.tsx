@@ -1,8 +1,8 @@
 import { Header } from "@/components/Header";
-import { BookOpen, TrendingUp, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale } from "lucide-react";
+import { BookOpen, TrendingUp, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
-import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, fadeIn, stagger } from "@/components/learn/LearnComponents";
+import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, fadeIn, stagger } from "@/components/learn/LearnComponents";
 
 export default function LearnPage() {
   const t = useT();
