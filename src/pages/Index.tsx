@@ -6,6 +6,7 @@ import { TopCompanies } from "@/components/TopCompanies";
 import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
 import { HiddenGems } from "@/components/HiddenGems";
+import { CommoditiesSection } from "@/components/CommoditiesSection";
 import { useT } from "@/contexts/LanguageContext";
 
 const Index = () => {
@@ -26,6 +27,7 @@ const Index = () => {
           <div className="lg:col-span-3"><MarketNewsSection limit={8} /></div>
           <div className="lg:col-span-2"><TopCompanies /></div>
         </div>
+        <div className="mb-4 sm:mb-6"><CommoditiesSection /></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <GainersLosers />
           <MostActive />
