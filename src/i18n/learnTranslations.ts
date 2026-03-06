@@ -539,4 +539,110 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
 
   "learn.popularEtfs": t("Beliebte ETFs", "Popular ETFs"),
   "learn.quoteTitle": t("📌 Zitat", "📌 Quote"),
+
+  // ══════════════════════════════════════════════════════════════
+  // FORMULAS & EXPERT ADDITIONS
+  // ══════════════════════════════════════════════════════════════
+
+  // DCF
+  "learn.dcfTitle": t("Discounted Cash Flow (DCF)", "Discounted Cash Flow (DCF)"),
+  "learn.dcfFormula": t("V = Σ [FCFₜ / (1 + r)ᵗ] + TV / (1 + r)ⁿ", "V = Σ [FCFₜ / (1 + r)ᵗ] + TV / (1 + r)ⁿ"),
+  "learn.dcfExplanation": t(
+    "V = Unternehmenswert, FCF = Freier Cashflow im Jahr t, r = Diskontierungsrate (WACC), TV = Terminal Value. Die DCF-Analyse berechnet den heutigen Wert aller zukünftigen Cashflows. Sie ist die Basis der Fundamentalanalyse und wird von Warren Buffett und institutionellen Investoren verwendet.",
+    "V = Enterprise value, FCF = Free cash flow in year t, r = Discount rate (WACC), TV = Terminal value. DCF analysis calculates the present value of all future cash flows. It's the foundation of fundamental analysis, used by Warren Buffett and institutional investors."
+  ),
+
+  // CAPM
+  "learn.capmTitle": t("Capital Asset Pricing Model (CAPM)", "Capital Asset Pricing Model (CAPM)"),
+  "learn.capmFormula": t("E(Rᵢ) = Rf + βᵢ × (E(Rm) - Rf)", "E(Rᵢ) = Rf + βᵢ × (E(Rm) - Rf)"),
+  "learn.capmExplanation": t(
+    "E(Rᵢ) = erwartete Rendite der Anlage, Rf = risikofreier Zinssatz, βᵢ = Beta der Anlage, E(Rm) = erwartete Marktrendite. Die Marktrisikoprämie (E(Rm) - Rf) beträgt historisch ca. 5-7%. Beispiel: β=1.5, Rf=4%, Marktprämie=6% → E(R)=4%+1.5×6%=13%.",
+    "E(Rᵢ) = expected return, Rf = risk-free rate, βᵢ = asset beta, E(Rm) = expected market return. The market risk premium (E(Rm) - Rf) is historically ~5-7%. Example: β=1.5, Rf=4%, premium=6% → E(R)=4%+1.5×6%=13%."
+  ),
+
+  // Sharpe Ratio
+  "learn.sharpeTitle": t("Sharpe Ratio", "Sharpe Ratio"),
+  "learn.sharpeFormula": t("S = (Rp - Rf) / σp", "S = (Rp - Rf) / σp"),
+  "learn.sharpeExplanation": t(
+    "Rp = Portfolio-Rendite, Rf = risikofreier Zinssatz, σp = Standardabweichung der Portfolio-Rendite. Misst die risikoadjustierte Rendite. S > 1 = gut, S > 2 = sehr gut, S > 3 = exzellent. Ein Sharpe Ratio von 2 bedeutet: Pro Einheit Risiko erhältst du 2 Einheiten Überrendite.",
+    "Rp = Portfolio return, Rf = risk-free rate, σp = Standard deviation of portfolio return. Measures risk-adjusted return. S > 1 = good, S > 2 = very good, S > 3 = excellent. A Sharpe Ratio of 2 means: per unit of risk, you get 2 units of excess return."
+  ),
+
+  // Black-Scholes
+  "learn.bsTitle": t("Black-Scholes Optionspreismodell", "Black-Scholes Option Pricing Model"),
+  "learn.bsFormula": t("C = S·N(d₁) - K·e⁻ʳᵗ·N(d₂)", "C = S·N(d₁) - K·e⁻ʳᵗ·N(d₂)"),
+  "learn.bsExplanation": t(
+    "C = Call-Preis, S = aktueller Aktienkurs, K = Strike-Preis, r = risikofreier Zins, t = Restlaufzeit, N() = kumulative Normalverteilung. d₁ = [ln(S/K) + (r + σ²/2)·t] / (σ·√t), d₂ = d₁ - σ·√t. Das Black-Scholes-Modell ist die Grundlage der modernen Optionsbewertung und brachte Scholes und Merton den Nobelpreis.",
+    "C = Call price, S = current stock price, K = strike price, r = risk-free rate, t = time to expiry, N() = cumulative normal distribution. d₁ = [ln(S/K) + (r + σ²/2)·t] / (σ·√t), d₂ = d₁ - σ·√t. The Black-Scholes model is the foundation of modern option pricing and earned Scholes and Merton the Nobel Prize."
+  ),
+
+  // Gordon Growth Model
+  "learn.gordonTitle": t("Gordon Growth Model (Dividendenmodell)", "Gordon Growth Model (Dividend Model)"),
+  "learn.gordonFormula": t("P = D₁ / (r - g)", "P = D₁ / (r - g)"),
+  "learn.gordonExplanation": t(
+    "P = fairer Aktienkurs, D₁ = erwartete Dividende nächstes Jahr, r = geforderte Rendite, g = Dividendenwachstumsrate. Beispiel: D₁=$3, r=10%, g=5% → P=$3/(0.10-0.05)=$60. Nur gültig wenn r > g. Ideal für stabile Dividendenzahler wie Coca-Cola oder P&G.",
+    "P = fair stock price, D₁ = expected dividend next year, r = required return, g = dividend growth rate. Example: D₁=$3, r=10%, g=5% → P=$3/(0.10-0.05)=$60. Only valid when r > g. Ideal for stable dividend payers like Coca-Cola or P&G."
+  ),
+
+  // Kelly Criterion
+  "learn.kellyTitle": t("Kelly-Kriterium (Positionsgröße)", "Kelly Criterion (Position Sizing)"),
+  "learn.kellyFormula": t("f* = (p·b - q) / b", "f* = (p·b - q) / b"),
+  "learn.kellyExplanation": t(
+    "f* = optimaler Anteil des Kapitals, p = Gewinnwahrscheinlichkeit, q = 1-p (Verlustwahrscheinlichkeit), b = Gewinn/Verlust-Verhältnis. Beispiel: 60% Gewinnrate, 2:1 R/R → f*=(0.6×2-0.4)/2=0.4=40%. In der Praxis nutzt man oft \"Half Kelly\" (f*/2) für mehr Sicherheit.",
+    "f* = optimal capital fraction, p = win probability, q = 1-p (loss probability), b = win/loss ratio. Example: 60% win rate, 2:1 R/R → f*=(0.6×2-0.4)/2=0.4=40%. In practice, \"Half Kelly\" (f*/2) is often used for extra safety."
+  ),
+
+  // WACC
+  "learn.waccTitle": t("WACC (Kapitalkosten)", "WACC (Cost of Capital)"),
+  "learn.waccFormula": t("WACC = (E/V)·Re + (D/V)·Rd·(1-Tc)", "WACC = (E/V)·Re + (D/V)·Rd·(1-Tc)"),
+  "learn.waccExplanation": t(
+    "E = Marktwert Eigenkapital, D = Marktwert Fremdkapital, V = E+D, Re = Eigenkapitalkosten (aus CAPM), Rd = Fremdkapitalkosten, Tc = Steuersatz. WACC wird als Diskontierungsrate in DCF-Analysen verwendet. Typische Werte: 8-12% für etablierte Unternehmen, 15-25% für Startups.",
+    "E = Equity market value, D = Debt market value, V = E+D, Re = Cost of equity (from CAPM), Rd = Cost of debt, Tc = Tax rate. WACC is used as the discount rate in DCF analyses. Typical values: 8-12% for established companies, 15-25% for startups."
+  ),
+
+  // Valuation Ratios Deep Dive
+  "learn.valuationDeepTitle": t("Bewertungskennzahlen im Detail", "Valuation Metrics Deep Dive"),
+  "learn.evFormulaTitle": t("Enterprise Value (EV)", "Enterprise Value (EV)"),
+  "learn.evFormula": t("EV = Marktkapitalisierung + Schulden - Cash", "EV = Market Cap + Debt - Cash"),
+  "learn.evExplanation": t(
+    "Enterprise Value repräsentiert den theoretischen Übernahmepreis eines Unternehmens. EV/EBITDA ist ein besserer Vergleichsmaßstab als KGV, da es Verschuldung und Cash berücksichtigt. EV/EBITDA < 10 gilt oft als günstig, > 20 als teuer (branchenabhängig).",
+    "Enterprise Value represents the theoretical takeover price of a company. EV/EBITDA is a better comparison metric than P/E as it accounts for debt and cash. EV/EBITDA < 10 is often considered cheap, > 20 expensive (industry-dependent)."
+  ),
+
+  // Fibonacci
+  "learn.fibonacciTitle": t("Fibonacci-Retracement", "Fibonacci Retracement"),
+  "learn.fibonacciP1": t(
+    "Fibonacci-Retracements basieren auf der mathematischen Fibonacci-Folge und werden zur Identifikation potenzieller Unterstützungs-/Widerstandsniveaus verwendet. Die wichtigsten Levels: <strong>23.6%</strong> (schwaches Retracement), <strong>38.2%</strong> (moderates Retracement), <strong>50%</strong> (psychologisch wichtig), <strong>61.8%</strong> (\"Goldener Schnitt\" – stärkstes Level), <strong>78.6%</strong> (tiefes Retracement).",
+    "Fibonacci retracements are based on the mathematical Fibonacci sequence and are used to identify potential support/resistance levels. Key levels: <strong>23.6%</strong> (shallow retracement), <strong>38.2%</strong> (moderate retracement), <strong>50%</strong> (psychologically important), <strong>61.8%</strong> (\"Golden Ratio\" – strongest level), <strong>78.6%</strong> (deep retracement)."
+  ),
+
+  // Elliott Wave
+  "learn.elliottTitle": t("Elliott-Wellen-Theorie", "Elliott Wave Theory"),
+  "learn.elliottP1": t(
+    "Die Elliott-Wellen-Theorie beschreibt Marktbewegungen als Fraktalmuster: <strong>5 Impulswellen</strong> in Trendrichtung (1-2-3-4-5) gefolgt von <strong>3 Korrekturwellen</strong> (A-B-C). Welle 3 ist typischerweise die stärkste und längste. Die Theorie nutzt Fibonacci-Verhältnisse für Kursziele: Welle 3 = 1.618 × Welle 1, Welle 5 = Welle 1.",
+    "Elliott Wave Theory describes market movements as fractal patterns: <strong>5 impulse waves</strong> in the trend direction (1-2-3-4-5) followed by <strong>3 corrective waves</strong> (A-B-C). Wave 3 is typically the strongest and longest. The theory uses Fibonacci ratios for price targets: Wave 3 = 1.618 × Wave 1, Wave 5 = Wave 1."
+  ),
+
+  // Monte Carlo
+  "learn.monteCarloTitle": t("Monte-Carlo-Simulation", "Monte Carlo Simulation"),
+  "learn.monteCarloP1": t(
+    "Monte-Carlo-Simulationen nutzen <strong>Zufallszahlen</strong>, um tausende mögliche Portfolio-Entwicklungen zu simulieren. Damit berechnet man z.B. die Wahrscheinlichkeit, ein bestimmtes Ruhestandsziel zu erreichen. Man modelliert Rendite und Volatilität als Zufallsvariablen und führt 10.000+ Simulationen durch. Das Ergebnis: eine Wahrscheinlichkeitsverteilung der Portfoliowerte.",
+    "Monte Carlo simulations use <strong>random numbers</strong> to simulate thousands of possible portfolio outcomes. They calculate, for example, the probability of reaching a specific retirement goal. Returns and volatility are modeled as random variables, with 10,000+ simulations run. The result: a probability distribution of portfolio values."
+  ),
+
+  // Modern Portfolio Theory
+  "learn.mptTitle": t("Moderne Portfoliotheorie (Markowitz)", "Modern Portfolio Theory (Markowitz)"),
+  "learn.mptP1": t(
+    "Harry Markowitz entwickelte 1952 die Moderne Portfoliotheorie (Nobelpreis 1990). Kernidee: Durch geschickte Kombination von Anlagen kann man bei gleichem Risiko eine höhere Rendite erzielen (oder bei gleicher Rendite weniger Risiko). Die <strong>Effizienzgrenze</strong> zeigt die optimalen Portfolio-Kombinationen. Das <strong>Tangentialportfolio</strong> ist der Punkt, an dem die Kapitalmarktlinie die Effizienzgrenze berührt – das theoretisch beste risikobereinigte Portfolio.",
+    "Harry Markowitz developed Modern Portfolio Theory in 1952 (Nobel Prize 1990). Core idea: Through clever asset combination, you can achieve higher returns at the same risk (or less risk at the same return). The <strong>efficient frontier</strong> shows optimal portfolio combinations. The <strong>tangency portfolio</strong> is where the capital market line touches the efficient frontier – the theoretically best risk-adjusted portfolio."
+  ),
+  "learn.mptFormula": t("σp² = Σᵢ Σⱼ wᵢ·wⱼ·σᵢⱼ", "σp² = Σᵢ Σⱼ wᵢ·wⱼ·σᵢⱼ"),
+  "learn.mptExplanation": t(
+    "σp² = Portfolio-Varianz, wᵢ = Gewichtung der Anlage i, σᵢⱼ = Kovarianz zwischen Anlage i und j. Je niedriger die Korrelation zwischen Anlagen, desto stärker der Diversifikationseffekt. Bei perfekt negativ korrellierten Anlagen (ρ = -1) kann das Risiko theoretisch auf null reduziert werden.",
+    "σp² = Portfolio variance, wᵢ = Weight of asset i, σᵢⱼ = Covariance between asset i and j. The lower the correlation between assets, the stronger the diversification effect. With perfectly negatively correlated assets (ρ = -1), risk can theoretically be reduced to zero."
+  ),
+
+  // Section 10 headers
+  "learn.toc10": t("10. Formeln & Expertenwissen", "10. Formulas & Expert Knowledge"),
+  "learn.section10Title": t("Formeln & Expertenwissen", "Formulas & Expert Knowledge"),
 };
