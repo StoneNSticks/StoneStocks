@@ -403,6 +403,62 @@ export default function LearnPage() {
           </SectionCard>
         </motion.section>
 
+        {/* ═══ SECTION 10: FORMULAS & EXPERT KNOWLEDGE ═══ */}
+        <motion.section id="formeln" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={10} title={t("learn.section10Title")} level={t("learn.levelAdvanced")} />
+
+          <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.dcfTitle")}>
+            <p>{t("learn.dcfExplanation").split('.')[0]}.</p>
+            <FormulaBox title={t("learn.dcfTitle")} formula={t("learn.dcfFormula")} explanation={t("learn.dcfExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.capmTitle")}>
+            <FormulaBox title={t("learn.capmTitle")} formula={t("learn.capmFormula")} explanation={t("learn.capmExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.sharpeTitle")}>
+            <FormulaBox title={t("learn.sharpeTitle")} formula={t("learn.sharpeFormula")} explanation={t("learn.sharpeExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.bsTitle")}>
+            <FormulaBox title={t("learn.bsTitle")} formula={t("learn.bsFormula")} explanation={t("learn.bsExplanation")} />
+            <WarningBox title={t("learn.warning")}>{t("learn.taWarning")}</WarningBox>
+          </SectionCard>
+
+          <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.gordonTitle")}>
+            <FormulaBox title={t("learn.gordonTitle")} formula={t("learn.gordonFormula")} explanation={t("learn.gordonExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.kellyTitle")}>
+            <FormulaBox title={t("learn.kellyTitle")} formula={t("learn.kellyFormula")} explanation={t("learn.kellyExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.waccTitle")}>
+            <FormulaBox title={t("learn.waccTitle")} formula={t("learn.waccFormula")} explanation={t("learn.waccExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.evFormulaTitle")}>
+            <FormulaBox title={t("learn.evFormulaTitle")} formula={t("learn.evFormula")} explanation={t("learn.evExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.mptTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.mptP1") }} />
+            <FormulaBox title={t("learn.mptTitle")} formula={t("learn.mptFormula")} explanation={t("learn.mptExplanation")} />
+          </SectionCard>
+
+          <SectionCard icon={<CandlestickChart className="h-5 w-5" />} title={t("learn.fibonacciTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.fibonacciP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.elliottTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.elliottP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.monteCarloTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.monteCarloP1") }} />
+          </SectionCard>
+        </motion.section>
+
         {/* Disclaimer */}
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center text-xs text-muted-foreground pb-8 border-t border-border/40 pt-8">
           <p>{t("learn.disclaimer")}</p>
