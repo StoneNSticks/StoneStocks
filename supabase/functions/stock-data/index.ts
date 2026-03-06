@@ -1113,6 +1113,43 @@ async function handleEulerpoolProfile(symbol: string) {
   return null;
 }
 
+// === Commodities ===
+const COMMODITY_CONFIG = [
+  { name: "Gold", yahooSymbol: "GC=F", unit: "oz" },
+  { name: "Silver", yahooSymbol: "SI=F", unit: "oz" },
+  { name: "Crude Oil (WTI)", yahooSymbol: "CL=F", unit: "bbl" },
+  { name: "Brent Crude", yahooSymbol: "BZ=F", unit: "bbl" },
+  { name: "Natural Gas", yahooSymbol: "NG=F", unit: "MMBtu" },
+  { name: "Copper", yahooSymbol: "HG=F", unit: "lb" },
+  { name: "Platinum", yahooSymbol: "PL=F", unit: "oz" },
+  { name: "Wheat", yahooSymbol: "ZW=F", unit: "bu" },
+];
+
+async function handleCommodities() {
+  const cacheKey = "market:commodities:v1";
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const results = await Promise.all(
+    COMMODITY_CONFIG.map(async (cfg) => {
+      const quote = await fetchYahooQuote(cfg.yahooSymbol);
+      return {
+        name: cfg.name,
+        symbol: cfg.yahooSymbol,
+        unit: cfg.unit,
+        price: quote?.price || 0,
+        prevClose: quote?.prevClose || 0,
+        change: quote?.change || 0,
+        changePercent: quote?.changePercent || 0,
+      };
+    })
+  );
+
+  const valid = results.filter(c => c.price > 0);
+  await setCache(cacheKey, valid, "yahoo", TTL.commodities);
+  return valid;
+}
+
 // === Hidden Gems - stocks with strong buy consensus + positive momentum ===
 const HIDDEN_GEM_CANDIDATES = [
   { symbol: "PLTR", name: "Palantir" }, { symbol: "SOFI", name: "SoFi Technologies" },
