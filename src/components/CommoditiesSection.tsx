@@ -55,7 +55,7 @@ export function CommoditiesSection() {
         {data.map((c: any) => {
           const isUp = c.change >= 0;
           return (
-            <div key={c.name} className="rounded-xl bg-muted/40 border border-border/30 p-3 hover:border-primary/30 transition-colors">
+            <Link key={c.name} to={`/commodity/${encodeURIComponent(c.name)}`} className="rounded-xl bg-muted/40 border border-border/30 p-3 hover:border-primary/30 transition-colors block">
               <div className="flex items-center gap-2 mb-1.5">
                 {ICONS[c.name] || <Gem className="h-4 w-4 text-muted-foreground" />}
                 <span className="text-xs font-medium text-muted-foreground truncate">
