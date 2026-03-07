@@ -53,3 +53,4 @@ export const getSimFinStatements = (symbol: string) => callStockApi({ action: "s
 export const getEulerpoolProfile = (symbol: string) => callStockApi({ action: "eulerpool_profile", symbol });
 export const getHiddenGems = () => callStockApi({ action: "hidden_gems" });
 export const getCommodities = () => callStockApi({ action: "commodities" });
+export const getCommodityHistory = (name: string, period: string) => callStockApi({ action: "commodity_history", symbol: name, interval: period });

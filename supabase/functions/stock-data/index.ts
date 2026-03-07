@@ -1150,6 +1150,54 @@ async function handleCommodities() {
   return valid;
 }
 
+// === Commodity History ===
+const COMMODITY_YAHOO_MAP: Record<string, string> = {
+  Gold: "GC=F", Silver: "SI=F", "Crude Oil (WTI)": "CL=F", "Brent Crude": "BZ=F",
+  "Natural Gas": "NG=F", Copper: "HG=F", Platinum: "PL=F", Wheat: "ZW=F",
+};
+
+async function handleCommodityHistory(name: string, period: string) {
+  const yahooSymbol = COMMODITY_YAHOO_MAP[name];
+  if (!yahooSymbol) return [];
+  
+  const rangeMap: Record<string, string> = { "1W": "5d", "1M": "1mo", "3M": "3mo", "6M": "6mo", "1Y": "1y" };
+  const range = rangeMap[period] || "1mo";
+  const cacheKey = `commodity_history:${name}:${range}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=${range}`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const result = data?.chart?.result?.[0];
+    if (!result?.timestamp) return [];
+    
+    const timestamps = result.timestamp;
+    const closes = result.indicators?.quote?.[0]?.close || [];
+    const highs = result.indicators?.quote?.[0]?.high || [];
+    const lows = result.indicators?.quote?.[0]?.low || [];
+    const opens = result.indicators?.quote?.[0]?.open || [];
+    
+    const history = timestamps.map((t: number, i: number) => ({
+      date: new Date(t * 1000).toISOString().split("T")[0],
+      close: Math.round((closes[i] || 0) * 100) / 100,
+      high: Math.round((highs[i] || 0) * 100) / 100,
+      low: Math.round((lows[i] || 0) * 100) / 100,
+      open: Math.round((opens[i] || 0) * 100) / 100,
+    })).filter((d: any) => d.close > 0);
+    
+    await setCache(cacheKey, history, "yahoo", TTL.commodities);
+    return history;
+  } catch (e) {
+    console.warn(`Commodity history for ${name} failed:`, e);
+    return [];
+  }
+}
+
 // === Hidden Gems - stocks with strong buy consensus + positive momentum ===
 const HIDDEN_GEM_CANDIDATES = [
   { symbol: "PLTR", name: "Palantir" }, { symbol: "SOFI", name: "SoFi Technologies" },
@@ -1439,6 +1487,7 @@ Deno.serve(async (req) => {
       case "eulerpool_profile": result = await handleEulerpoolProfile(symbol!); break;
       case "hidden_gems": result = await handleHiddenGems(); break;
       case "commodities": result = await handleCommodities(); break;
+      case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

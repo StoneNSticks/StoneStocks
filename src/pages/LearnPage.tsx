@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import { BookOpen, TrendingUp, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma } from "lucide-react";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, fadeIn, stagger } from "@/components/learn/LearnComponents";
@@ -32,6 +32,9 @@ export default function LearnPage() {
     { label: t("learn.toc8"), href: "#portfolio" },
     { label: t("learn.toc9"), href: "#steuern" },
     { label: t("learn.toc10"), href: "#formeln" },
+    { label: t("learn.toc11"), href: "#microstructure" },
+    { label: t("learn.toc12"), href: "#behavioral" },
+    { label: t("learn.toc13"), href: "#macro" },
   ];
 
   return (
@@ -55,7 +58,7 @@ export default function LearnPage() {
         {/* TOC */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-6">
           <h2 className="font-display font-semibold text-foreground mb-3">{t("learn.toc")}</h2>
-          <nav className="grid sm:grid-cols-3 gap-2">
+          <nav className="grid sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {toc.map((item) => (
               <a key={item.href} href={item.href} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors">
                 <ArrowRight className="h-3.5 w-3.5" />{item.label}
@@ -457,6 +460,96 @@ export default function LearnPage() {
 
           <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.monteCarloTitle")}>
             <p dangerouslySetInnerHTML={{ __html: t("learn.monteCarloP1") }} />
+          </SectionCard>
+        </motion.section>
+
+        {/* ═══ SECTION 11: MARKET MICROSTRUCTURE ═══ */}
+        <motion.section id="microstructure" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={11} title={t("learn.section11Title")} level={t("learn.levelAdvanced")} />
+
+          <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.orderBookTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP1") }} />
+            <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP2") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Network className="h-5 w-5" />} title={t("learn.marketMakersTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.marketMakersP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Zap className="h-5 w-5" />} title={t("learn.hftTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.hftP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<TrendingDown className="h-5 w-5" />} title={t("learn.shortSellingTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.shortSellingP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Gauge className="h-5 w-5" />} title={t("learn.slippageTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.slippageP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.marginTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.marginP1") }} />
+            <WarningBox title={t("learn.warning")}>{t("learn.marginWarning")}</WarningBox>
+          </SectionCard>
+        </motion.section>
+
+        {/* ═══ SECTION 12: BEHAVIORAL FINANCE ═══ */}
+        <motion.section id="behavioral" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={12} title={t("learn.section12Title")} level={t("learn.levelAdvanced")} />
+
+          <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
+            <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.behavioralIntro") }} />
+          </motion.div>
+
+          <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.prospectTheoryTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.prospectTheoryP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Eye className="h-5 w-5" />} title={t("learn.anomaliesTitle")}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.anchoring")} desc={t("learn.anchoringDesc")} />
+              <TermCard term={t("learn.overconfidence")} desc={t("learn.overconfidenceDesc")} />
+              <TermCard term={t("learn.dispositionEffect")} desc={t("learn.dispositionEffectDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.anomaliesTitle")}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TermCard term={t("learn.januaryEffect")} desc={t("learn.januaryEffectDesc")} />
+              <TermCard term={t("learn.momentumAnomaly")} desc={t("learn.momentumAnomalyDesc")} />
+              <TermCard term={t("learn.valueAnomaly")} desc={t("learn.valueAnomalyDesc")} />
+              <TermCard term={t("learn.sizeAnomaly")} desc={t("learn.sizeAnomalyDesc")} />
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.emhTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.emhP1") }} />
+          </SectionCard>
+        </motion.section>
+
+        {/* ═══ SECTION 13: GLOBAL MARKETS & MACRO ═══ */}
+        <motion.section id="macro" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+          <SectionHeader num={13} title={t("learn.section13Title")} level={t("learn.levelAdvanced")} />
+
+          <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.centralBanksTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.centralBanksP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.inflationTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.inflationP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.yieldCurveTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.yieldCurveP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.businessCycleTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.businessCycleP1") }} />
+          </SectionCard>
+
+          <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.geopoliticsTitle")}>
+            <p dangerouslySetInnerHTML={{ __html: t("learn.geopoliticsP1") }} />
           </SectionCard>
         </motion.section>
 
