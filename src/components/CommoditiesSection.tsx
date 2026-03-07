@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { Skeleton } from "@/components/ui/skeleton";
