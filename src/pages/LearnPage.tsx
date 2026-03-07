@@ -58,7 +58,7 @@ export default function LearnPage() {
         {/* TOC */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-6">
           <h2 className="font-display font-semibold text-foreground mb-3">{t("learn.toc")}</h2>
-          <nav className="grid sm:grid-cols-3 gap-2">
+          <nav className="grid sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {toc.map((item) => (
               <a key={item.href} href={item.href} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors">
                 <ArrowRight className="h-3.5 w-3.5" />{item.label}
