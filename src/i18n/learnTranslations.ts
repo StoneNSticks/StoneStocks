@@ -645,4 +645,141 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
   // Section 10 headers
   "learn.toc10": t("10. Formeln & Expertenwissen", "10. Formulas & Expert Knowledge"),
   "learn.section10Title": t("Formeln & Expertenwissen", "Formulas & Expert Knowledge"),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 11: MARKET MICROSTRUCTURE & ADVANCED TRADING
+  // ══════════════════════════════════════════════════════════════
+  "learn.toc11": t("11. Marktmikrostruktur & Trading", "11. Market Microstructure & Trading"),
+  "learn.section11Title": t("Marktmikrostruktur & Advanced Trading", "Market Microstructure & Advanced Trading"),
+
+  "learn.orderBookTitle": t("Das Orderbuch verstehen", "Understanding the Order Book"),
+  "learn.orderBookP1": t(
+    "Das <strong>Orderbuch</strong> zeigt alle offenen Kauf- (Bid) und Verkaufsorders (Ask) für ein Wertpapier. <strong>Level 1</strong>-Daten zeigen nur den besten Bid/Ask. <strong>Level 2</strong> (Market Depth) zeigt alle Orders nach Preis gestaffelt. Die <strong>Bid-Ask-Spanne</strong> (Spread) ist ein direktes Maß für Liquidität – enge Spreads = hohe Liquidität.",
+    "The <strong>order book</strong> shows all open buy (bid) and sell (ask) orders for a security. <strong>Level 1</strong> data shows only the best bid/ask. <strong>Level 2</strong> (market depth) shows all orders stacked by price. The <strong>bid-ask spread</strong> is a direct measure of liquidity – tight spreads = high liquidity."
+  ),
+  "learn.orderBookP2": t(
+    "Große institutionelle Orders werden oft in <strong>Iceberg Orders</strong> aufgeteilt, um den wahren Umfang zu verbergen. <strong>Dark Pools</strong> sind alternative Handelsplätze, auf denen große Blöcke gehandelt werden, ohne den öffentlichen Markt zu beeinflussen.",
+    "Large institutional orders are often split into <strong>iceberg orders</strong> to hide their true size. <strong>Dark pools</strong> are alternative trading venues where large blocks are traded without affecting the public market."
+  ),
+
+  "learn.marketMakersTitle": t("Market Maker & Liquidität", "Market Makers & Liquidity"),
+  "learn.marketMakersP1": t(
+    "<strong>Market Maker</strong> stellen kontinuierlich Kauf- und Verkaufskurse und verdienen am Spread. Sie sind essenziell für die Marktliquidität. Bekannte Market Maker: Citadel Securities, Virtu Financial, Jane Street. In Krisenzeiten können Market Maker ihre Spreads deutlich ausweiten, was die Handelskosten erhöht.",
+    "<strong>Market makers</strong> continuously provide buy and sell quotes, earning the spread. They are essential for market liquidity. Notable market makers: Citadel Securities, Virtu Financial, Jane Street. During crises, market makers may significantly widen their spreads, increasing trading costs."
+  ),
+
+  "learn.hftTitle": t("Hochfrequenzhandel (HFT)", "High-Frequency Trading (HFT)"),
+  "learn.hftP1": t(
+    "<strong>HFT</strong> nutzt Algorithmen und extrem schnelle Verbindungen (Mikrosekunden), um tausende Trades pro Sekunde auszuführen. HFT macht ~50% des US-Aktienhandelsvolumens aus. Strategien: <strong>Latenz-Arbitrage</strong> (Preisunterschiede zwischen Börsen), <strong>Statistical Arbitrage</strong> (korrelierte Wertpapiere), <strong>Market Making</strong> (automatisiertes Spread-Earning).",
+    "<strong>HFT</strong> uses algorithms and extremely fast connections (microseconds) to execute thousands of trades per second. HFT accounts for ~50% of US stock trading volume. Strategies: <strong>latency arbitrage</strong> (price differences between exchanges), <strong>statistical arbitrage</strong> (correlated securities), <strong>market making</strong> (automated spread earning)."
+  ),
+
+  "learn.shortSellingTitle": t("Leerverkäufe (Short Selling)", "Short Selling"),
+  "learn.shortSellingP1": t(
+    "Beim <strong>Leerverkauf</strong> leihst du dir Aktien und verkaufst sie sofort, in der Hoffnung, sie später günstiger zurückzukaufen. Gewinn = Verkaufspreis - Rückkaufpreis - Leihgebühren. <strong>Risiko: theoretisch unbegrenzt</strong>, da der Kurs unendlich steigen kann. <strong>Short Squeeze</strong>: Wenn viele Shorts gleichzeitig eindecken müssen, kann der Kurs explodieren (GameStop 2021: +1.500% in 2 Wochen).",
+    "In <strong>short selling</strong>, you borrow shares and sell them immediately, hoping to buy them back cheaper later. Profit = selling price - buyback price - borrowing fees. <strong>Risk: theoretically unlimited</strong>, as the price can rise infinitely. <strong>Short squeeze</strong>: When many shorts must cover simultaneously, prices can explode (GameStop 2021: +1,500% in 2 weeks)."
+  ),
+
+  "learn.slippageTitle": t("Slippage & Execution", "Slippage & Execution"),
+  "learn.slippageP1": t(
+    "<strong>Slippage</strong> ist die Differenz zwischen erwartetem und tatsächlichem Ausführungspreis. Bei Market Orders in illiquiden Aktien kann Slippage mehrere Prozent betragen. <strong>VWAP</strong> (Volume Weighted Average Price) und <strong>TWAP</strong> (Time Weighted Average Price) sind Algorithmen, die institutionelle Investoren nutzen, um große Orders mit minimalem Marktimpact auszuführen.",
+    "<strong>Slippage</strong> is the difference between expected and actual execution price. With market orders in illiquid stocks, slippage can be several percent. <strong>VWAP</strong> (Volume Weighted Average Price) and <strong>TWAP</strong> (Time Weighted Average Price) are algorithms institutional investors use to execute large orders with minimal market impact."
+  ),
+
+  "learn.marginTitle": t("Margin-Handel & Hebel", "Margin Trading & Leverage"),
+  "learn.marginP1": t(
+    "Beim <strong>Margin-Handel</strong> leihst du dir Geld vom Broker, um größere Positionen einzugehen. <strong>Initial Margin</strong>: Mindesteinschuss (z. B. 50% bei US-Aktien). <strong>Maintenance Margin</strong>: Mindestdeckung (~25-30%). Fällt dein Kontostand darunter, erfolgt ein <strong>Margin Call</strong> – du musst nachschießen oder Positionen werden zwangsliquidiert.",
+    "In <strong>margin trading</strong>, you borrow money from your broker to take larger positions. <strong>Initial margin</strong>: minimum deposit (e.g. 50% for US stocks). <strong>Maintenance margin</strong>: minimum equity (~25-30%). If your account falls below this, you get a <strong>margin call</strong> – you must deposit more or positions are force-liquidated."
+  ),
+  "learn.marginWarning": t(
+    "Margin-Handel kann deine Verluste vervielfachen! Ein 2x Hebel bedeutet: -10% Kursverlust = -20% Kontoverlust. Bei 5x Hebel reicht ein -20% Kursverlust, um dein gesamtes Kapital zu verlieren.",
+    "Margin trading can multiply your losses! 2x leverage means: -10% price drop = -20% account loss. With 5x leverage, a -20% price drop wipes out your entire capital."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 12: BEHAVIORAL FINANCE & MARKET ANOMALIES
+  // ══════════════════════════════════════════════════════════════
+  "learn.toc12": t("12. Verhaltensökonomie & Marktanomalien", "12. Behavioral Finance & Market Anomalies"),
+  "learn.section12Title": t("Verhaltensökonomie & Marktanomalien", "Behavioral Finance & Market Anomalies"),
+
+  "learn.behavioralIntro": t(
+    "Die <strong>Verhaltensökonomie</strong> (Behavioral Finance) untersucht, wie psychologische Faktoren und kognitive Verzerrungen Anlageentscheidungen beeinflussen. Daniel Kahneman erhielt 2002 den Nobelpreis für seine Arbeit zu Entscheidungen unter Unsicherheit.",
+    "<strong>Behavioral Finance</strong> studies how psychological factors and cognitive biases influence investment decisions. Daniel Kahneman received the 2002 Nobel Prize for his work on decision-making under uncertainty."
+  ),
+
+  "learn.prospectTheoryTitle": t("Prospect Theory (Verlustaversion)", "Prospect Theory (Loss Aversion)"),
+  "learn.prospectTheoryP1": t(
+    "Menschen empfinden Verluste <strong>2-2,5x stärker</strong> als gleichgroße Gewinne. Das führt dazu, dass Anleger: Verlustpositionen zu lange halten (\"es wird schon wieder\"), Gewinnpositionen zu früh verkaufen (\"lieber den Spatz in der Hand\"), übermäßig risikoscheu bei Gewinnen und risikofreudig bei Verlusten werden.",
+    "People feel losses <strong>2-2.5x more strongly</strong> than equal gains. This leads investors to: hold losing positions too long (\"it'll come back\"), sell winning positions too early (\"a bird in the hand\"), become overly risk-averse with gains and risk-seeking with losses."
+  ),
+
+  "learn.anchoring": t("Anchoring (Ankereffekt)", "Anchoring Effect"),
+  "learn.anchoringDesc": t(
+    "Investoren fixieren sich auf einen Referenzpunkt (z. B. Kaufkurs) und bewerten neue Informationen relativ dazu. Eine Aktie, die von $100 auf $50 gefallen ist, erscheint 'billig' – obwohl der faire Wert vielleicht nur $30 beträgt. Der Kaufkurs hat keinen Einfluss auf den zukünftigen Wert!",
+    "Investors fixate on a reference point (e.g. purchase price) and evaluate new information relative to it. A stock that dropped from $100 to $50 seems 'cheap' – even though fair value might be $30. Your purchase price has no effect on future value!"
+  ),
+
+  "learn.overconfidence": t("Overconfidence (Selbstüberschätzung)", "Overconfidence Bias"),
+  "learn.overconfidenceDesc": t(
+    "Die meisten Anleger überschätzen ihre Fähigkeiten. Studien zeigen: Je häufiger Anleger handeln, desto schlechter ihre Rendite (Barber & Odean, 2000). Männer handeln 45% mehr als Frauen und erzielen durchschnittlich 1% weniger Rendite pro Jahr.",
+    "Most investors overestimate their abilities. Studies show: The more frequently investors trade, the worse their returns (Barber & Odean, 2000). Men trade 45% more than women and earn on average 1% less return per year."
+  ),
+
+  "learn.dispositionEffect": t("Dispositionseffekt", "Disposition Effect"),
+  "learn.dispositionEffectDesc": t(
+    "Die Tendenz, Gewinnaktien zu früh zu verkaufen und Verlustaktien zu lange zu halten. Lösung: Setze vor dem Kauf klare Verkaufsregeln (z. B. -15% Stop-Loss, +30% Take-Profit) und halte dich daran.",
+    "The tendency to sell winners too early and hold losers too long. Solution: Set clear selling rules before buying (e.g. -15% stop-loss, +30% take-profit) and stick to them."
+  ),
+
+  "learn.anomaliesTitle": t("Marktanomalien", "Market Anomalies"),
+  "learn.januaryEffect": t("Januar-Effekt", "January Effect"),
+  "learn.januaryEffectDesc": t("Aktien, besonders Small Caps, tendieren dazu, im Januar besser abzuschneiden. Mögliche Ursache: Tax-Loss Harvesting im Dezember mit Reinvestition im Januar.", "Stocks, especially small caps, tend to outperform in January. Possible cause: tax-loss harvesting in December with reinvestment in January."),
+  "learn.momentumAnomaly": t("Momentum-Anomalie", "Momentum Anomaly"),
+  "learn.momentumAnomalyDesc": t("Aktien, die in den letzten 3-12 Monaten gestiegen sind, tendieren dazu, weiter zu steigen (und umgekehrt). Widerspricht der Effizienzmarkthypothese.", "Stocks that have risen over the last 3-12 months tend to continue rising (and vice versa). Contradicts the efficient market hypothesis."),
+  "learn.valueAnomaly": t("Value-Prämie", "Value Premium"),
+  "learn.valueAnomalyDesc": t("Aktien mit niedrigem KGV/KBV haben historisch besser abgeschnitten als teure Wachstumsaktien (Fama & French, 1992). Mögliche Erklärung: höheres fundamentales Risiko.", "Stocks with low P/E/P/B have historically outperformed expensive growth stocks (Fama & French, 1992). Possible explanation: higher fundamental risk."),
+  "learn.sizeAnomaly": t("Size-Effekt", "Size Effect"),
+  "learn.sizeAnomalyDesc": t("Small-Cap-Aktien haben langfristig höhere Renditen als Large Caps erzielt – bei allerdings deutlich höherer Volatilität und Risiko.", "Small-cap stocks have earned higher returns than large caps long-term – though with significantly higher volatility and risk."),
+
+  "learn.emhTitle": t("Effizienzmarkthypothese (EMH)", "Efficient Market Hypothesis (EMH)"),
+  "learn.emhP1": t(
+    "Eugene Fama's <strong>EMH</strong> besagt, dass alle verfügbaren Informationen bereits im Kurs eingepreist sind. <strong>Schwache Form</strong>: Historische Kurse enthalten keine nützliche Information (→ Technische Analyse sinnlos). <strong>Mittelstarke Form</strong>: Alle öffentlichen Infos eingepreist (→ Fundamentalanalyse sinnlos). <strong>Starke Form</strong>: Auch Insiderwissen eingepreist (empirisch widerlegt). Die Realität liegt zwischen schwacher und mittelstarker Form – Märkte sind größtenteils, aber nicht perfekt effizient.",
+    "Eugene Fama's <strong>EMH</strong> states that all available information is already priced in. <strong>Weak form</strong>: Historical prices contain no useful info (→ technical analysis useless). <strong>Semi-strong form</strong>: All public info priced in (→ fundamental analysis useless). <strong>Strong form</strong>: Even insider info priced in (empirically refuted). Reality lies between weak and semi-strong – markets are mostly, but not perfectly, efficient."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 13: GLOBAL MARKETS & MACRO
+  // ══════════════════════════════════════════════════════════════
+  "learn.toc13": t("13. Globale Märkte & Makroökonomie", "13. Global Markets & Macroeconomics"),
+  "learn.section13Title": t("Globale Märkte & Makroökonomie", "Global Markets & Macroeconomics"),
+
+  "learn.centralBanksTitle": t("Zentralbanken & Geldpolitik", "Central Banks & Monetary Policy"),
+  "learn.centralBanksP1": t(
+    "Zentralbanken (Fed, EZB, BoJ, BoE) steuern die Wirtschaft über <strong>Leitzinsen</strong> und <strong>Quantitative Easing/Tightening</strong>. Zinssenkungen → billiges Geld → Aktien steigen. Zinserhöhungen → teures Geld → Aktien unter Druck. Die <strong>Fed Funds Rate</strong> ist der wichtigste Zinssatz der Welt und beeinflusst alle Assetklassen.",
+    "Central banks (Fed, ECB, BoJ, BoE) steer the economy via <strong>interest rates</strong> and <strong>quantitative easing/tightening</strong>. Rate cuts → cheap money → stocks rise. Rate hikes → expensive money → stocks under pressure. The <strong>Fed Funds Rate</strong> is the most important interest rate in the world and affects all asset classes."
+  ),
+
+  "learn.inflationTitle": t("Inflation & Deflation", "Inflation & Deflation"),
+  "learn.inflationP1": t(
+    "<strong>Inflation</strong> entwertet Bargeld – daher ist Investieren langfristig wichtiger als Sparen. Bei 3% Inflation verliert dein Geld in 24 Jahren die Hälfte seiner Kaufkraft. Aktien und Immobilien bieten historisch den besten Inflationsschutz. <strong>Deflation</strong> (fallende Preise) ist seltener, aber gefährlicher: Konsumenten verschieben Käufe, Unternehmen senken Preise, Gewinne fallen – eine Abwärtsspirale.",
+    "<strong>Inflation</strong> erodes cash – that's why investing is more important than saving long-term. At 3% inflation, your money loses half its purchasing power in 24 years. Stocks and real estate historically provide the best inflation protection. <strong>Deflation</strong> (falling prices) is rarer but more dangerous: consumers delay purchases, companies cut prices, profits fall – a downward spiral."
+  ),
+
+  "learn.yieldCurveTitle": t("Zinskurve (Yield Curve)", "Yield Curve"),
+  "learn.yieldCurveP1": t(
+    "Die <strong>Zinskurve</strong> zeigt die Renditen von Staatsanleihen verschiedener Laufzeiten. <strong>Normal</strong>: Langfristige Renditen > kurzfristige (gesundes Wachstum). <strong>Flach</strong>: Ähnliche Renditen (Unsicherheit). <strong>Invertiert</strong>: Kurzfristige > langfristige – der zuverlässigste Rezessionsindikator! Jede US-Rezession seit 1955 wurde von einer invertierten Zinskurve vorhergesagt (mit 6-24 Monaten Vorlauf).",
+    "The <strong>yield curve</strong> shows government bond yields across different maturities. <strong>Normal</strong>: Long-term yields > short-term (healthy growth). <strong>Flat</strong>: Similar yields (uncertainty). <strong>Inverted</strong>: Short-term > long-term – the most reliable recession indicator! Every US recession since 1955 was preceded by an inverted yield curve (6-24 months ahead)."
+  ),
+
+  "learn.businessCycleTitle": t("Konjunkturzyklen & Sektorrotation", "Business Cycles & Sector Rotation"),
+  "learn.businessCycleP1": t(
+    "Die Wirtschaft durchläuft regelmäßig vier Phasen: <strong>Expansion</strong> (Wachstum, Tech/Konsum stark), <strong>Boom/Überhitzung</strong> (Rohstoffe, Energie), <strong>Rezession</strong> (Gesundheit, Versorger, Basiskonsumgüter defensiv), <strong>Erholung</strong> (Finanzen, Industrie). Kluge Investoren rotieren ihre Sektorgewichtung entsprechend dem Zyklus (<strong>Sektorrotation</strong>).",
+    "The economy regularly cycles through four phases: <strong>Expansion</strong> (growth, tech/consumer strong), <strong>Peak/Overheating</strong> (commodities, energy), <strong>Recession</strong> (healthcare, utilities, consumer staples defensive), <strong>Recovery</strong> (financials, industrials). Smart investors rotate their sector weights according to the cycle (<strong>sector rotation</strong>)."
+  ),
+
+  "learn.geopoliticsTitle": t("Geopolitik & Black Swans", "Geopolitics & Black Swans"),
+  "learn.geopoliticsP1": t(
+    "<strong>Black Swans</strong> sind unvorhersehbare Ereignisse mit massivem Marktimpact: COVID-19 (-34% in 23 Tagen), Lehman Brothers 2008 (-57% vom Hoch), 9/11 (-12% in 1 Woche). Man kann sie nicht vorhersagen, aber man kann sich vorbereiten: Diversifikation, Cash-Reserve, keine übermäßige Hebelung, Stop-Losses bei spekulativen Positionen.",
+    "<strong>Black Swans</strong> are unpredictable events with massive market impact: COVID-19 (-34% in 23 days), Lehman Brothers 2008 (-57% from peak), 9/11 (-12% in 1 week). You can't predict them, but you can prepare: diversification, cash reserve, no excessive leverage, stop-losses on speculative positions."
+  ),
 };
