@@ -67,7 +67,7 @@ export function CommoditiesSection() {
                 {isUp ? "+" : ""}{c.changePercent.toFixed(2)}%
               </div>
               <div className="text-[10px] text-muted-foreground mt-0.5">/{c.unit}</div>
-            </div>
+            </Link>
           );
         })}
       </div>

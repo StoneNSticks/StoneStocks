@@ -41,6 +41,7 @@ const App = () => (
               <Route path="/calculators" element={<CalculatorPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/watchlist" element={<WatchlistPage />} />
+              <Route path="/commodity/:symbol" element={<CommodityDetail />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/learn" element={<LearnPage />} />
               <Route path="/profile" element={<ProfilePage />} />
