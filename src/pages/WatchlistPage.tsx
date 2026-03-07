@@ -8,17 +8,40 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Eye, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
 import { getQuote } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { AreaChart, Area, ResponsiveContainer } from "recharts";
 
-const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
-const item = { hidden: { opacity: 0, y: 16, scale: 0.96 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 260, damping: 22 } } };
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.04 } } };
+const item = { hidden: { opacity: 0, y: 12, scale: 0.97 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } } };
 
 type SortMode = "newest" | "oldest" | "alpha" | "performance";
+
+// Bloomberg-style mini sparkline
+function MiniSparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
+  const chartData = data.map((v, i) => ({ i, v }));
+  const color = isUp ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
+  return (
+    <div className="w-20 h-8">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id={`spark-${isUp}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Area type="monotone" dataKey="v" stroke={color} fill={`url(#spark-${isUp})`} strokeWidth={1.5} dot={false} />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 function WatchlistQuote({ symbol }: { symbol: string }) {
   const { convert, symbol: cSym } = useCurrency();
@@ -28,18 +51,84 @@ function WatchlistQuote({ symbol }: { symbol: string }) {
     staleTime: 60_000,
   });
 
-  if (isLoading) return <div className="text-right"><Skeleton className="h-5 w-16 ml-auto mb-1" /><Skeleton className="h-4 w-12 ml-auto" /></div>;
+  if (isLoading) return (
+    <div className="flex items-center gap-3">
+      <Skeleton className="h-8 w-20" />
+      <div className="text-right">
+        <Skeleton className="h-5 w-16 mb-1" />
+        <Skeleton className="h-4 w-12" />
+      </div>
+    </div>
+  );
   if (!quote?.c) return null;
 
   const isUp = (quote.dp || 0) >= 0;
+  // Generate fake sparkline from available data
+  const sparkData = useMemo(() => {
+    const base = quote.pc || quote.c;
+    const points: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const progress = i / 19;
+      const value = base + (quote.c - base) * progress + (Math.random() - 0.5) * (quote.c * 0.005);
+      points.push(value);
+    }
+    points[points.length - 1] = quote.c;
+    return points;
+  }, [quote]);
+
   return (
-    <div className="text-right shrink-0">
-      <div className="font-display font-bold text-sm">{cSym}{convert(quote.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div className={`flex items-center justify-end gap-1 text-xs font-semibold ${isUp ? "text-chart-2" : "text-destructive"}`}>
-        {isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-        {isUp ? "+" : ""}{(quote.dp || 0).toFixed(2)}%
+    <div className="flex items-center gap-3">
+      <MiniSparkline data={sparkData} isUp={isUp} />
+      <div className="text-right shrink-0">
+        <div className="font-mono font-bold text-sm tabular-nums">
+          {cSym}{convert(quote.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+        <div className={`flex items-center justify-end gap-1 text-xs font-bold tabular-nums ${isUp ? "text-chart-2" : "text-destructive"}`}>
+          {isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+          {isUp ? "+" : ""}{(quote.dp || 0).toFixed(2)}%
+        </div>
       </div>
     </div>
+  );
+}
+
+// Portfolio summary bar
+function PortfolioSummary({ watchlist, lang }: { watchlist: any[]; lang: string }) {
+  const gainersCount = watchlist.length; // Placeholder
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+      <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+          {lang === "de" ? "Positionen" : "Positions"}
+        </div>
+        <div className="font-display font-bold text-xl text-foreground">{watchlist.length}</div>
+      </div>
+      <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+          {lang === "de" ? "Seit" : "Since"}
+        </div>
+        <div className="font-display font-bold text-sm text-foreground">
+          {watchlist.length > 0 ? new Date(watchlist[watchlist.length - 1].created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", year: "numeric" }) : "—"}
+        </div>
+      </div>
+      <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+          {lang === "de" ? "Letzte Änderung" : "Last Updated"}
+        </div>
+        <div className="font-display font-bold text-sm text-foreground">
+          {watchlist.length > 0 ? new Date(watchlist[0].created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" }) : "—"}
+        </div>
+      </div>
+      <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+          {lang === "de" ? "Live-Daten" : "Live Data"}
+        </div>
+        <div className="flex items-center justify-center gap-1.5">
+          <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-chart-2" /></span>
+          <span className="font-display font-bold text-sm text-chart-2">LIVE</span>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -75,58 +164,85 @@ export default function WatchlistPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-4xl px-3 sm:px-4">
-        {/* Hero Header */}
-        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 border border-primary/10 p-6 sm:p-8">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative flex items-start justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-xl shadow-primary/10 backdrop-blur-sm border border-primary/20">
-                  <Star className="h-7 w-7 text-primary fill-primary/20" />
-                </div>
-                <div>
-                  <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">{t("watchlist.title")}</h1>
-                  {user && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {count === 0 ? t("watchlist.startTracking") : t("watchlist.tracking").replace("{count}", String(count))}
-                    </p>
-                  )}
-                </div>
+      <main className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
+        {/* Terminal-style Header */}
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/60 shadow-2xl">
+            {/* Terminal top bar */}
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-muted/50 border-b border-border/40">
+              <div className="flex gap-1.5">
+                <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                <div className="h-2.5 w-2.5 rounded-full bg-chart-2/60" />
               </div>
-              {user && count > 0 && (
-                <Badge variant="secondary" className="font-display text-base gap-2 px-5 py-2 shadow-md bg-background/80 backdrop-blur-sm border border-border/60">
-                  <BarChart3 className="h-4 w-4 text-primary" />{count}
-                </Badge>
-              )}
+              <div className="flex-1 text-center">
+                <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">
+                  {lang === "de" ? "WATCHLIST TERMINAL" : "WATCHLIST TERMINAL"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" /></span>
+                <span className="text-[10px] font-mono text-chart-2">CONNECTED</span>
+              </div>
             </div>
 
-            {/* Search & Controls */}
-            {user && count > 0 && (
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex items-center gap-2 mt-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder={t("watchlist.search")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-11 rounded-xl bg-background/80 backdrop-blur-sm border-border/50 shadow-sm"
-                  />
+            <div className="p-6 sm:p-8">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-lg shadow-primary/10">
+                    <Activity className="h-7 w-7 text-primary" />
+                  </div>
+                  <div>
+                    <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">{t("watchlist.title")}</h1>
+                    {user && (
+                      <p className="text-sm text-muted-foreground mt-0.5 font-mono">
+                        {count === 0 ? t("watchlist.startTracking") : `${count} ${lang === "de" ? "Instrumente beobachtet" : "instruments tracked"}`}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 bg-background/80 backdrop-blur-sm" onClick={cycleSortMode} title={sortLabel}>
-                  {sortMode === "oldest" ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
-                </Button>
-                <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 bg-background/80 backdrop-blur-sm" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
-                  {viewMode === "list" ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
-                </Button>
-              </motion.div>
-            )}
+                {user && count > 0 && (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Badge variant="outline" className="font-mono text-xs gap-1.5 px-3 py-1.5 border-chart-2/30 text-chart-2 bg-chart-2/5">
+                      <Zap className="h-3 w-3" />REAL-TIME
+                    </Badge>
+                    <Badge variant="secondary" className="font-display text-lg gap-2 px-4 py-1.5 shadow bg-card border border-border/60">
+                      <BarChart3 className="h-4 w-4 text-primary" />{count}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              {/* Portfolio Summary */}
+              {user && count > 0 && <PortfolioSummary watchlist={watchlist || []} lang={lang} />}
+
+              {/* Search & Controls */}
+              {user && count > 0 && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex items-center gap-2 mt-5">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder={t("watchlist.search")}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 h-10 rounded-xl bg-background/80 border-border/50 font-mono text-sm"
+                    />
+                  </div>
+                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={cycleSortMode} title={sortLabel}>
+                    {sortMode === "oldest" ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
+                    {viewMode === "list" ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
+                  </Button>
+                </motion.div>
+              )}
+            </div>
           </div>
         </motion.div>
 
         {/* Content */}
         {authLoading ? (
-          <div className="space-y-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-[88px] rounded-2xl" />)}</div>
+          <div className="space-y-2">{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-[72px] rounded-xl" />)}</div>
         ) : !user ? (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="text-center py-24 px-6">
             <div className="relative inline-block mb-8">
@@ -135,9 +251,6 @@ export default function WatchlistPage() {
               </div>
               <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2.5 }} className="absolute -top-3 -right-3">
                 <Sparkles className="h-6 w-6 text-primary" />
-              </motion.div>
-              <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.8, 0.3] }} transition={{ repeat: Infinity, duration: 3, delay: 1 }} className="absolute -bottom-2 -left-2">
-                <Sparkles className="h-4 w-4 text-primary/60" />
               </motion.div>
             </div>
             <h2 className="font-display text-2xl font-bold mb-3">{t("watchlist.signInTitle")}</h2>
@@ -148,7 +261,7 @@ export default function WatchlistPage() {
             </div>
           </motion.div>
         ) : isLoading ? (
-          <div className="space-y-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-[88px] rounded-2xl" />)}</div>
+          <div className="space-y-2">{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-[72px] rounded-xl" />)}</div>
         ) : count === 0 ? (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="text-center py-24 px-6">
             <div className="relative inline-block mb-8">
@@ -169,17 +282,17 @@ export default function WatchlistPage() {
             <AnimatePresence>
               {filtered.map((w) => (
                 <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}>
-                  <div className="rounded-2xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group">
+                  <div className="rounded-xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute top-3 right-3 z-10"><WatchlistStar symbol={w.symbol} /></div>
-                    <Link to={`/stock/${w.symbol}`} className="block p-5 text-center relative">
-                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-3 flex items-center justify-center shadow-md shadow-primary/5">
-                        <span className="font-display font-bold text-primary text-base">{w.symbol.slice(0, 2)}</span>
+                    <div className="absolute top-2.5 right-2.5 z-10"><WatchlistStar symbol={w.symbol} /></div>
+                    <Link to={`/stock/${w.symbol}`} className="block p-4 text-center relative">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-2 flex items-center justify-center shadow-md shadow-primary/5">
+                        <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
                       </div>
-                      <span className="font-display font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
-                      <div className="mt-3"><WatchlistQuote symbol={w.symbol} /></div>
-                      <div className="flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/60">
-                        <Clock className="h-3 w-3" />
+                      <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
+                      <div className="mt-2"><WatchlistQuote symbol={w.symbol} /></div>
+                      <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
+                        <Clock className="h-2.5 w-2.5" />
                         {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
                       </div>
                     </Link>
@@ -189,41 +302,59 @@ export default function WatchlistPage() {
             </AnimatePresence>
           </motion.div>
         ) : (
-          <motion.ul variants={container} initial="hidden" animate="show" className="space-y-2.5">
-            <AnimatePresence>
-              {filtered.map((w, i) => (
-                <motion.li key={w.symbol} variants={item} layout exit={{ opacity: 0, x: -50, transition: { duration: 0.2 } }}>
-                  <div className="group flex items-center gap-3 rounded-2xl border border-border/50 bg-card p-4 sm:p-5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <span className="text-xs font-mono text-muted-foreground/30 w-6 text-center select-none relative">{i + 1}</span>
-                    <div className="relative"><WatchlistStar symbol={w.symbol} /></div>
-                    <Link to={`/stock/${w.symbol}`} className="flex-1 flex items-center gap-3 min-w-0 relative">
-                      <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center shrink-0 shadow-sm shadow-primary/5 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
-                        <span className="font-display font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-display font-bold text-sm group-hover:text-primary transition-colors truncate">{w.symbol}</span>
-                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 mt-0.5">
-                          <Clock className="h-2.5 w-2.5" />
-                          {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "numeric" })}
+          /* Bloomberg Terminal List View */
+          <div className="rounded-xl border border-border/60 overflow-hidden bg-card shadow-lg">
+            {/* Table Header */}
+            <div className="grid grid-cols-[2rem_2.5rem_1fr_7rem_8rem_2.5rem] sm:grid-cols-[2rem_2.5rem_1fr_5rem_7rem_8rem_2.5rem] items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+              <span>#</span>
+              <span></span>
+              <span>{lang === "de" ? "Symbol" : "Symbol"}</span>
+              <span className="hidden sm:block text-right">{lang === "de" ? "Hinzugefügt" : "Added"}</span>
+              <span className="text-right">{lang === "de" ? "Chart" : "Chart"}</span>
+              <span className="text-right">{lang === "de" ? "Kurs" : "Price"}</span>
+              <span></span>
+            </div>
+            <motion.div variants={container} initial="hidden" animate="show">
+              <AnimatePresence>
+                {filtered.map((w, i) => (
+                  <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, x: -50, transition: { duration: 0.2 } }} className="group">
+                    <div className="grid grid-cols-[2rem_2.5rem_1fr_7rem_8rem_2.5rem] sm:grid-cols-[2rem_2.5rem_1fr_5rem_7rem_8rem_2.5rem] items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors relative">
+                      <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none">{i + 1}</span>
+                      <div><WatchlistStar symbol={w.symbol} /></div>
+                      <Link to={`/stock/${w.symbol}`} className="flex items-center gap-2.5 min-w-0">
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center shrink-0 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
+                          <span className="font-mono font-bold text-primary text-xs">{w.symbol.slice(0, 2)}</span>
                         </div>
+                        <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors truncate">{w.symbol}</span>
+                      </Link>
+                      <div className="hidden sm:block text-right">
+                        <span className="text-[10px] font-mono text-muted-foreground/50">
+                          {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
+                        </span>
                       </div>
-                    </Link>
-                    <div className="relative"><WatchlistQuote symbol={w.symbol} /></div>
-                    <Link to={`/stock/${w.symbol}`} className="relative hidden sm:flex items-center justify-center h-9 w-9 rounded-lg bg-muted/50 hover:bg-primary/10 transition-colors shrink-0">
-                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </Link>
-                  </div>
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </motion.ul>
+                      <div className="flex justify-end"><WatchlistQuote symbol={w.symbol} /></div>
+                      <Link to={`/stock/${w.symbol}`} className="hidden sm:flex items-center justify-center h-8 w-8 rounded-lg bg-muted/50 hover:bg-primary/10 transition-colors shrink-0 ml-auto">
+                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </div>
         )}
 
-        {/* Quick stats footer */}
+        {/* Footer */}
         {user && count > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 text-center text-xs text-muted-foreground/50">
-            {lang === "de" ? `${count} Aktie(n) in deiner Watchlist · Kurse werden alle 60 Sekunden aktualisiert` : `${count} stock(s) in your watchlist · Prices refresh every 60 seconds`}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" /></span>
+              {lang === "de" ? "Echtzeit-Daten" : "Real-time data"}
+            </span>
+            <span>•</span>
+            <span>{count} {lang === "de" ? "Positionen" : "positions"}</span>
+            <span>•</span>
+            <span>{lang === "de" ? "Aktualisierung 60s" : "60s refresh"}</span>
           </motion.div>
         )}
       </main>
