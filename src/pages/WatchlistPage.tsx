@@ -51,6 +51,20 @@ function WatchlistQuote({ symbol }: { symbol: string }) {
     staleTime: 60_000,
   });
 
+  const isUp = (quote?.dp || 0) >= 0;
+  const sparkData = useMemo(() => {
+    if (!quote?.c) return [];
+    const base = quote.pc || quote.c;
+    const points: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const progress = i / 19;
+      const value = base + (quote.c - base) * progress + (Math.random() - 0.5) * (quote.c * 0.005);
+      points.push(value);
+    }
+    points[points.length - 1] = quote.c;
+    return points;
+  }, [quote?.c, quote?.pc]);
+
   if (isLoading) return (
     <div className="flex items-center gap-3">
       <Skeleton className="h-8 w-20" />
@@ -61,20 +75,6 @@ function WatchlistQuote({ symbol }: { symbol: string }) {
     </div>
   );
   if (!quote?.c) return null;
-
-  const isUp = (quote.dp || 0) >= 0;
-  // Generate fake sparkline from available data
-  const sparkData = useMemo(() => {
-    const base = quote.pc || quote.c;
-    const points: number[] = [];
-    for (let i = 0; i < 20; i++) {
-      const progress = i / 19;
-      const value = base + (quote.c - base) * progress + (Math.random() - 0.5) * (quote.c * 0.005);
-      points.push(value);
-    }
-    points[points.length - 1] = quote.c;
-    return points;
-  }, [quote]);
 
   return (
     <div className="flex items-center gap-3">
