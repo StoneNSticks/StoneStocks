@@ -32,6 +32,9 @@ export default function LearnPage() {
     { label: t("learn.toc8"), href: "#portfolio" },
     { label: t("learn.toc9"), href: "#steuern" },
     { label: t("learn.toc10"), href: "#formeln" },
+    { label: t("learn.toc11"), href: "#microstructure" },
+    { label: t("learn.toc12"), href: "#behavioral" },
+    { label: t("learn.toc13"), href: "#macro" },
   ];
 
   return (
