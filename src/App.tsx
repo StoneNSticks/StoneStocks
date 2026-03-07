@@ -19,6 +19,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LearnPage from "./pages/LearnPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
+import CommodityDetail from "./pages/CommodityDetail";
 
 const queryClient = new QueryClient();
 
