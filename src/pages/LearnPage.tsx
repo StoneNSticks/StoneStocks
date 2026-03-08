@@ -878,6 +878,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.duPontP1") }} />
               <FormulaBox title="DuPont" formula="ROE = Net Margin × Asset Turnover × Equity Multiplier" explanation={t("learn.duPontP1").replace(/<[^>]*>/g, '').slice(0, 120) + '...'} />
             </SectionCard>
+            {interactive && <DuPontCalc lang={lang} />}
             <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.accrualVsCashTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.accrualVsCashP1") }} />
             </SectionCard>
