@@ -67,7 +67,7 @@ export default function LearnPage() {
   const { read, markRead } = useReadProgress();
   const { user } = useAuth();
   const { completedCount, markComplete, isCompleted } = useLearnProgress();
-  const totalSections = 12; // approximate number of main learn sections
+  const totalSections = 28; // total main learn sections
 
   // Track which sections are in view
   useEffect(() => {
