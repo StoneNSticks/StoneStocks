@@ -11,7 +11,7 @@ export function useWatchlist() {
       if (!user) return [];
       const { data, error } = await supabase
         .from("watchlist")
-        .select("symbol, created_at")
+        .select("id, symbol, created_at, note, group_name")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -58,4 +58,23 @@ export function useToggleWatchlist() {
   );
 
   return { toggle, cooldown, isLoading: mutation.isPending };
+}
+
+export function useUpdateWatchlistItem() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, note, group_name }: { id: string; note?: string | null; group_name?: string | null }) => {
+      if (!user) throw new Error("Not authenticated");
+      const update: Record<string, unknown> = {};
+      if (note !== undefined) update.note = note;
+      if (group_name !== undefined) update.group_name = group_name;
+      const { error } = await supabase.from("watchlist").update(update).eq("id", id).eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["watchlist"] });
+    },
+  });
 }

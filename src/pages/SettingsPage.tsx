@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, ChevronRight, Moon, Sun, Shield } from "lucide-react";
-import { useEffect } from "react";
+import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, Moon, Sun, Shield, BellRing, TrendingUp, TrendingDown, X } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -19,21 +19,31 @@ export default function SettingsPage() {
   const { lang, setLang } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const qc = useQueryClient();
 
-  // Password change
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPw, setChangingPw] = useState(false);
-
-  // Theme
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
-
-  // Notifications (local preference)
   const [priceAlerts, setPriceAlerts] = useState(() => localStorage.getItem("pref_price_alerts") !== "false");
   const [newsAlerts, setNewsAlerts] = useState(() => localStorage.getItem("pref_news_alerts") !== "false");
-
-  // Delete account
   const [showDelete, setShowDelete] = useState(false);
+
+  // Fetch active price alerts
+  const { data: alerts } = useQuery({
+    queryKey: ["price-alerts", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("price_alerts")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -74,6 +84,12 @@ export default function SettingsPage() {
   const handleNewsAlerts = (v: boolean) => {
     setNewsAlerts(v);
     localStorage.setItem("pref_news_alerts", String(v));
+  };
+
+  const deleteAlert = async (id: string) => {
+    await supabase.from("price_alerts").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["price-alerts"] });
+    toast({ title: lang === "de" ? "Alarm gelöscht" : "Alert deleted" });
   };
 
   const handleDeleteAccount = async () => {
@@ -150,6 +166,41 @@ export default function SettingsPage() {
             </SettingRow>
           </Section>
 
+          {/* Active Price Alerts */}
+          {alerts && alerts.length > 0 && (
+            <Section icon={BellRing} title={lang === "de" ? "Aktive Kursalarme" : "Active Price Alerts"}>
+              <div className="space-y-2">
+                {alerts.map((a: any) => (
+                  <div key={a.id} className="flex items-center justify-between gap-3 rounded-lg border border-border/40 px-3 py-2.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {a.direction === "above" ? (
+                        <TrendingUp className="h-4 w-4 text-chart-2 shrink-0" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-destructive shrink-0" />
+                      )}
+                      <div className="min-w-0">
+                        <span className="font-mono font-bold text-sm">{a.symbol}</span>
+                        <span className="text-xs text-muted-foreground ml-2">
+                          {a.direction === "above" ? "≥" : "≤"} ${a.target_price?.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {a.triggered && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-chart-2/15 text-chart-2 font-medium">
+                          {lang === "de" ? "Ausgelöst" : "Triggered"}
+                        </span>
+                      )}
+                      <button onClick={() => deleteAlert(a.id)} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
           {/* Security */}
           <Section icon={Lock} title={t("settings.security")}>
             <div className="space-y-3">
@@ -177,7 +228,7 @@ export default function SettingsPage() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive">
                 <p className="mb-3">{t("settings.deleteWarning")}</p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setShowDelete(false)}>{t("profile.cancel")}</Button>
+                  <Button variant="outline" size="sm" onClick={() => setShowDelete(false)}>{lang === "de" ? "Abbrechen" : "Cancel"}</Button>
                   <Button variant="destructive" size="sm" onClick={handleDeleteAccount}>{t("settings.confirmDelete")}</Button>
                 </div>
               </motion.div>
