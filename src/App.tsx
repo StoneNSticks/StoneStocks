@@ -10,6 +10,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
 import { OnboardingModal } from "@/components/OnboardingModal";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -86,6 +87,7 @@ const App = () => (
               <OnboardingModal />
               <BottomNav />
               <BackToTop />
+              <InstallPrompt />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
