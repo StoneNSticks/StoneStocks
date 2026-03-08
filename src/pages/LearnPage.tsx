@@ -715,6 +715,9 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.monteCarloP1") }} />
             </SectionCard>
           </motion.section>
+          <a href="#quiz-technical-analysis" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
