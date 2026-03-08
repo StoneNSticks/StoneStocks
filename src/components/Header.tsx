@@ -161,16 +161,6 @@ export function Header() {
                 </Link>
               );
             })}
-            {/* Compare as simple link */}
-            {(() => {
-              const isActive = location.pathname === "/compare";
-              return (
-                <Link to="/compare" className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-                  Compare
-                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
-                </Link>
-              );
-            })()}
           </nav>
         </div>
       </div>
