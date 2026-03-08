@@ -27,13 +27,13 @@ import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PriceAlertForm } from "@/components/PriceAlertForm";
+import { DividendGrowth } from "@/components/DividendGrowth";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
 import { useT } from "@/contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery } from "@tanstack/react-query";
 import { getEarnings } from "@/lib/stockApi";
-
-function formatDividendValue(num: number, sym = "$"): string { return `${sym}${num.toFixed(2)}`; }
 
 /** Wrapper to fetch earnings data separately for the EarningsCard */
 function EarningsCardWrapper({ symbol }: { symbol: string }) {
