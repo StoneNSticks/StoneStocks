@@ -134,3 +134,10 @@
     transform: translateX(0%);
   }
 }
+
+/* Mobile bottom nav spacing */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 4rem;
+  }
+}
