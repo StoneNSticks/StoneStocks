@@ -90,7 +90,7 @@ export function NormalizedChart({ symbols }: NormalizedChartProps) {
 
     // Build normalized data
     return commonDates.map((date) => {
-      const point: Record<string, unknown> = { date: date.slice(5) }; // MM-DD format
+      const point: Record<string, unknown> = { date };
       for (const sym of Object.keys(lookups)) {
         point[sym] = bases[sym] ? +((lookups[sym][date] / bases[sym]) * 100).toFixed(2) : 100;
       }
