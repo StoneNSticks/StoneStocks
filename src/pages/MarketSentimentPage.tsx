@@ -25,6 +25,7 @@ import { Gauge, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Shield, Flam
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MarketHeatmap } from "@/components/MarketHeatmap";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
@@ -255,6 +256,9 @@ export default function MarketSentimentPage() {
 
             {/* Global Indices */}
             {indices?.length > 0 && <IndexGrid indices={indices} />}
+
+            {/* Market Heatmap */}
+            <MarketHeatmap />
 
             {/* Top Movers */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

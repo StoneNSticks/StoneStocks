@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
+import { OnboardingModal } from "@/components/OnboardingModal";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -31,6 +32,7 @@ const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
 const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
 const ScreenerPage = lazy(() => import("./pages/ScreenerPage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 const queryClient = new QueryClient();
 
@@ -65,9 +67,11 @@ const App = () => (
                   <Route path="/glossary" element={<GlossaryPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/admin" element={<AdminPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              <OnboardingModal />
               <BottomNav />
               <BackToTop />
             </BrowserRouter>

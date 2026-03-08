@@ -113,9 +113,11 @@ export default function CommodityDetail() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
-        <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link to="/"><ArrowLeft className="h-4 w-4 mr-1" />{t("nav.markets")}</Link>
-        </Button>
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
+          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1"><ArrowLeft className="h-3 w-3" />{t("nav.markets")}</Link>
+          <span className="text-foreground font-medium">/ {lang === "de" ? (DE_NAMES[decodedName] || decodedName) : decodedName}</span>
+        </nav>
 
         {isLoading ? (
           <div className="space-y-4">

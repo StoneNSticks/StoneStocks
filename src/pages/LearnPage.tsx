@@ -1,11 +1,44 @@
 import { Header } from "@/components/Header";
-import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network } from "lucide-react";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, fadeIn, stagger } from "@/components/learn/LearnComponents";
+import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
+import { ReadingProgress } from "@/components/learn/ReadingProgress";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LearnPage() {
   const t = useT();
+  const { lang } = useLanguage();
+
+  // Quizzes for each section
+  const quizBasics: QuizQuestion[] = lang === "de" ? [
+    { question: "Was beschreibt die Marktkapitalisierung?", options: ["Tägliches Handelsvolumen", "Gesamtwert aller Aktien eines Unternehmens", "Jahresgewinn", "Dividendenrendite"], correct: 1 },
+    { question: "Was bedeutet ein Beta von 1,5?", options: ["50% weniger volatil als der Markt", "Gleich wie der Markt", "50% volatiler als der Markt", "Keine Korrelation"], correct: 2 },
+    { question: "Was ist der Hauptvorteil von Diversifikation?", options: ["Höhere Renditen garantiert", "Risikominimierung durch Streuung", "Steuerersparnis", "Schnellere Gewinne"], correct: 1 },
+  ] : [
+    { question: "What does market capitalization describe?", options: ["Daily trading volume", "Total value of all company shares", "Annual profit", "Dividend yield"], correct: 1 },
+    { question: "What does a Beta of 1.5 mean?", options: ["50% less volatile than market", "Same as market", "50% more volatile than market", "No correlation"], correct: 2 },
+    { question: "What is the main benefit of diversification?", options: ["Guaranteed higher returns", "Risk reduction through spreading", "Tax savings", "Faster profits"], correct: 1 },
+  ];
+
+  const quizStocksETFs: QuizQuestion[] = lang === "de" ? [
+    { question: "Was unterscheidet einen ETF von einem aktiven Fonds?", options: ["ETFs haben höhere Gebühren", "ETFs bilden einen Index passiv ab", "Aktive Fonds sind immer besser", "ETFs zahlen keine Dividenden"], correct: 1 },
+    { question: "Was sind Blue-Chip Aktien?", options: ["Billige Penny Stocks", "Große, etablierte Unternehmen", "Nur Tech-Aktien", "Aktien unter 10€"], correct: 1 },
+  ] : [
+    { question: "What distinguishes an ETF from an active fund?", options: ["ETFs have higher fees", "ETFs passively track an index", "Active funds are always better", "ETFs don't pay dividends"], correct: 1 },
+    { question: "What are Blue-Chip stocks?", options: ["Cheap penny stocks", "Large, established companies", "Only tech stocks", "Stocks under $10"], correct: 1 },
+  ];
+
+  const quizDerivatives: QuizQuestion[] = lang === "de" ? [
+    { question: "Was gibt dir eine Call-Option?", options: ["Pflicht zum Kauf", "Recht zum Kauf", "Pflicht zum Verkauf", "Recht zum Verkauf"], correct: 1 },
+    { question: "Was misst Theta bei Optionen?", options: ["Preisänderung pro $1", "Zeitwertverfall pro Tag", "Volatilitätssensitivität", "Zinssensitivität"], correct: 1 },
+    { question: "Was ist das Hauptrisiko bei CFDs?", options: ["Geringe Liquidität", "Hebelwirkung vervielfacht Verluste", "Zu niedrige Renditen", "Nur in EUR handelbar"], correct: 1 },
+  ] : [
+    { question: "What does a Call option give you?", options: ["Obligation to buy", "Right to buy", "Obligation to sell", "Right to sell"], correct: 1 },
+    { question: "What does Theta measure in options?", options: ["Price change per $1", "Time decay per day", "Volatility sensitivity", "Interest rate sensitivity"], correct: 1 },
+    { question: "What is the main risk with CFDs?", options: ["Low liquidity", "Leverage multiplies losses", "Returns too low", "Only tradeable in EUR"], correct: 1 },
+  ];
 
   const terms = [
     { term: t("learn.term.marketCap"), desc: t("learn.term.marketCapDesc") },
@@ -39,6 +72,7 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <ReadingProgress />
       <Header />
       <main className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
         {/* Hero */}
@@ -100,6 +134,7 @@ export default function LearnPage() {
               <TermCard term={t("learn.orderTrailingStop")} desc={t("learn.orderTrailingStopDesc")} />
             </div>
           </SectionCard>
+          <QuizSection sectionId="basics" title={lang === "de" ? "Quiz: Grundlagen" : "Quiz: Basics"} questions={quizBasics} />
         </motion.section>
 
         {/* ═══ SECTION 2: STOCKS & ETFs ═══ */}
@@ -146,6 +181,7 @@ export default function LearnPage() {
               <TermCard term={t("learn.technicalTitle")} desc={t("learn.technicalDesc")} />
             </div>
           </SectionCard>
+          <QuizSection sectionId="stocks-etfs" title={lang === "de" ? "Quiz: Aktien & ETFs" : "Quiz: Stocks & ETFs"} questions={quizStocksETFs} />
         </motion.section>
 
         {/* ═══ SECTION 3: BONDS & FUNDS ═══ */}

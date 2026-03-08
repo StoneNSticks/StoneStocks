@@ -26,6 +26,7 @@ import { StockComments } from "@/components/StockComments";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
 import { useT } from "@/contexts/LanguageContext";
@@ -131,6 +132,7 @@ const StockDetail = () => {
                   <div className="flex items-center gap-2">
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
                     <WatchlistStar symbol={upperSymbol} />
+                    <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
                   </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
                 </div>

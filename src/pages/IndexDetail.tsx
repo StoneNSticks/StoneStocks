@@ -31,9 +31,11 @@ const IndexDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-8 px-3 sm:px-4 lg:px-8">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-          <ArrowLeft className="h-4 w-4" /> {t("idx.back")}
-        </Link>
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
+          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1"><ArrowLeft className="h-3 w-3" />{t("nav.markets")}</Link>
+          <span className="text-foreground font-medium">/ {index?.name || upperSymbol}</span>
+        </nav>
 
         {isLoading ? (
           <div className="space-y-4">
