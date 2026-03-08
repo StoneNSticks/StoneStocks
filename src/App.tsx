@@ -101,6 +101,15 @@ const App = () => (
                   <Route path="/ai-chat" element={<StockChatPage />} />
                   <Route path="/dashboard" element={<CustomDashboard />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
+                  <Route path="/crypto" element={<CryptoPage />} />
+                  <Route path="/forex" element={<ForexPage />} />
+                  <Route path="/bonds" element={<BondsPage />} />
+                  <Route path="/ipo" element={<IPOCalendarPage />} />
+                  <Route path="/economic-calendar" element={<EconomicCalendarPage />} />
+                  <Route path="/paper-trading" element={<PaperTradingPage />} />
+                  <Route path="/alert-history" element={<AlertHistoryPage />} />
+                  <Route path="/system-status" element={<SystemStatusPage />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
