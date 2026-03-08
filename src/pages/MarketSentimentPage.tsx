@@ -162,13 +162,13 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Strength Signal (10%) — Top movers magnitude */
+  /* 5. Strength Signal (3%) — Top movers magnitude */
   const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
   const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
   const strengthRatio = (topGainerAvg + topLoserAvg) > 0 ? topGainerAvg / (topGainerAvg + topLoserAvg) : 0.5;
   const strengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
   indicators.push({
-    key: "strength", weight: 0.10,
+    key: "strength", weight: 0.03,
     label: { de: "Stärke-Signal", en: "Strength Signal" },
     description: {
       de: "Vergleicht die durchschnittliche Stärke der Top-5-Tagesgewinner mit den Top-5-Verlierern. Misst, ob Aufwärtsbewegungen kräftiger sind als Abwärtsbewegungen.",
@@ -181,6 +181,27 @@ function computeSubIndicators(
     score: strengthScore,
     rawValue: `${(strengthRatio * 100).toFixed(0)}%`,
     icon: <Target className="h-4 w-4" />,
+  });
+
+  /* 5b. Breadth Divergence (7%) — gap between top movers and market average */
+  const topMoverAvg = (topGainerAvg - topLoserAvg) / 2;
+  const divergence = topMoverAvg - avgChange;
+  // Positive divergence = top movers outperform average = greed; negative = fear
+  const divergenceScore = Math.min(100, Math.max(0, ((divergence + 2) / 4) * 100));
+  indicators.push({
+    key: "breadth_divergence", weight: 0.07,
+    label: { de: "Breiten-Divergenz", en: "Breadth Divergence" },
+    description: {
+      de: "Misst die Abweichung zwischen Top-Movers und dem allgemeinen Markt-Durchschnitt. Wenn Top-Mover deutlich besser laufen als der Markt, signalisiert das Gier – umgekehrt Angst.",
+      en: "Measures the gap between top movers and the overall market average. When top movers significantly outperform the market, it signals greed – the reverse signals fear."
+    },
+    formula: {
+      de: `Score = ((Ø Top-Mover − Markt-Ø + 2%) / 4%) × 100. Ø Top-Mover: ${topMoverAvg >= 0 ? "+" : ""}${topMoverAvg.toFixed(2)}%, Markt-Ø: ${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%.`,
+      en: `Score = ((top mover avg − market avg + 2%) / 4%) × 100. Top mover avg: ${topMoverAvg >= 0 ? "+" : ""}${topMoverAvg.toFixed(2)}%, Market avg: ${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%.`
+    },
+    score: divergenceScore,
+    rawValue: `${divergence >= 0 ? "+" : ""}${divergence.toFixed(2)}%`,
+    icon: <TrendingUp className="h-4 w-4" />,
   });
 
   /* 6. Commodity Risk Appetite (10%) — Oil + Copper */
