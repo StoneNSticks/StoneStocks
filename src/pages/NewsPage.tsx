@@ -115,6 +115,17 @@ const NewsPage = () => {
                 </button>
               ))}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={analyzeSentiment}
+              disabled={sentimentLoading || !news}
+              className="gap-1.5 shrink-0"
+            >
+              <Brain className="h-3.5 w-3.5" />
+              {sentimentLoading ? "..." : (lang === "de" ? "Sentiment AI" : "Sentiment AI")}
+            </Button>
+            </div>
           </div>
 
           {/* News list */}
