@@ -477,9 +477,6 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/compare" label={lang === "de" ? "Aktienvergleich" : "Stock Compare"} />
           </motion.section>
-          <a href="#quiz-portfolio" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zum Quiz" : "Go to quiz"}
-          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
