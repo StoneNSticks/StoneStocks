@@ -1719,7 +1719,7 @@ async function handleFullStock(symbol: string) {
     filledOverview.SharesOutstanding = String((profile as any).shareOutstanding * 1e6);
   }
 
-  const derived = calculateDerivedMetrics(filledOverview, quote || {});
+  const derived = calculateDerivedMetrics(filledOverview, quote || {}, symbol);
 
   // Supplement derived metrics from massiveTicker if still missing (with sanity check)
   if (massiveTicker) {
