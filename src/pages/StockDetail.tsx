@@ -336,10 +336,6 @@ const StockDetail = () => {
               <SecFilings symbol={upperSymbol} />
             </div>
 
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 13: Community: Sentiment Vote + Threaded Comments
-                ══════════════════════════════════════════════════════════ */}
-            <CommunitySection symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 14: Similar Stocks List
