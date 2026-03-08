@@ -279,35 +279,55 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="px-5 pb-5">
-                  <ResponsiveContainer width="100%" height={140}>
-                    <BarChart data={chartData} barCategoryGap="20%">
+                <div className="px-5 pb-5 space-y-4">
+                  <ResponsiveContainer width="100%" height={160}>
+                    <BarChart data={chartData} barCategoryGap="15%" barGap={0}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="period" axisLine={false} tickLine={false} interval={0} angle={-45} textAnchor="end" height={40} tick={{ fontSize: 7, fill: "hsl(var(--muted-foreground))" }} />
+                      <XAxis dataKey="period" axisLine={false} tickLine={false} interval={0} angle={-45} textAnchor="end" height={40} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
                       <YAxis hide />
-                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 10, color: "hsl(var(--foreground))" }} />
-                      <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} />
+                      <Tooltip
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "10px", fontSize: 11, color: "hsl(var(--foreground))", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                        cursor={{ fill: "hsl(var(--muted))", opacity: 0.3, radius: 4 }}
+                      />
+                      <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="buy" stackId="a" fill={COLORS.buy} name={t("rec.buy")} />
                       <Bar dataKey="hold" stackId="a" fill={COLORS.hold} name={t("rec.hold")} />
                       <Bar dataKey="sell" stackId="a" fill={COLORS.sell} name={t("rec.sell")} />
-                      <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[3, 3, 0, 0]} name={t("rec.strongSell")} />
+                      <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[4, 4, 0, 0]} name={t("rec.strongSell")} />
                     </BarChart>
                   </ResponsiveContainer>
 
-                  {/* Per-month mini breakdown */}
-                  <div className="mt-3 space-y-1 max-h-[200px] overflow-y-auto">
-                    {chartData.map((row) => {
+                  {/* Legend */}
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    {segments.map((s) => (
+                      <div key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                        {s.label}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Timeline rows */}
+                  <div className="space-y-1">
+                    {chartData.map((row, i) => {
                       const rowTotal = row.strongBuy + row.buy + row.hold + row.sell + row.strongSell;
+                      const rowScore = rowTotal > 0
+                        ? 5 - ((row.strongBuy * 1 + row.buy * 2 + row.hold * 3 + row.sell * 4 + row.strongSell * 5) / rowTotal) + 1
+                        : 0;
+                      const isLatest = i === chartData.length - 1;
                       return (
-                        <div key={row.period} className="flex items-center gap-2 text-[10px] px-1 py-1 rounded-md hover:bg-muted/30">
-                          <span className="w-14 text-muted-foreground font-mono">{row.period}</span>
-                          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden gap-px">
+                        <div key={row.period} className={`flex items-center gap-2.5 text-[11px] px-2 py-1.5 rounded-lg transition-colors ${isLatest ? "bg-primary/[0.06] border border-primary/20" : "hover:bg-muted/40"}`}>
+                          <span className={`w-14 font-mono ${isLatest ? "text-primary font-semibold" : "text-muted-foreground"}`}>{row.period}</span>
+                          <div className="flex-1 flex h-2 rounded-full overflow-hidden gap-px bg-muted/30">
                             {segments.map((s) => {
                               const val = row[s.key] as number;
-                              return <div key={s.label} style={{ width: rowTotal > 0 ? `${(val / rowTotal) * 100}%` : "0", backgroundColor: s.color, minWidth: val > 0 ? "2px" : "0" }} />;
+                              return <div key={s.label} className="transition-all duration-500" style={{ width: rowTotal > 0 ? `${(val / rowTotal) * 100}%` : "0", backgroundColor: s.color, minWidth: val > 0 ? "3px" : "0" }} />;
                             })}
                           </div>
-                          <span className="w-6 text-right text-muted-foreground font-mono">{rowTotal}</span>
+                          <span className={`w-8 text-right font-mono font-semibold ${rowScore >= 3.5 ? "text-chart-2" : rowScore >= 2.0 ? "text-muted-foreground" : "text-destructive"}`}>
+                            {rowScore.toFixed(1)}
+                          </span>
+                          <span className="w-5 text-right text-muted-foreground/60 font-mono text-[10px]">{rowTotal}</span>
                         </div>
                       );
                     })}
