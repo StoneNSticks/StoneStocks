@@ -15,6 +15,7 @@ import { AlertNotifications } from "@/components/AlertNotifications";
 import { EarningsNotificationProvider } from "@/components/EarningsNotificationProvider";
 import { lazy, Suspense } from "react";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
+import { FloatingChat } from "@/components/FloatingChat";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Lazy-loaded page components for code splitting ──
