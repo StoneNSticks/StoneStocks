@@ -1,6 +1,6 @@
 /**
  * SectorPerformance — Horizontal bar chart showing daily performance by sector.
- * Aggregates data from top companies, gainers/losers, and most active for broader coverage.
+ * Shows all 11 GICS sectors with fallback to 0% when no data available.
  */
 import { useMemo, useState } from "react";
 import { useTopCompanies, useGainersLosers, useMostActive } from "@/hooks/useStockData";
@@ -8,101 +8,63 @@ import { useT } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart3, Layers, List } from "lucide-react";
 
+const ALL_GICS_SECTORS = [
+  "Technology", "Healthcare", "Financials", "Consumer Discretionary",
+  "Consumer Staples", "Industrials", "Energy", "Utilities",
+  "Real Estate", "Materials", "Communication Services",
+] as const;
+
 const INDUSTRY_TO_SECTOR: Record<string, string> = {
-  // Technology
-  "semiconductors": "Technology",
-  "software": "Technology",
-  "software—infrastructure": "Technology",
-  "software—application": "Technology",
-  "consumer electronics": "Technology",
-  "electronic components": "Technology",
+  "semiconductors": "Technology", "software": "Technology",
+  "software—infrastructure": "Technology", "software—application": "Technology",
+  "consumer electronics": "Technology", "electronic components": "Technology",
   "information technology services": "Technology",
   "semiconductor equipment & materials": "Technology",
   "scientific & technical instruments": "Technology",
-  "computer hardware": "Technology",
-  "electronic gaming & multimedia": "Technology",
+  "computer hardware": "Technology", "electronic gaming & multimedia": "Technology",
   "data processing & outsourced services": "Technology",
-  // Communication Services
   "internet content & information": "Communication Services",
-  "telecom services": "Communication Services",
-  "entertainment": "Communication Services",
-  "advertising agencies": "Communication Services",
-  "broadcasting": "Communication Services",
-  "electronic media": "Communication Services",
-  "publishing": "Communication Services",
-  // Consumer Cyclical / Discretionary
-  "internet retail": "Consumer Discretionary",
-  "specialty retail": "Consumer Discretionary",
-  "auto manufacturers": "Consumer Discretionary",
-  "restaurants": "Consumer Discretionary",
-  "apparel retail": "Consumer Discretionary",
-  "home improvement retail": "Consumer Discretionary",
-  "travel services": "Consumer Discretionary",
-  "resorts & casinos": "Consumer Discretionary",
-  "leisure": "Consumer Discretionary",
-  "lodging": "Consumer Discretionary",
+  "telecom services": "Communication Services", "entertainment": "Communication Services",
+  "advertising agencies": "Communication Services", "broadcasting": "Communication Services",
+  "electronic media": "Communication Services", "publishing": "Communication Services",
+  "media": "Communication Services",
+  "internet retail": "Consumer Discretionary", "specialty retail": "Consumer Discretionary",
+  "auto manufacturers": "Consumer Discretionary", "restaurants": "Consumer Discretionary",
+  "apparel retail": "Consumer Discretionary", "home improvement retail": "Consumer Discretionary",
+  "travel services": "Consumer Discretionary", "resorts & casinos": "Consumer Discretionary",
+  "leisure": "Consumer Discretionary", "lodging": "Consumer Discretionary",
   "footwear & accessories": "Consumer Discretionary",
-  "apparel manufacturing": "Consumer Discretionary",
-  "auto parts": "Consumer Discretionary",
+  "apparel manufacturing": "Consumer Discretionary", "auto parts": "Consumer Discretionary",
   "residential construction": "Consumer Discretionary",
   "furnishings, fixtures & appliances": "Consumer Discretionary",
   "luxury goods": "Consumer Discretionary",
   "textiles, apparel & luxury goods": "Consumer Discretionary",
-  "retail": "Consumer Discretionary",
-  "automobiles": "Consumer Discretionary",
-  // Healthcare
-  "drug manufacturers—general": "Healthcare",
-  "drug manufacturers": "Healthcare",
-  "medical devices": "Healthcare",
-  "health care plans": "Healthcare",
-  "biotechnology": "Healthcare",
-  "diagnostics & research": "Healthcare",
+  "retail": "Consumer Discretionary", "automobiles": "Consumer Discretionary",
+  "drug manufacturers—general": "Healthcare", "drug manufacturers": "Healthcare",
+  "medical devices": "Healthcare", "health care plans": "Healthcare",
+  "biotechnology": "Healthcare", "diagnostics & research": "Healthcare",
   "medical instruments & supplies": "Healthcare",
   "health care equipment & services": "Healthcare",
-  "pharmaceutical retailers": "Healthcare",
-  "medical distribution": "Healthcare",
-  "health information services": "Healthcare",
-  "medical care facilities": "Healthcare",
-  // Financials
-  "banks—diversified": "Financials",
-  "banks—regional": "Financials",
-  "financial data & stock exchanges": "Financials",
-  "credit services": "Financials",
-  "insurance—diversified": "Financials",
-  "insurance—property & casualty": "Financials",
-  "insurance—life": "Financials",
-  "insurance brokers": "Financials",
-  "asset management": "Financials",
-  "capital markets": "Financials",
-  "financial conglomerates": "Financials",
-  "mortgage finance": "Financials",
-  "specialty finance": "Financials",
-  "insurance": "Financials",
-  // Energy
-  "oil & gas integrated": "Energy",
-  "oil & gas e&p": "Energy",
-  "oil & gas midstream": "Energy",
-  "oil & gas refining & marketing": "Energy",
-  "oil & gas equipment & services": "Energy",
-  "solar": "Energy",
-  "uranium": "Energy",
-  "thermal coal": "Energy",
-  // Utilities
-  "utilities—regulated electric": "Utilities",
-  "utilities—diversified": "Utilities",
-  "utilities—renewable": "Utilities",
-  "utilities—regulated gas": "Utilities",
-  "utilities—regulated water": "Utilities",
-  "independent power producers": "Utilities",
-  // Industrials
-  "aerospace & defense": "Industrials",
-  "industrial conglomerates": "Industrials",
-  "railroads": "Industrials",
-  "farm & heavy construction machinery": "Industrials",
-  "waste management": "Industrials",
-  "trucking": "Industrials",
-  "marine shipping": "Industrials",
-  "airlines": "Industrials",
+  "pharmaceutical retailers": "Healthcare", "medical distribution": "Healthcare",
+  "health information services": "Healthcare", "medical care facilities": "Healthcare",
+  "banks—diversified": "Financials", "banks—regional": "Financials",
+  "financial data & stock exchanges": "Financials", "credit services": "Financials",
+  "insurance—diversified": "Financials", "insurance—property & casualty": "Financials",
+  "insurance—life": "Financials", "insurance brokers": "Financials",
+  "asset management": "Financials", "capital markets": "Financials",
+  "financial conglomerates": "Financials", "mortgage finance": "Financials",
+  "specialty finance": "Financials", "insurance": "Financials",
+  "oil & gas integrated": "Energy", "oil & gas e&p": "Energy",
+  "oil & gas midstream": "Energy", "oil & gas refining & marketing": "Energy",
+  "oil & gas equipment & services": "Energy", "solar": "Energy",
+  "uranium": "Energy", "thermal coal": "Energy",
+  "utilities—regulated electric": "Utilities", "utilities—diversified": "Utilities",
+  "utilities—renewable": "Utilities", "utilities—regulated gas": "Utilities",
+  "utilities—regulated water": "Utilities", "independent power producers": "Utilities",
+  "aerospace & defense": "Industrials", "industrial conglomerates": "Industrials",
+  "railroads": "Industrials", "farm & heavy construction machinery": "Industrials",
+  "waste management": "Industrials", "trucking": "Industrials",
+  "marine shipping": "Industrials", "airlines": "Industrials",
   "specialty industrial machinery": "Industrials",
   "integrated freight & logistics": "Industrials",
   "building products & equipment": "Industrials",
@@ -110,52 +72,30 @@ const INDUSTRY_TO_SECTOR: Record<string, string> = {
   "electrical equipment & parts": "Industrials",
   "staffing & employment services": "Industrials",
   "rental & leasing services": "Industrials",
-  "security & protection services": "Industrials",
-  "conglomerates": "Industrials",
-  // Consumer Staples / Defensive
+  "security & protection services": "Industrials", "conglomerates": "Industrials",
   "household & personal products": "Consumer Staples",
   "beverages—non-alcoholic": "Consumer Staples",
   "beverages—brewers": "Consumer Staples",
   "beverages—wineries & distilleries": "Consumer Staples",
-  "discount stores": "Consumer Staples",
-  "packaged foods": "Consumer Staples",
-  "tobacco": "Consumer Staples",
-  "farm products": "Consumer Staples",
-  "food distribution": "Consumer Staples",
-  "grocery stores": "Consumer Staples",
+  "discount stores": "Consumer Staples", "packaged foods": "Consumer Staples",
+  "tobacco": "Consumer Staples", "farm products": "Consumer Staples",
+  "food distribution": "Consumer Staples", "grocery stores": "Consumer Staples",
   "confectioners": "Consumer Staples",
   "education & training services": "Consumer Staples",
-  // Real Estate
-  "reit—industrial": "Real Estate",
-  "reit—residential": "Real Estate",
-  "reit—retail": "Real Estate",
-  "reit—office": "Real Estate",
-  "reit—healthcare facilities": "Real Estate",
-  "reit—diversified": "Real Estate",
-  "reit—specialty": "Real Estate",
-  "reit—mortgage": "Real Estate",
-  "real estate services": "Real Estate",
-  "real estate—development": "Real Estate",
+  "reit—industrial": "Real Estate", "reit—residential": "Real Estate",
+  "reit—retail": "Real Estate", "reit—office": "Real Estate",
+  "reit—healthcare facilities": "Real Estate", "reit—diversified": "Real Estate",
+  "reit—specialty": "Real Estate", "reit—mortgage": "Real Estate",
+  "real estate services": "Real Estate", "real estate—development": "Real Estate",
   "real estate—diversified": "Real Estate",
-  // Materials
-  "gold": "Materials",
-  "silver": "Materials",
-  "steel": "Materials",
-  "specialty chemicals": "Materials",
-  "chemicals": "Materials",
-  "building materials": "Materials",
-  "aluminum": "Materials",
-  "copper": "Materials",
-  "paper & paper products": "Materials",
-  "lumber & wood production": "Materials",
-  "other industrial metals & mining": "Materials",
-  "agricultural inputs": "Materials",
+  "gold": "Materials", "silver": "Materials", "steel": "Materials",
+  "specialty chemicals": "Materials", "chemicals": "Materials",
+  "building materials": "Materials", "aluminum": "Materials", "copper": "Materials",
+  "paper & paper products": "Materials", "lumber & wood production": "Materials",
+  "other industrial metals & mining": "Materials", "agricultural inputs": "Materials",
   "coking coal": "Materials",
-  // Media (map to Communication Services)
-  "media": "Communication Services",
 };
 
-// Canonical sector name mapping (normalize variants)
 const SECTOR_ALIASES: Record<string, string> = {
   "consumer cyclical": "Consumer Discretionary",
   "consumer defensive": "Consumer Staples",
@@ -164,21 +104,34 @@ const SECTOR_ALIASES: Record<string, string> = {
   "basic materials": "Materials",
   "financial services": "Financials",
   "media": "Communication Services",
+  "technology": "Technology",
+  "healthcare": "Healthcare",
+  "financials": "Financials",
+  "energy": "Energy",
+  "utilities": "Utilities",
+  "industrials": "Industrials",
+  "real estate": "Real Estate",
+  "materials": "Materials",
+  "consumer discretionary": "Consumer Discretionary",
+  "consumer staples": "Consumer Staples",
 };
 
 function mapToSector(industry: string | undefined, sector: string | undefined): string {
-  // Try sector first
-  if (sector && sector.length > 1) {
-    const lower = sector.toLowerCase();
-    if (SECTOR_ALIASES[lower]) return SECTOR_ALIASES[lower];
-    if (lower !== "other") return sector;
+  // Try industry mapping first (most specific)
+  if (industry) {
+    const lower = industry.toLowerCase().trim();
+    if (INDUSTRY_TO_SECTOR[lower]) return INDUSTRY_TO_SECTOR[lower];
   }
-  if (!industry) return "Other";
-  const lower = industry.toLowerCase();
-  return INDUSTRY_TO_SECTOR[lower] || (sector && sector !== "Other" ? (SECTOR_ALIASES[sector.toLowerCase()] || sector) : "Other");
+  // Then normalize raw sector field
+  if (sector) {
+    const lower = sector.toLowerCase().trim();
+    if (SECTOR_ALIASES[lower]) return SECTOR_ALIASES[lower];
+    // Check if it's already a canonical name
+    if (ALL_GICS_SECTORS.includes(sector as any)) return sector;
+  }
+  return "Other";
 }
 
-// Pretty labels for sub-sectors / industries
 const INDUSTRY_LABELS: Record<string, string> = {
   "semiconductors": "Semiconductors",
   "software—infrastructure": "Software Infra",
@@ -230,21 +183,21 @@ const INDUSTRY_LABELS: Record<string, string> = {
   "real estate services": "Real Estate Services",
 };
 
-function getIndustryLabel(industry: string | undefined): string {
-  if (!industry) return "";
+function getIndustryLabel(industry: string): string {
   const lower = industry.toLowerCase();
   return INDUSTRY_LABELS[lower] || industry.split("—").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
 export function SectorPerformance() {
   const { data: companies, isLoading: loadingTop } = useTopCompanies();
-  const { data: gl, isLoading: loadingGL } = useGainersLosers();
-  const { data: active, isLoading: loadingActive } = useMostActive();
+  const { data: gl } = useGainersLosers();
+  const { data: active } = useMostActive();
   const t = useT();
   const [viewMode, setViewMode] = useState<"sectors" | "industries">("industries");
 
   const isLoading = loadingTop && !companies;
 
+  // Deduplicate stocks across all sources
   const allStocks = useMemo(() => {
     const seen = new Set<string>();
     const all: any[] = [];
@@ -263,53 +216,62 @@ export function SectorPerformance() {
     return all;
   }, [companies, gl, active]);
 
+  // Always show all 11 GICS sectors
   const sectors = useMemo(() => {
-    if (allStocks.length === 0) return [];
     const map: Record<string, { sum: number; count: number }> = {};
+    // Initialize all GICS sectors
+    for (const s of ALL_GICS_SECTORS) {
+      map[s] = { sum: 0, count: 0 };
+    }
     allStocks.forEach((c: any) => {
       const sector = mapToSector(c.industry, c.sector);
-      if (!map[sector]) map[sector] = { sum: 0, count: 0 };
-      map[sector].sum += c.changePercent || 0;
-      map[sector].count += 1;
+      if (map[sector]) {
+        map[sector].sum += c.changePercent || 0;
+        map[sector].count += 1;
+      }
     });
-    return Object.entries(map)
-      .filter(([name]) => name !== "Other" && name !== "")
-      .map(([name, { sum, count }]) => ({ name, avg: sum / count, count }))
-      .sort((a, b) => b.avg - a.avg);
+    return ALL_GICS_SECTORS.map(name => ({
+      name,
+      avg: map[name].count > 0 ? map[name].sum / map[name].count : 0,
+      count: map[name].count,
+      hasData: map[name].count > 0,
+    })).sort((a, b) => b.avg - a.avg);
   }, [allStocks]);
 
+  // Industries view with minimum 10 entries
   const industries = useMemo(() => {
     if (allStocks.length === 0) return [];
     const map: Record<string, { sum: number; count: number; sector: string }> = {};
     allStocks.forEach((c: any) => {
-      // Use industry if available; if not, use sector as the key
       const rawIndustry = c.industry ? c.industry.toLowerCase().trim() : "";
-      const rawSector = c.sector ? c.sector.trim() : "";
-      
-      // Create entries for BOTH the broad sector AND the specific industry
       const sectorName = mapToSector(c.industry, c.sector);
-      
-      // Add to specific industry (if we have one and it's different from sector)
-      if (rawIndustry && rawIndustry !== "other" && rawIndustry !== rawSector.toLowerCase()) {
+      if (rawIndustry && rawIndustry !== "other") {
         if (!map[rawIndustry]) map[rawIndustry] = { sum: 0, count: 0, sector: sectorName };
         map[rawIndustry].sum += c.changePercent || 0;
         map[rawIndustry].count += 1;
-      } else if (rawSector && rawSector !== "Other") {
-        // Stocks with only sector info → use sector as industry entry
-        const key = rawSector.toLowerCase();
-        if (!map[key]) map[key] = { sum: 0, count: 0, sector: sectorName };
-        map[key].sum += c.changePercent || 0;
-        map[key].count += 1;
       }
     });
-    return Object.entries(map)
+    const result = Object.entries(map)
       .map(([key, { sum, count, sector }]) => ({
         name: getIndustryLabel(key),
         avg: sum / count,
         count,
         sector,
+        hasData: true,
       }))
       .sort((a, b) => b.avg - a.avg);
+
+    // Pad with GICS sectors if fewer than 10
+    if (result.length < 10) {
+      const existingNames = new Set(result.map(r => r.name));
+      for (const s of ALL_GICS_SECTORS) {
+        if (result.length >= 10) break;
+        if (!existingNames.has(s)) {
+          result.push({ name: s, avg: 0, count: 0, sector: s, hasData: false });
+        }
+      }
+    }
+    return result;
   }, [allStocks]);
 
   const items = viewMode === "sectors" ? sectors : industries;
@@ -347,19 +309,24 @@ export function SectorPerformance() {
         {items.map(s => {
           const isUp = s.avg >= 0;
           const width = Math.min(Math.abs(s.avg) / max * 100, 100);
+          const noData = !s.hasData;
           return (
             <div key={s.name} className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground w-36 truncate shrink-0" title={s.name}>
+              <span className={`text-xs w-36 truncate shrink-0 ${noData ? "text-muted-foreground/50" : "text-muted-foreground"}`} title={s.name}>
                 {s.name}
               </span>
               <div className="flex-1 h-5 bg-muted/30 rounded-md overflow-hidden relative">
-                <div
-                  className={`h-full rounded-md transition-all duration-500 ${isUp ? "bg-chart-2/60" : "bg-destructive/60"}`}
-                  style={{ width: `${width}%` }}
-                />
+                {noData ? (
+                  <div className="h-full w-full bg-muted/10 rounded-md" />
+                ) : (
+                  <div
+                    className={`h-full rounded-md transition-all duration-500 ${isUp ? "bg-chart-2/60" : "bg-destructive/60"}`}
+                    style={{ width: `${width}%` }}
+                  />
+                )}
               </div>
-              <span className={`text-xs font-mono font-semibold w-14 text-right ${isUp ? "text-chart-2" : "text-destructive"}`}>
-                {isUp ? "+" : ""}{s.avg.toFixed(2)}%
+              <span className={`text-xs font-mono font-semibold w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
+                {noData ? "—" : `${isUp ? "+" : ""}${s.avg.toFixed(2)}%`}
               </span>
             </div>
           );
