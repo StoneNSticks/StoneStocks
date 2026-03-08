@@ -128,7 +128,7 @@ export default function ComparePage() {
 
   usePageTitle(
     lang === "de" ? "Aktienvergleich" : "Stock Compare",
-    lang === "de" ? "Bis zu 4 Aktien nebeneinander vergleichen" : "Compare up to 4 stocks side by side"
+    lang === "de" ? "Bis zu 5 Aktien nebeneinander vergleichen" : "Compare up to 5 stocks side by side"
   );
 
   const [symbols, setSymbols] = useState<string[]>([]);
