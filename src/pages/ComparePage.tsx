@@ -262,6 +262,10 @@ export default function ComparePage() {
             <TabsContent value="financials">
               <CompareFinancials symbols={symbols} />
             </TabsContent>
+
+            <TabsContent value="correlation">
+              <CorrelationMatrix symbols={symbols} />
+            </TabsContent>
           </Tabs>
         )}
       </main>
