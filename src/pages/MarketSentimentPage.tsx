@@ -1,16 +1,17 @@
 /**
  * MarketSentimentPage: Comprehensive market sentiment dashboard.
  *
- * The Fear & Greed Index is computed from 7 sub-indicators:
- * 1. Market Momentum: Average performance of major indices
- * 2. Market Breadth: Ratio of advancing vs declining stocks
- * 3. Volatility Signal: Derived from index spread (proxy for VIX)
- * 4. Safe Haven Demand: Gold performance vs stock market
- * 5. Strength Signal: Top gainers vs top losers magnitude
- * 6. Volume Conviction: Volume-weighted price momentum
- * 7. Commodity Risk Appetite: Energy/metals momentum as risk signal
+ * The Fear & Greed Index (modeled after CNN's methodology) uses 7
+ * equally-weighted indicators (each ~14.3%). Each tracks deviation
+ * from average compared to normal divergence. 0 = max fear, 100 = max greed.
  *
- * Each indicator produces a 0-100 sub-score with transparent methodology.
+ * 1. Market Momentum — S&P 500 vs its 125-day moving average
+ * 2. Stock Price Strength — Net new 52-week highs vs lows
+ * 3. Stock Price Breadth — Advancing vs declining volume (McClellan)
+ * 4. Put & Call Options — Put/Call ratio (inverse fear signal)
+ * 5. Junk Bond Demand — Yield spread junk vs investment grade
+ * 6. Market Volatility — VIX level vs its 50-day moving average
+ * 7. Safe Haven Demand — Stock returns vs Treasury bond returns
  */
 
 import { Header } from "@/components/Header";
