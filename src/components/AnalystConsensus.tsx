@@ -212,7 +212,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             {low > 0 && (
               <div className="rounded-lg bg-background p-2 border border-border/30">
                 <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Tief" : "Low"}</div>
-                <div className="font-mono font-bold text-sm text-destructive">{cSym}{convert(low)?.toFixed(0)}</div>
+                <div className="font-mono font-bold text-sm text-destructive">{cSym}{(convert(low) ?? low).toFixed(0)}</div>
               </div>
             )}
             <div className="rounded-lg bg-background p-2 border border-primary/30 shadow-sm">
