@@ -61,6 +61,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { DividendGrowth } from "@/components/DividendGrowth";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
+import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
