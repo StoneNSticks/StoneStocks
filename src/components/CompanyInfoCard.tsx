@@ -22,7 +22,8 @@ export function CompanyInfoCard({ profile, overview, massiveTicker, symbol }: Co
   const currency = profile?.currency as string || overview?.Currency || "USD";
   const description = overview?.description || (overview as any)?.Description || "";
 
-  const displayWebsite = website ? new URL(website).hostname : "";
+  let displayWebsite = "";
+  try { if (website) displayWebsite = new URL(website).hostname; } catch { displayWebsite = website; }
   const countryFlag = country === "US" ? "🇺🇸" : country === "DE" ? "🇩🇪" : country === "JP" ? "🇯🇵" : country === "CN" ? "🇨🇳" : country === "GB" ? "🇬🇧" : country === "TW" ? "🇹🇼" : country === "KR" ? "🇰🇷" : country === "FR" ? "🇫🇷" : country === "CA" ? "🇨🇦" : country === "NL" ? "🇳🇱" : country === "CH" ? "🇨🇭" : "🌍";
 
   const countryName = country === "US" ? t("info.us") : country === "DE" ? t("info.de") : country === "JP" ? t("info.jp") : country === "CN" ? t("info.cn") : country === "GB" ? t("info.gb") : country === "TW" ? t("info.tw") : country === "KR" ? t("info.kr") : country === "FR" ? t("info.fr") : country === "CA" ? t("info.ca") : country === "NL" ? t("info.nl") : country === "CH" ? t("info.ch") : country;

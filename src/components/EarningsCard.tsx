@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useT } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -7,7 +7,7 @@ interface EarningsCardProps {
   earnings: any;
 }
 
-export function EarningsCard({ earnings }: EarningsCardProps) {
+export const EarningsCard = memo(function EarningsCard({ earnings }: EarningsCardProps) {
   const t = useT();
   const { symbol: cSym } = useCurrency();
 
@@ -54,4 +54,4 @@ export function EarningsCard({ earnings }: EarningsCardProps) {
       </div>
     </div>
   );
-}
+});

@@ -312,7 +312,7 @@ export function SectorPerformance() {
           const noData = !s.hasData;
           return (
             <div key={s.name} className="flex items-center gap-2">
-              <span className={`text-xs w-36 truncate shrink-0 ${noData ? "text-muted-foreground/50" : "text-muted-foreground"}`} title={s.name}>
+              <span className={`text-xs w-24 sm:w-36 truncate shrink-0 ${noData ? "text-muted-foreground/50" : "text-muted-foreground"}`} title={s.name}>
                 {s.name}
               </span>
               <div className="flex-1 h-5 bg-muted/30 rounded-md overflow-hidden relative">
@@ -325,7 +325,7 @@ export function SectorPerformance() {
                   />
                 )}
               </div>
-              <span className={`text-xs font-mono font-semibold w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
+              <span className={`text-xs font-mono font-semibold w-12 sm:w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
                 {noData ? "—" : `${isUp ? "+" : ""}${s.avg.toFixed(2)}%`}
               </span>
             </div>

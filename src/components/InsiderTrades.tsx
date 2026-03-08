@@ -48,7 +48,7 @@ export function InsiderTrades({ symbol }: { symbol: string }) {
         {recent.map((tx: any, i: number) => {
           const info = getTypeInfo(tx.change || 0);
           return (
-            <div key={i} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/20 transition-colors">
+            <div key={`${tx.name}-${tx.transactionDate}-${i}`} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/20 transition-colors">
               <div className={`flex items-center justify-center h-7 w-7 rounded-lg ${info.bg} ${info.color} shrink-0`}>
                 {info.icon}
               </div>

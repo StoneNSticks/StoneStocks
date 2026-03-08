@@ -62,9 +62,9 @@ export function CommoditiesSection() {
                   {lang === "de" ? (DE_NAMES[c.name] || c.name) : c.name}
                 </span>
               </div>
-              <div className="font-display font-bold text-sm">{cSym}{convert(c.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="font-display font-bold text-sm">{cSym}{(convert(c.price) ?? c.price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               <div className={`text-xs font-medium mt-0.5 ${isUp ? "text-chart-2" : "text-destructive"}`}>
-                {isUp ? "+" : ""}{c.changePercent.toFixed(2)}%
+                {isUp ? "+" : ""}{(c.changePercent ?? 0).toFixed(2)}%
               </div>
               <div className="text-[10px] text-muted-foreground mt-0.5">/{c.unit}</div>
             </Link>

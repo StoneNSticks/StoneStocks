@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { ArrowRight } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -26,7 +26,7 @@ function formatLargeNumber(num: number, sym = "$"): string {
   return `${sym}${num.toFixed(0)}`;
 }
 
-export function FinancialChart({
+export const FinancialChart = memo(function FinancialChart({
   title, data, dataKey, secondaryKey, secondaryLabel,
   color = "hsl(210, 80%, 55%)", secondaryColor = "hsl(145, 63%, 42%)",
   type = "bar", formatValue = formatLargeNumber, badge, badgeColor = "hsl(210, 80%, 55%)",
@@ -34,6 +34,7 @@ export function FinancialChart({
   const { convert, symbol: currSymbol } = useCurrency();
   const t = useT();
   const effectiveFormat = (v: number) => {
+    if (v == null || isNaN(v)) return "—";
     const converted = convert(v) ?? v;
     if (formatValue !== formatLargeNumber) return `${currSymbol}${converted.toFixed(2)}`;
     return formatLargeNumber(converted, currSymbol);
@@ -92,7 +93,7 @@ export function FinancialChart({
       </div>
     </div>
   );
-}
+});
 
 export function extractFinancialSeries(financials: Array<Record<string, unknown>>, metric: string, statement: string = "income_statement"): Array<{ label: string; value: number }> {
   if (!financials || !Array.isArray(financials)) return [];

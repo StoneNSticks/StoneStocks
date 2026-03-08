@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { useT } from "@/contexts/LanguageContext";
 
@@ -7,7 +8,7 @@ interface StockPerformanceProps {
   massiveSnapshot: Record<string, unknown> | null;
 }
 
-export function StockPerformance({ quote, overview, massiveSnapshot }: StockPerformanceProps) {
+export const StockPerformance = memo(function StockPerformance({ quote, overview, massiveSnapshot }: StockPerformanceProps) {
   const fc = useFormattedCurrency();
   const t = useT();
 
@@ -74,4 +75,4 @@ export function StockPerformance({ quote, overview, massiveSnapshot }: StockPerf
       </div>
     </div>
   );
-}
+});

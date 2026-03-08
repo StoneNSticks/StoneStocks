@@ -212,17 +212,17 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             {low > 0 && (
               <div className="rounded-lg bg-background p-2 border border-border/30">
                 <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Tief" : "Low"}</div>
-                <div className="font-mono font-bold text-sm text-destructive">{cSym}{convert(low)?.toFixed(0)}</div>
+                <div className="font-mono font-bold text-sm text-destructive">{cSym}{(convert(low) ?? low).toFixed(0)}</div>
               </div>
             )}
             <div className="rounded-lg bg-background p-2 border border-primary/30 shadow-sm">
               <div className="text-[9px] text-primary font-semibold uppercase tracking-wider">Target</div>
-              <div className="font-mono font-bold text-sm text-foreground">{cSym}{convert(target)?.toFixed(2)}</div>
+              <div className="font-mono font-bold text-sm text-foreground">{cSym}{(convert(target) ?? target).toFixed(2)}</div>
             </div>
             {high > 0 && (
               <div className="rounded-lg bg-background p-2 border border-border/30">
                 <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Hoch" : "High"}</div>
-                <div className="font-mono font-bold text-sm text-chart-2">{cSym}{convert(high)?.toFixed(0)}</div>
+                <div className="font-mono font-bold text-sm text-chart-2">{cSym}{(convert(high) ?? high).toFixed(0)}</div>
               </div>
             )}
           </div>
@@ -242,17 +242,17 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             return (
               <div className="relative h-2 rounded-full bg-muted overflow-hidden">
                 <div className="absolute top-0 h-full rounded-full bg-primary/15" style={{ left: `${lowPct}%`, width: `${highPct - lowPct}%` }} />
-                <div className="absolute top-0 h-full w-0.5 bg-foreground/70 z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} title={`Current: ${cSym}${convert(price)?.toFixed(2)}`} />
+                 <div className="absolute top-0 h-full w-0.5 bg-foreground/70 z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} title={`Current: ${cSym}${(convert(price) ?? price).toFixed(2)}`} />
                 <div className="absolute -top-0.5 h-3 w-1.5 rounded-full z-10" style={{
-                  left: `${Math.min(100, Math.max(0, targetPct))}%`,
-                  backgroundColor: upside >= 0 ? COLORS.buy : COLORS.sell,
-                }} title={`Target: ${cSym}${convert(target)?.toFixed(2)}`} />
+                   left: `${Math.min(100, Math.max(0, targetPct))}%`,
+                   backgroundColor: upside >= 0 ? COLORS.buy : COLORS.sell,
+                 }} title={`Target: ${cSym}${(convert(target) ?? target).toFixed(2)}`} />
               </div>
             );
           })()}
 
           <div className="text-[10px] text-muted-foreground text-center">
-            {t("at.current")}: <span className="font-mono font-medium text-foreground">{cSym}{convert(price)?.toFixed(2)}</span>
+            {t("at.current")}: <span className="font-mono font-medium text-foreground">{cSym}{(convert(price) ?? price).toFixed(2)}</span>
           </div>
         </div>
       )}
