@@ -893,7 +893,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.lboP1") }} />
             </SectionCard>
             <CalcLink to="/calculators" label="DCF Calculator" />
-            <QuizSection sectionId="valuation" title={t("learn.quizValuation")} questions={quizValuation} />
+            
           </motion.section>
 
           {/* Section 24: Alternative Investments Advanced */}
