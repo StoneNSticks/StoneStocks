@@ -173,7 +173,7 @@ const StockDetail = () => {
             </div>
 
             {/* Financial charts */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 overflow-hidden">
               <FinancialChart title={t("sd.revenue")} data={revenueData} dataKey="value" color="hsl(210, 80%, 55%)" />
               <FinancialChart title={t("sd.grossProfit")} data={grossProfitData} dataKey="value" color="hsl(280, 65%, 55%)" />
               <FinancialChart title={t("sd.netIncome")} data={netIncomeData} dataKey="value" color="hsl(38, 92%, 50%)" />
