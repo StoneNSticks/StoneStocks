@@ -88,7 +88,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
 
   if (!total && !target) return null;
 
-  const gaugeAngle = total > 0 ? ((consensus - 1) / 4) * 180 : 90;
+  const gaugeAngle = total > 0 ? (consensus / 5) * 180 : 90;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
