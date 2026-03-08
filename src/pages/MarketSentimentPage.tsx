@@ -30,7 +30,7 @@ import { MarketHeatmap } from "@/components/MarketHeatmap";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
-/* ─── Sub-indicator computation ─── */
+/* ── Sub-indicator computation ── */
 
 interface SubIndicator {
   key: string;
