@@ -739,6 +739,10 @@ function isETFByName(name: string): boolean {
     lower.includes("t-rex") ||
     lower.includes("yieldmax") ||
     lower.includes("microsectors") ||
+    lower.includes("inverse") ||
+    lower.includes("single stock") ||
+    lower.includes("roundhill") ||
+    lower.includes("tuttle") ||
     (lower.includes("daily") && (lower.includes("short") || lower.includes("long") || lower.includes("bull") || lower.includes("bear")));
 }
 
