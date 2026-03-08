@@ -134,6 +134,7 @@ export default function LearnPage() {
               <TermCard term={t("learn.orderTrailingStop")} desc={t("learn.orderTrailingStopDesc")} />
             </div>
           </SectionCard>
+          <QuizSection sectionId="basics" title={lang === "de" ? "Quiz: Grundlagen" : "Quiz: Basics"} questions={quizBasics} />
         </motion.section>
 
         {/* ═══ SECTION 2: STOCKS & ETFs ═══ */}
