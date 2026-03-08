@@ -1,6 +1,6 @@
 /**
- * ComparePage — Side-by-side stock comparison with key metrics.
- * Enhanced with more metrics, winner highlighting, and improved UX.
+ * ComparePage — Side-by-side stock comparison with tabbed views:
+ * Overview (metrics table), Charts (normalized overlay), Financials (grouped bars).
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
@@ -14,19 +14,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown, Trophy } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { NormalizedChart } from "@/components/NormalizedChart";
 import { CompareRadar } from "@/components/CompareRadar";
+import { CompareFinancials } from "@/components/CompareFinancials";
+import { ShareButton } from "@/components/ShareButton";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
-
-interface MetricRow {
-  label: string;
-  values: { symbol: string; raw: number; display: string; color: string }[];
-  higherIsBetter: boolean;
-}
 
 function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => void }) {
   const { data, isLoading } = useFullStock(symbol);
@@ -71,22 +68,22 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
   const pctColor = (v: number) => v > 0 ? "text-chart-2" : v < 0 ? "text-destructive" : "";
 
   const metrics = [
-    { label: t("compare.price"), value: fmtCur(price || 0), color: "" },
-    { label: t("compare.change"), value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change) },
-    { label: t("compare.marketCap"), value: fmtMcap(mcap), color: "" },
-    { label: "P/E", value: fmtNum(pe), color: "" },
-    { label: "P/B", value: fmtNum(pb), color: "" },
-    { label: "EV/EBITDA", value: fmtNum(evEbitda), color: "" },
-    { label: "EPS", value: fmtCur(eps), color: "" },
-    { label: "Beta", value: fmtNum(beta), color: "" },
-    { label: t("compare.divYield"), value: fmtPct(divYield), color: pctColor(divYield) },
-    { label: "FCF Yield", value: fmtPct(fcfYield), color: pctColor(fcfYield) },
-    { label: t("compare.profitMargin"), value: fmtPct(profitMargin), color: pctColor(profitMargin) },
-    { label: "Op. Margin", value: fmtPct(opMargin), color: pctColor(opMargin) },
-    { label: "ROE", value: fmtPct(roe), color: pctColor(roe) },
-    { label: "ROA", value: fmtPct(roa), color: pctColor(roa) },
-    { label: t("compare.revGrowth"), value: fmtPct(revGrowth), color: pctColor(revGrowth) },
-    { label: "D/E", value: debtToEquity ? debtToEquity.toFixed(2) : "—", color: "" },
+    { label: t("compare.price"), value: fmtCur(price || 0), color: "", raw: price || 0 },
+    { label: t("compare.change"), value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change), raw: change },
+    { label: t("compare.marketCap"), value: fmtMcap(mcap), color: "", raw: mcap },
+    { label: "P/E", value: fmtNum(pe), color: "", raw: pe },
+    { label: "P/B", value: fmtNum(pb), color: "", raw: pb },
+    { label: "EV/EBITDA", value: fmtNum(evEbitda), color: "", raw: evEbitda },
+    { label: "EPS", value: fmtCur(eps), color: "", raw: eps },
+    { label: "Beta", value: fmtNum(beta), color: "", raw: beta },
+    { label: t("compare.divYield"), value: fmtPct(divYield), color: pctColor(divYield), raw: divYield },
+    { label: "FCF Yield", value: fmtPct(fcfYield), color: pctColor(fcfYield), raw: fcfYield },
+    { label: t("compare.profitMargin"), value: fmtPct(profitMargin), color: pctColor(profitMargin), raw: profitMargin },
+    { label: "Op. Margin", value: fmtPct(opMargin), color: pctColor(opMargin), raw: opMargin },
+    { label: "ROE", value: fmtPct(roe), color: pctColor(roe), raw: roe },
+    { label: "ROA", value: fmtPct(roa), color: pctColor(roa), raw: roa },
+    { label: t("compare.revGrowth"), value: fmtPct(revGrowth), color: pctColor(revGrowth), raw: revGrowth },
+    { label: "D/E", value: debtToEquity ? debtToEquity.toFixed(2) : "—", color: "", raw: debtToEquity },
   ];
 
   return (
@@ -123,6 +120,20 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
   );
 }
 
+function exportCompareCSV(symbols: string[], t: (key: string) => string) {
+  // We export symbol names as header, users can fill data from the page
+  const header = ["Metric", ...symbols].join(",");
+  const metrics = ["Price", "Change %", "Market Cap", "P/E", "P/B", "EV/EBITDA", "EPS", "Beta", "Div Yield", "FCF Yield", "Profit Margin", "Op. Margin", "ROE", "ROA", "Rev Growth", "D/E"];
+  const csv = [header, ...metrics.map(m => `${m},${symbols.map(() => "").join(",")}`)].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `compare-${symbols.join("-")}-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function ComparePage() {
   const t = useT();
   const { lang } = useLanguage();
@@ -145,6 +156,8 @@ export default function ComparePage() {
   };
 
   const removeSymbol = (sym: string) => setSymbols(symbols.filter(s => s !== sym));
+
+  const shareUrl = `${window.location.origin}/compare?symbols=${symbols.join(",")}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -184,7 +197,7 @@ export default function ComparePage() {
           )}
         </div>
 
-        {/* Selected Symbols */}
+        {/* Selected Symbols + Actions */}
         {symbols.length > 0 && (
           <div className="flex items-center justify-center gap-2 flex-wrap mb-6">
             {symbols.map(s => (
@@ -198,10 +211,18 @@ export default function ComparePage() {
                 <Plus className="h-3 w-3" />{5 - symbols.length} {t("compare.remaining")}
               </Badge>
             )}
+            <ShareButton url={shareUrl} title={`Compare ${symbols.join(" vs ")} — StoneStocks`} variant="icon" />
+            <button
+              onClick={() => exportCompareCSV(symbols, t)}
+              className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              title={t("compare.exportCSV")}
+            >
+              <Download className="h-4 w-4" />
+            </button>
           </div>
         )}
 
-        {/* Compare Grid */}
+        {/* Compare Content */}
         {symbols.length === 0 ? (
           <div className="text-center py-20">
             <GitCompare className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
@@ -210,15 +231,34 @@ export default function ComparePage() {
             </p>
           </div>
         ) : (
-          <>
-            <NormalizedChart symbols={symbols} />
-            {symbols.length >= 2 && <div className="mt-4"><CompareRadar symbols={symbols} /></div>}
-            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : symbols.length === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"}`}>
-              {symbols.map(s => (
-                <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
-              ))}
-            </div>
-          </>
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="mb-4 w-full sm:w-auto">
+              <TabsTrigger value="overview">{t("compare.overview")}</TabsTrigger>
+              <TabsTrigger value="charts">{t("compare.charts")}</TabsTrigger>
+              {symbols.length >= 2 && (
+                <TabsTrigger value="financials">{t("compare.financials")}</TabsTrigger>
+              )}
+            </TabsList>
+
+            <TabsContent value="overview">
+              <NormalizedChart symbols={symbols} />
+              {symbols.length >= 2 && <div className="mt-4"><CompareRadar symbols={symbols} /></div>}
+              <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : symbols.length === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"}`}>
+                {symbols.map(s => (
+                  <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="charts">
+              <NormalizedChart symbols={symbols} />
+              {symbols.length >= 2 && <div className="mt-4"><CompareRadar symbols={symbols} /></div>}
+            </TabsContent>
+
+            <TabsContent value="financials">
+              <CompareFinancials symbols={symbols} />
+            </TabsContent>
+          </Tabs>
         )}
       </main>
       <Footer />
