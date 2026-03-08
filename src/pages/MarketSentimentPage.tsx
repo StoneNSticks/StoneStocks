@@ -742,8 +742,8 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
         </span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((card) => (
-          <div key={card.title} className="rounded-2xl border border-border/60 bg-card p-5 space-y-3">
+        {cards.map((card: any) => (
+          <div key={card.title} className={`rounded-2xl border border-border/60 bg-card p-5 space-y-3 ${card.stale ? "opacity-60" : ""}`}>
             <div className="flex items-center gap-2">
               {card.icon}
               <h3 className="font-display font-semibold text-sm">{card.title}</h3>
