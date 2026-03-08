@@ -1784,22 +1784,26 @@ async function handleFredSeries(seriesId: string): Promise<unknown> {
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  // FRED API is free, no key needed for basic access (but rate-limited)
-  // We use the public JSON endpoint
-  const FRED_BASE = "https://api.stlouisfed.org/fred/series/observations";
-  // Try with API key if available, otherwise use public access
   const fredKey = Deno.env.get("FRED_API_KEY");
+  if (!fredKey) {
+    return { id: seriesId, title: seriesId, units: "", frequency: "", lastUpdated: "", observations: [], error: "FRED_API_KEY not configured" };
+  }
+
+  const FRED_BASE = "https://api.stlouisfed.org/fred/series/observations";
   const params = new URLSearchParams({
     series_id: seriesId,
+    api_key: fredKey,
     file_type: "json",
     sort_order: "desc",
     limit: "365",
   });
-  if (fredKey) params.set("api_key", fredKey);
-  else params.set("api_key", "DEMO_KEY"); // FRED provides a demo key
 
   const res = await fetchWithBackoff(`${FRED_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`FRED API error: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`FRED error for ${seriesId}: ${res.status} ${body}`);
+    throw new Error(`FRED API error: ${res.status}`);
+  }
   const json = await res.json();
 
   const observations = (json.observations || []).map((o: any) => ({
