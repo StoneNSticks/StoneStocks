@@ -1100,6 +1100,7 @@ async function handleTopCompanies() {
           change: q.d || 0, changePercent: q.dp || 0,
           marketCap,
           logo: profile?.logo || "",
+          sector: profile?.finnhubIndustry || polygonTicker?.results?.sic_description || "",
         };
       } catch {
         return { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "" };
