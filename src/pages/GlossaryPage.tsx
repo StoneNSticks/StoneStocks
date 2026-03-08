@@ -13,8 +13,8 @@ interface Term { term: string; def: string; }
 
 function getGlossary(lang: string): Term[] {
   if (lang === "de") return [
-    { term: "ADR", def: "American Depositary Receipt — Handelbare Zertifikate für ausländische Aktien an US-Börsen." },
-    { term: "Aktie", def: "Anteilsschein an einem Unternehmen, der dem Inhaber Stimmrechte und Gewinnbeteiligung gewährt." },
+    { term: "ADR", def: "American Depositary Receipt — Über ADRs können Anleger ausländische Aktien direkt an US-Börsen kaufen und verkaufen, ohne ein Depot im Ausland zu eröffnen." },
+    { term: "Aktie", def: "Ein Anteilsschein, der dich zum Miteigentümer eines Unternehmens macht. Du hast damit Stimmrecht auf der Hauptversammlung und profitierst von Dividenden und Kursgewinnen." },
     { term: "Alpha", def: "Überschussrendite einer Anlage gegenüber dem Benchmark." },
     { term: "Anleihe", def: "Festverzinsliches Wertpapier, bei dem der Emittent dem Gläubiger Zinsen zahlt und am Laufzeitende den Nennwert zurückzahlt." },
     { term: "Arbitrage", def: "Ausnutzung von Preisunterschieden desselben Vermögenswerts auf verschiedenen Märkten." },
