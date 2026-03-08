@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Newspaper, Search, ExternalLink, Clock, Brain, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AINewsDigest } from "@/components/AINewsDigest";
 
 const CATEGORIES = ["All", "Technology", "Finance", "Energy", "Healthcare", "Crypto"];
 
