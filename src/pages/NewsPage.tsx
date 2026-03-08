@@ -52,7 +52,6 @@ const NewsPage = () => {
       setSentimentLoading(false);
     }
   };
-  const [limit, setLimit] = useState(20);
 
   const filtered = useMemo(() => {
     if (!news) return [];
