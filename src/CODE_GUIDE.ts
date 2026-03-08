@@ -135,8 +135,8 @@
  * 3. COMPONENTS — Building blocks used by pages
  * ═══════════════════════════════════════════════════════════════════════
  * 
- * ── NAVIGATION & LAYOUT ──
- * 
+ * -- NAVIGATION & LAYOUT --
+ *
  * Header.tsx          → Top navigation bar (logo, menu, search, toggles, user dropdown)
  * BottomNav.tsx       → Mobile bottom tab bar for quick navigation
  * Footer.tsx          → Page footer with links and credits
