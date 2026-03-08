@@ -1,92 +1,93 @@
 
 
-# Vier Aenderungen umsetzen
+# Comprehensive Upgrade Plan: StoneStocks to Top-Level
 
-## 1. Auth-Seite auf Englisch umstellen
+## Critical Bug Fixes
 
-Alle deutschen Texte in `src/pages/AuthPage.tsx` werden ins Englische uebersetzt:
-- "Einloggen" -> "Sign In"
-- "Registrieren" -> "Sign Up"
-- "Passwort zuruecksetzen" -> "Reset Password"
-- "Benutzername" -> "Username"
-- "Anzeigename" -> "Display Name"
-- "Laden..." -> "Loading..."
-- Toast-Meldungen, Platzhalter, Labels, Links
+### 1. TSMC Market Cap Fix (the real root cause)
+The `MAX_REASONABLE_MCAP` check at line 1047 only applies to Polygon data. Finnhub's `marketCapitalization` for TSM returns ~49T (TWD-denominated ADR cap), and since `finnhubMarketCap > 0` is checked first without any cap, it passes through unchecked.
 
-## 2. ETFs/Leveraged Products aus Listen filtern
-
-Das Problem: Produkte wie NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL sind Leveraged/Inverse ETFs, die den `isCommonStock`-Filter passieren, weil sie kurze Ticker haben und nicht in der Blacklist stehen.
-
-Loesung in `supabase/functions/stock-data/index.ts`:
-- Blacklist erweitern um bekannte Ticker: NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL, NVD, NVDL, NVDS, CONL, MSTZ, MSTU
-- Zusaetzlichen **Name-basierten Filter** nach dem Enrichment einbauen: Eintraege deren Name Begriffe wie "ETF", "2x", "2X", "3x", "3X", "Leveraged", "Short", "Long Daily", "Direxion", "Defiance", "GraniteShares", "Tradr", "ProShares", "Trust" + "ETF" enthaelt, werden entfernt
-- Diesen Filter auf `handleGainersLosers` und `handleMostActive` anwenden (nach `enrichWithProfileData`)
-
-## 3. User-Datenbank leeren
-
-Per SQL alle bestehenden Eintraege aus der `profiles`-Tabelle loeschen. Da `profiles.id` per `ON DELETE CASCADE` an `auth.users` haengt, muss zuerst der Eintrag in `auth.users` (ueber Lovable Cloud) oder die `profiles`-Tabelle direkt geleert werden.
-
-Konkret: `DELETE FROM profiles;` und `DELETE FROM watchlist;` ausfuehren.
-
-## 4. Waehrungsumrechnung auf Stock-Detail-Seiten
-
-Folgende Komponenten zeigen Preise aktuell immer in USD (`$`) an und muessen die Waehrungsumrechnung nutzen:
-
-### StockChart.tsx
-- `useCurrency` importieren
-- Y-Achse: `$` durch `symbol` ersetzen und Werte konvertieren
-- Tooltip: Konvertierte Werte mit korrektem Waehrungssymbol anzeigen
-- Chartdaten: `close`-Werte bei der Anzeige konvertieren
-
-### FinancialChart.tsx
-- `useCurrency` importieren
-- `formatLargeNumber` dynamisch mit Waehrungssymbol versehen
-- Y-Achse und Tooltip nutzen konvertierte Werte
-
-### MetricsGrid.tsx
-- `useFormattedCurrency` und `useCurrency` importieren
-- Alle `formatCurrency`-Aufrufe durch die Hook-basierte Version ersetzen
-
-### KeyMetrics.tsx
-- `useFormattedCurrency` importieren
-- Alle Waehrungswerte (Market Cap, EPS, 52W High/Low, Revenue, Gross Profit) konvertieren
-
-### StockDetail.tsx
-- `formatDividendValue` mit dem Waehrungssymbol versehen
-- Preis-Header-Anzeige mit Konvertierung
-
----
-
-## Technische Details
-
-### Betroffene Dateien
-- `src/pages/AuthPage.tsx` (Texte uebersetzen)
-- `supabase/functions/stock-data/index.ts` (ETF-Filter erweitern)
-- `src/components/StockChart.tsx` (Waehrung)
-- `src/components/FinancialChart.tsx` (Waehrung)
-- `src/components/MetricsGrid.tsx` (Waehrung)
-- `src/components/KeyMetrics.tsx` (Waehrung)
-- `src/pages/StockDetail.tsx` (Waehrung)
-
-### Name-basierter ETF-Filter (Pseudocode)
-```text
-function isETFByName(name: string): boolean {
-  const lower = name.toLowerCase();
-  return lower.includes(" etf") ||
-    /\b[23]x\b/.test(lower) ||
-    lower.includes("leveraged") ||
-    lower.includes("direxion") ||
-    lower.includes("proshares") ||
-    lower.includes("graniteshares") ||
-    lower.includes("defiance") ||
-    lower.includes("tradr") ||
-    (lower.includes("daily") && (lower.includes("short") || lower.includes("long")));
+**Fix in `supabase/functions/stock-data/index.ts`**: Apply the $8T sanity cap to ALL sources including Finnhub:
+```
+if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
+  marketCap = finnhubMarketCap;
+} else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
+  marketCap = polygonMarketCap;
+} else {
+  marketCap = computedMarketCap;
 }
 ```
+Also clear the `api_cache` for key `market:top_companies:v2` via SQL migration.
 
-### Reihenfolge
-1. Auth-Seite uebersetzen
-2. ETF-Filter in Edge Function erweitern + deployen
-3. User-Daten loeschen
-4. Waehrungsumrechnung in alle Stock-Detail-Komponenten einbauen
+### 2. ETF Leak in Most Active / Gainers-Losers
+SPDN, PLTD, TSLG still appear in most_active results. Add these to the `ETF_BLACKLIST` set and add more name-based filter keywords: "inverse", "single stock", "roundhill", "tuttle".
+
+## Feature Additions & Improvements
+
+### 3. Watchlist: Real Company Logos + Names
+Currently watchlist items show generic 2-letter avatars. Fetch company profile (name + logo) alongside the quote for each watchlist item, displaying the actual company logo and full name instead of just the ticker symbol.
+
+### 4. Watchlist: Performance Sorting
+The `sortMode` includes "performance" as a type but never implements it. Wire up actual sorting by `quote.dp` (daily percent change) so users can rank their watchlist by today's performance.
+
+### 5. Watchlist: Daily P&L Summary Card
+Add a summary card at the top showing aggregate daily change across all watched positions (sum of individual dp values, average performance), making it feel more like a real portfolio dashboard.
+
+### 6. Homepage: "Fear & Greed" Style Market Sentiment Indicator
+Add a visual gauge/meter showing overall market sentiment based on the indices data already fetched (average change of S&P, Nasdaq, Dow). Display as a colored arc gauge with labels like "Extreme Fear" to "Extreme Greed".
+
+### 7. Stock Detail: Add 52-Week Range Visual Bar
+In `MetricsGrid.tsx` or `StockDetail.tsx`, render the 52-week high/low as a visual progress bar showing where the current price sits within the range — a common feature on professional stock sites.
+
+### 8. Calculator: Currency Converter Tool
+Add a new calculator tab that uses the already-fetched `currency_rates` data to let users convert between currencies. Simple two-dropdown + amount input design.
+
+### 9. Profile Page: Avatar Upload with Initials Fallback
+Show a large avatar circle with user initials on the profile page. Use a gradient based on the username hash for visual distinction.
+
+### 10. Settings: Export Watchlist as CSV
+Add a button in Settings or Watchlist that exports the current watchlist symbols (and dates added) as a downloadable CSV file.
+
+### 11. Improve Mobile Navigation
+The header nav items can overflow on small screens. Ensure the mobile sheet menu includes all nav items with proper icons and active state indicators.
+
+### 12. Learn Page: Add Visual Diagrams
+Add simple SVG/CSS-based visual diagrams for key concepts:
+- Candlestick chart anatomy diagram (body, wick, open/close)
+- Risk/return scatter plot illustration
+- Options payoff diagrams (call/put P&L curves)
+These would be built as React components with Tailwind styling, no external images needed.
+
+### 13. NotFound Page Enhancement
+Currently a basic 404. Make it visually consistent with the app, include a search bar and links to popular pages.
+
+### 14. Commodity Detail: Related Commodities Section
+Show links to other commodities at the bottom of each commodity detail page for easy navigation between assets.
+
+### 15. Loading States & Error Boundaries
+Add a global error boundary component and improve loading skeletons across pages for a more polished feel.
+
+## Technical Details
+
+### Files to modify:
+- `supabase/functions/stock-data/index.ts` — TSMC cap fix (line 1047), ETF blacklist expansion (line 718), redeploy
+- SQL migration — clear stale cache: `DELETE FROM api_cache WHERE cache_key = 'market:top_companies:v2';`
+- `src/pages/WatchlistPage.tsx` — company logos/names, performance sort, P&L summary
+- `src/components/MetricsGrid.tsx` or `src/pages/StockDetail.tsx` — 52-week range bar
+- `src/pages/Index.tsx` — sentiment gauge component
+- `src/pages/CalculatorPage.tsx` — currency converter tab
+- `src/pages/ProfilePage.tsx` — avatar with initials
+- `src/pages/SettingsPage.tsx` — CSV export button
+- `src/pages/LearnPage.tsx` + `src/components/learn/LearnComponents.tsx` — visual diagrams
+- `src/pages/NotFound.tsx` — redesign
+- `src/pages/CommodityDetail.tsx` — related commodities
+- `src/components/Header.tsx` — mobile nav polish
+
+### Execution order:
+1. TSMC bug fix + cache clear + ETF blacklist (critical bugs first)
+2. Watchlist upgrades (logos, performance sort, P&L summary)
+3. Stock detail 52-week bar + market sentiment gauge
+4. Calculator currency converter + settings CSV export
+5. Learn page diagrams + NotFound redesign + commodity related section
+6. Mobile nav + loading polish
 
