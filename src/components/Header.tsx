@@ -1,15 +1,12 @@
 /**
- * Header: Professional finance-style navigation inspired by Yahoo Finance.
- * 
- * Row 1 (utility bar): Logo | Search (wide, always visible) | Theme + Notifications + User
- * Row 2 (nav bar): Text-only horizontal links for ALL pages, clean and spacious
- * Mobile: Logo + compact search + hamburger → Sheet with grouped pages
+ * Header: Professional finance-style navigation.
+ * Row 1: Logo | Search (wide) | Currency, Language, Theme, Notifications, User
+ * Row 2: All 11 pages as flat links with divider between main and tools
+ * Mobile: Logo + Search + Hamburger → Sheet
  */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  Menu, LogIn, LogOut, User, Settings, ChevronDown
-} from "lucide-react";
+import { Menu, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
@@ -25,12 +22,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface NavItem {
-  to: string;
-  key: string;
-  fallback?: string;
-  group?: string;
-}
+interface NavItem { to: string; key: string; fallback?: string; group?: string }
 
 const navItems: NavItem[] = [
   { to: "/", key: "nav.markets", group: "main" },
@@ -63,33 +55,27 @@ export function Header() {
 
   const mainItems = navItems.filter(n => n.group === "main");
   const toolItems = navItems.filter(n => n.group === "tools");
-  const isToolActive = toolItems.some(n => location.pathname === n.to);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl">
       {/* Row 1: Utility bar */}
       <div className="border-b border-border/40">
         <div className="container flex h-12 items-center gap-4">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-display font-bold text-xs">
-              S
-            </div>
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-display font-bold text-xs">S</div>
             <span className="font-display text-base font-semibold tracking-tight hidden sm:inline">
               Stone<span className="text-primary">Stocks</span>
             </span>
           </Link>
 
-          {/* Search - wide, always visible */}
           <div className="flex-1 max-w-xl mx-auto">
             <SearchBar compact />
           </div>
 
-          {/* Right utility icons */}
           <div className="flex items-center gap-1.5">
-            <div className="hidden lg:block">
-              <MarketClock />
-            </div>
+            <div className="hidden lg:block"><MarketClock /></div>
+            <CurrencyToggle />
+            <LanguageToggle />
             <ThemeToggle />
             <NotificationBell />
 
@@ -120,11 +106,6 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <div className="px-2 py-2 flex items-center gap-2">
-                    <CurrencyToggle />
-                    <LanguageToggle />
-                  </div>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()} className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="h-4 w-4" />{t("nav.logout")}
                   </DropdownMenuItem>
@@ -137,7 +118,6 @@ export function Header() {
               </Link>
             )}
 
-            {/* Mobile hamburger */}
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
                 <button className="flex md:hidden items-center justify-center rounded-lg p-1.5 transition-colors hover:bg-muted text-muted-foreground hover:text-foreground">
@@ -150,76 +130,38 @@ export function Header() {
                     Stone<span className="text-primary">Stocks</span>
                   </SheetTitle>
                 </SheetHeader>
-                <MobileNav
-                  items={navItems}
-                  location={location}
-                  label={label}
-                  user={user}
-                  username={username}
-                  t={t}
-                  signOut={signOut}
-                />
+                <MobileNav items={navItems} location={location} label={label} user={user} username={username} t={t} signOut={signOut} />
               </SheetContent>
             </Sheet>
           </div>
         </div>
       </div>
 
-      {/* Row 2: Navigation bar — desktop only */}
+      {/* Row 2: All nav links flat — desktop only */}
       <div className="hidden md:block border-b border-border/30 bg-card/50">
         <div className="container">
           <nav className="flex items-center h-10 gap-0 -mb-px overflow-x-auto scrollbar-hide">
             {mainItems.map((item) => {
-              const isActive = item.to === "/" 
-                ? location.pathname === "/" 
-                : location.pathname.startsWith(item.to);
+              const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
               return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
+                <Link key={item.to} to={item.to} className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
                   {label(item)}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />
-                  )}
+                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
                 </Link>
               );
             })}
 
-            {/* Divider */}
-            <span className="w-px h-4 bg-border/60 mx-1.5" />
+            <span className="w-px h-4 bg-border/60 mx-1.5 flex-shrink-0" />
 
-            {/* Tools dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className={`relative px-3.5 h-10 flex items-center gap-1 text-[13px] font-medium whitespace-nowrap transition-colors ${
-                  isToolActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                }`}>
-                  Tools
-                  <ChevronDown className="h-3 w-3" />
-                  {isToolActive && (
-                    <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />
-                  )}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
-                {toolItems.map((item) => {
-                  const isActive = location.pathname === item.to;
-                  return (
-                    <DropdownMenuItem key={item.to} asChild>
-                      <Link to={item.to} className={`cursor-pointer ${isActive ? "text-primary font-medium" : ""}`}>
-                        {label(item)}
-                      </Link>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {toolItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link key={item.to} to={item.to} className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  {label(item)}
+                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </div>
@@ -228,16 +170,8 @@ export function Header() {
 }
 
 /* ── Mobile navigation inside Sheet ── */
-function MobileNav({
-  items, location, label, user, username, t, signOut
-}: {
-  items: NavItem[];
-  location: any;
-  label: (item: NavItem) => string;
-  user: any;
-  username: string;
-  t: (key: string) => string;
-  signOut: () => void;
+function MobileNav({ items, location, label, user, username, t, signOut }: {
+  items: NavItem[]; location: any; label: (item: NavItem) => string; user: any; username: string; t: (key: string) => string; signOut: () => void;
 }) {
   const mainItems = items.filter(n => n.group === "main");
   const toolItems = items.filter(n => n.group === "tools");
@@ -248,41 +182,23 @@ function MobileNav({
         {mainItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-primary/10 text-primary border-l-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
+            <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               {label(item)}
             </Link>
           );
         })}
-
         <div className="mt-4 mb-2 px-3">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Tools</p>
         </div>
         {toolItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-primary/10 text-primary border-l-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
+            <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               {label(item)}
             </Link>
           );
         })}
       </nav>
-
       <div className="mt-auto pt-6 border-t border-border/60 space-y-3 pb-6">
         <MarketClock />
         <div className="flex items-center gap-2">
@@ -292,20 +208,13 @@ function MobileNav({
         {user ? (
           <div className="space-y-1 pt-2 border-t border-border/40">
             <p className="px-3 py-1.5 text-sm font-medium text-foreground">{username}</p>
-            <Link to="/profile" className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
-              {t("nav.profile")}
-            </Link>
-            <Link to="/settings" className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
-              {t("nav.settings")}
-            </Link>
-            <button onClick={signOut} className="w-full text-left px-3 py-2 text-sm text-destructive hover:bg-muted rounded-lg transition-colors">
-              {t("nav.logout")}
-            </button>
+            <Link to="/profile" className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">{t("nav.profile")}</Link>
+            <Link to="/settings" className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">{t("nav.settings")}</Link>
+            <button onClick={signOut} className="w-full text-left px-3 py-2 text-sm text-destructive hover:bg-muted rounded-lg transition-colors">{t("nav.logout")}</button>
           </div>
         ) : (
           <Link to="/auth" className="flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-            <LogIn className="h-4 w-4 mr-2" />
-            {t("nav.login")}
+            <LogIn className="h-4 w-4 mr-2" />{t("nav.login")}
           </Link>
         )}
       </div>
