@@ -8,6 +8,7 @@ import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, 
 import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 // Progress tracker using localStorage
 function useReadProgress() {
