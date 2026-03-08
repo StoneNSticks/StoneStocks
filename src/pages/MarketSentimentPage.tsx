@@ -522,6 +522,9 @@ export default function MarketSentimentPage() {
               </div>
             </div>
 
+            {/* Sector Performance */}
+            <SectorPerformance />
+
             {/* Global Indices */}
             {indices?.length > 0 && <IndexGrid indices={indices} />}
 
