@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useT } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
