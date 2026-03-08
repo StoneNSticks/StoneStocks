@@ -89,6 +89,17 @@ export function EarningsCalendar({ symbols, compact = false }: EarningsCalendarP
       .sort((a: EarningsEvent, b: EarningsEvent) => a.date.localeCompare(b.date));
   }, [data]);
 
+  // Group by date — must be before any returns
+  const grouped = useMemo(() => {
+    const map = new Map<string, EarningsEvent[]>();
+    events.forEach((e) => {
+      const existing = map.get(e.date) || [];
+      existing.push(e);
+      map.set(e.date, existing);
+    });
+    return Array.from(map.entries());
+  }, [events]);
+
   if (isLoading) {
     return (
       <div className="rounded-xl border border-border/60 bg-card p-5">
@@ -121,17 +132,6 @@ export function EarningsCalendar({ symbols, compact = false }: EarningsCalendarP
       </div>
     );
   }
-
-  // Group by date
-  const grouped = useMemo(() => {
-    const map = new Map<string, EarningsEvent[]>();
-    events.forEach((e) => {
-      const existing = map.get(e.date) || [];
-      existing.push(e);
-      map.set(e.date, existing);
-    });
-    return Array.from(map.entries());
-  }, [events]);
 
   const displayGroups = compact ? grouped.slice(0, 3) : grouped;
 
