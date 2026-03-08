@@ -10,6 +10,7 @@ import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
 import { MarketOverview } from "@/components/MarketOverview";
 import { SectorPerformance } from "@/components/SectorPerformance";
+import { ScreenerHeatmap } from "@/components/ScreenerHeatmap";
 import { Button } from "@/components/ui/button";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
