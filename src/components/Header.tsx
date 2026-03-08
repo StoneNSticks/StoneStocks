@@ -188,13 +188,10 @@ export function Header() {
 function MobileNav({ items, location, label, user, username, t, signOut }: {
   items: NavItem[]; location: any; label: (item: NavItem) => string; user: any; username: string; t: (key: string) => string; signOut: () => void;
 }) {
-  const mainItems = items.filter(n => n.group === "main");
-  const toolItems = items.filter(n => n.group === "tools");
-
   return (
     <div className="mt-6 flex flex-col h-full">
       <nav className="flex flex-col gap-0.5">
-        {mainItems.map((item) => {
+        {items.map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
@@ -205,11 +202,19 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
         <div className="mt-4 mb-2 px-3">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Tools</p>
         </div>
-        {toolItems.map((item) => {
+        {[
+          { to: "/compare", label: "Compare" },
+          { to: "/calculators", label: t("nav.tools") },
+          { to: "/macro", label: "Macro" },
+          { to: "/dashboard", label: "Dashboard" },
+          { to: "/crypto", label: "Crypto" },
+          { to: "/forex", label: "Forex" },
+          { to: "/bonds", label: "Bonds" },
+        ].map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
-              {label(item)}
+              {item.label}
             </Link>
           );
         })}

@@ -66,6 +66,36 @@ const RankingsPage = () => {
           <SectorPerformance />
         </div>
         <ScreenerHeatmap />
+
+        {/* Leaderboard Section */}
+        <div className="mt-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-accent"><Trophy className="h-5 w-5 text-primary" /></div>
+            <h2 className="font-display text-lg font-bold">{lang === "de" ? "Bestenliste" : "Leaderboard"}</h2>
+            <Badge variant="secondary" className="ml-auto gap-1"><Users className="h-3 w-3" />Paper Trading</Badge>
+          </div>
+          <div className="rounded-xl border border-border/60 overflow-hidden bg-card">
+            <div className="grid grid-cols-[3rem_1fr_5rem_4rem_4rem_4rem] gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+              <span>#</span><span>{lang === "de" ? "Nutzer" : "User"}</span>
+              <span className="text-right">{lang === "de" ? "Rendite" : "Return"}</span>
+              <span className="text-right">Trades</span>
+              <span className="text-right">{lang === "de" ? "Gewinnrate" : "Win %"}</span>
+              <span className="text-right">Streak</span>
+            </div>
+            {LEADERS.map(l => (
+              <div key={l.rank} className={`grid grid-cols-[3rem_1fr_5rem_4rem_4rem_4rem] gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors items-center ${l.rank <= 3 ? "bg-primary/[0.03]" : ""}`}>
+                <div className="flex items-center justify-center">{rankIcon(l.rank)}</div>
+                <div className="font-display font-bold text-sm">{l.name}</div>
+                <div className="text-right font-mono text-sm font-bold text-chart-2 flex items-center justify-end gap-0.5">
+                  <TrendingUpIcon className="h-3 w-3" />+{l.return}%
+                </div>
+                <div className="text-right font-mono text-xs text-muted-foreground">{l.trades}</div>
+                <div className="text-right font-mono text-xs">{l.winRate}%</div>
+                <div className="text-right font-mono text-xs">🔥{l.streak}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
