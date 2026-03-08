@@ -5,7 +5,6 @@
 import { useMemo } from "react";
 import { Building2, Globe, Package, Link as LinkIcon, Shield, MapPin, Users, TrendingUp } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -26,7 +25,6 @@ const COUNTRY_FLAGS: Record<string, string> = {
 
 function extractProducts(description: string): string[] {
   if (!description) return [];
-  // Extract key product/service terms from description
   const keywords = [
     "iPhone", "iPad", "Mac", "Apple Watch", "Apple TV", "iCloud", "App Store",
     "Windows", "Office", "Azure", "LinkedIn", "Xbox", "Teams", "GitHub",
@@ -52,7 +50,7 @@ function extractProducts(description: string): string[] {
   return found.slice(0, 8);
 }
 
-function getRiskScore(overview: Record<string, string> | null, quote: any): { score: number; label: string; color: string } {
+function getRiskScore(overview: Record<string, string> | null): { score: number; label: string; color: string } {
   if (!overview) return { score: 0, label: "N/A", color: "hsl(var(--muted-foreground))" };
   
   let risk = 50;
@@ -80,7 +78,6 @@ function getRiskScore(overview: Record<string, string> | null, quote: any): { sc
 
 export function CompanyIntelligence({ profile, overview, massiveTicker, peers, massiveRelated, currentSymbol }: Props) {
   const t = useT();
-  const { lang } = useLanguage();
 
   const description = (overview as any)?.Description || overview?.description || "";
   const products = useMemo(() => extractProducts(description), [description]);
@@ -90,20 +87,17 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
   const exchange = (profile?.exchange as string) || overview?.Exchange || "";
   const employees = (massiveTicker?.total_employees as number) || (overview?.FullTimeEmployees ? parseInt(overview.FullTimeEmployees) : 0);
   
-  const riskScore = useMemo(() => getRiskScore(overview, null), [overview]);
+  const riskScore = useMemo(() => getRiskScore(overview), [overview]);
 
-  // Institutional ownership
   const institutionPct = overview?.InstitutionalOwnership || overview?.PercentInstitutions || "";
   const insiderPct = overview?.PercentInsiders || "";
 
-  // Related companies from massive_related
   const relatedCompanies = useMemo(() => {
     if (massiveRelated?.length) return massiveRelated.slice(0, 6).map((r: any) => r.ticker || r.symbol || r).filter(Boolean);
     if (peers?.length) return peers.filter(p => p !== currentSymbol).slice(0, 6);
     return [];
   }, [massiveRelated, peers, currentSymbol]);
 
-  // Short interest
   const shortRatio = overview?.ShortRatio || "";
   const shortPct = overview?.ShortPercentFloat || overview?.ShortPercentOfFloat || "";
 
@@ -114,13 +108,12 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 text-primary" />
         <h3 className="font-display font-semibold text-sm text-muted-foreground">
-          {lang === "de" ? "Unternehmens-Intelligence" : "Company Intelligence"}
+          {t("ci.title")}
         </h3>
-        {/* Risk badge */}
         <div className="ml-auto flex items-center gap-1.5">
           <Shield className="h-3.5 w-3.5" style={{ color: riskScore.color }} />
           <span className="text-xs font-bold" style={{ color: riskScore.color }}>
-            {lang === "de" ? "Risiko" : "Risk"}: {riskScore.label}
+            {t("ci.risk")}: {riskScore.label}
           </span>
           <div className="w-12 h-1.5 rounded-full bg-muted overflow-hidden">
             <div className="h-full rounded-full transition-all" style={{ width: `${riskScore.score}%`, backgroundColor: riskScore.color }} />
@@ -128,11 +121,10 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         </div>
       </div>
 
-      {/* Products & Services */}
       {products.length > 0 && (
         <div>
           <span className="text-[11px] text-primary font-medium uppercase tracking-wider flex items-center gap-1">
-            <Package className="h-3 w-3" /> {lang === "de" ? "Produkte & Services" : "Products & Services"}
+            <Package className="h-3 w-3" /> {t("ci.products")}
           </span>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {products.map((p) => (
@@ -142,12 +134,11 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         </div>
       )}
 
-      {/* Geographic & Market Info */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {country && (
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <MapPin className="h-2.5 w-2.5" /> {lang === "de" ? "Hauptsitz" : "HQ"}
+              <MapPin className="h-2.5 w-2.5" /> {t("ci.hq")}
             </span>
             <span className="text-sm font-medium">{COUNTRY_FLAGS[country] || "🌍"} {country}</span>
           </div>
@@ -155,7 +146,7 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         {exchange && (
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <Globe className="h-2.5 w-2.5" /> {lang === "de" ? "Börse" : "Exchange"}
+              <Globe className="h-2.5 w-2.5" /> {t("ci.exchange")}
             </span>
             <span className="text-sm font-medium">{exchange}</span>
           </div>
@@ -163,7 +154,7 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         {employees > 0 && (
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <Users className="h-2.5 w-2.5" /> {lang === "de" ? "Mitarbeiter" : "Employees"}
+              <Users className="h-2.5 w-2.5" /> {t("ci.employees")}
             </span>
             <span className="text-sm font-medium">{employees.toLocaleString()}</span>
           </div>
@@ -171,46 +162,44 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         {institutionPct && (
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              {lang === "de" ? "Institutionell" : "Institutional"}
+              {t("ci.institutional")}
             </span>
             <span className="text-sm font-medium">{parseFloat(institutionPct) > 1 ? `${parseFloat(institutionPct).toFixed(1)}%` : `${(parseFloat(institutionPct) * 100).toFixed(1)}%`}</span>
           </div>
         )}
       </div>
 
-      {/* Additional data row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {insiderPct && (
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === "de" ? "Insider-Anteil" : "Insider Own."}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t("ci.insiderOwn")}</span>
             <span className="text-sm font-medium">{parseFloat(insiderPct) > 1 ? `${parseFloat(insiderPct).toFixed(1)}%` : `${(parseFloat(insiderPct) * 100).toFixed(1)}%`}</span>
           </div>
         )}
         {shortRatio && (
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === "de" ? "Short Ratio" : "Short Ratio"}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t("ci.shortRatio")}</span>
             <span className="text-sm font-medium">{parseFloat(shortRatio).toFixed(1)}</span>
           </div>
         )}
         {shortPct && (
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === "de" ? "Short % Float" : "Short % Float"}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t("ci.shortPctFloat")}</span>
             <span className="text-sm font-medium">{parseFloat(shortPct) > 1 ? `${parseFloat(shortPct).toFixed(1)}%` : `${(parseFloat(shortPct) * 100).toFixed(1)}%`}</span>
           </div>
         )}
         {sector && (
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === "de" ? "Sektor" : "Sector"}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t("ci.sector")}</span>
             <span className="text-sm font-medium">{sector}</span>
           </div>
         )}
       </div>
 
-      {/* Key Relationships */}
       {relatedCompanies.length > 0 && (
         <div>
           <span className="text-[11px] text-primary font-medium uppercase tracking-wider flex items-center gap-1">
-            <LinkIcon className="h-3 w-3" /> {lang === "de" ? "Verwandte Unternehmen" : "Related Companies"}
+            <LinkIcon className="h-3 w-3" /> {t("ci.related")}
           </span>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {relatedCompanies.map((sym: string) => (
@@ -226,7 +215,6 @@ export function CompanyIntelligence({ profile, overview, massiveTicker, peers, m
         </div>
       )}
 
-      {/* Description */}
       {description && (
         <div>
           <span className="text-[11px] text-primary font-medium uppercase tracking-wider">{t("info.description")}</span>

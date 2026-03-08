@@ -1,16 +1,15 @@
 /**
  * AlertNotifications — Floating alert banner that shows when price alerts are triggered.
- * Uses useAlertChecker to poll prices and displays animated notifications.
  */
 import { useAlertChecker } from "@/hooks/useAlertChecker";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useT } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, X, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function AlertNotifications() {
   const { triggered, dismiss, dismissAll } = useAlertChecker();
-  const { lang } = useLanguage();
+  const t = useT();
 
   if (triggered.length === 0) return null;
 
@@ -38,7 +37,7 @@ export function AlertNotifications() {
                 <div className="flex items-center gap-1.5">
                   <Bell className="h-3 w-3 text-primary" />
                   <span className="text-xs font-semibold text-primary">
-                    {lang === "de" ? "Kursalarm" : "Price Alert"}
+                    {t("alert.priceAlert")}
                   </span>
                 </div>
                 <p className="text-sm font-bold mt-0.5">
@@ -48,15 +47,13 @@ export function AlertNotifications() {
                   </span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {lang === "de"
-                    ? `Zielkurs $${alert.target_price.toFixed(2)} erreicht`
-                    : `Target $${alert.target_price.toFixed(2)} reached`}
+                  {t("alert.targetReached")}: ${alert.target_price.toFixed(2)}
                 </p>
                 <Link
                   to={`/stock/${alert.symbol}`}
                   className="inline-flex items-center gap-0.5 text-xs text-primary hover:underline mt-1"
                 >
-                  {lang === "de" ? "Details" : "View"} <ChevronRight className="h-3 w-3" />
+                  {t("alert.view")} <ChevronRight className="h-3 w-3" />
                 </Link>
               </div>
               <button
@@ -76,7 +73,7 @@ export function AlertNotifications() {
           onClick={dismissAll}
           className="pointer-events-auto self-end text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-card border border-border/40"
         >
-          {lang === "de" ? "Alle schließen" : "Dismiss all"}
+          {t("alert.dismissAll")}
         </motion.button>
       )}
     </div>
