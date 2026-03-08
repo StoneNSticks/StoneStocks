@@ -48,7 +48,10 @@ const Index = () => {
 
         {/* Sentiment + Market Overview Row */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <div className="md:col-span-3"><SentimentGauge /></div>
+          <div className="md:col-span-3 space-y-4">
+            <SentimentGauge />
+            <VixIndicator />
+          </div>
           <div className="md:col-span-2"><SectorPerformance /></div>
         </div>
 
