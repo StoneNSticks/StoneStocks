@@ -45,3 +45,7 @@ export const useEulerpoolProfile = (symbol: string) => useQuery({ queryKey: ["eu
 export const useHiddenGems = () => useQuery({ queryKey: ["hiddenGems"], queryFn: getHiddenGems, staleTime: 1000 * 60 * 15, refetchInterval: 1000 * 60 * 30 });
 export const useInsiderTransactions = (symbol: string) => useQuery({ queryKey: ["insiderTx", symbol], queryFn: () => getInsiderTransactions(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 30 });
 export const useEarningsCalendar = (symbols: string) => useQuery({ queryKey: ["earningsCalendar", symbols], queryFn: () => getEarningsCalendar(symbols), enabled: !!symbols, staleTime: 1000 * 60 * 60 });
+export const useYahooSectors = () => useQuery({ queryKey: ["yahooSectors"], queryFn: getYahooSectors, staleTime: 1000 * 60 * 60 });
+export const useFredSeries = (seriesId: string) => useQuery({ queryKey: ["fredSeries", seriesId], queryFn: () => getFredSeries(seriesId), enabled: !!seriesId, staleTime: 1000 * 60 * 60 * 24 });
+export const useSecFilings = (symbol: string) => useQuery({ queryKey: ["secFilings", symbol], queryFn: () => getSecFilings(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 4 });
+export const useOpenFigi = (symbol: string) => useQuery({ queryKey: ["openFigi", symbol], queryFn: () => getOpenFigi(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 * 30 });
