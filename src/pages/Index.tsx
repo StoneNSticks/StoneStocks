@@ -33,10 +33,6 @@ const Index = () => {
           </div>
           <div className="lg:col-span-1"><SentimentGauge /></div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <div className="lg:col-span-3"><MarketNewsSection limit={8} /></div>
-          <div className="lg:col-span-2"><TopCompanies /></div>
-        </div>
         <div className="mb-4 sm:mb-6"><CommoditiesSection /></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <GainersLosers />

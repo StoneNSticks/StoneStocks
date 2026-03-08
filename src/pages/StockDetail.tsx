@@ -113,6 +113,15 @@ const StockDetail = () => {
 
             <MetricsGrid overview={overview} quote={quote} derived={derived} profile={profile} massiveTicker={massiveTicker} />
 
+            {/* 52-Week Range Bar */}
+            {overview?.["52WeekHigh"] && overview?.["52WeekLow"] && quote?.c && (
+              <WeekRangeBar
+                low52={Number(overview["52WeekLow"])}
+                high52={Number(overview["52WeekHigh"])}
+                current={quote.c}
+              />
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="lg:col-span-2"><StockChart symbol={upperSymbol} /></div>
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
