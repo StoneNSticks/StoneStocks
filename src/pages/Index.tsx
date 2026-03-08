@@ -23,6 +23,17 @@ const Index = () => {
   );
   return (
     <div className="min-h-screen bg-background">
+      {/* JSON-LD structured data for SEO */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "StoneStocks",
+        "url": "https://stonestocks.com",
+        "description": "Real-time stock market data, analysis tools, and financial insights",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }) }} />
       <Header />
       <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
         <section className="mb-6 sm:mb-8 text-center px-2 sm:px-0">
