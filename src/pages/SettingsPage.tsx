@@ -170,6 +170,19 @@ export default function SettingsPage() {
             </SettingRow>
           </Section>
 
+          {/* Privacy */}
+          <Section icon={Eye} title={lang === "de" ? "Privatsphare" : "Privacy"}>
+            <SettingRow
+              label={lang === "de" ? "Benutzername in Kommentaren anzeigen" : "Show username in comments"}
+              desc={lang === "de" ? "Wenn deaktiviert, erscheinst du als 'Anonym'" : "If disabled, you appear as 'Anonymous'"}
+            >
+              <Switch checked={showUsername} onCheckedChange={async (v) => {
+                setShowUsername(v);
+                if (user) await (supabase as any).from("profiles").update({ show_username: v }).eq("id", user.id);
+              }} />
+            </SettingRow>
+          </Section>
+
           {/* Notifications */}
           <Section icon={Bell} title={t("settings.notifications")}>
             <SettingRow label={t("settings.priceAlerts")} desc={t("settings.priceAlertsDesc")}>
@@ -177,6 +190,15 @@ export default function SettingsPage() {
             </SettingRow>
             <SettingRow label={t("settings.newsAlerts")} desc={t("settings.newsAlertsDesc")}>
               <Switch checked={newsAlerts} onCheckedChange={handleNewsAlerts} />
+            </SettingRow>
+            <SettingRow
+              label={lang === "de" ? "Antworten auf Kommentare" : "Comment reply alerts"}
+              desc={lang === "de" ? "Benachrichtigung wenn jemand auf deinen Kommentar antwortet" : "Get notified when someone replies to your comment"}
+            >
+              <Switch checked={commentReplyAlerts} onCheckedChange={async (v) => {
+                setCommentReplyAlerts(v);
+                if (user) await (supabase as any).from("profiles").update({ comment_reply_alerts: v }).eq("id", user.id);
+              }} />
             </SettingRow>
           </Section>
 
