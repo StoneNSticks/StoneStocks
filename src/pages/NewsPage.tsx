@@ -1,7 +1,5 @@
 /**
- * NewsPage — Market news with category filters, search, and load-more.
- * Fetches news from the edge function via useMarketNews hook.
- * Features: category tabs, search within headlines, thumbnail images, load more.
+ * NewsPage — Market news with category filters, search, sentiment AI, and load-more.
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
@@ -14,7 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, Search, ExternalLink, Clock } from "lucide-react";
+import { Newspaper, Search, ExternalLink, Clock, Brain, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CATEGORIES = ["All", "Technology", "Finance", "Energy", "Healthcare", "Crypto"];
 
@@ -29,6 +29,29 @@ const NewsPage = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [limit, setLimit] = useState(20);
+  const [sentiments, setSentiments] = useState<Record<number, { sentiment: string; score: number }>>({});
+  const [sentimentLoading, setSentimentLoading] = useState(false);
+
+  const analyzeSentiment = async () => {
+    if (!news || (news as any[]).length === 0) return;
+    setSentimentLoading(true);
+    try {
+      const headlines = (news as any[]).slice(0, 20).map((n: any) => n.headline || "");
+      const { data, error } = await supabase.functions.invoke("news-sentiment", {
+        body: { headlines },
+      });
+      if (error) throw error;
+      if (data?.sentiments) {
+        const map: Record<number, { sentiment: string; score: number }> = {};
+        data.sentiments.forEach((s: any) => { map[s.index] = { sentiment: s.sentiment, score: s.score }; });
+        setSentiments(map);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Sentiment analysis failed");
+    } finally {
+      setSentimentLoading(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!news) return [];
@@ -91,6 +114,16 @@ const NewsPage = () => {
                 </button>
               ))}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={analyzeSentiment}
+              disabled={sentimentLoading || !news}
+              className="gap-1.5 shrink-0"
+            >
+              <Brain className="h-3.5 w-3.5" />
+              {sentimentLoading ? "..." : "Sentiment AI"}
+            </Button>
           </div>
 
           {/* News list */}
@@ -120,6 +153,12 @@ const NewsPage = () => {
                         <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatTime(article.datetime)}</span>
                         {article.source && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{article.source}</Badge>}
                         {article.category && article.category !== "top news" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{article.category}</Badge>}
+                        {sentiments[i] && (
+                          <Badge className={`text-[10px] px-1.5 py-0 gap-0.5 ${sentiments[i].sentiment === "bullish" ? "bg-chart-2/10 text-chart-2" : sentiments[i].sentiment === "bearish" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                            {sentiments[i].sentiment === "bullish" ? <TrendingUp className="h-2.5 w-2.5" /> : sentiments[i].sentiment === "bearish" ? <TrendingDown className="h-2.5 w-2.5" /> : <Minus className="h-2.5 w-2.5" />}
+                            {sentiments[i].score}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </a>

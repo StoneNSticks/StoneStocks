@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon, DollarSign, Percent, BarChart3 } from "lucide-react";
+import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon, DollarSign, Percent, BarChart3, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
@@ -332,12 +332,31 @@ export default function PortfolioPage() {
             {count > 0 && !isLoading && <PortfolioSummary positions={positions!} />}
 
             {/* Add position button / form */}
-            <div className="mb-5">
+            <div className="mb-5 flex items-center gap-2">
               {!showAdd ? (
-                <Button onClick={() => setShowAdd(true)} variant="outline" className="rounded-xl gap-2">
-                  <Plus className="h-4 w-4" />
-                  {lang === "de" ? "Position hinzufügen" : "Add Position"}
-                </Button>
+                <>
+                  <Button onClick={() => setShowAdd(true)} variant="outline" className="rounded-xl gap-2">
+                    <Plus className="h-4 w-4" />
+                    {lang === "de" ? "Position hinzufügen" : "Add Position"}
+                  </Button>
+                  {count > 0 && (
+                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
+                      const header = "Symbol,Shares,Avg Cost,Date";
+                      const rows = positions!.map((p: any) => `${p.symbol},${p.shares},${p.avg_cost},${new Date(p.created_at).toISOString().slice(0, 10)}`);
+                      const csv = [header, ...rows].join("\n");
+                      const blob = new Blob([csv], { type: "text/csv" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `portfolio-${new Date().toISOString().slice(0, 10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}>
+                      <Download className="h-3.5 w-3.5" />
+                      CSV
+                    </Button>
+                  )}
+                </>
               ) : (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border border-border/60 bg-card p-4">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

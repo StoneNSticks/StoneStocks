@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown } from "lucide-react";
+import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown, Zap } from "lucide-react";
 
 type SortKey = "marketCap" | "change" | "name" | "pe" | "yield";
 
@@ -52,6 +52,23 @@ export default function ScreenerPage() {
   const [sortKey, setSortKey] = useState<SortKey>("marketCap");
   const [sortAsc, setSortAsc] = useState(false);
   const [showSectors, setShowSectors] = useState(false);
+
+  type Preset = { label: string; labelDe: string; minMcap: number; maxPe: number; minYield: number; sector: string };
+  const PRESETS: Preset[] = [
+    { label: "Value", labelDe: "Value", minMcap: 10, maxPe: 20, minYield: 2, sector: "" },
+    { label: "Growth", labelDe: "Wachstum", minMcap: 5, maxPe: 200, minYield: 0, sector: "Technology" },
+    { label: "Dividend", labelDe: "Dividende", minMcap: 10, maxPe: 200, minYield: 3, sector: "" },
+    { label: "Large Cap", labelDe: "Large Cap", minMcap: 100, maxPe: 200, minYield: 0, sector: "" },
+    { label: "Healthcare", labelDe: "Gesundheit", minMcap: 0, maxPe: 200, minYield: 0, sector: "Healthcare" },
+    { label: "Energy", labelDe: "Energie", minMcap: 0, maxPe: 200, minYield: 0, sector: "Energy" },
+  ];
+
+  const applyPreset = (p: Preset) => {
+    setMinMcap(p.minMcap);
+    setMaxPe(p.maxPe);
+    setMinYield(p.minYield);
+    setSelectedSector(p.sector);
+  };
 
   const hasFilters = search || minMcap > 0 || maxPe < 200 || minYield > 0 || selectedSector;
 
@@ -128,6 +145,16 @@ export default function ScreenerPage() {
               {lang === "de" ? "Zurücksetzen" : "Reset"}
             </Button>
           )}
+        </div>
+
+        {/* Presets */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono uppercase mr-1"><Zap className="h-3 w-3" />{lang === "de" ? "Schnellfilter" : "Quick filters"}</span>
+          {PRESETS.map((p) => (
+            <button key={p.label} onClick={() => applyPreset(p)} className="px-2.5 py-1 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors">
+              {lang === "de" ? p.labelDe : p.label}
+            </button>
+          ))}
         </div>
 
         {/* Filters */}
