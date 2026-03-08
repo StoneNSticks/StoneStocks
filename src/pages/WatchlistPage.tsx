@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWatchlist, useUpdateWatchlistItem } from "@/hooks/useWatchlist";
 import { WatchlistStar } from "@/components/WatchlistStar";
