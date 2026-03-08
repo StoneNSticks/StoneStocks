@@ -26,7 +26,7 @@ import { SecFilings } from "@/components/SecFilings";
 import { FairValue } from "@/components/FairValue";
 import { DCFCalculator } from "@/components/DCFCalculator";
 import { AIStockSummary } from "@/components/AIStockSummary";
-import { AdvancedAlertBuilder } from "@/components/AdvancedAlertBuilder";
+// AdvancedAlertBuilder removed — integrated into PriceAlertForm bell icon
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -249,8 +249,7 @@ const StockDetail = () => {
 
             {/* Analyst Consensus moved to after Company Intelligence */}
 
-            {/* Advanced Alerts */}
-            <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
+            {/* Advanced Alerts now integrated into PriceAlertForm bell icon */}
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 6b: Fair Value Estimate + DCF Calculator
