@@ -242,11 +242,11 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             return (
               <div className="relative h-2 rounded-full bg-muted overflow-hidden">
                 <div className="absolute top-0 h-full rounded-full bg-primary/15" style={{ left: `${lowPct}%`, width: `${highPct - lowPct}%` }} />
-                <div className="absolute top-0 h-full w-0.5 bg-foreground/70 z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} title={`Current: ${cSym}${convert(price)?.toFixed(2)}`} />
+                 <div className="absolute top-0 h-full w-0.5 bg-foreground/70 z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} title={`Current: ${cSym}${(convert(price) ?? price).toFixed(2)}`} />
                 <div className="absolute -top-0.5 h-3 w-1.5 rounded-full z-10" style={{
-                  left: `${Math.min(100, Math.max(0, targetPct))}%`,
-                  backgroundColor: upside >= 0 ? COLORS.buy : COLORS.sell,
-                }} title={`Target: ${cSym}${convert(target)?.toFixed(2)}`} />
+                   left: `${Math.min(100, Math.max(0, targetPct))}%`,
+                   backgroundColor: upside >= 0 ? COLORS.buy : COLORS.sell,
+                 }} title={`Target: ${cSym}${(convert(target) ?? target).toFixed(2)}`} />
               </div>
             );
           })()}
