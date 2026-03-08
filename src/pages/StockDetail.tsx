@@ -11,12 +11,17 @@ import { RecommendationChart } from "@/components/RecommendationChart";
 import { StockPerformance } from "@/components/StockPerformance";
 import { CompanyInfoCard } from "@/components/CompanyInfoCard";
 import { WeekRangeBar } from "@/components/WeekRangeBar";
+import { AnalystTargets } from "@/components/AnalystTargets";
+import { TechnicalIndicators } from "@/components/TechnicalIndicators";
+import { EarningsCard } from "@/components/EarningsCard";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, Globe } from "lucide-react";
 import { useMemo } from "react";
 import { useT } from "@/contexts/LanguageContext";
+import { useQuery } from "@tanstack/react-query";
+import { getEarnings } from "@/lib/stockApi";
 
 function formatDividendValue(num: number, sym = "$"): string { return `${sym}${num.toFixed(2)}`; }
 
