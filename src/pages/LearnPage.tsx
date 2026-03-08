@@ -692,7 +692,7 @@ export default function LearnPage() {
               </div>
               <InfoBox title={t("learn.goodToKnow")}>{t("learn.optionStyleComparison")}</InfoBox>
             </SectionCard>
-            {interactive && <DcfCalc lang={lang} />}
+            
             {/* Options Strategies */}
             <SectionCard icon={<Layers className="h-5 w-5" />} title={lang === "de" ? "Optionsstrategien" : "Option Strategies"}>
               <p className="font-medium text-foreground text-sm">{t("learn.optionsStrategies")}</p>
