@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { NormalizedChart } from "@/components/NormalizedChart";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
 
