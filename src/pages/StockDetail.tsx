@@ -252,13 +252,15 @@ const StockDetail = () => {
             {/* Advanced Alerts now integrated into PriceAlertForm bell icon */}
 
             {/* ══════════════════════════════════════════════════════════
-                SECTION 6b: Fair Value Estimate + DCF Calculator
-                Multiple valuation methods + interactive DCF with sensitivity
+                SECTION 6b: Fair Value + Community Sentiment
                 ══════════════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
               <FairValue quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
-              <DCFCalculator overview={overview} quote={quote} derived={derived} />
+              <CommunitySection symbol={upperSymbol} />
             </div>
+
+            {/* DCF Calculator */}
+            <DCFCalculator overview={overview} quote={quote} derived={derived} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 7: Financial Charts (10 charts)
