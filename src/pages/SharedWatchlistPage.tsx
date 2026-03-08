@@ -5,6 +5,7 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { getQuote, getProfile } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";
