@@ -162,7 +162,7 @@ export default function ComparePage() {
             ))}
             {symbols.length < 4 && (
               <Badge variant="outline" className="text-xs text-muted-foreground gap-1">
-                <Plus className="h-3 w-3" />{4 - symbols.length} {lang === "de" ? "übrig" : "remaining"}
+                <Plus className="h-3 w-3" />{4 - symbols.length} {t("compare.remaining")}
               </Badge>
             )}
           </div>
