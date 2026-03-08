@@ -1,6 +1,18 @@
+/**
+ * Header — Global navigation bar with responsive design.
+ * 
+ * Features:
+ * - Desktop: horizontal nav links with icons + compact search (appears on scroll)
+ * - Mobile (<768px): hamburger menu (Sheet) with full nav + settings
+ * - Market clock, currency/language/theme toggles
+ * - User dropdown (profile, watchlist, settings, logout) when authenticated
+ * - Learn page link (HelpCircle icon)
+ * 
+ * Nav items are defined in `navKeys` array for easy extension.
+ */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -17,9 +29,10 @@ import {
 
 const navKeys = [
   { to: "/", key: "nav.markets", icon: TrendingUp },
+  { to: "/sentiment", key: "nav.sentiment", icon: Gauge },
   { to: "/news", key: "nav.news", icon: Newspaper },
   { to: "/rankings", key: "nav.rankings", icon: BarChart3 },
-  { to: "/portfolio", key: "nav.portfolio", icon: BarChart3 },
+  { to: "/portfolio", key: "nav.portfolio", icon: Briefcase },
   { to: "/calculators", key: "nav.tools", icon: Calculator },
   { to: "/watchlist", key: "nav.watchlist", icon: Star },
 ];

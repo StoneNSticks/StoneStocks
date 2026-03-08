@@ -26,6 +26,7 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const CommodityDetail = lazy(() => import("./pages/CommodityDetail"));
 const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
+const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/sentiment" element={<MarketSentimentPage />} />
                   <Route path="/stock/:symbol" element={<StockDetail />} />
                   <Route path="/index/:symbol" element={<IndexDetail />} />
                   <Route path="/news" element={<NewsPage />} />

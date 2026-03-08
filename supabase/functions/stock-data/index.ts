@@ -1041,21 +1041,31 @@ async function handleTopCompanies() {
           fetchFinnhub("stock/profile2", { symbol: c.symbol }),
           fetchMassive(`/v3/reference/tickers/${c.symbol}`).catch(() => null),
         ]);
-        // Polygon market_cap can be wildly wrong for ADRs (e.g. TSM returns TWD-based cap)
-        const MAX_REASONABLE_MCAP = 8e12; // $8T sanity cap
+        // === Market Cap Resolution (multi-source with ADR correction) ===
+        // ADR ratio map: 1 ADR = N ordinary shares. Finnhub's shareOutstanding returns
+        // TOTAL ordinary shares, so computed cap = ADR_price × total_shares is N× too high.
+        const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8 };
+        const MAX_REASONABLE_MCAP = 5e12; // $5T sanity cap (no company exceeds this as of 2026)
         const polygonMarketCap = polygonTicker?.results?.market_cap || 0;
         const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
         const shareOutstanding = profile?.shareOutstanding || 0;
-        const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
-        // Prefer Finnhub for accuracy, only use Polygon if reasonable, fallback to computed
-        // Apply MAX_REASONABLE_MCAP sanity cap to ALL sources (fixes ADR issues like TSM)
+        const adrRatio = ADR_RATIOS[c.symbol] || 1;
+        // For ADRs: divide by ratio since shareOutstanding is in ordinary shares
+        const computedMarketCap = ((q.c || 0) * shareOutstanding * 1e6) / adrRatio;
+        // Prefer Finnhub → Polygon → Computed, all subject to sanity cap
         let marketCap = 0;
         if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = finnhubMarketCap;
         } else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = polygonMarketCap;
-        } else {
+        } else if (computedMarketCap > 0 && computedMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = computedMarketCap;
+        }
+        // If all sources exceed cap, use smallest reasonable value
+        if (marketCap === 0) {
+          const candidates = [finnhubMarketCap, polygonMarketCap, computedMarketCap].filter(v => v > 0);
+          marketCap = candidates.length > 0 ? Math.min(...candidates) : 0;
+          if (marketCap > MAX_REASONABLE_MCAP) marketCap = computedMarketCap; // ADR-corrected is most reliable
         }
         return {
           symbol: c.symbol, name: c.name, price: q.c || 0,
