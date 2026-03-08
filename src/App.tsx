@@ -43,9 +43,7 @@ const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 const StockChatPage = lazy(() => import("./pages/StockChatPage"));
-const CryptoPage = lazy(() => import("./pages/CryptoPage"));
-const ForexPage = lazy(() => import("./pages/ForexPage"));
-const BondsPage = lazy(() => import("./pages/BondsPage"));
+// Crypto, Forex, Bonds pages removed — crypto/forex searchable via stock search
 const IPOCalendarPage = lazy(() => import("./pages/IPOCalendarPage"));
 const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
