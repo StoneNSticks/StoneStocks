@@ -563,4 +563,7 @@ const translations: Record<string, Record<Language, string>> = {
   "compare.searchPlaceholder": { de: "Aktie suchen (z.B. AAPL)", en: "Search stock (e.g. AAPL)" },
   "compare.remaining": { de: "übrig", en: "remaining" },
   "compare.emptyHint": { de: "Suche nach Aktien, um den Vergleich zu starten", en: "Search for stocks to start comparing" },
+  "compare.perfChart": { de: "Performance-Vergleich", en: "Performance Comparison" },
+  "compare.base100": { de: "Basis 100", en: "Base 100" },
+  "compare.noChartData": { de: "Keine Chart-Daten verfügbar", en: "No chart data available" },
 };

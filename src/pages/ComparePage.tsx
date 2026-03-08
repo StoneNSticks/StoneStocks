@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { NormalizedChart } from "@/components/NormalizedChart";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
 
@@ -177,11 +178,14 @@ export default function ComparePage() {
             </p>
           </div>
         ) : (
-          <div className={`grid gap-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 md:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
-            {symbols.map(s => (
-              <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
-            ))}
-          </div>
+          <>
+            <NormalizedChart symbols={symbols} />
+            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 md:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+              {symbols.map(s => (
+                <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
+              ))}
+            </div>
+          </>
         )}
       </main>
       <footer className="border-t border-border/50 py-6 mt-8">
