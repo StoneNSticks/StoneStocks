@@ -24,7 +24,7 @@ const SECTOR_LABELS: Record<string, Record<string, string>> = {
   Utilities: { de: "Versorger", en: "Utilities" },
 };
 
-const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Energy", "Industrials"];
+const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities"];
 
 function getColor(change: number): string {
   if (change >= 3) return "hsl(145, 63%, 35%)";
@@ -75,19 +75,21 @@ export function MarketHeatmap() {
 
   const treemapData = useMemo(() => {
     if (!companies?.length) return [];
-    let filtered = companies.slice(0, 40);
+    let filtered = companies;
     if (sectorFilter !== "All") {
-      filtered = companies.filter((c: any) => c.sector === sectorFilter).slice(0, 30);
+      filtered = companies.filter((c: any) => c.sector === sectorFilter);
     }
-    return filtered.map((c: any) => ({
-      name: c.symbol,
-      fullName: c.name || c.symbol,
-      sector: c.sector || "Other",
-      sectorLabel: SECTOR_LABELS[c.sector]?.[lang] || c.sector || "Other",
-      size: Math.max(c.marketCap || 1e9, 1e8),
-      marketCap: c.marketCap || 0,
-      changePercent: c.changePercent || 0,
-    }));
+    return filtered
+      .filter((c: any) => c.price > 0)
+      .map((c: any) => ({
+        name: c.symbol,
+        fullName: c.name || c.symbol,
+        sector: c.sector || "Other",
+        sectorLabel: SECTOR_LABELS[c.sector]?.[lang] || c.sector || "Other",
+        size: Math.max(c.marketCap || 1e9, 1e8),
+        marketCap: c.marketCap || 0,
+        changePercent: c.changePercent || 0,
+      }));
   }, [companies, sectorFilter, lang]);
 
   const handleClick = (data: any) => {
@@ -123,7 +125,7 @@ export function MarketHeatmap() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={360}>
+      <ResponsiveContainer width="100%" height={440}>
         <Treemap
           data={treemapData}
           dataKey="size"

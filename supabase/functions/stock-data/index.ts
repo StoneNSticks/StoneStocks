@@ -37,7 +37,7 @@ const TTL: Record<string, number> = {
   massive_dividends: 60 * 24 * 7, massive_splits: 60 * 24 * 7,
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
   massive_news: 30, market_news: 15, gainers_losers: 30,
-  most_active: 10, top_companies: 15, currency_rates: 60,
+  most_active: 10, top_companies: 30, currency_rates: 60,
   simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
   commodities: 10,
   insider_transactions: 30,
@@ -1139,66 +1139,113 @@ async function handleMostActive() {
 }
 
 const TOP_COMPANIES = [
+  // ── Technology (20) ──
   { symbol: "NVDA", name: "NVIDIA" }, { symbol: "AAPL", name: "Apple" },
-  { symbol: "GOOG", name: "Alphabet" }, { symbol: "MSFT", name: "Microsoft" },
-  { symbol: "AMZN", name: "Amazon" }, { symbol: "META", name: "Meta Platforms" },
-  { symbol: "TSLA", name: "Tesla" }, { symbol: "AVGO", name: "Broadcom" },
-  { symbol: "TSM", name: "TSMC" }, { symbol: "BRK.B", name: "Berkshire Hathaway" },
+  { symbol: "MSFT", name: "Microsoft" }, { symbol: "GOOG", name: "Alphabet" },
+  { symbol: "META", name: "Meta Platforms" }, { symbol: "AVGO", name: "Broadcom" },
+  { symbol: "TSM", name: "TSMC" }, { symbol: "ORCL", name: "Oracle" },
+  { symbol: "CRM", name: "Salesforce" }, { symbol: "AMD", name: "AMD" },
+  { symbol: "ADBE", name: "Adobe" }, { symbol: "INTC", name: "Intel" },
+  { symbol: "CSCO", name: "Cisco" }, { symbol: "NOW", name: "ServiceNow" },
+  { symbol: "QCOM", name: "Qualcomm" }, { symbol: "IBM", name: "IBM" },
+  { symbol: "TXN", name: "Texas Instruments" }, { symbol: "AMAT", name: "Applied Materials" },
+  { symbol: "PANW", name: "Palo Alto Networks" }, { symbol: "MU", name: "Micron" },
+  // ── Consumer Cyclical (10) ──
+  { symbol: "AMZN", name: "Amazon" }, { symbol: "TSLA", name: "Tesla" },
+  { symbol: "HD", name: "Home Depot" }, { symbol: "NKE", name: "Nike" },
+  { symbol: "MCD", name: "McDonald's" }, { symbol: "SBUX", name: "Starbucks" },
+  { symbol: "LOW", name: "Lowe's" }, { symbol: "BKNG", name: "Booking Holdings" },
+  { symbol: "TJX", name: "TJX Companies" }, { symbol: "CMG", name: "Chipotle" },
+  // ── Financials (12) ──
+  { symbol: "BRK.B", name: "Berkshire Hathaway" }, { symbol: "JPM", name: "JPMorgan Chase" },
+  { symbol: "V", name: "Visa" }, { symbol: "MA", name: "Mastercard" },
+  { symbol: "BAC", name: "Bank of America" }, { symbol: "GS", name: "Goldman Sachs" },
+  { symbol: "MS", name: "Morgan Stanley" }, { symbol: "BLK", name: "BlackRock" },
+  { symbol: "C", name: "Citigroup" }, { symbol: "AXP", name: "American Express" },
+  { symbol: "SCHW", name: "Charles Schwab" }, { symbol: "SPGI", name: "S&P Global" },
+  // ── Healthcare (10) ──
+  { symbol: "LLY", name: "Eli Lilly" }, { symbol: "UNH", name: "UnitedHealth" },
+  { symbol: "JNJ", name: "Johnson & Johnson" }, { symbol: "ABBV", name: "AbbVie" },
+  { symbol: "MRK", name: "Merck" }, { symbol: "PFE", name: "Pfizer" },
+  { symbol: "TMO", name: "Thermo Fisher" }, { symbol: "ABT", name: "Abbott" },
+  { symbol: "AMGN", name: "Amgen" }, { symbol: "ISRG", name: "Intuitive Surgical" },
+  // ── Communication Services (5) ──
+  { symbol: "NFLX", name: "Netflix" }, { symbol: "DIS", name: "Walt Disney" },
+  { symbol: "CMCSA", name: "Comcast" }, { symbol: "T", name: "AT&T" },
+  { symbol: "VZ", name: "Verizon" },
+  // ── Consumer Defensive (6) ──
+  { symbol: "WMT", name: "Walmart" }, { symbol: "PG", name: "Procter & Gamble" },
+  { symbol: "COST", name: "Costco" }, { symbol: "KO", name: "Coca-Cola" },
+  { symbol: "PEP", name: "PepsiCo" }, { symbol: "PM", name: "Philip Morris" },
+  // ── Energy (5) ──
+  { symbol: "XOM", name: "Exxon Mobil" }, { symbol: "CVX", name: "Chevron" },
+  { symbol: "COP", name: "ConocoPhillips" }, { symbol: "SLB", name: "Schlumberger" },
+  { symbol: "EOG", name: "EOG Resources" },
+  // ── Industrials (8) ──
+  { symbol: "CAT", name: "Caterpillar" }, { symbol: "GE", name: "GE Aerospace" },
+  { symbol: "RTX", name: "RTX Corp" }, { symbol: "UNP", name: "Union Pacific" },
+  { symbol: "HON", name: "Honeywell" }, { symbol: "BA", name: "Boeing" },
+  { symbol: "DE", name: "Deere & Co" }, { symbol: "LMT", name: "Lockheed Martin" },
+  // ── Basic Materials (3) ──
+  { symbol: "LIN", name: "Linde" }, { symbol: "APD", name: "Air Products" },
+  { symbol: "FCX", name: "Freeport-McMoRan" },
+  // ── Utilities (3) ──
+  { symbol: "NEE", name: "NextEra Energy" }, { symbol: "DUK", name: "Duke Energy" },
+  { symbol: "SO", name: "Southern Company" },
 ];
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v3";
+  const cacheKey = "market:top_companies:v5";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  const quotes = await Promise.all(
-    TOP_COMPANIES.map(async (c) => {
-      try {
-        const [q, profile, polygonTicker] = await Promise.all([
-          fetchFinnhub("quote", { symbol: c.symbol }),
-          fetchFinnhub("stock/profile2", { symbol: c.symbol }),
-          fetchMassive(`/v3/reference/tickers/${c.symbol}`).catch(() => null),
-        ]);
-        // === Market Cap Resolution (multi-source with ADR correction) ===
-        // ADR ratio map: 1 ADR = N ordinary shares. Finnhub's shareOutstanding returns
-        // TOTAL ordinary shares, so computed cap = ADR_price × total_shares is N× too high.
-        const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8 };
-        const MAX_REASONABLE_MCAP = 5e12; // $5T sanity cap (no company exceeds this as of 2026)
-        const polygonMarketCap = polygonTicker?.results?.market_cap || 0;
-        const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
-        const shareOutstanding = profile?.shareOutstanding || 0;
-        const adrRatio = ADR_RATIOS[c.symbol] || 1;
-        // For ADRs: divide by ratio since shareOutstanding is in ordinary shares
-        const computedMarketCap = ((q.c || 0) * shareOutstanding * 1e6) / adrRatio;
-        // Prefer Finnhub → Polygon → Computed, all subject to sanity cap
-        let marketCap = 0;
-        if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
-          marketCap = finnhubMarketCap;
-        } else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
-          marketCap = polygonMarketCap;
-        } else if (computedMarketCap > 0 && computedMarketCap < MAX_REASONABLE_MCAP) {
-          marketCap = computedMarketCap;
+
+  // Fetch in batches of 15 to avoid rate limits
+  const BATCH_SIZE = 15;
+  const allQuotes: any[] = [];
+
+  for (let i = 0; i < TOP_COMPANIES.length; i += BATCH_SIZE) {
+    const batch = TOP_COMPANIES.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(
+      batch.map(async (c) => {
+        try {
+          const [q, profile] = await Promise.all([
+            fetchFinnhub("quote", { symbol: c.symbol }),
+            fetchFinnhub("stock/profile2", { symbol: c.symbol }),
+          ]);
+          const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8 };
+          const MAX_REASONABLE_MCAP = 5e12;
+          const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
+          const shareOutstanding = profile?.shareOutstanding || 0;
+          const adrRatio = ADR_RATIOS[c.symbol] || 1;
+          const computedMarketCap = ((q.c || 0) * shareOutstanding * 1e6) / adrRatio;
+          let marketCap = 0;
+          if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
+            marketCap = finnhubMarketCap;
+          } else if (computedMarketCap > 0 && computedMarketCap < MAX_REASONABLE_MCAP) {
+            marketCap = computedMarketCap;
+          }
+          if (marketCap === 0) {
+            const candidates = [finnhubMarketCap, computedMarketCap].filter(v => v > 0);
+            marketCap = candidates.length > 0 ? Math.min(...candidates) : 0;
+          }
+          return {
+            symbol: c.symbol, name: c.name, price: q.c || 0,
+            change: q.d || 0, changePercent: q.dp || 0,
+            marketCap,
+            logo: profile?.logo || "",
+            sector: profile?.finnhubIndustry || "",
+          };
+        } catch {
+          return { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "" };
         }
-        // If all sources exceed cap, use smallest reasonable value
-        if (marketCap === 0) {
-          const candidates = [finnhubMarketCap, polygonMarketCap, computedMarketCap].filter(v => v > 0);
-          marketCap = candidates.length > 0 ? Math.min(...candidates) : 0;
-          if (marketCap > MAX_REASONABLE_MCAP) marketCap = computedMarketCap; // ADR-corrected is most reliable
-        }
-        return {
-          symbol: c.symbol, name: c.name, price: q.c || 0,
-          change: q.d || 0, changePercent: q.dp || 0,
-          marketCap,
-          logo: profile?.logo || "",
-          sector: profile?.finnhubIndustry || polygonTicker?.results?.sic_description || "",
-        };
-      } catch {
-        return { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "" };
-      }
-    })
-  );
-  quotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
-  await setCache(cacheKey, quotes, "multi", TTL.top_companies);
-  return quotes;
+      })
+    );
+    allQuotes.push(...batchResults);
+  }
+
+  allQuotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
+  await setCache(cacheKey, allQuotes, "multi", TTL.top_companies);
+  return allQuotes;
 }
 
 // === Currency Conversion ===
