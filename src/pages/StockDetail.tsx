@@ -357,15 +357,6 @@ const StockDetail = () => {
               <EarningsWhisper symbol={upperSymbol} />
             </div>
 
-            {/* Volume Profile + Seasonality */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <VolumeProfile symbol={upperSymbol} currentPrice={quote?.c} />
-              <SeasonalityChart symbol={upperSymbol} />
-            </div>
-
-            {/* Monte Carlo Fair Value */}
-            <MonteCarloFairValue symbol={upperSymbol} currentPrice={quote?.c} />
-
             {/* Options Chain */}
             <OptionsChainViewer symbol={upperSymbol} currentPrice={quote?.c} />
 
