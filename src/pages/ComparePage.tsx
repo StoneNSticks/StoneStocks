@@ -3,6 +3,7 @@
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useFullStock } from "@/hooks/useStockData";
 import { useSearchStocks } from "@/hooks/useStockData";
 import { useCurrency } from "@/contexts/CurrencyContext";
