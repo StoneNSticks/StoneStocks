@@ -452,6 +452,11 @@ export default function PortfolioPage() {
             {count > 1 && (
               <PortfolioAnalyticsWrapper positions={positions!} />
             )}
+
+            {/* AI Recommendations */}
+            {count > 0 && (
+              <AIRecommendations portfolio={positions!} watchlist={[]} />
+            )}
           </>
         )}
       </main>
