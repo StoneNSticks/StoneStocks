@@ -396,7 +396,7 @@ export default function BacktestPage() {
                     <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} />
                     <Tooltip
                       contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                      formatter={(value: number, name: string) => [`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, name === "equity" ? (lang === "de" ? activeStrategy.labelDe : activeStrategy.label) : "Buy & Hold"]}
+                      formatter={(value: number, name: string) => [`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, name === "benchmark" ? "Buy & Hold" : (lang === "de" ? activeStrategy.labelDe : activeStrategy.label)]}
                     />
                     <ReferenceLine y={capital} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" strokeOpacity={0.5} />
                     <Area type="monotone" dataKey="benchmark" stroke="hsl(var(--muted-foreground))" fill="url(#bmGrad)" strokeWidth={1} strokeDasharray="4 4" dot={false} name="Buy & Hold" />
