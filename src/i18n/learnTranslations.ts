@@ -611,6 +611,47 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
     "<strong>Delta</strong> (Δ): Preisänderung der Option pro $1 Änderung im Basiswert. <strong>Gamma</strong> (Γ): Änderungsrate von Delta. <strong>Theta</strong> (Θ): Zeitwertverfall pro Tag – Optionen verlieren täglich an Wert! <strong>Vega</strong> (ν): Sensitivität gegenüber Volatilitätsänderungen. <strong>Rho</strong> (ρ): Zinssensitivität.",
     "<strong>Delta</strong> (Δ): Option price change per $1 move in underlying. <strong>Gamma</strong> (Γ): Rate of change of Delta. <strong>Theta</strong> (Θ): Time decay per day – options lose value daily! <strong>Vega</strong> (ν): Sensitivity to volatility changes. <strong>Rho</strong> (ρ): Interest rate sensitivity."
   ),
+  // ── American vs European Options ──
+  "learn.optionStylesTitle": t("Amerikanische vs. Europäische Optionen", "American vs. European Options"),
+  "learn.optionStylesIntro": t(
+    "Optionen unterscheiden sich nicht nur in Call/Put, sondern auch in ihrem <strong>Ausübungsstil</strong>. Diese Unterscheidung hat nichts mit Geografie zu tun – beide Typen werden weltweit gehandelt.",
+    "Options differ not only in call/put but also in their <strong>exercise style</strong>. This distinction has nothing to do with geography – both types are traded worldwide."
+  ),
+  "learn.americanOption": t("Amerikanische Option", "American Option"),
+  "learn.americanOptionDesc": t(
+    "Kann <strong>jederzeit</strong> bis zum Verfallsdatum ausgeübt werden. Bietet maximale Flexibilität. Die meisten Aktienoptionen in den USA sind amerikanisch. Durch die frühe Ausübungsmöglichkeit ist die Prämie tendenziell höher als bei europäischen Optionen.",
+    "Can be exercised <strong>at any time</strong> until expiration. Offers maximum flexibility. Most stock options in the US are American style. Due to early exercise possibility, premiums tend to be higher than European options."
+  ),
+  "learn.europeanOption": t("Europäische Option", "European Option"),
+  "learn.europeanOptionDesc": t(
+    "Kann <strong>nur am Verfallstag</strong> ausgeübt werden. Index-Optionen (z.B. auf den S&P 500, DAX) sind meist europäisch. Einfacher zu bewerten (Black-Scholes-Modell), oft leicht günstiger.",
+    "Can <strong>only be exercised on expiration day</strong>. Index options (e.g., on S&P 500, DAX) are mostly European style. Easier to price (Black-Scholes model), often slightly cheaper."
+  ),
+  "learn.americanCallTitle": t("American Call", "American Call"),
+  "learn.americanCallDesc": t(
+    "Recht, den Basiswert jederzeit bis zum Verfall zum Strike-Preis zu <strong>kaufen</strong>. Beispiel: Du kaufst einen American Call auf Apple mit Strike $150, Verfall in 3 Monaten. Steigt Apple auf $180, kannst du sofort ausüben und 100 Aktien für $150 kaufen (Gewinn: $30/Aktie minus Prämie). Besonders wertvoll bei Dividendenzahlungen – du kannst vor dem Ex-Datum ausüben.",
+    "Right to <strong>buy</strong> the underlying at the strike price at any time until expiration. Example: You buy an American Call on Apple with $150 strike, expiring in 3 months. If Apple rises to $180, you can exercise immediately and buy 100 shares at $150 (profit: $30/share minus premium). Especially valuable around dividend dates – you can exercise before ex-date."
+  ),
+  "learn.americanPutTitle": t("American Put", "American Put"),
+  "learn.americanPutDesc": t(
+    "Recht, den Basiswert jederzeit bis zum Verfall zum Strike-Preis zu <strong>verkaufen</strong>. Beispiel: Du besitzt 100 Tesla-Aktien und kaufst einen American Put mit Strike $200. Fällt Tesla auf $150, kannst du sofort ausüben und für $200 verkaufen (Verlust begrenzt). Die frühe Ausübung ist besonders sinnvoll bei stark gefallenen Aktien – du sicherst dir den Gewinn sofort.",
+    "Right to <strong>sell</strong> the underlying at the strike price at any time until expiration. Example: You own 100 Tesla shares and buy an American Put with $200 strike. If Tesla drops to $150, you can exercise immediately and sell at $200 (loss limited). Early exercise is especially useful for deeply fallen stocks – you lock in the profit immediately."
+  ),
+  "learn.europeanCallTitle": t("European Call", "European Call"),
+  "learn.europeanCallDesc": t(
+    "Recht, den Basiswert <strong>nur am Verfallstag</strong> zum Strike-Preis zu kaufen. Beispiel: European Call auf den DAX-Index mit Strike 18.000, Verfall Dezember. Am Verfallstag steht der DAX bei 18.500 → du erhältst die Differenz (500 Punkte × Multiplikator) als Barabrechnung. Keine physische Lieferung.",
+    "Right to buy the underlying <strong>only on expiration day</strong> at the strike price. Example: European Call on DAX index with 18,000 strike, December expiry. On expiration day, DAX is at 18,500 → you receive the difference (500 points × multiplier) as cash settlement. No physical delivery."
+  ),
+  "learn.europeanPutTitle": t("European Put", "European Put"),
+  "learn.europeanPutDesc": t(
+    "Recht, den Basiswert <strong>nur am Verfallstag</strong> zum Strike-Preis zu verkaufen. Beispiel: European Put auf den S&P 500 mit Strike 5.000. Am Verfallstag steht der Index bei 4.800 → du erhältst 200 × Multiplikator als Gewinn. Wird oft zur Portfolio-Absicherung verwendet (Index-Puts sind günstiger als viele Einzel-Puts).",
+    "Right to sell the underlying <strong>only on expiration day</strong> at the strike price. Example: European Put on S&P 500 with 5,000 strike. On expiration, index is at 4,800 → you receive 200 × multiplier as profit. Often used for portfolio hedging (index puts are cheaper than many individual puts)."
+  ),
+  "learn.optionStyleComparison": t(
+    "Zusammenfassung: Amerikanische Optionen sind flexibler (jederzeit ausübbar) und daher teurer. Europäische Optionen sind nur am Verfall ausübbar, aber oft günstiger und einfacher zu bewerten. Für Einsteiger: Die meisten Broker-Plattformen handhaben die Ausübung automatisch – du musst dich selten manuell entscheiden.",
+    "Summary: American options are more flexible (exercisable anytime) and therefore more expensive. European options can only be exercised at expiration but are often cheaper and easier to price. For beginners: Most broker platforms handle exercise automatically – you rarely need to decide manually."
+  ),
+
   "learn.optionsStrategies": t("Beliebte Optionsstrategien:", "Popular Option Strategies:"),
   "learn.coveredCall": t("Covered Call", "Covered Call"),
   "learn.coveredCallDesc": t("Besitze 100 Aktien + verkaufe Call darauf. Einnahme: Prämie. Risiko: Kursgewinne über dem Strike verpasst.", "Own 100 shares + sell call. Income: premium. Risk: miss gains above strike."),

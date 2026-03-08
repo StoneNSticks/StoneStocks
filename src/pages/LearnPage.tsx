@@ -533,7 +533,28 @@ export default function LearnPage() {
                 <p className="font-medium text-foreground text-sm">{t("learn.optionsGreeks")}</p>
                 <p className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: t("learn.optionsGreeksDesc") }} />
               </div>
-              <p className="font-medium text-foreground text-sm mt-3">{t("learn.optionsStrategies")}</p>
+            </SectionCard>
+
+            {/* American vs European Options */}
+            <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.optionStylesTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.optionStylesIntro") }} />
+              <div className="grid sm:grid-cols-2 gap-3 mt-3">
+                <TermCard term={t("learn.americanOption")} desc={t("learn.americanOptionDesc")} />
+                <TermCard term={t("learn.europeanOption")} desc={t("learn.europeanOptionDesc")} />
+              </div>
+              <div className="mt-4 space-y-3">
+                <p className="font-medium text-foreground text-sm">{lang === "de" ? "Detaillierte Beispiele:" : "Detailed Examples:"}</p>
+                <TermCard term={t("learn.americanCallTitle")} desc={t("learn.americanCallDesc")} />
+                <TermCard term={t("learn.americanPutTitle")} desc={t("learn.americanPutDesc")} />
+                <TermCard term={t("learn.europeanCallTitle")} desc={t("learn.europeanCallDesc")} />
+                <TermCard term={t("learn.europeanPutTitle")} desc={t("learn.europeanPutDesc")} />
+              </div>
+              <InfoBox title={t("learn.goodToKnow")}>{t("learn.optionStyleComparison")}</InfoBox>
+            </SectionCard>
+
+            {/* Options Strategies */}
+            <SectionCard icon={<Layers className="h-5 w-5" />} title={lang === "de" ? "Optionsstrategien" : "Option Strategies"}>
+              <p className="font-medium text-foreground text-sm">{t("learn.optionsStrategies")}</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 <TermCard term={t("learn.coveredCall")} desc={t("learn.coveredCallDesc")} />
                 <TermCard term={t("learn.protectivePut")} desc={t("learn.protectivePutDesc")} />
