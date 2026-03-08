@@ -75,4 +75,4 @@ export const StockPerformance = memo(function StockPerformance({ quote, overview
       </div>
     </div>
   );
-}
+});

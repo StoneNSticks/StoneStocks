@@ -54,4 +54,4 @@ export const EarningsCard = memo(function EarningsCard({ earnings }: EarningsCar
       </div>
     </div>
   );
-}
+});

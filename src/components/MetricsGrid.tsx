@@ -99,4 +99,4 @@ export const MetricsGrid = memo(function MetricsGrid({ overview, quote, derived,
       ]} />
     </div>
   );
-}
+});
