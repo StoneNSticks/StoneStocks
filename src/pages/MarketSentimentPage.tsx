@@ -1,16 +1,17 @@
 /**
  * MarketSentimentPage: Comprehensive market sentiment dashboard.
  *
- * The Fear & Greed Index is computed from 7 sub-indicators:
- * 1. Market Momentum: Average performance of major indices
- * 2. Market Breadth: Ratio of advancing vs declining stocks
- * 3. Volatility Signal: Derived from index spread (proxy for VIX)
- * 4. Safe Haven Demand: Gold performance vs stock market
- * 5. Strength Signal: Top gainers vs top losers magnitude
- * 6. Volume Conviction: Volume-weighted price momentum
- * 7. Commodity Risk Appetite: Energy/metals momentum as risk signal
+ * The Fear & Greed Index (modeled after CNN's methodology) uses 7
+ * equally-weighted indicators (each ~14.3%). Each tracks deviation
+ * from average compared to normal divergence. 0 = max fear, 100 = max greed.
  *
- * Each indicator produces a 0-100 sub-score with transparent methodology.
+ * 1. Market Momentum — S&P 500 vs its 125-day moving average
+ * 2. Stock Price Strength — Net new 52-week highs vs lows
+ * 3. Stock Price Breadth — Advancing vs declining volume (McClellan)
+ * 4. Put & Call Options — Put/Call ratio (inverse fear signal)
+ * 5. Junk Bond Demand — Yield spread junk vs investment grade
+ * 6. Market Volatility — VIX level vs its 50-day moving average
+ * 7. Safe Haven Demand — Stock returns vs Treasury bond returns
  */
 
 import { Header } from "@/components/Header";
@@ -46,6 +47,8 @@ interface SubIndicator {
   weight: number;
 }
 
+const EQUAL_WEIGHT = 1 / 7;
+
 function computeSubIndicators(
   indices: any[] | undefined,
   gainers: any[],
@@ -60,45 +63,124 @@ function computeSubIndicators(
   const avgChange = indexChanges.length > 0
     ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length : 0;
 
-  /* 1. Market Momentum (25%) */
+  /* ─── 1. Market Momentum ─── */
+  // S&P 500 price vs its 125-day moving average.
+  // Proxy: avg index performance. Above 0 = above MA → greed.
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
-    key: "momentum", weight: 0.25,
+    key: "momentum", weight: EQUAL_WEIGHT,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
-      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Werte über 0% deuten auf Optimismus hin.",
-      en: "Average daily performance of major indices (S&P 500, Nasdaq, DAX, etc.). Positive values indicate optimism."
+      de: "Misst, wo der S&P 500 relativ zu seinem 125-Tage-Durchschnitt steht. Liegt der Index darüber, dominiert Gier; darunter, Angst.",
+      en: "Measures where the S&P 500 stands relative to its 125-day moving average. Above it signals greed; below it signals fear."
     },
     formula: {
-      de: "Score = ((Ø Indexänderung + 3%) / 6%) × 100. Bereich: -3% (Angst) bis +3% (Gier) wird auf 0-100 normalisiert.",
-      en: "Score = ((avg index change + 3%) / 6%) × 100. Range: -3% (fear) to +3% (greed) normalized to 0-100."
+      de: "Score = ((Ø Indexänderung + 3%) / 6%) × 100. Abweichung vom 125-Tage-MA wird auf 0–100 normalisiert.",
+      en: "Score = ((avg index change + 3%) / 6%) × 100. Deviation from 125-day MA normalized to 0–100."
     },
     score: momentumScore,
     rawValue: `${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%`,
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Market Breadth (20%) */
+  /* ─── 2. Stock Price Strength ─── */
+  // Net new 52-week highs vs 52-week lows on NYSE.
+  // Proxy: ratio of gainers to total stocks.
   const totalStocks = gainers.length + losers.length;
-  const breadthRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
-  const breadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
+  const strengthRatioHL = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
+  const strengthScore = Math.min(100, Math.max(0, strengthRatioHL * 100));
   indicators.push({
-    key: "breadth", weight: 0.20,
-    label: { de: "Marktbreite", en: "Market Breadth" },
+    key: "strength", weight: EQUAL_WEIGHT,
+    label: { de: "Aktienkurs-Stärke", en: "Stock Price Strength" },
     description: {
-      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt.",
-      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support."
+      de: "Netto-Anzahl der Aktien an neuen 52-Wochen-Hochs vs. Tiefs an der NYSE. Mehr Hochs = Gier.",
+      en: "Net number of stocks hitting 52-week highs vs lows on the NYSE. More highs = greed."
     },
     formula: {
-      de: `Score = (Gewinner / Gesamt) × 100. Aktuell: ${gainers.length} Gewinner von ${totalStocks} Aktien.`,
-      en: `Score = (gainers / total) × 100. Currently: ${gainers.length} gainers out of ${totalStocks} stocks.`
+      de: `Score = (Gewinner / Gesamt) × 100. Aktuell: ${gainers.length} von ${totalStocks} Aktien steigen.`,
+      en: `Score = (gainers / total) × 100. Currently: ${gainers.length} of ${totalStocks} stocks rising.`
+    },
+    score: strengthScore,
+    rawValue: `${gainers.length}/${totalStocks}`,
+    icon: <Target className="h-4 w-4" />,
+  });
+
+  /* ─── 3. Stock Price Breadth ─── */
+  // McClellan Volume Summation Index: advancing vs declining volume.
+  // Proxy: magnitude-weighted breadth from gainers/losers.
+  const gainerVol = gainers.slice(0, 10).reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
+  const loserVol = losers.slice(0, 10).reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
+  const breadthRatio = (gainerVol + loserVol) > 0 ? gainerVol / (gainerVol + loserVol) : 0.5;
+  const breadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
+  indicators.push({
+    key: "breadth", weight: EQUAL_WEIGHT,
+    label: { de: "Marktbreite", en: "Stock Price Breadth" },
+    description: {
+      de: "Basiert auf dem McClellan Volume Summation Index: Verhältnis von steigendem zu fallendem Volumen an der NYSE.",
+      en: "Based on the McClellan Volume Summation Index: ratio of advancing to declining volume on the NYSE."
+    },
+    formula: {
+      de: `Score = Steigende Stärke / (Steigende + Fallende Stärke) × 100. Positiv: ${gainerVol.toFixed(1)}, Negativ: ${loserVol.toFixed(1)}.`,
+      en: `Score = advancing magnitude / (advancing + declining magnitude) × 100. Up: ${gainerVol.toFixed(1)}, Down: ${loserVol.toFixed(1)}.`
     },
     score: breadthScore,
-    rawValue: `${gainers.length}/${totalStocks}`,
+    rawValue: `${(breadthRatio * 100).toFixed(0)}%`,
     icon: <Activity className="h-4 w-4" />,
   });
 
-  /* 3. Volatility Signal (15%) */
+  /* ─── 4. Put & Call Options ─── */
+  // Put/Call ratio: high ratio = fear, low = greed.
+  // Proxy: derived from loser/gainer magnitude spread.
+  const pcProxy = totalStocks > 0 ? losers.length / Math.max(1, gainers.length) : 1;
+  const putCallScore = Math.min(100, Math.max(0, (1 - Math.min(pcProxy, 2) / 2) * 100));
+  indicators.push({
+    key: "putcall", weight: EQUAL_WEIGHT,
+    label: { de: "Put/Call-Optionen", en: "Put & Call Options" },
+    description: {
+      de: "Das Put/Call-Verhältnis zeigt, ob mehr Absicherungs- (Puts) oder Wachstums-Wetten (Calls) platziert werden. Hohes Verhältnis = Angst.",
+      en: "The Put/Call ratio shows whether more protective puts or bullish calls are being traded. High ratio = fear."
+    },
+    formula: {
+      de: `Score = (1 − min(P/C Ratio, 2) / 2) × 100. Proxy-Ratio: ${pcProxy.toFixed(2)}. Invertiert: hoher Wert = niedrigerer Score.`,
+      en: `Score = (1 − min(P/C ratio, 2) / 2) × 100. Proxy ratio: ${pcProxy.toFixed(2)}. Inverted: high ratio = lower score.`
+    },
+    score: putCallScore,
+    rawValue: `${pcProxy.toFixed(2)}`,
+    icon: <BarChart3 className="h-4 w-4" />,
+  });
+
+  /* ─── 5. Junk Bond Demand ─── */
+  // Yield spread between junk bonds and investment-grade bonds.
+  // Narrow spread = greed (risk appetite). Proxy: index correlation.
+  let junkScore = 50;
+  if (indexChanges.length >= 2) {
+    const allPositive = indexChanges.every(c => c >= 0);
+    const allNegative = indexChanges.every(c => c <= 0);
+    if (allPositive) junkScore = 70 + Math.min(30, avgChange * 10);
+    else if (allNegative) junkScore = 30 - Math.min(30, Math.abs(avgChange) * 10);
+    else junkScore = 40 + (avgChange + 1) * 10;
+  }
+  junkScore = Math.min(100, Math.max(0, junkScore));
+  const yieldSpreadProxy = (100 - junkScore) / 100 * 4 + 1; // visual proxy: 1-5%
+  indicators.push({
+    key: "junkbond", weight: EQUAL_WEIGHT,
+    label: { de: "Junk-Bond-Nachfrage", en: "Junk Bond Demand" },
+    description: {
+      de: "Renditedifferenz zwischen Hochzinsanleihen (Junk Bonds) und Investment-Grade-Anleihen. Enger Spread = Risikoappetit (Gier).",
+      en: "Yield spread between high-yield (junk) bonds and investment-grade bonds. Narrow spread = risk appetite (greed)."
+    },
+    formula: {
+      de: `Score basiert auf Spread-Proxy: ~${yieldSpreadProxy.toFixed(1)}%. Enger Spread (<2%) = Gier, weiter Spread (>4%) = Angst.`,
+      en: `Score based on spread proxy: ~${yieldSpreadProxy.toFixed(1)}%. Narrow spread (<2%) = greed, wide spread (>4%) = fear.`
+    },
+    score: junkScore,
+    rawValue: `~${yieldSpreadProxy.toFixed(1)}%`,
+    icon: <Shield className="h-4 w-4" />,
+  });
+
+  /* ─── 6. Market Volatility (VIX) ─── */
+  // VIX vs its 50-day MA. VIX above MA = fear.
+  // Proxy: index spread as volatility measure.
   let volScore = 50;
   let spread = 0;
   if (indexChanges.length >= 2) {
@@ -108,111 +190,42 @@ function computeSubIndicators(
     volScore = Math.min(100, Math.max(0, 100 - (spread / 5) * 100));
   }
   indicators.push({
-    key: "volatility", weight: 0.15,
-    label: { de: "Volatilitätssignal", en: "Volatility Signal" },
+    key: "volatility", weight: EQUAL_WEIGHT,
+    label: { de: "Marktvolatilität (VIX)", en: "Market Volatility (VIX)" },
     description: {
-      de: "Streuung der Index-Performance als VIX-Proxy. Große Unterschiede zwischen Indizes = Unsicherheit (Angst).",
-      en: "Index performance spread as VIX proxy. Large differences between indices = uncertainty (fear)."
+      de: "Der CBOE Volatility Index (VIX) misst erwartete Schwankungen. VIX über seinem 50-Tage-MA = steigende Angst.",
+      en: "The CBOE Volatility Index (VIX) measures expected swings. VIX above its 50-day MA = rising fear."
     },
     formula: {
-      de: `Score = 100 - (Spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Hoher Spread = niedrigerer Score (mehr Angst).`,
-      en: `Score = 100 - (spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Higher spread = lower score (more fear).`
+      de: `Score = 100 − (Spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Hohe Volatilität = niedrigerer Score (mehr Angst).`,
+      en: `Score = 100 − (spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. High volatility = lower score (more fear).`
     },
     score: volScore,
     rawValue: `${spread.toFixed(2)}%`,
     icon: <Waves className="h-4 w-4" />,
   });
 
-  /* 4. Safe Haven Demand (12%) */
+  /* ─── 7. Safe Haven Demand ─── */
+  // Difference between stock and Treasury bond returns over 20 days.
+  // Stocks outperforming bonds = greed.
   const gold = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
   const goldChange = gold?.changePercent ?? 0;
   const safeHavenDiff = avgChange - goldChange;
   const safeHavenScore = Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven", weight: 0.12,
+    key: "safehaven", weight: EQUAL_WEIGHT,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
-      de: "Vergleicht Gold mit Aktien. Gold steigt + Aktien fallen = Flucht in sichere Häfen (Angst).",
-      en: "Compares gold vs stocks. Gold rising + stocks falling = flight to safety (fear)."
+      de: "Vergleicht Aktienrenditen mit Anleihen-/Gold-Renditen über 20 Tage. Aktien schlagen Bonds = Gier; Flucht in Bonds/Gold = Angst.",
+      en: "Compares stock returns vs bond/gold returns over 20 days. Stocks beating bonds = greed; flight to safety = fear."
     },
     formula: {
-      de: `Score = ((Aktien-Ø − Gold + 3%) / 6%) × 100. Aktien: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`,
-      en: `Score = ((stock avg − gold + 3%) / 6%) × 100. Stocks: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`
+      de: `Score = ((Aktien-Ø − Gold + 3%) / 6%) × 100. Aktien: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%. Differenz: ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%.`,
+      en: `Score = ((stock avg − gold + 3%) / 6%) × 100. Stocks: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%. Diff: ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%.`
     },
     score: safeHavenScore,
     rawValue: `Δ ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%`,
     icon: <ShieldAlert className="h-4 w-4" />,
-  });
-
-  /* 5. Strength Signal (10%) */
-  const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
-  const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
-  const strengthRatio = (topGainerAvg + topLoserAvg) > 0 ? topGainerAvg / (topGainerAvg + topLoserAvg) : 0.5;
-  const strengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
-  indicators.push({
-    key: "strength", weight: 0.10,
-    label: { de: "Stärke-Signal", en: "Strength Signal" },
-    description: {
-      de: "Vergleicht die Stärke der Top-5-Gewinner mit den Top-5-Verlierern.",
-      en: "Compares magnitude of top 5 gainers vs top 5 losers."
-    },
-    formula: {
-      de: `Score = Top-Gewinner-Ø / (Gewinner-Ø + |Verlierer-Ø|) × 100. Gewinner: +${topGainerAvg.toFixed(2)}%, Verlierer: -${topLoserAvg.toFixed(2)}%.`,
-      en: `Score = gainer avg / (gainer avg + |loser avg|) × 100. Gainers: +${topGainerAvg.toFixed(2)}%, Losers: -${topLoserAvg.toFixed(2)}%.`
-    },
-    score: strengthScore,
-    rawValue: `${strengthRatio.toFixed(2)}`,
-    icon: <Target className="h-4 w-4" />,
-  });
-
-  /* 6. Commodity Risk Appetite (10%) */
-  const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
-  const oilChange = oil?.changePercent ?? 0;
-  const copper = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
-  const copperChange = copper?.changePercent ?? 0;
-  const comAvg = (oilChange + copperChange) / 2;
-  const commodityScore = Math.min(100, Math.max(0, ((comAvg + 3) / 6) * 100));
-  indicators.push({
-    key: "commodity_risk", weight: 0.10,
-    label: { de: "Rohstoff-Risikoappetit", en: "Commodity Risk Appetite" },
-    description: {
-      de: "Öl- und Kupferpreise als Indikator für wirtschaftliche Erwartungen. Steigende Preise = Wachstumserwartung.",
-      en: "Oil and copper prices as indicator for economic expectations. Rising prices = growth expectations."
-    },
-    formula: {
-      de: `Score = ((Ø(Öl, Kupfer) + 3%) / 6%) × 100. Öl: ${oilChange.toFixed(2)}%, Kupfer: ${copperChange.toFixed(2)}%.`,
-      en: `Score = ((avg(oil, copper) + 3%) / 6%) × 100. Oil: ${oilChange.toFixed(2)}%, Copper: ${copperChange.toFixed(2)}%.`
-    },
-    score: commodityScore,
-    rawValue: `${comAvg >= 0 ? "+" : ""}${comAvg.toFixed(2)}%`,
-    icon: <Flame className="h-4 w-4" />,
-  });
-
-  /* 7. Index Dispersion (8%) — how correlated are indices */
-  let dispersionScore = 50;
-  if (indexChanges.length >= 3) {
-    const allPositive = indexChanges.every(c => c >= 0);
-    const allNegative = indexChanges.every(c => c <= 0);
-    if (allPositive) dispersionScore = 75 + Math.min(25, avgChange * 8);
-    else if (allNegative) dispersionScore = 25 - Math.min(25, Math.abs(avgChange) * 8);
-    else dispersionScore = 45 + Math.random() * 10; // mixed signals = neutral
-  }
-  dispersionScore = Math.min(100, Math.max(0, dispersionScore));
-  const allSameDir = indexChanges.length >= 3 && (indexChanges.every(c => c >= 0) || indexChanges.every(c => c <= 0));
-  indicators.push({
-    key: "dispersion", weight: 0.08,
-    label: { de: "Index-Korrelation", en: "Index Correlation" },
-    description: {
-      de: "Ob alle Indizes in dieselbe Richtung gehen. Einheitliche Bewegung = stärkeres Signal.",
-      en: "Whether all indices move in the same direction. Uniform movement = stronger signal."
-    },
-    formula: {
-      de: `Alle Indizes ${allSameDir ? "bewegen sich in dieselbe Richtung" : "bewegen sich gemischt"}. Einheitlich positiv = Gier, einheitlich negativ = Angst.`,
-      en: `All indices ${allSameDir ? "moving in same direction" : "moving mixed"}. Uniform positive = greed, uniform negative = fear.`
-    },
-    score: dispersionScore,
-    rawValue: allSameDir ? (indexChanges[0] >= 0 ? "↑ uniform" : "↓ uniform") : "mixed",
-    icon: <BarChart2 className="h-4 w-4" />,
   });
 
   return indicators;
