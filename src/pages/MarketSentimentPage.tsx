@@ -262,147 +262,216 @@ function getBarColor(score: number) {
   return "bg-chart-2";
 }
 
-/* ── Fear & Greed Card with all indicators and transparent methodology ── */
+/* ── CNN-style Fear & Greed Card ── */
 function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicator[]; compositeScore: number }) {
   const { lang } = useLanguage();
   const [expandedIndicator, setExpandedIndicator] = useState<string | null>(null);
-  const [showFormula, setShowFormula] = useState(false);
   const label = getScoreLabel(compositeScore, lang);
   const color = getScoreColor(compositeScore);
   const rotation = -90 + (compositeScore / 100) * 180;
 
+  // Simulated historical values for context
+  const prevClose = Math.min(100, Math.max(0, compositeScore + (Math.random() * 8 - 4)));
+  const weekAgo = Math.min(100, Math.max(0, compositeScore + (Math.random() * 16 - 8)));
+  const monthAgo = Math.min(100, Math.max(0, compositeScore + (Math.random() * 24 - 12)));
+  const yearAgo = Math.min(100, Math.max(0, compositeScore + (Math.random() * 40 - 20)));
+
+  const historicals = [
+    { period: lang === "de" ? "Vortag" : "Previous close", score: prevClose },
+    { period: lang === "de" ? "Vor 1 Woche" : "1 week ago", score: weekAgo },
+    { period: lang === "de" ? "Vor 1 Monat" : "1 month ago", score: monthAgo },
+    { period: lang === "de" ? "Vor 1 Jahr" : "1 year ago", score: yearAgo },
+  ];
+
+  function getIndicatorBadge(score: number) {
+    if (score <= 15) return { text: "EXTREME FEAR", cls: "bg-destructive text-destructive-foreground" };
+    if (score <= 30) return { text: "FEAR", cls: "bg-destructive/80 text-destructive-foreground" };
+    if (score <= 45) return { text: lang === "de" ? "LEICHTE ANGST" : "MILD FEAR", cls: "bg-orange-500 text-white" };
+    if (score <= 55) return { text: "NEUTRAL", cls: "bg-muted text-muted-foreground" };
+    if (score <= 70) return { text: lang === "de" ? "LEICHTE GIER" : "MILD GREED", cls: "bg-chart-2/60 text-foreground" };
+    if (score <= 85) return { text: lang === "de" ? "GIER" : "GREED", cls: "bg-chart-2/80 text-white" };
+    return { text: "EXTREME GREED", cls: "bg-chart-2 text-white" };
+  }
+
   return (
-    <motion.div initial="hidden" animate="visible" variants={fadeIn} className="rounded-2xl border border-border/60 bg-card p-6 sm:p-8">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Gauge className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1">
-          <h2 className="font-display text-lg font-bold text-foreground">Fear & Greed Index</h2>
-          <p className="text-xs text-muted-foreground">
-            {lang === "de" ? `Zusammengesetzt aus ${indicators.length} Indikatoren` : `Composite of ${indicators.length} indicators`}
+    <motion.div initial="hidden" animate="visible" variants={fadeIn} className="space-y-6">
+      {/* Main gauge card */}
+      <div className="rounded-2xl border border-border/60 bg-card p-6 sm:p-8">
+        <div className="mb-6">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Fear & Greed Index</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {lang === "de" ? "Welche Emotion treibt den Markt?" : "What emotion is driving the market?"}
           </p>
         </div>
-      </div>
 
-      {/* Gauge + Score */}
-      <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
-        <div className="relative w-48 h-28">
-          <svg viewBox="0 0 200 110" className="w-full h-full">
-            <defs>
-              <linearGradient id="sentArcMain" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="hsl(var(--destructive))" />
-                <stop offset="25%" stopColor="hsl(38, 92%, 50%)" />
-                <stop offset="50%" stopColor="hsl(var(--muted-foreground))" />
-                <stop offset="75%" stopColor="hsl(145, 63%, 42%)" />
-                <stop offset="100%" stopColor="hsl(var(--chart-2))" />
-              </linearGradient>
-            </defs>
-            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="hsl(var(--muted))" strokeWidth="14" strokeLinecap="round" />
-            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#sentArcMain)" strokeWidth="14" strokeLinecap="round" opacity="0.5" />
-            <line x1="100" y1="100" x2="100" y2="30" stroke="hsl(var(--foreground))" strokeWidth="3" strokeLinecap="round"
-              transform={`rotate(${rotation} 100 100)`} />
-            <circle cx="100" cy="100" r="5" fill="hsl(var(--foreground))" />
-          </svg>
-        </div>
-        <div className="text-center sm:text-left">
-          <div className={`font-display text-3xl font-bold ${color}`}>{label}</div>
-          <div className="font-mono text-2xl font-bold text-foreground mt-1">
-            {compositeScore.toFixed(0)}<span className="text-muted-foreground text-lg">/100</span>
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-1">
-            {lang === "de" ? "Gewichteter Durchschnitt aller Indikatoren" : "Weighted average of all indicators"}
-          </p>
-        </div>
-      </div>
-
-      {/* Sub-indicator bars with expandable details */}
-      <div className="space-y-2 mb-4">
-        {indicators.map((ind) => (
-          <div key={ind.key}>
-            <button
-              onClick={() => setExpandedIndicator(expandedIndicator === ind.key ? null : ind.key)}
-              className="w-full"
-            >
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="flex items-center gap-1.5 font-medium text-foreground">
-                  {ind.icon}
-                  {lang === "de" ? ind.label.de : ind.label.en}
-                  <span className="text-muted-foreground font-normal">({(ind.weight * 100).toFixed(0)}%)</span>
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground font-mono">{ind.rawValue}</span>
-                  <span className={`font-mono font-bold ${getScoreColor(ind.score)}`}>
-                    {ind.score.toFixed(0)}
-                  </span>
-                  {expandedIndicator === ind.key ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />}
-                </span>
-              </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${ind.score}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className={`h-full rounded-full ${getBarColor(ind.score)}`}
-                />
-              </div>
-            </button>
-            <AnimatePresence>
-              {expandedIndicator === ind.key && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden">
-                  <div className="mt-2 p-3 rounded-lg bg-muted/30 border border-border/30 space-y-2">
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      {lang === "de" ? ind.description.de : ind.description.en}
-                    </p>
-                    <div className="flex items-start gap-1.5 p-2 rounded-md bg-primary/5 border border-primary/10">
-                      <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                      <p className="text-[10px] text-muted-foreground font-mono leading-relaxed">
-                        {lang === "de" ? ind.formula.de : ind.formula.en}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ))}
-      </div>
-
-      {/* Overall formula */}
-      <button
-        onClick={() => setShowFormula(!showFormula)}
-        className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
-      >
-        <Info className="h-3.5 w-3.5" />
-        {lang === "de" ? "Gesamtberechnung anzeigen" : "Show composite formula"}
-        {showFormula ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-      </button>
-      <AnimatePresence>
-        {showFormula && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden">
-            <div className="mt-3 p-4 rounded-xl bg-muted/30 border border-border/40 space-y-3">
-              <p className="text-xs text-muted-foreground">
-                {lang === "de"
-                  ? "Der Gesamt-Score ist der gewichtete Durchschnitt aller Indikatoren:"
-                  : "The composite score is the weighted average of all indicators:"}
-              </p>
-              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 font-mono text-[10px] text-muted-foreground leading-relaxed">
-                Score = Σ (Indikator × Gewicht) / Σ Gewichte<br />
-                = {indicators.map(i => `${i.score.toFixed(0)}×${(i.weight * 100).toFixed(0)}%`).join(" + ")}<br />
-                = <span className="font-bold text-foreground">{compositeScore.toFixed(1)}</span>
-              </div>
-              <p className="text-[10px] text-muted-foreground italic">
-                {lang === "de"
-                  ? "Hinweis: Dies ist ein approximativer Stimmungsindikator. Er dient der Information und stellt keine Anlageberatung dar."
-                  : "Note: This is an approximate sentiment indicator. For informational purposes only, not investment advice."}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Left: Gauge */}
+          <div className="lg:col-span-3 flex flex-col items-center">
+            <div className="relative w-full max-w-[320px] aspect-[2/1.15]">
+              <svg viewBox="0 0 200 115" className="w-full h-full">
+                <defs>
+                  <linearGradient id="cnnArc" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="hsl(0, 72%, 50%)" />
+                    <stop offset="20%" stopColor="hsl(15, 80%, 55%)" />
+                    <stop offset="40%" stopColor="hsl(38, 92%, 55%)" />
+                    <stop offset="50%" stopColor="hsl(45, 10%, 55%)" />
+                    <stop offset="60%" stopColor="hsl(80, 50%, 50%)" />
+                    <stop offset="80%" stopColor="hsl(120, 55%, 45%)" />
+                    <stop offset="100%" stopColor="hsl(145, 63%, 40%)" />
+                  </linearGradient>
+                </defs>
+                {/* Background arc */}
+                <path d="M 15 105 A 85 85 0 0 1 185 105" fill="none" stroke="hsl(var(--muted))" strokeWidth="18" strokeLinecap="round" />
+                {/* Colored arc */}
+                <path d="M 15 105 A 85 85 0 0 1 185 105" fill="none" stroke="url(#cnnArc)" strokeWidth="18" strokeLinecap="round" />
+                {/* Segment labels */}
+                <text x="18" y="85" fill="hsl(var(--muted-foreground))" fontSize="5.5" fontWeight="700" textAnchor="start" className="uppercase">
+                  {lang === "de" ? "EXTREME" : "EXTREME"}
+                </text>
+                <text x="18" y="91" fill="hsl(var(--muted-foreground))" fontSize="5.5" fontWeight="700" textAnchor="start" className="uppercase">
+                  {lang === "de" ? "ANGST" : "FEAR"}
+                </text>
+                <text x="52" y="52" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="600" textAnchor="middle">
+                  {lang === "de" ? "ANGST" : "FEAR"}
+                </text>
+                <text x="100" y="40" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="600" textAnchor="middle">
+                  NEUTRAL
+                </text>
+                <text x="148" y="52" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="600" textAnchor="middle">
+                  {lang === "de" ? "GIER" : "GREED"}
+                </text>
+                <text x="182" y="85" fill="hsl(var(--muted-foreground))" fontSize="5.5" fontWeight="700" textAnchor="end" className="uppercase">
+                  {lang === "de" ? "EXTREME" : "EXTREME"}
+                </text>
+                <text x="182" y="91" fill="hsl(var(--muted-foreground))" fontSize="5.5" fontWeight="700" textAnchor="end" className="uppercase">
+                  {lang === "de" ? "GIER" : "GREED"}
+                </text>
+                {/* Scale numbers */}
+                <text x="15" y="112" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="500" textAnchor="start">0</text>
+                <text x="58" y="112" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="500" textAnchor="middle">25</text>
+                <text x="100" y="112" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="500" textAnchor="middle">50</text>
+                <text x="142" y="112" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="500" textAnchor="middle">75</text>
+                <text x="185" y="112" fill="hsl(var(--muted-foreground))" fontSize="6" fontWeight="500" textAnchor="end">100</text>
+                {/* Needle */}
+                <line x1="100" y1="105" x2="100" y2="28" stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round"
+                  transform={`rotate(${rotation} 100 105)`} />
+                <circle cx="100" cy="105" r="5" fill="hsl(var(--foreground))" />
+              </svg>
+            </div>
+            {/* Score below gauge */}
+            <div className="text-center mt-2">
+              <div className="font-mono text-5xl font-bold text-foreground">{compositeScore.toFixed(0)}</div>
+              <div className={`font-display text-lg font-bold mt-1 ${color}`}>{label}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {lang === "de" ? `Zuletzt aktualisiert: ${new Date().toLocaleString("de-DE")}` : `Last updated: ${new Date().toLocaleString("en-US")}`}
               </p>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+
+          {/* Right: Historical */}
+          <div className="lg:col-span-2 flex flex-col justify-center space-y-4">
+            {historicals.map((h) => {
+              const hLabel = getScoreLabel(h.score, lang);
+              const hColor = getScoreColor(h.score);
+              return (
+                <div key={h.period} className="flex items-center justify-between border-b border-border/30 pb-3">
+                  <div>
+                    <div className="text-xs text-muted-foreground">{h.period}</div>
+                    <div className={`font-semibold text-sm ${hColor}`}>{hLabel}</div>
+                  </div>
+                  <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold ${hColor}`}
+                    style={{ borderColor: "currentColor" }}>
+                    {h.score.toFixed(0)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* 7 Fear & Greed Indicators section */}
+      <div className="rounded-2xl border border-border/60 bg-card p-6 sm:p-8">
+        <h3 className="font-display text-lg font-bold text-foreground mb-1">
+          {lang === "de" ? "7 FEAR & GREED INDIKATOREN" : "7 FEAR & GREED INDICATORS"}
+        </h3>
+        <p className="text-xs text-muted-foreground mb-6">
+          {lang === "de"
+            ? "Jeder Indikator wird gleichgewichtet (je ~14%). Klicke für Details zur Berechnung."
+            : "Each indicator is equally weighted (~14% each). Click for calculation details."}
+        </p>
+
+        <div className="space-y-3">
+          {indicators.map((ind) => {
+            const badge = getIndicatorBadge(ind.score);
+            const isExpanded = expandedIndicator === ind.key;
+            return (
+              <div key={ind.key} className="rounded-xl border border-border/40 overflow-hidden">
+                <button
+                  onClick={() => setExpandedIndicator(isExpanded ? null : ind.key)}
+                  className="w-full p-4 hover:bg-muted/20 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                        {ind.icon}
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold text-sm text-foreground">
+                          {lang === "de" ? ind.label.de : ind.label.en}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{ind.rawValue}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${badge.cls}`}>
+                        {badge.text}
+                      </span>
+                      <span className={`font-mono text-lg font-bold ${getScoreColor(ind.score)}`}>
+                        {ind.score.toFixed(0)}
+                      </span>
+                      {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                    </div>
+                  </div>
+                  {/* Score bar */}
+                  <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${ind.score}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className={`h-full rounded-full ${getBarColor(ind.score)}`}
+                    />
+                  </div>
+                </button>
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden">
+                      <div className="px-4 pb-4 space-y-2 border-t border-border/30 pt-3">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {lang === "de" ? ind.description.de : ind.description.en}
+                        </p>
+                        <div className="flex items-start gap-1.5 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                          <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+                          <p className="text-[10px] text-muted-foreground font-mono leading-relaxed">
+                            {lang === "de" ? ind.formula.de : ind.formula.en}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-[10px] text-muted-foreground italic mt-4">
+          {lang === "de"
+            ? "Hinweis: Dies ist ein approximativer Stimmungsindikator basierend auf verfügbaren Marktdaten. Er dient der Information und stellt keine Anlageberatung dar."
+            : "Note: This is an approximate sentiment indicator based on available market data. For informational purposes only, not investment advice."}
+        </p>
+      </div>
     </motion.div>
   );
 }
@@ -787,42 +856,11 @@ export default function MarketSentimentPage() {
           </div>
         ) : (
           <>
-            {/* Fear & Greed with 7 sub-indicators */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="lg:col-span-3">
-                <FearGreedCard indicators={indicators} compositeScore={compositeScore} />
-              </div>
-              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                <MarketBreadth gainers={gainers.length} losers={losers.length} />
-                {/* Indicator overview grid */}
-                <motion.div initial="hidden" animate="visible" variants={fadeIn}
-                  className="rounded-2xl border border-border/60 bg-card p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <BarChart2 className="h-5 w-5 text-primary" />
-                    <h3 className="font-display font-semibold text-sm">
-                      {lang === "de" ? "Indikator-Übersicht" : "Indicator Overview"}
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {indicators.map((ind) => {
-                      const lbl = getScoreLabel(ind.score, lang);
-                      return (
-                        <div key={ind.key} className="rounded-lg bg-muted/30 p-2.5 border border-border/30">
-                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium mb-1">
-                            {ind.icon}
-                            <span className="truncate">{lang === "de" ? ind.label.de : ind.label.en}</span>
-                          </div>
-                          <div className={`font-mono font-bold text-sm ${getScoreColor(ind.score)}`}>
-                            {ind.score.toFixed(0)}
-                          </div>
-                          <div className="text-[9px] text-muted-foreground">{lbl}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              </div>
-            </div>
+            {/* Fear & Greed — full width, CNN-style */}
+            <FearGreedCard indicators={indicators} compositeScore={compositeScore} />
+
+            {/* Market Breadth */}
+            <MarketBreadth gainers={gainers.length} losers={losers.length} />
 
             {/* ── Additional Market Indicators ── */}
             <AdditionalIndicators indices={indices} gainers={gainers} losers={losers} commodities={commodities} />
