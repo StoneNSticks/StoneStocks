@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { useT } from "@/contexts/LanguageContext";
 
