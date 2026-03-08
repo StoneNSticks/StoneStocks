@@ -704,4 +704,13 @@ const translations: Record<string, Record<Language, string>> = {
 
   // ── Dashboard ──
   "nav.dashboard": { de: "Dashboard", en: "Dashboard" },
+  "nav.crypto": { de: "Krypto", en: "Crypto" },
+  "nav.forex": { de: "Forex", en: "Forex" },
+  "nav.bonds": { de: "Anleihen", en: "Bonds" },
+  "nav.ipo": { de: "IPOs", en: "IPOs" },
+  "nav.econ": { de: "Wirtschaft", en: "Economy" },
+  "nav.paper": { de: "Paper Trading", en: "Paper Trading" },
+  "nav.leaderboard": { de: "Bestenliste", en: "Leaderboard" },
+  "nav.alertHistory": { de: "Alert-Verlauf", en: "Alert History" },
+  "nav.systemStatus": { de: "System-Status", en: "System Status" },
 };

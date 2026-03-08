@@ -14,6 +14,7 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { AlertNotifications } from "@/components/AlertNotifications";
 import { EarningsNotificationProvider } from "@/components/EarningsNotificationProvider";
 import { lazy, Suspense } from "react";
+import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Lazy-loaded page components for code splitting ──
@@ -42,6 +43,15 @@ const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 const StockChatPage = lazy(() => import("./pages/StockChatPage"));
 const CustomDashboard = lazy(() => import("./pages/CustomDashboard"));
+const CryptoPage = lazy(() => import("./pages/CryptoPage"));
+const ForexPage = lazy(() => import("./pages/ForexPage"));
+const BondsPage = lazy(() => import("./pages/BondsPage"));
+const IPOCalendarPage = lazy(() => import("./pages/IPOCalendarPage"));
+const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
+const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
+const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
+const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
+const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +101,15 @@ const App = () => (
                   <Route path="/ai-chat" element={<StockChatPage />} />
                   <Route path="/dashboard" element={<CustomDashboard />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
+                  <Route path="/crypto" element={<CryptoPage />} />
+                  <Route path="/forex" element={<ForexPage />} />
+                  <Route path="/bonds" element={<BondsPage />} />
+                  <Route path="/ipo" element={<IPOCalendarPage />} />
+                  <Route path="/economic-calendar" element={<EconomicCalendarPage />} />
+                  <Route path="/paper-trading" element={<PaperTradingPage />} />
+                  <Route path="/alert-history" element={<AlertHistoryPage />} />
+                  <Route path="/system-status" element={<SystemStatusPage />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
@@ -101,6 +120,7 @@ const App = () => (
               <BackToTop />
               <InstallPrompt />
               <AlertNotifications />
+              <KeyboardShortcutsModal />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
