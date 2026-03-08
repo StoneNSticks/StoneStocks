@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { LineChart, BarChart3, TrendingUp, Activity } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { motion } from "framer-motion";
+import { AISectorRotation } from "@/components/AISectorRotation";
 
 interface FredIndicator {
   id: string;
@@ -159,6 +160,9 @@ export default function MacroDashboard() {
             {lang === "de" ? "Quelle: Federal Reserve Bank of St. Louis" : "Source: Federal Reserve Bank of St. Louis"}
           </Badge>
         </motion.div>
+
+        {/* AI Sector Rotation */}
+        <AISectorRotation />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {INDICATORS.map((indicator) => (

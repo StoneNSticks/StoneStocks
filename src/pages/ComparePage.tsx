@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { NormalizedChart } from "@/components/NormalizedChart";
 import { CompareRadar } from "@/components/CompareRadar";
 import { CompareFinancials } from "@/components/CompareFinancials";
+import { CorrelationMatrix } from "@/components/CorrelationMatrix";
 import { ShareButton } from "@/components/ShareButton";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
@@ -238,6 +239,9 @@ export default function ComparePage() {
               {symbols.length >= 2 && (
                 <TabsTrigger value="financials">{t("compare.financials")}</TabsTrigger>
               )}
+              {symbols.length >= 2 && (
+                <TabsTrigger value="correlation">{lang === "de" ? "Korrelation" : "Correlation"}</TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="overview">
@@ -257,6 +261,10 @@ export default function ComparePage() {
 
             <TabsContent value="financials">
               <CompareFinancials symbols={symbols} />
+            </TabsContent>
+
+            <TabsContent value="correlation">
+              <CorrelationMatrix symbols={symbols} />
             </TabsContent>
           </Tabs>
         )}

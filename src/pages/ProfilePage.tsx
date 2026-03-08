@@ -15,6 +15,7 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { User, Mail, Calendar, Star, Shield, Save, CheckCircle, Edit3 } from "lucide-react";
+import { AchievementBadges } from "@/components/AchievementBadges";
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -156,6 +157,11 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Achievement Badges */}
+          <div className="mt-6">
+            <AchievementBadges />
           </div>
         </motion.div>
       </main>

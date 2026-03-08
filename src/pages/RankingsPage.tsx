@@ -10,6 +10,7 @@ import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
 import { MarketOverview } from "@/components/MarketOverview";
 import { SectorPerformance } from "@/components/SectorPerformance";
+import { ScreenerHeatmap } from "@/components/ScreenerHeatmap";
 import { Button } from "@/components/ui/button";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -39,10 +40,11 @@ const RankingsPage = () => {
           <TopCompanies />
           <GainersLosers />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <MostActive />
           <SectorPerformance />
         </div>
+        <ScreenerHeatmap />
       </main>
       <Footer />
     </div>

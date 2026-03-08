@@ -17,6 +17,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown, Zap } from "lucide-react";
+import { NLPScreener } from "@/components/NLPScreener";
+import { MagicFormulaRanking } from "@/components/MagicFormulaRanking";
+import { PiotroskiScore } from "@/components/PiotroskiScore";
+import { MomentumScreener } from "@/components/MomentumScreener";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 type SortKey = "marketCap" | "change" | "name" | "pe" | "yield";
 
@@ -146,6 +151,18 @@ export default function ScreenerPage() {
             </Button>
           )}
         </div>
+        {/* AI Stock Finder */}
+        <NLPScreener />
+
+        <Tabs defaultValue="screener" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="screener">{lang === "de" ? "Screener" : "Screener"}</TabsTrigger>
+            <TabsTrigger value="magic">{lang === "de" ? "Magic Formula" : "Magic Formula"}</TabsTrigger>
+            <TabsTrigger value="piotroski">Piotroski</TabsTrigger>
+            <TabsTrigger value="momentum">Momentum</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="screener">
 
         {/* Presets */}
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -264,6 +281,21 @@ export default function ScreenerPage() {
             })
           )}
         </div>
+
+          </TabsContent>
+
+          <TabsContent value="magic">
+            <MagicFormulaRanking />
+          </TabsContent>
+
+          <TabsContent value="piotroski">
+            <PiotroskiScore />
+          </TabsContent>
+
+          <TabsContent value="momentum">
+            <MomentumScreener />
+          </TabsContent>
+        </Tabs>
       </main>
       <Footer />
     </div>
