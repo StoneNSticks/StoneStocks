@@ -187,7 +187,7 @@ function getBarColor(score: number) {
   return "bg-chart-2";
 }
 
-/* ─── Main Fear & Greed Card with sub-indicators ─── */
+/* ── Main Fear & Greed Card with sub-indicators ── */
 function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicator[]; compositeScore: number }) {
   const { lang } = useLanguage();
   const [showDetails, setShowDetails] = useState(false);
