@@ -43,9 +43,7 @@ const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 const StockChatPage = lazy(() => import("./pages/StockChatPage"));
-const CryptoPage = lazy(() => import("./pages/CryptoPage"));
-const ForexPage = lazy(() => import("./pages/ForexPage"));
-const BondsPage = lazy(() => import("./pages/BondsPage"));
+// Crypto, Forex, Bonds pages removed — crypto/forex searchable via stock search
 const IPOCalendarPage = lazy(() => import("./pages/IPOCalendarPage"));
 const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
@@ -101,9 +99,7 @@ const App = () => (
                   <Route path="/ai-chat" element={<StockChatPage />} />
                   
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
-                  <Route path="/crypto" element={<CryptoPage />} />
-                  <Route path="/forex" element={<ForexPage />} />
-                  <Route path="/bonds" element={<BondsPage />} />
+                  {/* Crypto, Forex, Bonds routes removed */}
                   <Route path="/ipo" element={<IPOCalendarPage />} />
                   <Route path="/economic-calendar" element={<EconomicCalendarPage />} />
                   <Route path="/paper-trading" element={<PaperTradingPage />} />
