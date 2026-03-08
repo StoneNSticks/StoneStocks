@@ -1318,6 +1318,21 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
   };
 }
 
+async function handleInsiderTransactions(symbol: string) {
+  const cacheKey = `insider_tx:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+  try {
+    const data = await fetchFinnhub("stock/insider-transactions", { symbol });
+    const txs = data?.data || [];
+    await setCache(cacheKey, txs, "finnhub", TTL.insider_transactions);
+    return txs;
+  } catch (e) {
+    console.warn("Insider transactions fetch failed:", e);
+    return [];
+  }
+}
+
 // === Full Stock (with cross-source gap filling) ===
 
 async function handleFullStock(symbol: string) {
