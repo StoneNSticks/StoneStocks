@@ -16,6 +16,7 @@ import { MarketClock } from "@/components/MarketClock";
 import { TickerTape } from "@/components/TickerTape";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT } from "@/contexts/LanguageContext";
+import { useElementVisible } from "@/hooks/useScrollVisibility";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
@@ -44,6 +45,9 @@ export function Header() {
   const { user, signOut } = useAuth();
   const t = useT();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const isHome = location.pathname === "/";
+  const mainSearchVisible = useElementVisible("main-search-bar");
+  const mainIndicesVisible = useElementVisible("main-market-overview");
 
   useEffect(() => { setSheetOpen(false); }, [location.pathname]);
 
@@ -69,9 +73,13 @@ export function Header() {
             </span>
           </Link>
 
-          <div className="flex-1 max-w-xl mx-auto">
-            <SearchBar compact />
-          </div>
+          {/* Show compact search: always on non-home pages, on home only when main search scrolled away */}
+          {(!isHome || !mainSearchVisible) && (
+            <div className="flex-1 max-w-xl mx-auto animate-fade-in">
+              <SearchBar compact />
+            </div>
+          )}
+          {isHome && mainSearchVisible && <div className="flex-1" />}
 
           <div className="flex items-center gap-1.5">
             <div className="hidden lg:block"><MarketClock /></div>
@@ -166,8 +174,8 @@ export function Header() {
           </nav>
         </div>
       </div>
-      {/* Row 3: Ticker tape */}
-      <TickerTape />
+      {/* Row 3: Ticker tape — on home, only show when main indices scrolled away */}
+      {(!isHome || !mainIndicesVisible) && <TickerTape />}
     </header>
   );
 }
