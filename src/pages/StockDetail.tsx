@@ -372,10 +372,25 @@ const StockDetail = () => {
                 ══════════════════════════════════════════════════════════ */}
             <EarningsCalendar symbols={[upperSymbol]} compact />
 
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 12: Insider Trades
-                Recent buy/sell transactions by company executives
-                ══════════════════════════════════════════════════════════ */}
+            {/* Short Interest + Earnings Whisper */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <ShortInterestCard symbol={upperSymbol} />
+              <EarningsWhisper symbol={upperSymbol} />
+            </div>
+
+            {/* Volume Profile + Seasonality */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <VolumeProfile symbol={upperSymbol} currentPrice={quote?.c} />
+              <SeasonalityChart symbol={upperSymbol} />
+            </div>
+
+            {/* Monte Carlo Fair Value */}
+            <MonteCarloFairValue symbol={upperSymbol} currentPrice={quote?.c} />
+
+            {/* Options Chain */}
+            <OptionsChainViewer symbol={upperSymbol} currentPrice={quote?.c} />
+
+            {/* Insider Trades */}
             <InsiderTrades symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
