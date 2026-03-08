@@ -34,13 +34,11 @@ const navItems: NavItem[] = [
   { to: "/news", key: "nav.news", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/calculators", key: "nav.tools", fallback: "Calculators", group: "main" },
-  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
+  { to: "/calculators", key: "nav.calculators", fallback: "Rechner", group: "main" },
+  { to: "/compare", key: "nav.compare", fallback: "Compare", group: "main" },
   { to: "/learn", key: "nav.learn", group: "main" },
-];
-
-const toolItems = [
-  { to: "/compare", label: "Compare" },
+  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
+  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
 ];
 
 export function Header() {
@@ -163,16 +161,6 @@ export function Header() {
                 </Link>
               );
             })}
-            {/* Compare as simple link */}
-            {(() => {
-              const isActive = location.pathname === "/compare";
-              return (
-                <Link to="/compare" className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-                  Compare
-                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
-                </Link>
-              );
-            })()}
           </nav>
         </div>
       </div>
@@ -198,19 +186,6 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
           return (
             <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               {label(item)}
-            </Link>
-          );
-        })}
-        <div className="mt-4 mb-2 px-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Tools</p>
-        </div>
-        {[
-          { to: "/compare", label: "Compare" },
-        ].map((item) => {
-          const isActive = location.pathname === item.to;
-          return (
-            <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
-              {item.label}
             </Link>
           );
         })}

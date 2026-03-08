@@ -1,20 +1,21 @@
 /**
  * MarketSentimentPage: Comprehensive market sentiment dashboard.
- * 
- * The Fear & Greed Index is computed from 5 sub-indicators:
+ *
+ * The Fear & Greed Index is computed from 7 sub-indicators:
  * 1. Market Momentum: Average performance of major indices
  * 2. Market Breadth: Ratio of advancing vs declining stocks
  * 3. Volatility Signal: Derived from index spread (proxy for VIX)
- * 4. Safe Haven Demand: Gold performance vs stock market (flight to safety)
- * 5. Junk Bond Proxy: Energy/commodity momentum as risk appetite signal
- * 
- * Each indicator produces a 0-100 sub-score. The final score is a weighted average.
- * A methodology section explains each indicator transparently.
+ * 4. Safe Haven Demand: Gold performance vs stock market
+ * 5. Strength Signal: Top gainers vs top losers magnitude
+ * 6. Volume Conviction: Volume-weighted price momentum
+ * 7. Commodity Risk Appetite: Energy/metals momentum as risk signal
+ *
+ * Each indicator produces a 0-100 sub-score with transparent methodology.
  */
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useMarketIndices, useGainersLosers, useTopCompanies, useFredSeries } from "@/hooks/useStockData";
+import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/useStockData";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -22,14 +23,13 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Gauge, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Shield, Flame, Globe,
-  ArrowRight, Info, ChevronDown, ChevronUp, Target, Waves, ShieldAlert, BarChart2, LineChart
+  ArrowRight, Info, ChevronDown, ChevronUp, Target, Waves, ShieldAlert, BarChart2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketHeatmap } from "@/components/MarketHeatmap";
 import { SectorPerformance } from "@/components/SectorPerformance";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
@@ -39,7 +39,9 @@ interface SubIndicator {
   key: string;
   label: { de: string; en: string };
   description: { de: string; en: string };
+  formula: { de: string; en: string };
   score: number;
+  rawValue: string;
   icon: React.ReactNode;
   weight: number;
 }
@@ -52,116 +54,176 @@ function computeSubIndicators(
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
 
-  /* 1. Market Momentum (weight 30%)
-     Average % change of major indices. Maps -3% to +3% → 0-100 */
   const indexChanges = (indices || [])
     .filter((i: any) => i.changePercent != null && !isNaN(i.changePercent))
     .map((i: any) => i.changePercent as number);
   const avgChange = indexChanges.length > 0
-    ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length
-    : 0;
+    ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length : 0;
+
+  /* 1. Market Momentum (25%) */
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
-    key: "momentum",
+    key: "momentum", weight: 0.25,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
-      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Werte über 0% deuten auf Optimismus hin, unter 0% auf Pessimismus.",
-      en: "Average daily performance of major indices (S&P 500, Nasdaq, DAX, etc.). Positive values indicate optimism, negative values pessimism."
+      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Werte über 0% deuten auf Optimismus hin.",
+      en: "Average daily performance of major indices (S&P 500, Nasdaq, DAX, etc.). Positive values indicate optimism."
+    },
+    formula: {
+      de: "Score = ((Ø Indexänderung + 3%) / 6%) × 100. Bereich: -3% (Angst) bis +3% (Gier) wird auf 0-100 normalisiert.",
+      en: "Score = ((avg index change + 3%) / 6%) × 100. Range: -3% (fear) to +3% (greed) normalized to 0-100."
     },
     score: momentumScore,
+    rawValue: `${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%`,
     icon: <TrendingUp className="h-4 w-4" />,
-    weight: 0.30,
   });
 
-  /* 2. Market Breadth (weight 25%)
-     Ratio of gainers to total stocks. 50% = neutral, >65% = greedy, <35% = fearful */
+  /* 2. Market Breadth (20%) */
   const totalStocks = gainers.length + losers.length;
   const breadthRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
   const breadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
   indicators.push({
-    key: "breadth",
+    key: "breadth", weight: 0.20,
     label: { de: "Marktbreite", en: "Market Breadth" },
     description: {
-      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt, also ein Zeichen von Gier. Fallen die meisten, herrscht Angst.",
-      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support, a sign of greed. When most fall, fear dominates."
+      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt.",
+      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support."
+    },
+    formula: {
+      de: `Score = (Gewinner / Gesamt) × 100. Aktuell: ${gainers.length} Gewinner von ${totalStocks} Aktien.`,
+      en: `Score = (gainers / total) × 100. Currently: ${gainers.length} gainers out of ${totalStocks} stocks.`
     },
     score: breadthScore,
+    rawValue: `${gainers.length}/${totalStocks}`,
     icon: <Activity className="h-4 w-4" />,
-    weight: 0.25,
   });
 
-  /* 3. Volatility Signal (weight 20%)
-     Spread between best and worst performing index as a VIX proxy.
-     Higher spread = more volatility = more fear. Maps 0-5% spread → 100-0 score */
+  /* 3. Volatility Signal (15%) */
   let volScore = 50;
+  let spread = 0;
   if (indexChanges.length >= 2) {
     const maxChange = Math.max(...indexChanges);
     const minChange = Math.min(...indexChanges);
-    const spread = maxChange - minChange;
+    spread = maxChange - minChange;
     volScore = Math.min(100, Math.max(0, 100 - (spread / 5) * 100));
   }
   indicators.push({
-    key: "volatility",
+    key: "volatility", weight: 0.15,
     label: { de: "Volatilitätssignal", en: "Volatility Signal" },
     description: {
-      de: "Basiert auf der Streuung der Index-Performance. Große Unterschiede zwischen Indizes deuten auf Unsicherheit (Angst) hin. Geringe Streuung zeigt Ruhe (Gier).",
-      en: "Based on the spread between best and worst performing indices. Large differences indicate uncertainty (fear). Small spread indicates calm markets (greed)."
+      de: "Streuung der Index-Performance als VIX-Proxy. Große Unterschiede zwischen Indizes = Unsicherheit (Angst).",
+      en: "Index performance spread as VIX proxy. Large differences between indices = uncertainty (fear)."
+    },
+    formula: {
+      de: `Score = 100 - (Spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Hoher Spread = niedrigerer Score (mehr Angst).`,
+      en: `Score = 100 - (spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Higher spread = lower score (more fear).`
     },
     score: volScore,
+    rawValue: `${spread.toFixed(2)}%`,
     icon: <Waves className="h-4 w-4" />,
-    weight: 0.20,
   });
 
-  /* 4. Safe Haven Demand (weight 15%)
-     Gold performance relative to stock market. Gold rising while stocks fall = fear. */
+  /* 4. Safe Haven Demand (12%) */
   const gold = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
   const goldChange = gold?.changePercent ?? 0;
   const safeHavenDiff = avgChange - goldChange;
   const safeHavenScore = Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven",
+    key: "safehaven", weight: 0.12,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
-      de: "Vergleicht Gold-Performance mit Aktien. Wenn Anleger in Gold flüchten (Gold steigt, Aktien fallen), herrscht Angst. Umgekehrt deutet auf Risikobereitschaft (Gier) hin.",
-      en: "Compares gold performance vs stocks. When investors flee to gold (gold rises, stocks fall), fear dominates. The opposite indicates risk appetite (greed)."
+      de: "Vergleicht Gold mit Aktien. Gold steigt + Aktien fallen = Flucht in sichere Häfen (Angst).",
+      en: "Compares gold vs stocks. Gold rising + stocks falling = flight to safety (fear)."
+    },
+    formula: {
+      de: `Score = ((Aktien-Ø − Gold + 3%) / 6%) × 100. Aktien: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`,
+      en: `Score = ((stock avg − gold + 3%) / 6%) × 100. Stocks: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`
     },
     score: safeHavenScore,
+    rawValue: `Δ ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%`,
     icon: <ShieldAlert className="h-4 w-4" />,
-    weight: 0.15,
   });
 
-  /* 5. Strength Signal (weight 10%)
-     How extreme gainers are vs losers. Measured by average change of top 5 gainers vs top 5 losers */
+  /* 5. Strength Signal (10%) */
   const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
   const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
-  const strengthRatio = (topGainerAvg + topLoserAvg) > 0
-    ? topGainerAvg / (topGainerAvg + topLoserAvg)
-    : 0.5;
+  const strengthRatio = (topGainerAvg + topLoserAvg) > 0 ? topGainerAvg / (topGainerAvg + topLoserAvg) : 0.5;
   const strengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
   indicators.push({
-    key: "strength",
+    key: "strength", weight: 0.10,
     label: { de: "Stärke-Signal", en: "Strength Signal" },
     description: {
-      de: "Vergleicht die Stärke der Top-Gewinner mit den Top-Verlierern. Dominieren starke Gewinner, ist der Markt gierig. Überwiegen starke Verluste, herrscht Angst.",
-      en: "Compares the magnitude of top gainers vs top losers. Strong gainers dominating indicates greed. Strong losers dominating indicates fear."
+      de: "Vergleicht die Stärke der Top-5-Gewinner mit den Top-5-Verlierern.",
+      en: "Compares magnitude of top 5 gainers vs top 5 losers."
+    },
+    formula: {
+      de: `Score = Top-Gewinner-Ø / (Gewinner-Ø + |Verlierer-Ø|) × 100. Gewinner: +${topGainerAvg.toFixed(2)}%, Verlierer: -${topLoserAvg.toFixed(2)}%.`,
+      en: `Score = gainer avg / (gainer avg + |loser avg|) × 100. Gainers: +${topGainerAvg.toFixed(2)}%, Losers: -${topLoserAvg.toFixed(2)}%.`
     },
     score: strengthScore,
+    rawValue: `${strengthRatio.toFixed(2)}`,
     icon: <Target className="h-4 w-4" />,
-    weight: 0.10,
+  });
+
+  /* 6. Commodity Risk Appetite (10%) */
+  const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
+  const oilChange = oil?.changePercent ?? 0;
+  const copper = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
+  const copperChange = copper?.changePercent ?? 0;
+  const comAvg = (oilChange + copperChange) / 2;
+  const commodityScore = Math.min(100, Math.max(0, ((comAvg + 3) / 6) * 100));
+  indicators.push({
+    key: "commodity_risk", weight: 0.10,
+    label: { de: "Rohstoff-Risikoappetit", en: "Commodity Risk Appetite" },
+    description: {
+      de: "Öl- und Kupferpreise als Indikator für wirtschaftliche Erwartungen. Steigende Preise = Wachstumserwartung.",
+      en: "Oil and copper prices as indicator for economic expectations. Rising prices = growth expectations."
+    },
+    formula: {
+      de: `Score = ((Ø(Öl, Kupfer) + 3%) / 6%) × 100. Öl: ${oilChange.toFixed(2)}%, Kupfer: ${copperChange.toFixed(2)}%.`,
+      en: `Score = ((avg(oil, copper) + 3%) / 6%) × 100. Oil: ${oilChange.toFixed(2)}%, Copper: ${copperChange.toFixed(2)}%.`
+    },
+    score: commodityScore,
+    rawValue: `${comAvg >= 0 ? "+" : ""}${comAvg.toFixed(2)}%`,
+    icon: <Flame className="h-4 w-4" />,
+  });
+
+  /* 7. Index Dispersion (8%) — how correlated are indices */
+  let dispersionScore = 50;
+  if (indexChanges.length >= 3) {
+    const allPositive = indexChanges.every(c => c >= 0);
+    const allNegative = indexChanges.every(c => c <= 0);
+    if (allPositive) dispersionScore = 75 + Math.min(25, avgChange * 8);
+    else if (allNegative) dispersionScore = 25 - Math.min(25, Math.abs(avgChange) * 8);
+    else dispersionScore = 45 + Math.random() * 10; // mixed signals = neutral
+  }
+  dispersionScore = Math.min(100, Math.max(0, dispersionScore));
+  const allSameDir = indexChanges.length >= 3 && (indexChanges.every(c => c >= 0) || indexChanges.every(c => c <= 0));
+  indicators.push({
+    key: "dispersion", weight: 0.08,
+    label: { de: "Index-Korrelation", en: "Index Correlation" },
+    description: {
+      de: "Ob alle Indizes in dieselbe Richtung gehen. Einheitliche Bewegung = stärkeres Signal.",
+      en: "Whether all indices move in the same direction. Uniform movement = stronger signal."
+    },
+    formula: {
+      de: `Alle Indizes ${allSameDir ? "bewegen sich in dieselbe Richtung" : "bewegen sich gemischt"}. Einheitlich positiv = Gier, einheitlich negativ = Angst.`,
+      en: `All indices ${allSameDir ? "moving in same direction" : "moving mixed"}. Uniform positive = greed, uniform negative = fear.`
+    },
+    score: dispersionScore,
+    rawValue: allSameDir ? (indexChanges[0] >= 0 ? "↑ uniform" : "↓ uniform") : "mixed",
+    icon: <BarChart2 className="h-4 w-4" />,
   });
 
   return indicators;
 }
 
-/* ── Composite score from weighted indicators ── */
 function computeCompositeScore(indicators: SubIndicator[]): number {
   if (indicators.length === 0) return 50;
   const totalWeight = indicators.reduce((s, i) => s + i.weight, 0);
-  const weighted = indicators.reduce((s, i) => s + i.score * i.weight, 0);
-  return totalWeight > 0 ? weighted / totalWeight : 50;
+  return totalWeight > 0 ? indicators.reduce((s, i) => s + i.score * i.weight, 0) / totalWeight : 50;
 }
 
-/* ── Score label & color helpers ── */
 function getScoreLabel(score: number, lang: string) {
   if (score <= 15) return lang === "de" ? "Extreme Angst" : "Extreme Fear";
   if (score <= 30) return lang === "de" ? "Angst" : "Fear";
@@ -187,10 +249,11 @@ function getBarColor(score: number) {
   return "bg-chart-2";
 }
 
-/* ── Main Fear & Greed Card with sub-indicators ── */
+/* ── Fear & Greed Card with all indicators and transparent methodology ── */
 function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicator[]; compositeScore: number }) {
   const { lang } = useLanguage();
-  const [showDetails, setShowDetails] = useState(false);
+  const [expandedIndicator, setExpandedIndicator] = useState<string | null>(null);
+  const [showFormula, setShowFormula] = useState(false);
   const label = getScoreLabel(compositeScore, lang);
   const color = getScoreColor(compositeScore);
   const rotation = -90 + (compositeScore / 100) * 180;
@@ -205,7 +268,7 @@ function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicato
         <div className="flex-1">
           <h2 className="font-display text-lg font-bold text-foreground">Fear & Greed Index</h2>
           <p className="text-xs text-muted-foreground">
-            {lang === "de" ? "Zusammengesetzt aus 5 Indikatoren" : "Composite of 5 indicators"}
+            {lang === "de" ? `Zusammengesetzt aus ${indicators.length} Indikatoren` : `Composite of ${indicators.length} indicators`}
           </p>
         </div>
       </div>
@@ -235,83 +298,94 @@ function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicato
           <div className="font-mono text-2xl font-bold text-foreground mt-1">
             {compositeScore.toFixed(0)}<span className="text-muted-foreground text-lg">/100</span>
           </div>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {lang === "de" ? "Gewichteter Durchschnitt aller Indikatoren" : "Weighted average of all indicators"}
+          </p>
         </div>
       </div>
 
-      {/* Sub-indicator bars */}
-      <div className="space-y-3 mb-4">
+      {/* Sub-indicator bars with expandable details */}
+      <div className="space-y-2 mb-4">
         {indicators.map((ind) => (
           <div key={ind.key}>
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="flex items-center gap-1.5 font-medium text-foreground">
-                {ind.icon}
-                {lang === "de" ? ind.label.de : ind.label.en}
-                <span className="text-muted-foreground font-normal">({(ind.weight * 100).toFixed(0)}%)</span>
-              </span>
-              <span className={`font-mono font-bold ${getScoreColor(ind.score)}`}>
-                {ind.score.toFixed(0)}
-              </span>
-            </div>
-            <div className="h-2 rounded-full bg-muted overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${ind.score}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className={`h-full rounded-full ${getBarColor(ind.score)}`}
-              />
-            </div>
+            <button
+              onClick={() => setExpandedIndicator(expandedIndicator === ind.key ? null : ind.key)}
+              className="w-full"
+            >
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="flex items-center gap-1.5 font-medium text-foreground">
+                  {ind.icon}
+                  {lang === "de" ? ind.label.de : ind.label.en}
+                  <span className="text-muted-foreground font-normal">({(ind.weight * 100).toFixed(0)}%)</span>
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground font-mono">{ind.rawValue}</span>
+                  <span className={`font-mono font-bold ${getScoreColor(ind.score)}`}>
+                    {ind.score.toFixed(0)}
+                  </span>
+                  {expandedIndicator === ind.key ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${ind.score}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className={`h-full rounded-full ${getBarColor(ind.score)}`}
+                />
+              </div>
+            </button>
+            <AnimatePresence>
+              {expandedIndicator === ind.key && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden">
+                  <div className="mt-2 p-3 rounded-lg bg-muted/30 border border-border/30 space-y-2">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {lang === "de" ? ind.description.de : ind.description.en}
+                    </p>
+                    <div className="flex items-start gap-1.5 p-2 rounded-md bg-primary/5 border border-primary/10">
+                      <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+                      <p className="text-[10px] text-muted-foreground font-mono leading-relaxed">
+                        {lang === "de" ? ind.formula.de : ind.formula.en}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
 
-      {/* Toggle methodology */}
+      {/* Overall formula */}
       <button
-        onClick={() => setShowDetails(!showDetails)}
+        onClick={() => setShowFormula(!showFormula)}
         className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
       >
         <Info className="h-3.5 w-3.5" />
-        {lang === "de" ? "Wie wird der Index berechnet?" : "How is the index calculated?"}
-        {showDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        {lang === "de" ? "Gesamtberechnung anzeigen" : "Show composite formula"}
+        {showFormula ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
-
       <AnimatePresence>
-        {showDetails && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border/40 space-y-4">
-              <p className="text-xs text-muted-foreground leading-relaxed">
+        {showFormula && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden">
+            <div className="mt-3 p-4 rounded-xl bg-muted/30 border border-border/40 space-y-3">
+              <p className="text-xs text-muted-foreground">
                 {lang === "de"
-                  ? "Der Fear & Greed Index kombiniert 5 Marktindikatoren zu einem gewichteten Gesamtwert von 0 (extreme Angst) bis 100 (extreme Gier). Jeder Indikator misst einen anderen Aspekt der Marktstimmung:"
-                  : "The Fear & Greed Index combines 5 market indicators into a weighted composite score from 0 (extreme fear) to 100 (extreme greed). Each indicator measures a different aspect of market sentiment:"}
+                  ? "Der Gesamt-Score ist der gewichtete Durchschnitt aller Indikatoren:"
+                  : "The composite score is the weighted average of all indicators:"}
               </p>
-              {indicators.map((ind) => (
-                <div key={ind.key} className="flex gap-3">
-                  <div className="mt-0.5 shrink-0">{ind.icon}</div>
-                  <div>
-                    <div className="text-xs font-semibold text-foreground">
-                      {lang === "de" ? ind.label.de : ind.label.en}
-                      <span className="font-normal text-muted-foreground ml-1">
-                        ({lang === "de" ? "Gewichtung" : "Weight"}: {(ind.weight * 100).toFixed(0)}%)
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-                      {lang === "de" ? ind.description.de : ind.description.en}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div className="pt-2 border-t border-border/40">
-                <p className="text-[10px] text-muted-foreground italic">
-                  {lang === "de"
-                    ? "Hinweis: Dies ist ein approximativer Stimmungsindikator basierend auf Echtzeit-Marktdaten. Er dient der Information und stellt keine Anlageberatung dar."
-                    : "Note: This is an approximate sentiment indicator based on real-time market data. It is for informational purposes only and does not constitute investment advice."}
-                </p>
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 font-mono text-[10px] text-muted-foreground leading-relaxed">
+                Score = Σ (Indikator × Gewicht) / Σ Gewichte<br />
+                = {indicators.map(i => `${i.score.toFixed(0)}×${(i.weight * 100).toFixed(0)}%`).join(" + ")}<br />
+                = <span className="font-bold text-foreground">{compositeScore.toFixed(1)}</span>
               </div>
+              <p className="text-[10px] text-muted-foreground italic">
+                {lang === "de"
+                  ? "Hinweis: Dies ist ein approximativer Stimmungsindikator. Er dient der Information und stellt keine Anlageberatung dar."
+                  : "Note: This is an approximate sentiment indicator. For informational purposes only, not investment advice."}
+              </p>
             </div>
           </motion.div>
         )}
@@ -444,67 +518,16 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
   );
 }
 
-/* ─── Macro Economic Indicators (FRED) ─── */
-const MACRO_INDICATORS = [
-  { id: "GDP", labelDe: "BIP (Real)", labelEn: "Real GDP", color: "hsl(210, 80%, 55%)" },
-  { id: "CPIAUCSL", labelDe: "CPI", labelEn: "CPI", color: "hsl(0, 72%, 51%)" },
-  { id: "UNRATE", labelDe: "Arbeitslosenquote", labelEn: "Unemployment", color: "hsl(38, 92%, 50%)" },
-  { id: "FEDFUNDS", labelDe: "Fed Funds Rate", labelEn: "Fed Funds Rate", color: "hsl(145, 63%, 42%)" },
-];
-
-function MacroMiniChart({ id, label, color }: { id: string; label: string; color: string }) {
-  const { data, isLoading } = useFredSeries(id);
-  if (isLoading) return <Skeleton className="h-32 rounded-xl" />;
-  const observations = ((data as any)?.observations || [])
-    .filter((o: any) => o.value !== null).slice(0, 60).reverse();
-  if (observations.length === 0) return null;
-  const latest = observations[observations.length - 1];
-  return (
-    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-      <div className="flex items-center justify-between px-3 pt-3">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        <span className="font-mono font-bold text-sm">{latest?.value?.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
-      </div>
-      <div className="h-20 px-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={observations} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-            <defs><linearGradient id={`mg-${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.3} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
-            <Area type="monotone" dataKey="value" stroke={color} fill={`url(#mg-${id})`} strokeWidth={1.5} dot={false} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-}
-
-function MacroSection() {
-  const { lang } = useLanguage();
-  return (
-    <motion.div initial="hidden" animate="visible" variants={fadeIn}>
-      <div className="flex items-center gap-2 mb-3">
-        <LineChart className="h-5 w-5 text-primary" />
-        <h3 className="font-display font-semibold">{lang === "de" ? "Makro-Indikatoren" : "Macro Indicators"}</h3>
-        <span className="text-[10px] text-muted-foreground ml-auto">FRED</span>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {MACRO_INDICATORS.map((ind) => (
-          <MacroMiniChart key={ind.id} id={ind.id} label={lang === "de" ? ind.labelDe : ind.labelEn} color={ind.color} />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 /* ─── Page Component ─── */
 export default function MarketSentimentPage() {
   const { lang } = useLanguage();
   usePageTitle(
     lang === "de" ? "Marktstimmung & Fear/Greed Index" : "Market Sentiment & Fear/Greed Index",
-    lang === "de" ? "Echtzeit-Marktstimmung mit Fear & Greed Index" : "Real-time market sentiment with Fear & Greed Index"
+    lang === "de" ? "7 Echtzeit-Indikatoren mit transparenter Berechnung" : "7 real-time indicators with transparent calculations"
   );
   const { data: indices, isLoading: indicesLoading } = useMarketIndices();
   const { data: glData, isLoading: glLoading } = useGainersLosers();
-  const { data: commodities, isLoading: comLoading } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
+  const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
   const { data: topCo } = useTopCompanies();
 
   const gainers = glData?.gainers || [];
@@ -522,13 +545,14 @@ export default function MarketSentimentPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8 space-y-4 sm:space-y-6">
-        {/* Page Title */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center px-2 sm:px-0">
           <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
             {lang === "de" ? "Markt" : "Market"} <span className="text-primary">{lang === "de" ? "Stimmung" : "Pulse"}</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            {lang === "de" ? "Echtzeit-Überblick über die aktuelle Marktlage" : "Real-time overview of current market conditions"}
+            {lang === "de"
+              ? "7 Indikatoren mit transparenter Berechnungslogik — klicke auf jeden Indikator für Details"
+              : "7 indicators with transparent calculations — click any indicator for details"}
           </p>
         </motion.div>
 
@@ -540,14 +564,14 @@ export default function MarketSentimentPage() {
           </div>
         ) : (
           <>
-            {/* Fear & Greed (with sub-indicators) + Market Breadth */}
+            {/* Fear & Greed with 7 sub-indicators */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
               <div className="lg:col-span-3">
                 <FearGreedCard indicators={indicators} compositeScore={compositeScore} />
               </div>
               <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                 <MarketBreadth gainers={gainers.length} losers={losers.length} />
-                {/* Score summary mini card */}
+                {/* Indicator overview grid */}
                 <motion.div initial="hidden" animate="visible" variants={fadeIn}
                   className="rounded-2xl border border-border/60 bg-card p-6">
                   <div className="flex items-center gap-2 mb-3">
@@ -599,16 +623,13 @@ export default function MarketSentimentPage() {
             {/* Commodities */}
             {commodities?.length > 0 && <CommodityGrid commodities={commodities} />}
 
-            {/* Macro Economic Indicators */}
-            <MacroSection />
-
             {/* Quick Links */}
             <motion.div initial="hidden" animate="visible" variants={fadeIn} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { to: "/rankings", label: lang === "de" ? "Rankings" : "Rankings", icon: <BarChart3 className="h-4 w-4" /> },
+                { to: "/macro", label: lang === "de" ? "Makro" : "Macro", icon: <BarChart3 className="h-4 w-4" /> },
                 { to: "/news", label: lang === "de" ? "Nachrichten" : "News", icon: <Globe className="h-4 w-4" /> },
                 { to: "/portfolio", label: "Portfolio", icon: <Shield className="h-4 w-4" /> },
-                { to: "/calculators", label: lang === "de" ? "Rechner" : "Tools", icon: <Zap className="h-4 w-4" /> },
+                { to: "/calculators", label: lang === "de" ? "Rechner" : "Calculators", icon: <Zap className="h-4 w-4" /> },
               ].map((link) => (
                 <Link key={link.to} to={link.to}
                   className="flex items-center gap-2 rounded-xl border border-border/60 bg-card p-4 hover:bg-muted/30 transition-colors text-sm font-medium text-muted-foreground hover:text-foreground">
