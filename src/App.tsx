@@ -99,9 +99,7 @@ const App = () => (
                   <Route path="/ai-chat" element={<StockChatPage />} />
                   
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
-                  <Route path="/crypto" element={<CryptoPage />} />
-                  <Route path="/forex" element={<ForexPage />} />
-                  <Route path="/bonds" element={<BondsPage />} />
+                  {/* Crypto, Forex, Bonds routes removed */}
                   <Route path="/ipo" element={<IPOCalendarPage />} />
                   <Route path="/economic-calendar" element={<EconomicCalendarPage />} />
                   <Route path="/paper-trading" element={<PaperTradingPage />} />

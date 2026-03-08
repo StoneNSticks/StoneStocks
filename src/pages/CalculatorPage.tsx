@@ -988,18 +988,33 @@ const CalculatorPage = () => {
         </div>
 
         <Tabs defaultValue="portfolio" className="space-y-5">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {filteredTabs.map(tab => (
-              <TabsList key={tab.value} className="bg-transparent p-0 h-auto w-full">
-                <TabsTrigger
-                  value={tab.value}
-                  className="w-full flex flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-card px-3 py-3 text-xs font-medium text-muted-foreground transition-all hover:border-primary/30 hover:bg-primary/5 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm"
-                >
-                  <span className="p-1.5 rounded-lg bg-muted/60 data-[state=active]:bg-primary/15">{tab.icon}</span>
-                  <span className="text-center leading-tight">{tab.label}</span>
-                </TabsTrigger>
-              </TabsList>
-            ))}
+          {/* Category-grouped calculator grid */}
+          <div className="space-y-4">
+            {(activeCategory === "all" ? ["basics", "trading", "planning", "special"] as const : [activeCategory]).map(catKey => {
+              const catTabs = tabs.filter(t => t.category === catKey);
+              if (catTabs.length === 0) return null;
+              const catLabel = categories.find(c => c.key === catKey)?.label || catKey;
+              return (
+                <div key={catKey}>
+                  {activeCategory === "all" && (
+                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">{catLabel}</h2>
+                  )}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                    {catTabs.map(tab => (
+                      <TabsList key={tab.value} className="bg-transparent p-0 h-auto w-full">
+                        <TabsTrigger
+                          value={tab.value}
+                          className="w-full flex flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-card px-2 py-3 text-[11px] font-medium text-muted-foreground transition-all hover:border-primary/30 hover:bg-primary/5 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                        >
+                          <span className="p-1.5 rounded-lg bg-muted/50">{tab.icon}</span>
+                          <span className="text-center leading-tight">{tab.label}</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           {filteredTabs.map(tab => (
             <TabsContent key={tab.value} value={tab.value}>{tab.component}</TabsContent>
