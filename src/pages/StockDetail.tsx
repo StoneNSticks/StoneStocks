@@ -257,10 +257,7 @@ const StockDetail = () => {
                 Left: Gauge showing Strong Buy → Strong Sell + price targets
                 Right: Community bullish/bearish vote
                 ══════════════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
-              <SentimentVote symbol={upperSymbol} />
-            </div>
+            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 7: Financial Charts (10 charts)
