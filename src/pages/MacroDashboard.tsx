@@ -46,10 +46,9 @@ function FredChart({ indicator }: { indicator: FredIndicator }) {
     .reverse();
 
   if (!data || observations.length === 0) {
-    const { lang } = useLanguage();
     return (
       <div className="rounded-xl border border-border/60 bg-card p-6 text-center">
-        <indicator.icon className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+        <Icon className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
         <p className="text-sm font-medium">{lang === "de" ? indicator.labelDe : indicator.labelEn}</p>
         <p className="text-xs text-muted-foreground mt-1">{lang === "de" ? "Daten nicht verfügbar" : "Data unavailable"}</p>
       </div>
