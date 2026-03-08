@@ -322,7 +322,7 @@ export default function LearnPage() {
               </div>
               <InfoBox title={t("learn.goodToKnow")}>{t("learn.psychInfo")}</InfoBox>
             </SectionCard>
-            <QuizSection sectionId="strategies" title={t("learn.quizStrategies")} questions={quizStrategies} />
+            
           </motion.section>
 
           {/* Section 4: Taxes & Costs (was 9) */}
