@@ -37,6 +37,7 @@ const INDICATORS: FredIndicator[] = [
 function FredChart({ indicator }: { indicator: FredIndicator }) {
   const { data, isLoading } = useFredSeries(indicator.id);
   const { lang } = useLanguage();
+  const Icon = indicator.icon;
 
   if (isLoading) return <Skeleton className="h-64 rounded-xl" />;
 
@@ -58,7 +59,6 @@ function FredChart({ indicator }: { indicator: FredIndicator }) {
   const latest = observations[observations.length - 1];
   const previous = observations.length > 1 ? observations[observations.length - 2] : null;
   const change = previous ? latest.value - previous.value : 0;
-  const Icon = indicator.icon;
 
   return (
     <motion.div
