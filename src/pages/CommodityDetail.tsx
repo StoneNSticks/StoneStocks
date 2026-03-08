@@ -269,6 +269,24 @@ export default function CommodityDetail() {
                   </p>
                 </motion.div>
               )}
+
+              {/* Supply/Demand Factors */}
+              {info && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="rounded-2xl border border-border/60 bg-card p-5">
+                  <h2 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    {lang === "de" ? "Was beeinflusst den Preis?" : "What Drives the Price?"}
+                  </h2>
+                  <div className="space-y-2">
+                    {(lang === "de" ? info.factorsDe : info.factorsEn).map((factor, i) => (
+                      <div key={i} className="flex items-start gap-2.5 text-sm">
+                        <span className="text-primary font-bold mt-0.5">›</span>
+                        <span className="text-muted-foreground leading-relaxed">{factor}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             {/* Other Commodities */}

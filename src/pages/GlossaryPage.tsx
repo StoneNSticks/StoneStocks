@@ -34,7 +34,7 @@ function getGlossary(lang: string): Term[] {
     { term: "DCF", def: "Discounted Cash Flow — Bewertungsmethode, die zukünftige Cashflows auf den heutigen Wert abzinst." },
     { term: "Derivat", def: "Finanzinstrument, dessen Wert sich von einem Basiswert (Aktie, Index, Rohstoff) ableitet." },
     { term: "Dividende", def: "Gewinnausschüttung eines Unternehmens an seine Aktionäre." },
-    { term: "DCA", def: "Dollar-Cost-Averaging — Regelmäßige Investition eines festen Betrags zur Glättung des Einstiegspreises." },
+    { term: "DCA", def: "Dollar-Cost-Averaging — Du investierst regelmäßig einen festen Betrag. So kaufst du bei niedrigen Kursen mehr Anteile und bei hohen weniger. Das glättet den Einstiegspreis über die Zeit." },
     { term: "EBITDA", def: "Gewinn vor Zinsen, Steuern und Abschreibungen — zeigt die operative Ertragskraft." },
     { term: "EPS", def: "Earnings Per Share — Gewinn pro Aktie." },
     { term: "ETF", def: "Exchange-Traded Fund — Börsengehandelter Fonds, der einen Index oder Sektor abbildet." },
