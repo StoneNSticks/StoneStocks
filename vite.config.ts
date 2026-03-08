@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ["favicon.svg", "pwa-192.png", "pwa-512.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        navigateFallback: "offline.html",
         navigateFallbackDenylist: [/^\/~oauth/],
         runtimeCaching: [
           {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StoneStocks — Offline</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0f1a;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+    .card{text-align:center;max-width:380px}
+    .icon{width:64px;height:64px;margin:0 auto 1.5rem;border-radius:16px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center}
+    .icon svg{width:32px;height:32px;color:#10b981}
+    h1{font-size:1.5rem;font-weight:700;margin-bottom:.5rem}
+    p{font-size:.875rem;color:#94a3b8;line-height:1.6;margin-bottom:1.5rem}
+    button{background:#10b981;color:#fff;border:none;padding:.625rem 1.5rem;border-radius:10px;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .2s}
+    button:hover{background:#059669}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636a9 9 0 0 1 .203 12.519m-3.89-3.89a5 5 0 0 0-6.524-6.524M3 3l18 18M10.5 13.5a2 2 0 0 0 2.829 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+    </div>
+    <h1>Du bist offline</h1>
+    <p>Keine Internetverbindung. Stelle eine Verbindung her und versuche es erneut.</p>
+    <button onclick="window.location.reload()">Erneut versuchen</button>
+  </div>
+</body>
+</html>
