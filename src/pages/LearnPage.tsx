@@ -634,7 +634,7 @@ export default function LearnPage() {
                 <p className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: t("learn.optionsGreeksDesc") }} />
               </div>
             </SectionCard>
-
+            {interactive && <FireCalc lang={lang} />}
             {/* American vs European Options */}
             <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.optionStylesTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.optionStylesIntro") }} />
