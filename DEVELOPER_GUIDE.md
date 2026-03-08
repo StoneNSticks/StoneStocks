@@ -50,18 +50,20 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | File | Route | Description |
 |------|-------|-------------|
 | `Index.tsx` | `/` | Homepage: search, indices ticker, news, top companies, sentiment gauge |
-| `MarketSentimentPage.tsx` | `/sentiment` | Fear & Greed gauge, market breadth, indices grid, top movers |
-| `StockDetail.tsx` | `/stock/:symbol` | Full stock analysis: chart, metrics, financials, news, peers |
-| `IndexDetail.tsx` | `/index/:symbol` | Market index details with ETF-proxy chart |
-| `CommodityDetail.tsx` | `/commodity/:symbol` | Commodity price chart + info |
-| `NewsPage.tsx` | `/news` | Market news feed |
+| `MarketSentimentPage.tsx` | `/sentiment` | Fear & Greed gauge, market breadth, indices grid, market heatmap, top movers |
+| `StockDetail.tsx` | `/stock/:symbol` | Full stock analysis: chart, metrics, financials, dividend growth, news, peers, alerts |
+| `IndexDetail.tsx` | `/index/:symbol` | Market index details with ETF-proxy chart, constituents, performance table |
+| `CommodityDetail.tsx` | `/commodity/:symbol` | Commodity price chart, info, supply/demand factors |
+| `NewsPage.tsx` | `/news` | Market news feed (Finnhub + Polygon + Alpha Vantage + Twelve Data) |
 | `RankingsPage.tsx` | `/rankings` | Top companies, gainers/losers, most active |
-| `WatchlistPage.tsx` | `/watchlist` | User's saved stocks with live quotes |
-| `PortfolioPage.tsx` | `/portfolio` | Portfolio tracker with P&L |
-| `CalculatorPage.tsx` | `/calculators` | Financial calculators + currency converter |
-| `LearnPage.tsx` | `/learn` | Financial education (13 sections, beginner→expert) |
+| `WatchlistPage.tsx` | `/watchlist` | User's saved stocks with live quotes, groups, notes, CSV export |
+| `PortfolioPage.tsx` | `/portfolio` | Portfolio tracker with P&L, allocation pie chart |
+| `CalculatorPage.tsx` | `/calculators` | 12 calculators: Portfolio Growth, Compound Interest, Dividend, FIRE, Position Size, Options, DCA, Loan, Risk/Reward, Currency, Tax-Loss Harvesting, Dividend Projector |
+| `LearnPage.tsx` | `/learn` | Financial education (13 sections, beginner→expert, quizzes, reading progress) |
 | `ProfilePage.tsx` | `/profile` | User profile with avatar |
-| `SettingsPage.tsx` | `/settings` | Password, language, theme, notifications |
+| `SettingsPage.tsx` | `/settings` | Password, language, theme, notifications, active price alerts management |
+| `AdminPage.tsx` | `/admin` | Admin dashboard: platform stats, popular stocks (admin role required) |
+| `GlossaryPage.tsx` | `/glossary` | A-Z financial terms dictionary (bilingual) |
 | `AuthPage.tsx` | `/auth` | Login/signup forms |
 
 ### Components
@@ -72,11 +74,13 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | `SearchBar.tsx` | Header, Index | `search` action |
 | `MarketOverview.tsx` | Index, News, Rankings | `indices` action |
 | `SentimentGauge.tsx` | Index | `indices` action (computed) |
+| `MarketHeatmap.tsx` | MarketSentimentPage | `top_companies` action (Treemap) |
 | `TopCompanies.tsx` | Index, Rankings | `top_companies` action |
 | `GainersLosers.tsx` | Index, Rankings | `gainers_losers` action |
 | `MostActive.tsx` | Index, Rankings | `most_active` action |
 | `HiddenGems.tsx` | Index | `hidden_gems` action |
 | `CommoditiesSection.tsx` | Index | `commodities` action |
+| `MarketNewsSection.tsx` | Index | `market_news` action |
 | `StockChart.tsx` | StockDetail, IndexDetail | `series` action |
 | `MetricsGrid.tsx` | StockDetail | `full` action (derived) |
 | `KeyMetrics.tsx` | StockDetail | `full` action |
@@ -91,7 +95,14 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | `NewsList.tsx` | StockDetail | `full` action (news) |
 | `DividendGrowth.tsx` | StockDetail | `massive_dividends` action |
 | `StockPerformance.tsx` | StockDetail | `full` action (quote) |
+| `SentimentVote.tsx` | StockDetail | Supabase `stock_votes` table |
+| `StockComments.tsx` | StockDetail | Supabase `stock_comments` table |
 | `WatchlistStar.tsx` | StockDetail | Supabase `watchlist` table |
+| `PriceAlertForm.tsx` | StockDetail | Supabase `price_alerts` table |
+| `OnboardingModal.tsx` | App (first visit) | localStorage |
+| `learn/QuizSection.tsx` | LearnPage | localStorage (progress) |
+| `learn/ReadingProgress.tsx` | LearnPage | Scroll position |
+| `learn/LearnComponents.tsx` | LearnPage | Shared UI components with section share buttons |
 
 ### Edge Function Actions (`supabase/functions/stock-data/index.ts`)
 | Action | Description | Cache TTL |
@@ -101,7 +112,7 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | `profile` | Company profile & logo | 7 days |
 | `overview` | Company overview/fundamentals | 7 days |
 | `series` | Price time series | 4 hours |
-| `news` | Stock-specific news | 30 min |
+| `news` | Stock-specific news (relevance-filtered) | 30 min |
 | `peers` | Similar companies | 7 days |
 | `recommendation` | Analyst consensus | 24 hours |
 | `earnings` | EPS history | 7 days |
@@ -116,7 +127,7 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | `massive_snapshot` | Real-time snapshot | 5 min |
 | `massive_related` | Related companies | 7 days |
 | `massive_news` | Polygon news feed | 30 min |
-| `market_news` | General market news | 15 min |
+| `market_news` | General market news (4 sources) | 15 min |
 | `gainers_losers` | Daily top movers | 30 min |
 | `most_active` | Highest volume stocks | 10 min |
 | `top_companies` | Top 10 by market cap | 15 min |
@@ -131,8 +142,11 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 | Table | Purpose | RLS |
 |-------|---------|-----|
 | `api_cache` | Backend API response cache | Public read, service write |
-| `watchlist` | User's saved stock symbols | User-scoped CRUD |
+| `watchlist` | User's saved stocks (with groups & notes) | User-scoped CRUD |
 | `portfolio_positions` | User's stock holdings | User-scoped CRUD |
+| `price_alerts` | User's price target alerts | User-scoped CRUD |
+| `stock_votes` | Community sentiment votes | Public read, user insert/update |
+| `stock_comments` | Community stock comments | Public read, user insert/delete |
 | `profiles` | User profile data | Public read, user update |
 | `user_roles` | Role-based access control | User read own, service manage |
 
@@ -140,6 +154,7 @@ All API responses are cached in the `api_cache` table with configurable TTLs (5 
 - **TSMC (TSM)**: ADR with 5:1 ratio. Finnhub returns total ordinary shares, causing inflated computed market cap. Fixed with `ADR_RATIOS` map in edge function.
 - **ETF Filtering**: `isCommonStock()` blacklist + `isETFByName()` post-enrichment filter removes ETFs/leveraged products from rankings.
 - **Index Charts**: Real indices don't have intraday data via our APIs, so ETF proxies (SPY for S&P 500, etc.) are used for chart visualization.
+- **Index Performance**: Longer period values (1W, 1M, etc.) are estimated from 1D change — marked with asterisk.
 
 ## i18n System
 All user-facing text uses `t("key")` from `LanguageContext`. Translations are in:
@@ -154,3 +169,15 @@ Supported languages: German (de, default), English (en).
 - Font: Space Grotesk (display), system sans-serif (body)
 - Theme: Dark/Light mode via `next-themes`
 - All colors use HSL CSS variables: `--primary`, `--background`, `--foreground`, etc.
+
+## Features Overview
+- **Currency Toggle**: Global USD/EUR conversion via CurrencyContext
+- **Watchlist**: Groups, notes, CSV export, sparklines, performance sorting
+- **Portfolio**: Position tracking, P&L calculation, allocation pie chart
+- **Price Alerts**: Set above/below targets on stock detail pages, manage in settings
+- **Market Heatmap**: Treemap visualization on sentiment page
+- **Calculators**: 12 financial calculators including FIRE, DCA, Options, Tax-Loss Harvesting
+- **Learn Center**: 13 sections, interactive quizzes, reading progress bar, section share buttons
+- **Admin Dashboard**: Platform statistics (admin role required via user_roles table)
+- **Onboarding**: 4-step guide for first-time users
+- **PWA**: Web manifest for installable app
