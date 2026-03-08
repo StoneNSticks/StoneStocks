@@ -571,4 +571,55 @@ const translations: Record<string, Record<Language, string>> = {
   "error.somethingWrong": { de: "Etwas ist schiefgelaufen", en: "Something went wrong" },
   "error.tryAgain": { de: "Bitte versuche es später erneut", en: "Please try again later" },
   "error.retry": { de: "Erneut versuchen", en: "Retry" },
+
+  // ── CompanyIntelligence ──
+  "ci.title": { de: "Unternehmens-Intelligence", en: "Company Intelligence" },
+  "ci.risk": { de: "Risiko", en: "Risk" },
+  "ci.products": { de: "Produkte & Services", en: "Products & Services" },
+  "ci.hq": { de: "Hauptsitz", en: "HQ" },
+  "ci.exchange": { de: "Börse", en: "Exchange" },
+  "ci.employees": { de: "Mitarbeiter", en: "Employees" },
+  "ci.institutional": { de: "Institutionell", en: "Institutional" },
+  "ci.insiderOwn": { de: "Insider-Anteil", en: "Insider Own." },
+  "ci.shortRatio": { de: "Short Ratio", en: "Short Ratio" },
+  "ci.shortPctFloat": { de: "Short % Float", en: "Short % Float" },
+  "ci.sector": { de: "Sektor", en: "Sector" },
+  "ci.related": { de: "Verwandte Unternehmen", en: "Related Companies" },
+
+  // ── SentimentGauge ──
+  "sg.title": { de: "Marktstimmung", en: "Market Sentiment" },
+  "sg.extremeFear": { de: "Extreme Angst", en: "Extreme Fear" },
+  "sg.fear": { de: "Angst", en: "Fear" },
+  "sg.neutral": { de: "Neutral", en: "Neutral" },
+  "sg.greed": { de: "Gier", en: "Greed" },
+  "sg.extremeGreed": { de: "Extreme Gier", en: "Extreme Greed" },
+
+  // ── VixIndicator ──
+  "vix.title": { de: "Volatilitätsindex", en: "Volatility Index" },
+  "vix.low": { de: "Niedrig", en: "Low" },
+  "vix.normal": { de: "Normal", en: "Normal" },
+  "vix.elevated": { de: "Erhöht", en: "Elevated" },
+  "vix.high": { de: "Hoch", en: "High" },
+  "vix.calm": { de: "Ruhig", en: "Calm" },
+  "vix.volatile": { de: "Volatil", en: "Volatile" },
+
+  // ── PeerComparison ──
+  "pc.title": { de: "Peer-Vergleich", en: "Peer Comparison" },
+  "pc.metric": { de: "Kennzahl", en: "Metric" },
+  "pc.price": { de: "Kurs", en: "Price" },
+  "pc.mktCap": { de: "Marktk.", en: "Mkt Cap" },
+  "pc.margin": { de: "Marge", en: "Margin" },
+  "pc.revGr": { de: "Umsatzw.", en: "Rev Gr." },
+  "pc.dayChg": { de: "Tagesänd.", en: "Day Chg" },
+
+  // ── AlertNotifications ──
+  "alert.priceAlert": { de: "Kursalarm", en: "Price Alert" },
+  "alert.targetReached": { de: "Zielkurs erreicht", en: "Target reached" },
+  "alert.view": { de: "Details", en: "View" },
+  "alert.dismissAll": { de: "Alle schließen", en: "Dismiss all" },
+
+  // ── NotificationBell ──
+  "notif.disable": { de: "Push-Benachrichtigungen deaktivieren", en: "Disable push notifications" },
+  "notif.blocked": { de: "Benachrichtigungen blockiert", en: "Notifications blocked" },
+  "notif.enable": { de: "Earnings-Erinnerungen aktivieren", en: "Enable earnings reminders" },
 };
