@@ -40,7 +40,7 @@ export function StockPerformance({ quote, overview, massiveSnapshot }: StockPerf
         <div>
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>{t("perf.weekRange")}</span>
-            <span>{fc(low52)} — {fc(high52)}</span>
+            <span>{fc(low52)} – {fc(high52)}</span>
           </div>
           <div className="relative h-2 bg-muted rounded-full">
             <div className="absolute top-0 h-2 bg-primary/70 rounded-full" style={{ width: `${Math.min(100, Math.max(0, rangePercent))}%` }} />

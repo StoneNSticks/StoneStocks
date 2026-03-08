@@ -1,5 +1,5 @@
 /**
- * EarningsNotificationProvider — Wraps the app to run in-app earnings checks
+ * EarningsNotificationProvider: Wraps the app to run in-app earnings checks
  * and register the push service worker handler.
  */
 import { useEffect } from "react";

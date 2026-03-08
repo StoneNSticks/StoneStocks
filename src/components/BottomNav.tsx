@@ -1,5 +1,5 @@
 /**
- * BottomNav — Fixed mobile bottom navigation bar (visible only on <768px screens).
+ * BottomNav: Fixed mobile bottom navigation bar (visible only on <768px screens).
  * Shows 5 primary navigation items: Home, Sentiment, Rankings, Portfolio, Watchlist.
  */
 import { Link, useLocation } from "react-router-dom";

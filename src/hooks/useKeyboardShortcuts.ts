@@ -1,6 +1,6 @@
 /**
- * useKeyboardShortcuts — Global keyboard shortcuts for navigation.
- * `/` → focus search, `w` → watchlist, `p` → portfolio, `?` → shows help via callback.
+ * useKeyboardShortcuts: Global keyboard shortcuts for navigation.
+ * / = focus search, w = watchlist, p = portfolio, ? = shows help via callback.
  * Only fires when not typing in an input/textarea.
  */
 import { useEffect } from "react";
