@@ -336,9 +336,12 @@ async function handleNews(symbol: string) {
     companyName = (profile?.name || "").replace(/\s*(Inc\.?|Corp\.?|Ltd\.?|Co\.?|plc|SA|SE|AG|NV|Group|Holdings?|Platforms?|Technologies?|Semiconductor|Systems)\s*/gi, "").trim().toLowerCase();
   } catch { /* ignore */ }
 
-  const [finnhubNews, polygonNews] = await Promise.all([
+  const [finnhubNews, polygonNews, avNews, tdNews, yahooNews] = await Promise.all([
     fetchFinnhub("company-news", { symbol, from, to }).catch(() => []),
     fetchMassive("/v2/reference/news", { ticker: symbol, limit: "20", order: "desc" }).catch(() => ({ results: [] })),
+    fetchAlphaVantage("NEWS_SENTIMENT", { tickers: symbol, sort: "LATEST", limit: "15" }).catch(() => ({ feed: [] })),
+    fetchTwelveData("news", { symbol, outputsize: "10" }).catch(() => ({ data: [] })),
+    fetchYahooRSS(symbol).catch(() => []),
   ]);
 
   const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
@@ -356,6 +359,31 @@ async function handleNews(symbol: string) {
     primaryTicker: (n.tickers || [])[0] || "",
   }));
 
+  const avItems = ((avNews as any)?.feed || []).map((n: any) => ({
+    headline: n.title || "", summary: n.summary || "", url: n.url || "",
+    image: n.banner_image || "", source: n.source || "Alpha Vantage",
+    datetime: n.time_published ? Math.floor(new Date(
+      n.time_published.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, "$1-$2-$3T$4:$5:$6")
+    ).getTime() / 1000) : Math.floor(Date.now() / 1000),
+    related: (n.ticker_sentiment || []).map((t: any) => t.ticker).join(","),
+    origin: "alphavantage",
+    tickerCount: (n.ticker_sentiment || []).length,
+    primaryTicker: (n.ticker_sentiment || [])?.[0]?.ticker || "",
+  }));
+
+  const tdItems = ((tdNews as any)?.data || []).map((n: any) => ({
+    headline: n.title || "", summary: n.description || n.snippet || "", url: n.url || "",
+    image: n.image?.thumbnail || n.image?.original || "", source: n.source || "Twelve Data",
+    datetime: n.datetime ? Math.floor(new Date(n.datetime).getTime() / 1000) : Math.floor(Date.now() / 1000),
+    related: (n.symbols || []).join(","), origin: "twelvedata",
+    tickerCount: (n.symbols || []).length,
+    primaryTicker: (n.symbols || [])[0] || "",
+  }));
+
+  const yahooItems = (Array.isArray(yahooNews) ? yahooNews : []).map((n: any) => ({
+    ...n, tickerCount: 1, primaryTicker: symbol,
+  }));
+
   const symbolUpper = symbol.toUpperCase();
   const symLower = symbol.toLowerCase();
 
@@ -364,6 +392,9 @@ async function handleNews(symbol: string) {
     const sum = (n.summary || "").toLowerCase();
     const text = hl + " " + sum;
     const rel = (n.related || "").toUpperCase();
+
+    // Yahoo RSS is pre-filtered by ticker
+    if (n.origin === "yahoo") return true;
 
     // Polygon: only accept if ticker is primary or among ≤3 tickers
     if (n.origin === "polygon") {
@@ -374,6 +405,9 @@ async function handleNews(symbol: string) {
 
     // Finnhub: related field should match
     if (n.origin === "finnhub" && !rel.includes(symbolUpper)) return false;
+
+    // Alpha Vantage / Twelve Data: check related
+    if ((n.origin === "alphavantage" || n.origin === "twelvedata") && !rel.includes(symbolUpper)) return false;
 
     // Must mention ticker or company name in headline or summary
     const mentionsTicker = text.includes(symLower);
@@ -387,7 +421,7 @@ async function handleNews(symbol: string) {
   }
 
   const seen = new Set<string>();
-  const combined = [...fhItems, ...pgItems]
+  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems]
     .filter((n: any) => {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
@@ -395,7 +429,7 @@ async function handleNews(symbol: string) {
       return isDirectlyRelevant(n);
     })
     .sort((a: any, b: any) => b.datetime - a.datetime)
-    .slice(0, 20);
+    .slice(0, 30);
 
   await setCache(cacheKey, combined, "combined", TTL.news);
   return combined;
