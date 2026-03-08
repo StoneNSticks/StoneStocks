@@ -277,6 +277,14 @@ export default function LearnPage() {
           )}
         </motion.div>
 
+        {/* Interactive Mode Toggle */}
+        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="flex items-center justify-center gap-3 rounded-xl border border-border/60 bg-card px-5 py-3">
+          <Calculator className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">{lang === "de" ? "Interaktive Rechner" : "Interactive Calculators"}</span>
+          <Switch checked={interactive} onCheckedChange={toggleInteractive} />
+          <span className="text-xs text-muted-foreground">{interactive ? (lang === "de" ? "An" : "On") : (lang === "de" ? "Aus" : "Off")}</span>
+        </motion.div>
+
         {/* TOC with grouped super-sections */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-6">
           <h2 className="font-display font-semibold text-foreground mb-4">{t("learn.toc")}</h2>
