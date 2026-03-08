@@ -552,6 +552,13 @@ export default function WatchlistPage() {
           </div>
         )}
 
+        {/* Earnings Calendar for watchlist stocks */}
+        {user && watchlist && watchlist.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6">
+            <EarningsCalendar symbols={watchlist.map(w => w.symbol)} />
+          </motion.div>
+        )}
+
         {user && count > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
