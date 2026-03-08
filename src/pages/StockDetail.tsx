@@ -132,6 +132,7 @@ const StockDetail = () => {
                   <div className="flex items-center gap-2">
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
                     <WatchlistStar symbol={upperSymbol} />
+                    <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
                   </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
                 </div>
