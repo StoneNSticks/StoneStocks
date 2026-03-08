@@ -59,6 +59,9 @@ const STRATEGIES: StrategyInfo[] = [
   { key: "breakout", label: "Donchian Breakout", labelDe: "Donchian Ausbruch", category: "volatility", description: "Buy on new highs (Donchian channel), sell on new lows.", descriptionDe: "Kaufen bei neuen Hochs, verkaufen bei neuen Tiefs." },
   { key: "chandelier", label: "Chandelier Exit", labelDe: "Chandelier Exit", category: "volatility", description: "ATR-based trailing stop. Enter on trend, exit on volatility spike.", descriptionDe: "ATR-basierter Trailing Stop. Einstieg bei Trend, Ausstieg bei Volatilität." },
   { key: "keltner", label: "Keltner Channel", labelDe: "Keltner Kanal", category: "volatility", description: "Buy on upper channel breakout, sell on lower channel breakdown.", descriptionDe: "Kaufen bei Ausbruch über oberen Kanal, verkaufen bei Durchbruch unter unteren." },
+  { key: "dca", label: "Dollar Cost Averaging", labelDe: "Sparplan (DCA)", category: "trend", description: "Invest a fixed amount every N days regardless of price. Simple and passive.", descriptionDe: "Regelmäßig einen festen Betrag investieren, unabhängig vom Kurs. Einfach und passiv." },
+  { key: "high_strategy", label: "52-Week High", labelDe: "52-Wochen-Hoch", category: "momentum", description: "Buy when price hits a new 52-week high, sell with a trailing stop at -10%.", descriptionDe: "Kaufen bei neuem 52-Wochen-Hoch, verkaufen mit Trailing Stop bei -10%." },
+  { key: "envelope", label: "MA Envelope", labelDe: "MA Hüllkurve", category: "mean_reversion", description: "Buy below the lower envelope (SMA -3%), sell above the upper envelope (SMA +3%).", descriptionDe: "Kaufen unter der unteren Hüllkurve (SMA -3%), verkaufen über der oberen (SMA +3%)." },
 ];
 
 const CATEGORY_LABELS = {
