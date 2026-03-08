@@ -24,7 +24,19 @@ const SECTOR_LABELS: Record<string, Record<string, string>> = {
   Utilities: { de: "Versorger", en: "Utilities" },
 };
 
-const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities"];
+const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities", "Real Estate"];
+
+// Finnhub uses different sector names than our filters — normalize them
+const SECTOR_MAP: Record<string, string> = {
+  "Financial Services": "Financials",
+  "Consumer Discretionary": "Consumer Cyclical",
+  "Consumer Staples": "Consumer Defensive",
+  "Materials": "Basic Materials",
+  "Information Technology": "Technology",
+  "Communication": "Communication Services",
+  "Telecommunication Services": "Communication Services",
+  "Health Care": "Healthcare",
+};
 
 function getColor(change: number): string {
   if (change >= 3) return "hsl(145, 63%, 35%)";
@@ -75,21 +87,25 @@ export function MarketHeatmap() {
 
   const treemapData = useMemo(() => {
     if (!companies?.length) return [];
-    let filtered = companies;
-    if (sectorFilter !== "All") {
-      filtered = companies.filter((c: any) => c.sector === sectorFilter);
-    }
-    return filtered
+    const mapped = companies
       .filter((c: any) => c.price > 0)
-      .map((c: any) => ({
-        name: c.symbol,
-        fullName: c.name || c.symbol,
-        sector: c.sector || "Other",
-        sectorLabel: SECTOR_LABELS[c.sector]?.[lang] || c.sector || "Other",
-        size: Math.max(c.marketCap || 1e9, 1e8),
-        marketCap: c.marketCap || 0,
-        changePercent: c.changePercent || 0,
-      }));
+      .map((c: any) => {
+        const rawSector = c.sector || "Other";
+        const normalizedSector = SECTOR_MAP[rawSector] || rawSector;
+        return {
+          name: c.symbol,
+          fullName: c.name || c.symbol,
+          sector: normalizedSector,
+          sectorLabel: SECTOR_LABELS[normalizedSector]?.[lang] || normalizedSector,
+          size: Math.max(c.marketCap || 1e9, 1e8),
+          marketCap: c.marketCap || 0,
+          changePercent: c.changePercent || 0,
+        };
+      });
+    if (sectorFilter !== "All") {
+      return mapped.filter((c) => c.sector === sectorFilter);
+    }
+    return mapped;
   }, [companies, sectorFilter, lang]);
 
   const handleClick = (data: any) => {
@@ -99,7 +115,8 @@ export function MarketHeatmap() {
   };
 
   if (isLoading) return <Skeleton className="h-72 rounded-2xl" />;
-  if (!treemapData.length) return null;
+  if (!companies?.length) return null;
+  const hasFilteredData = treemapData.length > 0;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-5">
@@ -125,23 +142,29 @@ export function MarketHeatmap() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={440}>
-        <Treemap
-          data={treemapData}
-          dataKey="size"
-          aspectRatio={16 / 9}
-          content={<CustomContent />}
-          onClick={handleClick}
-        >
-          <Tooltip
-            contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12 }}
-            formatter={(_: unknown, __: string, entry: any) => [
-              `${(entry.payload.changePercent || 0) >= 0 ? "+" : ""}${(entry.payload.changePercent || 0).toFixed(2)}% · ${formatCompact(entry.payload.marketCap)}`,
-              entry.payload.fullName,
-            ]}
-          />
-        </Treemap>
-      </ResponsiveContainer>
+      {hasFilteredData ? (
+        <ResponsiveContainer width="100%" height={440}>
+          <Treemap
+            data={treemapData}
+            dataKey="size"
+            aspectRatio={16 / 9}
+            content={<CustomContent />}
+            onClick={handleClick}
+          >
+            <Tooltip
+              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12 }}
+              formatter={(_: unknown, __: string, entry: any) => [
+                `${(entry.payload.changePercent || 0) >= 0 ? "+" : ""}${(entry.payload.changePercent || 0).toFixed(2)}% · ${formatCompact(entry.payload.marketCap)}`,
+                entry.payload.fullName,
+              ]}
+            />
+          </Treemap>
+        </ResponsiveContainer>
+      ) : (
+        <div className="h-[440px] flex items-center justify-center text-sm text-muted-foreground">
+          {lang === "de" ? "Keine Aktien in diesem Sektor gefunden" : "No stocks found in this sector"}
+        </div>
+      )}
 
       <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
         {[
