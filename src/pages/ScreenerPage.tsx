@@ -151,6 +151,18 @@ export default function ScreenerPage() {
             </Button>
           )}
         </div>
+        {/* AI Stock Finder */}
+        <NLPScreener />
+
+        <Tabs defaultValue="screener" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="screener">{lang === "de" ? "Screener" : "Screener"}</TabsTrigger>
+            <TabsTrigger value="magic">{lang === "de" ? "Magic Formula" : "Magic Formula"}</TabsTrigger>
+            <TabsTrigger value="piotroski">Piotroski</TabsTrigger>
+            <TabsTrigger value="momentum">Momentum</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="screener">
 
         {/* Presets */}
         <div className="flex flex-wrap gap-1.5 mb-4">
