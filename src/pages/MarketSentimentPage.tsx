@@ -701,8 +701,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: energyLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (energyAvg + 5) / 10 * 100)), cls: energyAvg > 0 ? "bg-chart-2" : "bg-destructive" },
       desc: lang === "de"
-        ? "Durchschnitt aus Öl- und Gaspreisänderung. Steigende Energiepreise = Inflationsrisiko."
-        : "Average of oil & gas price change. Rising energy prices = inflation risk."
+        ? commoditiesStale ? "Energiemärkte geschlossen — keine aktuellen Daten." : "Durchschnitt aus Öl- und Gaspreisänderung. Steigende Energiepreise = Inflationsrisiko."
+        : commoditiesStale ? "Energy markets closed — no current data." : "Average of oil & gas price change. Rising energy prices = inflation risk.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Edelmetall-Signal" : "Precious Metals Signal",
