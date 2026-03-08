@@ -24,13 +24,15 @@ import {
   runBreakoutStrategy, runTripleSMAStrategy, runVolumeWeightedMomentum,
   runMomentumStrategy, runStochasticStrategy, runVWAPStrategy,
   runChandelierStrategy, runKeltnerStrategy,
+  runDCAStrategy, runHighStrategy, runEnvelopeStrategy,
   type OHLC, type BacktestResult,
 } from "@/lib/backtestEngine";
 
 type Strategy =
   | "buy_hold" | "sma_crossover" | "rsi" | "macd" | "bollinger"
   | "dual_momentum" | "mean_reversion" | "breakout" | "triple_sma"
-  | "volume_momentum" | "momentum" | "stochastic" | "vwap" | "chandelier" | "keltner";
+  | "volume_momentum" | "momentum" | "stochastic" | "vwap" | "chandelier" | "keltner"
+  | "dca" | "high_strategy" | "envelope";
 
 interface StrategyInfo {
   key: Strategy;
@@ -57,6 +59,9 @@ const STRATEGIES: StrategyInfo[] = [
   { key: "breakout", label: "Donchian Breakout", labelDe: "Donchian Ausbruch", category: "volatility", description: "Buy on new highs (Donchian channel), sell on new lows.", descriptionDe: "Kaufen bei neuen Hochs, verkaufen bei neuen Tiefs." },
   { key: "chandelier", label: "Chandelier Exit", labelDe: "Chandelier Exit", category: "volatility", description: "ATR-based trailing stop. Enter on trend, exit on volatility spike.", descriptionDe: "ATR-basierter Trailing Stop. Einstieg bei Trend, Ausstieg bei Volatilität." },
   { key: "keltner", label: "Keltner Channel", labelDe: "Keltner Kanal", category: "volatility", description: "Buy on upper channel breakout, sell on lower channel breakdown.", descriptionDe: "Kaufen bei Ausbruch über oberen Kanal, verkaufen bei Durchbruch unter unteren." },
+  { key: "dca", label: "Dollar Cost Averaging", labelDe: "Sparplan (DCA)", category: "trend", description: "Invest a fixed amount every N days regardless of price. Simple and passive.", descriptionDe: "Regelmäßig einen festen Betrag investieren, unabhängig vom Kurs. Einfach und passiv." },
+  { key: "high_strategy", label: "52-Week High", labelDe: "52-Wochen-Hoch", category: "momentum", description: "Buy when price hits a new 52-week high, sell with a trailing stop at -10%.", descriptionDe: "Kaufen bei neuem 52-Wochen-Hoch, verkaufen mit Trailing Stop bei -10%." },
+  { key: "envelope", label: "MA Envelope", labelDe: "MA Hüllkurve", category: "mean_reversion", description: "Buy below the lower envelope (SMA -3%), sell above the upper envelope (SMA +3%).", descriptionDe: "Kaufen unter der unteren Hüllkurve (SMA -3%), verkaufen über der oberen (SMA +3%)." },
 ];
 
 const CATEGORY_LABELS = {
@@ -165,6 +170,9 @@ export default function BacktestPage() {
       case "vwap": return runVWAPStrategy(ohlcData, capital, vwapDeviation);
       case "chandelier": return runChandelierStrategy(ohlcData, capital, chandAtrPeriod, chandMultiplier);
       case "keltner": return runKeltnerStrategy(ohlcData, capital, keltnerEma, 10, keltnerMultiplier);
+      case "dca": return runDCAStrategy(ohlcData, capital, 20);
+      case "high_strategy": return runHighStrategy(ohlcData, capital, 252, 0.10);
+      case "envelope": return runEnvelopeStrategy(ohlcData, capital, 20, 0.03);
       default: return null;
     }
   }, [ohlcData, strategy, capital, smaShort, smaLong, rsiOversold, rsiOverbought, macdFast, macdSlow, macdSignal, bbPeriod, bbStdDev, breakoutPeriod, tripleFast, tripleMid, tripleSlow, mrPeriod, mrDeviation, momLookback, stochPeriod, vwapDeviation, chandAtrPeriod, chandMultiplier, keltnerEma, keltnerMultiplier]);
@@ -396,7 +404,7 @@ export default function BacktestPage() {
                     <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} />
                     <Tooltip
                       contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                      formatter={(value: number, name: string) => [`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, name === "equity" ? (lang === "de" ? activeStrategy.labelDe : activeStrategy.label) : "Buy & Hold"]}
+                      formatter={(value: number, name: string) => [`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, name === "benchmark" ? "Buy & Hold" : (lang === "de" ? activeStrategy.labelDe : activeStrategy.label)]}
                     />
                     <ReferenceLine y={capital} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" strokeOpacity={0.5} />
                     <Area type="monotone" dataKey="benchmark" stroke="hsl(var(--muted-foreground))" fill="url(#bmGrad)" strokeWidth={1} strokeDasharray="4 4" dot={false} name="Buy & Hold" />
