@@ -63,8 +63,8 @@ export function InstallPrompt() {
               <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                 {isIOS
                   ? (lang === "de"
-                    ? "Tippe auf Teilen ⬆ und dann „Zum Home-Bildschirm""
-                    : "Tap Share ⬆ then \"Add to Home Screen\"")
+                    ? "Tippe auf Teilen ⬆ und dann \u201EZum Home-Bildschirm\u201C"
+                    : "Tap Share ⬆ then \u201CAdd to Home Screen\u201D")
                   : (lang === "de"
                     ? "Füge die App zu deinem Homescreen hinzu für schnellen Zugriff"
                     : "Add to your home screen for quick access")}
