@@ -63,14 +63,7 @@ import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { DividendGrowth } from "@/components/DividendGrowth";
 import { OptionsChainViewer } from "@/components/OptionsChainViewer";
 import { ShortInterestCard } from "@/components/ShortInterestCard";
-import { VolumeProfile } from "@/components/VolumeProfile";
 import { EarningsWhisper } from "@/components/EarningsWhisper";
-import { SeasonalityChart } from "@/components/SeasonalityChart";
-import { MonteCarloFairValue } from "@/components/MonteCarloFairValue";
-import { AIRiskAssessment } from "@/components/AIRiskAssessment";
-import { AITechnicalAnalysis } from "@/components/AITechnicalAnalysis";
-import { AICompetitorAnalysis } from "@/components/AICompetitorAnalysis";
-import { AIEarningsPreview } from "@/components/AIEarningsPreview";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
@@ -316,23 +309,9 @@ const StockDetail = () => {
             </div>
 
             {/* ══════════════════════════════════════════════════════════
-                SECTION 7b: AI-Powered Stock Analysis
+                SECTION 7b: AI-Powered Stock Summary
                 ══════════════════════════════════════════════════════════ */}
             <AIStockSummary symbol={upperSymbol} profile={profile} quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
-
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 7c: AI Risk Assessment + AI Technical Analysis
-                ══════════════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <AIRiskAssessment symbol={upperSymbol} overview={overview} derived={derived} />
-              <AITechnicalAnalysis symbol={upperSymbol} />
-            </div>
-
-            {/* AI Earnings Preview */}
-            <AIEarningsPreview symbol={upperSymbol} />
-
-            {/* AI Competitor Analysis */}
-            <AICompetitorAnalysis symbol={upperSymbol} peers={peers} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 8: Company Intelligence
@@ -377,15 +356,6 @@ const StockDetail = () => {
               <ShortInterestCard symbol={upperSymbol} />
               <EarningsWhisper symbol={upperSymbol} />
             </div>
-
-            {/* Volume Profile + Seasonality */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <VolumeProfile symbol={upperSymbol} currentPrice={quote?.c} />
-              <SeasonalityChart symbol={upperSymbol} />
-            </div>
-
-            {/* Monte Carlo Fair Value */}
-            <MonteCarloFairValue symbol={upperSymbol} currentPrice={quote?.c} />
 
             {/* Options Chain */}
             <OptionsChainViewer symbol={upperSymbol} currentPrice={quote?.c} />
