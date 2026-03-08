@@ -61,14 +61,20 @@ function computeSubIndicators(
   const avgChange = indexChanges.length > 0
     ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length : 0;
 
-  /* 1. Market Momentum (25%) */
+  // Detect stale commodity data (all changes = 0 means market closed / weekend)
+  const commodityChanges = (commodities || [])
+    .filter((c: any) => c.changePercent != null)
+    .map((c: any) => c.changePercent as number);
+  const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
+
+  /* 1. Market Momentum (25%) — ✅ Real index data */
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
     key: "momentum", weight: 0.25,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
-      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Werte über 0% deuten auf Optimismus hin.",
-      en: "Average daily performance of major indices (S&P 500, Nasdaq, DAX, etc.). Positive values indicate optimism."
+      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Basiert auf Echtzeit-Indexdaten.",
+      en: "Average daily performance of major indices (S&P 500, Nasdaq, DAX, etc.). Based on real-time index data."
     },
     formula: {
       de: "Score = ((Ø Indexänderung + 3%) / 6%) × 100. Bereich: -3% (Angst) bis +3% (Gier) wird auf 0-100 normalisiert.",
@@ -79,27 +85,27 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Market Breadth (20%) */
+  /* 2. Market Breadth (20%) — Proxy: top movers ratio */
   const totalStocks = gainers.length + losers.length;
   const breadthRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
   const breadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
   indicators.push({
     key: "breadth", weight: 0.20,
-    label: { de: "Marktbreite", en: "Market Breadth" },
+    label: { de: "Marktbreite (Proxy)", en: "Market Breadth (Proxy)" },
     description: {
-      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt.",
-      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support."
+      de: "Proxy basierend auf dem Verhältnis der Top-Gewinner zu Top-Verlierern des Tages. Nicht identisch mit NYSE Advance/Decline, aber ein nützlicher Stimmungsindikator.",
+      en: "Proxy based on the ratio of today's top gainers to top losers. Not identical to NYSE advance/decline data, but a useful sentiment indicator."
     },
     formula: {
-      de: `Score = (Gewinner / Gesamt) × 100. Aktuell: ${gainers.length} Gewinner von ${totalStocks} Aktien.`,
-      en: `Score = (gainers / total) × 100. Currently: ${gainers.length} gainers out of ${totalStocks} stocks.`
+      de: `Score = (Top-Gewinner / Gesamt Top-Movers) × 100. Aktuell: ${gainers.length} Gewinner von ${totalStocks} Top-Movers.`,
+      en: `Score = (top gainers / total top movers) × 100. Currently: ${gainers.length} gainers out of ${totalStocks} top movers.`
     },
     score: breadthScore,
     rawValue: `${gainers.length}/${totalStocks}`,
     icon: <Activity className="h-4 w-4" />,
   });
 
-  /* 3. Volatility Signal (15%) */
+  /* 3. Volatility Signal (15%) — Proxy: index spread */
   let volScore = 50;
   let spread = 0;
   if (indexChanges.length >= 2) {
@@ -110,42 +116,53 @@ function computeSubIndicators(
   }
   indicators.push({
     key: "volatility", weight: 0.15,
-    label: { de: "Volatilitätssignal", en: "Volatility Signal" },
+    label: { de: "Volatilität (Proxy)", en: "Volatility (Proxy)" },
     description: {
-      de: "Streuung der Index-Performance als VIX-Proxy. Große Unterschiede zwischen Indizes = Unsicherheit (Angst).",
-      en: "Index performance spread as VIX proxy. Large differences between indices = uncertainty (fear)."
+      de: "Approximation basierend auf der Streuung (Spread) zwischen den Tagesänderungen globaler Indizes. Kein direkter VIX-Wert, aber misst Marktunsicherheit.",
+      en: "Approximation based on the spread between daily changes of global indices. Not a direct VIX reading, but measures market uncertainty."
     },
     formula: {
-      de: `Score = 100 - (Spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Hoher Spread = niedrigerer Score (mehr Angst).`,
-      en: `Score = 100 - (spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Higher spread = lower score (more fear).`
+      de: `Score = 100 - (Spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Je größer die Streuung, desto mehr Unsicherheit.`,
+      en: `Score = 100 - (spread / 5%) × 100. Spread: ${spread.toFixed(2)}%. Greater spread = more uncertainty.`
     },
     score: volScore,
     rawValue: `${spread.toFixed(2)}%`,
     icon: <Waves className="h-4 w-4" />,
   });
 
-  /* 4. Safe Haven Demand (12%) */
+  /* 4. Safe Haven Demand (12%) — Gold vs stocks */
   const gold = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
   const goldChange = gold?.changePercent ?? 0;
   const safeHavenDiff = avgChange - goldChange;
-  const safeHavenScore = Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
+  // When commodity data is stale, base score purely on how negative stocks are (more fear when stocks drop)
+  const safeHavenScore = commoditiesStale
+    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
+    : Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
     key: "safehaven", weight: 0.12,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
-      de: "Vergleicht Gold mit Aktien. Gold steigt + Aktien fallen = Flucht in sichere Häfen (Angst).",
-      en: "Compares gold vs stocks. Gold rising + stocks falling = flight to safety (fear)."
+      de: commoditiesStale
+        ? "Rohstoffdaten aktuell nicht verfügbar (Markt geschlossen). Score basiert auf Aktienperformance als Fallback."
+        : "Vergleicht Aktienrenditen mit Gold. Aktien schlagen Gold = Risikoappetit (Gier); Gold outperformt Aktien = Angst.",
+      en: commoditiesStale
+        ? "Commodity data currently unavailable (market closed). Score uses stock performance as fallback."
+        : "Compares stock returns vs gold. Stocks beating gold = risk appetite (greed); gold outperforming stocks = fear."
     },
     formula: {
-      de: `Score = ((Aktien-Ø − Gold + 3%) / 6%) × 100. Aktien: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`,
-      en: `Score = ((stock avg − gold + 3%) / 6%) × 100. Stocks: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`
+      de: commoditiesStale
+        ? `Fallback: Score = ((Aktien-Ø + 2%) / 4%) × 100. Aktien: ${avgChange.toFixed(2)}%.`
+        : `Score = ((Aktien-Ø − Gold + 3%) / 6%) × 100. Aktien: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`,
+      en: commoditiesStale
+        ? `Fallback: Score = ((stock avg + 2%) / 4%) × 100. Stocks: ${avgChange.toFixed(2)}%.`
+        : `Score = ((stock avg − gold + 3%) / 6%) × 100. Stocks: ${avgChange.toFixed(2)}%, Gold: ${goldChange.toFixed(2)}%.`
     },
     score: safeHavenScore,
-    rawValue: `Δ ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%`,
+    rawValue: commoditiesStale ? `${avgChange.toFixed(2)}% (stale)` : `Δ ${safeHavenDiff >= 0 ? "+" : ""}${safeHavenDiff.toFixed(2)}%`,
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Strength Signal (10%) */
+  /* 5. Strength Signal (10%) — Top movers magnitude */
   const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
   const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
   const strengthRatio = (topGainerAvg + topLoserAvg) > 0 ? topGainerAvg / (topGainerAvg + topLoserAvg) : 0.5;
@@ -154,65 +171,81 @@ function computeSubIndicators(
     key: "strength", weight: 0.10,
     label: { de: "Stärke-Signal", en: "Strength Signal" },
     description: {
-      de: "Vergleicht die Stärke der Top-5-Gewinner mit den Top-5-Verlierern.",
-      en: "Compares magnitude of top 5 gainers vs top 5 losers."
+      de: "Vergleicht die durchschnittliche Stärke der Top-5-Tagesgewinner mit den Top-5-Verlierern. Misst, ob Aufwärtsbewegungen kräftiger sind als Abwärtsbewegungen.",
+      en: "Compares the average magnitude of today's top 5 gainers vs top 5 losers. Measures whether upward moves are stronger than downward moves."
     },
     formula: {
-      de: `Score = Top-Gewinner-Ø / (Gewinner-Ø + |Verlierer-Ø|) × 100. Gewinner: +${topGainerAvg.toFixed(2)}%, Verlierer: -${topLoserAvg.toFixed(2)}%.`,
-      en: `Score = gainer avg / (gainer avg + |loser avg|) × 100. Gainers: +${topGainerAvg.toFixed(2)}%, Losers: -${topLoserAvg.toFixed(2)}%.`
+      de: `Score = Gewinner-Ø / (Gewinner-Ø + |Verlierer-Ø|) × 100. Gewinner-Ø: +${topGainerAvg.toFixed(2)}%, Verlierer-Ø: -${topLoserAvg.toFixed(2)}%.`,
+      en: `Score = gainer avg / (gainer avg + |loser avg|) × 100. Gainer avg: +${topGainerAvg.toFixed(2)}%, Loser avg: -${topLoserAvg.toFixed(2)}%.`
     },
     score: strengthScore,
-    rawValue: `${strengthRatio.toFixed(2)}`,
+    rawValue: `${(strengthRatio * 100).toFixed(0)}%`,
     icon: <Target className="h-4 w-4" />,
   });
 
-  /* 6. Commodity Risk Appetite (10%) */
+  /* 6. Commodity Risk Appetite (10%) — Oil + Copper */
   const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
   const oilChange = oil?.changePercent ?? 0;
   const copper = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
   const copperChange = copper?.changePercent ?? 0;
   const comAvg = (oilChange + copperChange) / 2;
-  const commodityScore = Math.min(100, Math.max(0, ((comAvg + 3) / 6) * 100));
+  // When stale, use a momentum-based fallback
+  const commodityScore = commoditiesStale
+    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
+    : Math.min(100, Math.max(0, ((comAvg + 3) / 6) * 100));
   indicators.push({
     key: "commodity_risk", weight: 0.10,
     label: { de: "Rohstoff-Risikoappetit", en: "Commodity Risk Appetite" },
     description: {
-      de: "Öl- und Kupferpreise als Indikator für wirtschaftliche Erwartungen. Steigende Preise = Wachstumserwartung.",
-      en: "Oil and copper prices as indicator for economic expectations. Rising prices = growth expectations."
+      de: commoditiesStale
+        ? "Rohstoffmärkte aktuell geschlossen. Score basiert auf Aktienmarkt-Momentum als Fallback."
+        : "Öl- und Kupferpreisänderungen als Proxy für wirtschaftliche Erwartungen. Steigende Rohstoffe = Wachstumsoptimismus.",
+      en: commoditiesStale
+        ? "Commodity markets currently closed. Score uses stock market momentum as fallback."
+        : "Oil and copper price changes as proxy for economic expectations. Rising commodities = growth optimism."
     },
     formula: {
-      de: `Score = ((Ø(Öl, Kupfer) + 3%) / 6%) × 100. Öl: ${oilChange.toFixed(2)}%, Kupfer: ${copperChange.toFixed(2)}%.`,
-      en: `Score = ((avg(oil, copper) + 3%) / 6%) × 100. Oil: ${oilChange.toFixed(2)}%, Copper: ${copperChange.toFixed(2)}%.`
+      de: commoditiesStale
+        ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((Ø(Öl, Kupfer) + 3%) / 6%) × 100. Öl: ${oilChange.toFixed(2)}%, Kupfer: ${copperChange.toFixed(2)}%.`,
+      en: commoditiesStale
+        ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((avg(oil, copper) + 3%) / 6%) × 100. Oil: ${oilChange.toFixed(2)}%, Copper: ${copperChange.toFixed(2)}%.`
     },
     score: commodityScore,
-    rawValue: `${comAvg >= 0 ? "+" : ""}${comAvg.toFixed(2)}%`,
+    rawValue: commoditiesStale ? "closed" : `${comAvg >= 0 ? "+" : ""}${comAvg.toFixed(2)}%`,
     icon: <Flame className="h-4 w-4" />,
   });
 
-  /* 7. Index Dispersion (8%) — how correlated are indices */
+  /* 7. Index Correlation (8%) — deterministic, no randomness */
   let dispersionScore = 50;
   if (indexChanges.length >= 3) {
     const allPositive = indexChanges.every(c => c >= 0);
     const allNegative = indexChanges.every(c => c <= 0);
+    const posRatio = indexChanges.filter(c => c >= 0).length / indexChanges.length;
     if (allPositive) dispersionScore = 75 + Math.min(25, avgChange * 8);
     else if (allNegative) dispersionScore = 25 - Math.min(25, Math.abs(avgChange) * 8);
-    else dispersionScore = 45 + Math.random() * 10;
+    else {
+      // Deterministic: use the ratio of positive indices as signal
+      dispersionScore = posRatio * 100 * 0.6 + 20; // maps 0-100 range smoothly
+    }
   }
   dispersionScore = Math.min(100, Math.max(0, dispersionScore));
+  const posCount = indexChanges.filter(c => c >= 0).length;
   const allSameDir = indexChanges.length >= 3 && (indexChanges.every(c => c >= 0) || indexChanges.every(c => c <= 0));
   indicators.push({
     key: "dispersion", weight: 0.08,
     label: { de: "Index-Korrelation", en: "Index Correlation" },
     description: {
-      de: "Ob alle Indizes in dieselbe Richtung gehen. Einheitliche Bewegung = stärkeres Signal.",
-      en: "Whether all indices move in the same direction. Uniform movement = stronger signal."
+      de: "Misst, ob globale Indizes einheitlich in dieselbe Richtung gehen. Einheitlich positiv = Gier, einheitlich negativ = Angst, gemischt = Unsicherheit.",
+      en: "Measures whether global indices move uniformly in the same direction. Uniform positive = greed, uniform negative = fear, mixed = uncertainty."
     },
     formula: {
-      de: `Alle Indizes ${allSameDir ? "bewegen sich in dieselbe Richtung" : "bewegen sich gemischt"}. Einheitlich positiv = Gier, einheitlich negativ = Angst.`,
-      en: `All indices ${allSameDir ? "moving in same direction" : "moving mixed"}. Uniform positive = greed, uniform negative = fear.`
+      de: `${posCount} von ${indexChanges.length} Indizes positiv (${(posCount/Math.max(1,indexChanges.length)*100).toFixed(0)}%). ${allSameDir ? "Einheitliche Richtung = stärkeres Signal." : "Gemischte Signale."}`,
+      en: `${posCount} of ${indexChanges.length} indices positive (${(posCount/Math.max(1,indexChanges.length)*100).toFixed(0)}%). ${allSameDir ? "Uniform direction = stronger signal." : "Mixed signals."}`
     },
     score: dispersionScore,
-    rawValue: allSameDir ? (indexChanges[0] >= 0 ? "↑ uniform" : "↓ uniform") : "mixed",
+    rawValue: `${posCount}/${indexChanges.length} ↑`,
     icon: <BarChart2 className="h-4 w-4" />,
   });
 
@@ -523,6 +556,9 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
 function AdditionalIndicators({ indices, gainers, losers, commodities }: { indices: any[]; gainers: any[]; losers: any[]; commodities: any[] }) {
   const { lang } = useLanguage();
 
+  const commodityChanges = (commodities || []).filter((c: any) => c.changePercent != null).map((c: any) => c.changePercent as number);
+  const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
+
   const indexChanges = (indices || [])
     .filter((i: any) => i.changePercent != null && !isNaN(i.changePercent))
     .map((i: any) => i.changePercent as number);
@@ -620,8 +656,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: dxyLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (dollarProxy + 3) / 6 * 100)), cls: dollarProxy > 0 ? "bg-chart-2" : "bg-destructive" },
       desc: lang === "de"
-        ? "Inverse der Rohstoff-Performance. Starker Dollar drückt Rohstoffpreise."
-        : "Inverse of commodity performance. Strong dollar depresses commodity prices."
+        ? commoditiesStale ? "Rohstoffmärkte geschlossen — Wert zeigt 0%." : "Inverse der Rohstoff-Performance. Starker Dollar drückt Rohstoffpreise."
+        : commoditiesStale ? "Commodity markets closed — showing 0%." : "Inverse of commodity performance. Strong dollar depresses commodity prices.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Small vs Large Cap" : "Small vs Large Cap",
@@ -664,8 +701,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: energyLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (energyAvg + 5) / 10 * 100)), cls: energyAvg > 0 ? "bg-chart-2" : "bg-destructive" },
       desc: lang === "de"
-        ? "Durchschnitt aus Öl- und Gaspreisänderung. Steigende Energiepreise = Inflationsrisiko."
-        : "Average of oil & gas price change. Rising energy prices = inflation risk."
+        ? commoditiesStale ? "Energiemärkte geschlossen — keine aktuellen Daten." : "Durchschnitt aus Öl- und Gaspreisänderung. Steigende Energiepreise = Inflationsrisiko."
+        : commoditiesStale ? "Energy markets closed — no current data." : "Average of oil & gas price change. Rising energy prices = inflation risk.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Edelmetall-Signal" : "Precious Metals Signal",
@@ -675,8 +713,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: pmLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (pmAvg + 3) / 6 * 100)), cls: pmAvg > 0 ? "bg-orange-500" : "bg-chart-2" },
       desc: lang === "de"
-        ? "Ø Gold, Silber, Platin. Steigende Edelmetalle = Flucht in Sachwerte."
-        : "Avg of gold, silver, platinum. Rising precious metals = flight to real assets."
+        ? commoditiesStale ? "Edelmetallmärkte geschlossen — keine aktuellen Daten." : "Ø Gold, Silber, Platin. Steigende Edelmetalle = Flucht in Sachwerte."
+        : commoditiesStale ? "Precious metals markets closed — no current data." : "Avg of gold, silver, platinum. Rising precious metals = flight to real assets.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Asien vs US" : "Asia vs US",
@@ -703,8 +742,8 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
         </span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((card) => (
-          <div key={card.title} className="rounded-2xl border border-border/60 bg-card p-5 space-y-3">
+        {cards.map((card: any) => (
+          <div key={card.title} className={`rounded-2xl border border-border/60 bg-card p-5 space-y-3 ${card.stale ? "opacity-60" : ""}`}>
             <div className="flex items-center gap-2">
               {card.icon}
               <h3 className="font-display font-semibold text-sm">{card.title}</h3>
