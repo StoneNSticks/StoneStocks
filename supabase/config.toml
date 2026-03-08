@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.news-sentiment]
 verify_jwt = false
+
+[functions.ai-recommendations]
+verify_jwt = false
