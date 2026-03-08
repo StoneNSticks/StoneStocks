@@ -653,4 +653,24 @@ const translations: Record<string, Record<Language, string>> = {
   "dcf.intrinsicValue": { de: "Innerer Wert", en: "Intrinsic Value" },
   "dcf.perShare": { de: "pro Aktie", en: "per Share" },
   "dcf.sensitivity": { de: "Sensitivitätsanalyse", en: "Sensitivity Analysis" },
+
+  // ── AI Stock Summary ──
+  "ai.title": { de: "KI-Analyse", en: "AI Analysis" },
+  "ai.description": { de: "Generiere eine KI-gestützte Analyse dieser Aktie", en: "Generate an AI-powered analysis of this stock" },
+  "ai.generate": { de: "Analyse generieren", en: "Generate Analysis" },
+  "ai.retry": { de: "Erneut versuchen", en: "Try Again" },
+  "ai.refresh": { de: "Aktualisieren", en: "Refresh" },
+  "ai.disclaimer": { de: "KI-generiert — keine Anlageberatung", en: "AI-generated — not investment advice" },
+
+  // ── Portfolio Analytics ──
+  "pa.diversification": { de: "Diversifikation", en: "Diversification" },
+  "pa.excellent": { de: "Exzellent", en: "Excellent" },
+  "pa.good": { de: "Gut", en: "Good" },
+  "pa.moderate": { de: "Moderat", en: "Moderate" },
+  "pa.poor": { de: "Gering", en: "Poor" },
+  "pa.positions": { de: "Positionen", en: "Positions" },
+  "pa.sectors": { de: "Sektoren", en: "Sectors" },
+  "pa.topConcentration": { de: "Top-Konzentration", en: "Top Concentration" },
+  "pa.sectorAlloc": { de: "Sektor-Allokation", en: "Sector Allocation" },
+  "pa.posWeights": { de: "Gewichtung", en: "Position Weights" },
 };

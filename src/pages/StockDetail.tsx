@@ -54,6 +54,7 @@ import { EarningsCalendar } from "@/components/EarningsCalendar";
 import { SecFilings } from "@/components/SecFilings";
 import { FairValue } from "@/components/FairValue";
 import { DCFCalculator } from "@/components/DCFCalculator";
+import { AIStockSummary } from "@/components/AIStockSummary";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -297,6 +298,12 @@ const StockDetail = () => {
               <FinancialChart title={t("sd.dividendPerShare")} data={dividendData} dataKey="value" color="hsl(145, 63%, 42%)" formatValue={formatDividendValue} badge={derived?.dividendYield && derived.dividendYield > 0 ? `${derived.dividendYield.toFixed(2)}% ${t("div.yield")}` : undefined} badgeColor="hsl(145, 63%, 42%)" />
               <FinancialChart title={t("sd.assetsLiabilities")} data={assetsData} dataKey="assets" secondaryKey="liabilities" secondaryLabel={t("sd.liabilities")} color="hsl(210, 80%, 55%)" secondaryColor="hsl(0, 72%, 51%)" />
             </div>
+
+            {/* ══════════════════════════════════════════════════════════
+                SECTION 7b: AI-Powered Stock Analysis
+                On-demand AI analysis of the stock's fundamentals
+                ══════════════════════════════════════════════════════════ */}
+            <AIStockSummary symbol={upperSymbol} profile={profile} quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 8: Company Intelligence

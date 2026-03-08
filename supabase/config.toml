@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.notifications]
 verify_jwt = false
+
+[functions.ai-stock-summary]
+verify_jwt = false

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -110,6 +111,40 @@ function PositionRow({ position, onDelete }: { position: any; onDelete: (id: str
       </Button>
     </motion.div>
   );
+}
+
+/** Wrapper that fetches quote data for each position to feed PortfolioAnalytics */
+function PortfolioAnalyticsWrapper({ positions }: { positions: any[] }) {
+  const quoteQueries = positions.map(pos =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery({
+      queryKey: ["portfolio-quote", pos.symbol],
+      queryFn: () => getQuote(pos.symbol),
+      staleTime: 60_000,
+    })
+  );
+  const profileQueries = positions.map(pos =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery({
+      queryKey: ["portfolio-profile", pos.symbol],
+      queryFn: () => getProfile(pos.symbol),
+      staleTime: 5 * 60_000,
+    })
+  );
+
+  const allLoaded = quoteQueries.every(q => q.data);
+  if (!allLoaded) return null;
+
+  const posData = positions.map((pos, i) => ({
+    symbol: pos.symbol,
+    shares: Number(pos.shares),
+    avgCost: Number(pos.avg_cost),
+    currentPrice: quoteQueries[i]?.data?.c || 0,
+    sector: profileQueries[i]?.data?.finnhubIndustry || undefined,
+    name: profileQueries[i]?.data?.name || pos.symbol,
+  }));
+
+  return <PortfolioAnalytics positions={posData} />;
 }
 
 /** Portfolio Summary Cards */
@@ -376,6 +411,11 @@ export default function PortfolioPage() {
                   </ResponsiveContainer>
                 </div>
               </motion.div>
+            )}
+
+            {/* Portfolio Analytics */}
+            {count > 1 && (
+              <PortfolioAnalyticsWrapper positions={positions!} />
             )}
           </>
         )}
