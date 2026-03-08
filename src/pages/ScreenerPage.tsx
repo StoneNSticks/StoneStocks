@@ -53,6 +53,23 @@ export default function ScreenerPage() {
   const [sortAsc, setSortAsc] = useState(false);
   const [showSectors, setShowSectors] = useState(false);
 
+  type Preset = { label: string; labelDe: string; minMcap: number; maxPe: number; minYield: number; sector: string };
+  const PRESETS: Preset[] = [
+    { label: "Value", labelDe: "Value", minMcap: 10, maxPe: 20, minYield: 2, sector: "" },
+    { label: "Growth", labelDe: "Wachstum", minMcap: 5, maxPe: 200, minYield: 0, sector: "Technology" },
+    { label: "Dividend", labelDe: "Dividende", minMcap: 10, maxPe: 200, minYield: 3, sector: "" },
+    { label: "Large Cap", labelDe: "Large Cap", minMcap: 100, maxPe: 200, minYield: 0, sector: "" },
+    { label: "Healthcare", labelDe: "Gesundheit", minMcap: 0, maxPe: 200, minYield: 0, sector: "Healthcare" },
+    { label: "Energy", labelDe: "Energie", minMcap: 0, maxPe: 200, minYield: 0, sector: "Energy" },
+  ];
+
+  const applyPreset = (p: Preset) => {
+    setMinMcap(p.minMcap);
+    setMaxPe(p.maxPe);
+    setMinYield(p.minYield);
+    setSelectedSector(p.sector);
+  };
+
   const hasFilters = search || minMcap > 0 || maxPe < 200 || minYield > 0 || selectedSector;
 
   const resetFilters = () => {
