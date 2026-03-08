@@ -249,8 +249,7 @@ const StockDetail = () => {
 
             {/* Analyst Consensus moved to after Company Intelligence */}
 
-            {/* Advanced Alerts */}
-            <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
+            {/* Advanced Alerts now integrated into PriceAlertForm bell icon */}
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 6b: Fair Value Estimate + DCF Calculator
