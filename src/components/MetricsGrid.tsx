@@ -20,7 +20,7 @@ function MetricCard({ items }: MetricCardProps) {
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
 
-export function MetricsGrid({ overview, quote, derived, profile, massiveTicker }: {
+export const MetricsGrid = memo(function MetricsGrid({ overview, quote, derived, profile, massiveTicker }: {
   overview: Record<string, string> | null;
   quote: Record<string, number> | null;
   derived: Record<string, number | null> | null;
