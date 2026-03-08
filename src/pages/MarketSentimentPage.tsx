@@ -79,8 +79,8 @@ function computeSubIndicators(
     key: "breadth",
     label: { de: "Marktbreite", en: "Market Breadth" },
     description: {
-      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt — ein Zeichen von Gier. Fallen die meisten, herrscht Angst.",
-      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support — a sign of greed. When most fall, fear dominates."
+      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt, also ein Zeichen von Gier. Fallen die meisten, herrscht Angst.",
+      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support, a sign of greed. When most fall, fear dominates."
     },
     score: breadthScore,
     icon: <Activity className="h-4 w-4" />,
