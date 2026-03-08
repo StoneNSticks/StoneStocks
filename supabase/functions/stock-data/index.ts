@@ -1403,28 +1403,41 @@ async function handleInsiderTransactions(symbol: string) {
 }
 
 async function handleEarningsCalendar(symbols: string) {
-  const cacheKey = `earnings_calendar:${symbols}`;
-  const cached = await getCached(cacheKey);
-  if (cached) return cached;
+  // First try to serve from a global calendar cache to avoid per-user API calls
+  const globalCacheKey = "earnings_calendar:global";
+  const perSymbolCacheKey = `earnings_calendar:${symbols}`;
+
+  // Check per-symbol cache first
+  const cachedFiltered = await getCached(perSymbolCacheKey);
+  if (cachedFiltered) return cachedFiltered;
 
   try {
-    // Get upcoming earnings dates from Finnhub for each symbol
     const symbolList = symbols.split(",").map(s => s.trim()).filter(Boolean);
     const now = new Date();
     const from = now.toISOString().slice(0, 10);
-    const futureDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
+    const futureDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
     const to = futureDate.toISOString().slice(0, 10);
 
-    // Finnhub earnings calendar endpoint
-    const calendarData = await fetchFinnhub("calendar/earnings", { from, to, symbol: "" });
-    const allEarnings = calendarData?.earningsCalendar || [];
+    // Try global cache — all earnings for 90 days, shared across all users
+    let allEarnings: any[] = [];
+    const globalCached = await getCached(globalCacheKey);
+    if (globalCached && Array.isArray(globalCached)) {
+      allEarnings = globalCached;
+    } else {
+      // Fetch full calendar once and cache globally for 12 hours
+      const calendarData = await fetchFinnhub("calendar/earnings", { from, to, symbol: "" });
+      allEarnings = calendarData?.earningsCalendar || [];
+      if (allEarnings.length > 0) {
+        await setCache(globalCacheKey, allEarnings, "finnhub", 60 * 12);
+      }
+    }
 
     // Filter to requested symbols
     const filtered = symbolList.length > 0
       ? allEarnings.filter((e: any) => symbolList.includes(e.symbol))
       : allEarnings.slice(0, 50);
 
-    // If Finnhub returns nothing for those symbols, try individual lookups
+    // If global calendar didn't have our symbols, try individual lookups
     if (filtered.length === 0 && symbolList.length > 0 && symbolList.length <= 20) {
       const results: any[] = [];
       await Promise.all(symbolList.map(async (sym) => {
@@ -1437,14 +1450,14 @@ async function handleEarningsCalendar(symbols: string) {
       }));
       if (results.length > 0) {
         results.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
-        await setCache(cacheKey, results, "finnhub", 60);
+        await setCache(perSymbolCacheKey, results, "finnhub", 60 * 12);
         return results;
       }
     }
 
-    // Sort by date
+    // Sort and cache the filtered result per symbol set
     filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
-    await setCache(cacheKey, filtered, "finnhub", 60);
+    await setCache(perSymbolCacheKey, filtered, "finnhub", 60 * 12);
     return filtered;
   } catch (e) {
     console.warn("Earnings calendar fetch failed:", e);
