@@ -910,3 +910,8 @@ const baseTranslations: Record<string, Record<Language, string>> = {
   "learn.quizPortfolio": t("Quiz: Portfoliomanagement", "Quiz: Portfolio Management"),
   "learn.quizTA": t("Quiz: Technische Analyse", "Quiz: Technical Analysis"),
 };
+
+export const learnTranslations: Record<string, Record<Language, string>> = {
+  ...baseTranslations,
+  ...learnTranslationsExtended,
+};
