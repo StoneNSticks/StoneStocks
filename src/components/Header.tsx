@@ -35,9 +35,8 @@ const navItems: NavItem[] = [
   { to: "/screener", key: "nav.screener", fallback: "Screener", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/learn", key: "nav.learn", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
-  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
+  { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 export function Header() {
