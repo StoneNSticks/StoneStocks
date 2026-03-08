@@ -117,7 +117,7 @@ const App = () => (
               <InstallPrompt />
               <AlertNotifications />
               <KeyboardShortcutsModal />
-              <FloatingChat />
+              
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
