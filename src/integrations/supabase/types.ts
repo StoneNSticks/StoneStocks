@@ -197,19 +197,25 @@ export type Database = {
       watchlist: {
         Row: {
           created_at: string
+          group_name: string | null
           id: string
+          note: string | null
           symbol: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          group_name?: string | null
           id?: string
+          note?: string | null
           symbol: string
           user_id: string
         }
         Update: {
           created_at?: string
+          group_name?: string | null
           id?: string
+          note?: string | null
           symbol?: string
           user_id?: string
         }
