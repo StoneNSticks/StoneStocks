@@ -124,7 +124,7 @@ export default function AuthPage() {
                   </div>
                 </div>
               )}
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
                 {loading ? t("auth.loading") : showForgot ? t("auth.sendLink") : isLogin ? t("auth.signIn") : t("auth.signUp")}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
