@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, Moon, Sun, Shield, BellRing, TrendingUp, TrendingDown, X } from "lucide-react";
+import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, Moon, Sun, Shield, BellRing, TrendingUp, TrendingDown, X, Eye, EyeOff, MessageSquare } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, loading: authLoading, signOut } = useAuth();
