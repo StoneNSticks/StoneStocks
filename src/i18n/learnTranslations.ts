@@ -23,17 +23,35 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
   "learn.levelBeginner": t("🟢 Einsteiger", "🟢 Beginner"),
   "learn.levelIntermediate": t("🟡 Fortgeschritten", "🟡 Intermediate"),
   "learn.levelAdvanced": t("🔴 Experte", "🔴 Expert"),
+  "learn.levelExpert": t("🟣 Profi", "🟣 Expert+"),
+
+  // ── Obersektion Headers ──
+  "learn.superA": t("Einstieg", "Getting Started"),
+  "learn.superB": t("Aufbau", "Building Knowledge"),
+  "learn.superC": t("Fortgeschritten", "Advanced"),
+  "learn.superD": t("Experte", "Expert"),
 
   // ── TOC ──
   "learn.toc1": t("1. Grundlagen der Finanzen", "1. Financial Basics"),
   "learn.toc2": t("2. Aktien & ETFs", "2. Stocks & ETFs"),
-  "learn.toc3": t("3. Anleihen & Fonds", "3. Bonds & Funds"),
-  "learn.toc4": t("4. Derivate im Detail", "4. Derivatives in Detail"),
-  "learn.toc5": t("5. Krypto & Alternative Anlagen", "5. Crypto & Alternative Assets"),
-  "learn.toc6": t("6. Anlagestrategien", "6. Investment Strategies"),
-  "learn.toc7": t("7. Technische Analyse", "7. Technical Analysis"),
+  "learn.toc3": t("3. Anlagestrategien", "3. Investment Strategies"),
+  "learn.toc4": t("4. Steuern & Kosten", "4. Taxes & Costs"),
+  "learn.toc5": t("5. Dein erstes Investment", "5. Your First Investment"),
+  "learn.toc6": t("6. Anleihen & Fonds", "6. Bonds & Funds"),
+  "learn.toc7": t("7. Krypto & Alternative Anlagen", "7. Crypto & Alternatives"),
   "learn.toc8": t("8. Portfoliomanagement", "8. Portfolio Management"),
-  "learn.toc9": t("9. Steuern & Kosten", "9. Taxes & Costs"),
+  "learn.toc9": t("9. Aktienanalyse in der Praxis", "9. Stock Analysis in Practice"),
+  "learn.toc10": t("10. Technische Analyse", "10. Technical Analysis"),
+  "learn.toc11": t("11. Derivate im Detail", "11. Derivatives in Detail"),
+  "learn.toc12": t("12. Formeln & Expertenwissen", "12. Formulas & Expert Knowledge"),
+  "learn.toc13": t("13. Marktmikrostruktur & Trading", "13. Market Microstructure & Trading"),
+  "learn.toc14": t("14. Verhaltensökonomie & Marktanomalien", "14. Behavioral Finance & Anomalies"),
+  "learn.toc15": t("15. Globale Märkte & Makroökonomie", "15. Global Markets & Macro"),
+  "learn.toc16": t("16. Quantitative Analyse", "16. Quantitative Analysis"),
+
+  // ── Calculator cross-links ──
+  "learn.relatedCalc": t("🧮 Passender Rechner", "🧮 Related Calculator"),
+  "learn.tryCalculator": t("Jetzt ausprobieren →", "Try it now →"),
 
   // ══════════════════════════════════════════════════════════════
   // SECTION 1: BASICS
@@ -50,607 +68,705 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
     "The most important financial markets are: <strong>stock markets</strong> (NYSE, NASDAQ, XETRA, Tokyo Stock Exchange), <strong>bond markets</strong> (the largest market in the world by volume), <strong>foreign exchange markets</strong> (Forex – $7.5 trillion daily trading volume), and <strong>commodity markets</strong> (gold, oil, wheat, etc.)."
   ),
   "learn.marketsP3": t(
-    "Märkte werden in <strong>Primärmarkt</strong> (Erstausgabe von Wertpapieren, z. B. IPO) und <strong>Sekundärmarkt</strong> (Handel bereits ausgegebener Wertpapiere) unterteilt.",
-    "Markets are divided into <strong>primary markets</strong> (initial issuance of securities, e.g. IPO) and <strong>secondary markets</strong> (trading of already-issued securities)."
+    "Die <strong>Marktkapitalisierung</strong> aller börsennotierten Unternehmen weltweit beträgt über <strong>$100 Billionen</strong>. Die größten Börsen: NYSE ($25T), NASDAQ ($22T), Shanghai ($7T), Euronext ($7T).",
+    "The <strong>market capitalization</strong> of all publicly listed companies worldwide exceeds <strong>$100 trillion</strong>. Largest exchanges: NYSE ($25T), NASDAQ ($22T), Shanghai ($7T), Euronext ($7T)."
   ),
   "learn.marketsInfo": t(
-    "Die weltweiten Aktienmärkte haben zusammen eine Marktkapitalisierung von über $109 Billionen (2024). Der Forex-Markt bewegt täglich $7,5 Billionen – mehr als alle Aktienmärkte zusammen in einer Woche.",
-    "The world's stock markets have a combined market cap of over $109 trillion (2024). The Forex market moves $7.5 trillion daily – more than all stock markets combined in a week."
+    "Die Börse hat historisch eine durchschnittliche jährliche Rendite von ~10% (S&P 500 seit 1926). Nach Inflation sind es ~7%.",
+    "The stock market has historically returned ~10% annually (S&P 500 since 1926). After inflation, ~7%."
   ),
 
-  "learn.basicsTitle": t("Grundbegriffe", "Key Terms"),
+  "learn.basicsTitle": t("Wichtige Grundbegriffe", "Essential Terms"),
   "learn.term.marketCap": t("Marktkapitalisierung", "Market Capitalization"),
-  "learn.term.marketCapDesc": t("Der Gesamtwert aller ausgegebenen Aktien eines Unternehmens (Aktienkurs × Anzahl Aktien). Mega Cap: >$200 Mrd., Large Cap: $10–200 Mrd., Mid Cap: $2–10 Mrd., Small Cap: <$2 Mrd.", "The total value of all outstanding shares of a company (share price × number of shares). Mega Cap: >$200B, Large Cap: $10–200B, Mid Cap: $2–10B, Small Cap: <$2B."),
+  "learn.term.marketCapDesc": t("Gesamtwert aller ausgegebenen Aktien (Aktienpreis × Anzahl der Aktien)", "Total value of all issued shares (share price × number of shares)"),
   "learn.term.dividend": t("Dividende", "Dividend"),
-  "learn.term.dividendDesc": t("Eine regelmäßige Gewinnausschüttung eines Unternehmens an seine Aktionäre. Die Dividendenrendite = Dividende/Kurs × 100%.", "A regular profit distribution from a company to its shareholders. Dividend yield = Dividend/Price × 100%."),
-  "learn.term.pe": t("KGV (Kurs-Gewinn-Verhältnis)", "P/E Ratio (Price-to-Earnings)"),
-  "learn.term.peDesc": t("Zeigt, wie viel Investoren bereit sind, pro Euro Gewinn zu zahlen. KGV = Kurs / Gewinn pro Aktie. Ein niedriges KGV deutet auf eine günstigere Bewertung hin, kann aber auch Probleme signalisieren.", "Shows how much investors pay per dollar of earnings. P/E = Price / Earnings per Share. A low P/E suggests cheaper valuation but may also signal problems."),
-  "learn.term.volatility": t("Volatilität", "Volatility"),
-  "learn.term.volatilityDesc": t("Maß für die Schwankungsbreite eines Kurses. Wird oft als Standardabweichung gemessen. Der VIX ('Angstindex') misst die erwartete Volatilität des S&P 500.", "A measure of price fluctuation. Often measured as standard deviation. The VIX ('fear index') measures expected S&P 500 volatility."),
-  "learn.term.liquidity": t("Liquidität", "Liquidity"),
-  "learn.term.liquidityDesc": t("Wie leicht ein Wertpapier gekauft oder verkauft werden kann, ohne den Preis stark zu beeinflussen. Apple-Aktien: sehr liquide. Immobilien: wenig liquide.", "How easily a security can be bought or sold without significantly affecting its price. Apple stock: very liquid. Real estate: illiquid."),
-  "learn.term.bullBear": t("Bull Market / Bear Market", "Bull Market / Bear Market"),
-  "learn.term.bullBearDesc": t("Bull Market = Kurse steigen >20% vom Tief. Bear Market = Kurse fallen >20% vom Hoch. Historisch dauern Bull Markets im Durchschnitt 5,5 Jahre, Bear Markets 1,3 Jahre.", "Bull Market = prices rise >20% from low. Bear Market = prices fall >20% from high. Historically, bull markets last 5.5 years on average, bear markets 1.3 years."),
-  "learn.term.roe": t("Eigenkapitalrendite (ROE)", "Return on Equity (ROE)"),
-  "learn.term.roeDesc": t("Zeigt, wie effizient ein Unternehmen das Eigenkapital einsetzt. ROE = Nettogewinn / Eigenkapital × 100%. Ein ROE über 15% gilt als überdurchschnittlich.", "Shows how efficiently a company uses shareholder equity. ROE = Net Income / Equity × 100%. An ROE above 15% is considered above average."),
-  "learn.term.freeCashFlow": t("Freier Cashflow (FCF)", "Free Cash Flow (FCF)"),
-  "learn.term.freeCashFlowDesc": t("Geld, das nach allen operativen Ausgaben und Investitionen übrig bleibt. FCF = Operativer Cashflow − Investitionsausgaben. Wichtiger als Gewinn für die Bewertung.", "Cash remaining after operating expenses and capital expenditures. FCF = Operating Cash Flow − CapEx. More important than earnings for valuation."),
-  "learn.term.eps": t("Gewinn pro Aktie (EPS)", "Earnings Per Share (EPS)"),
-  "learn.term.epsDesc": t("Nettogewinn geteilt durch die Anzahl ausstehender Aktien. Der wichtigste Indikator für die Profitabilität eines Unternehmens pro Aktie.", "Net income divided by outstanding shares. The most important indicator of a company's per-share profitability."),
+  "learn.term.dividendDesc": t("Gewinnausschüttung an Aktionäre, meist quartalsweise", "Profit distribution to shareholders, usually quarterly"),
+  "learn.term.pe": t("KGV (Kurs-Gewinn-Verhältnis)", "P/E Ratio"),
+  "learn.term.peDesc": t("Aktienkurs geteilt durch Gewinn pro Aktie – Bewertungsmaßstab", "Share price divided by earnings per share – valuation measure"),
+  "learn.term.eps": t("EPS (Gewinn pro Aktie)", "EPS (Earnings Per Share)"),
+  "learn.term.epsDesc": t("Nettogewinn / Anzahl ausstehender Aktien", "Net income / number of outstanding shares"),
   "learn.term.beta": t("Beta", "Beta"),
-  "learn.term.betaDesc": t("Misst die Schwankung einer Aktie im Vergleich zum Gesamtmarkt. Beta 1,0 = gleich wie Markt. Beta 1,5 = 50% volatiler. Beta 0,5 = 50% weniger volatil.", "Measures a stock's volatility compared to the overall market. Beta 1.0 = same as market. Beta 1.5 = 50% more volatile. Beta 0.5 = 50% less volatile."),
+  "learn.term.betaDesc": t("Maß für die Volatilität einer Aktie im Vergleich zum Gesamtmarkt", "Measure of a stock's volatility compared to the overall market"),
+  "learn.term.volatility": t("Volatilität", "Volatility"),
+  "learn.term.volatilityDesc": t("Schwankungsbreite eines Kurses – höher = mehr Risiko", "Range of price fluctuations – higher = more risk"),
+  "learn.term.liquidity": t("Liquidität", "Liquidity"),
+  "learn.term.liquidityDesc": t("Wie einfach ein Wertpapier gehandelt werden kann ohne den Preis zu beeinflussen", "How easily a security can be traded without affecting the price"),
+  "learn.term.bullBear": t("Bulle & Bär", "Bull & Bear"),
+  "learn.term.bullBearDesc": t("Bulle = steigende Märkte, Bär = fallende Märkte", "Bull = rising markets, Bear = falling markets"),
+  "learn.term.roe": t("ROE (Eigenkapitalrendite)", "ROE (Return on Equity)"),
+  "learn.term.roeDesc": t("Nettogewinn / Eigenkapital – Profitabilität für Aktionäre", "Net income / equity – profitability for shareholders"),
+  "learn.term.freeCashFlow": t("Freier Cashflow", "Free Cash Flow"),
+  "learn.term.freeCashFlowDesc": t("Operativer Cashflow minus Investitionen – Geld, das wirklich übrig bleibt", "Operating cash flow minus capital expenditures – money that's truly left over"),
   "learn.term.spread": t("Spread (Geld-Brief-Spanne)", "Spread (Bid-Ask)"),
-  "learn.term.spreadDesc": t("Differenz zwischen Kauf- und Verkaufskurs. Ein enger Spread zeigt hohe Liquidität an. Bei illiquiden Aktien kann der Spread mehrere Prozent betragen.", "Difference between buy and sell price. A narrow spread indicates high liquidity. For illiquid stocks, the spread can be several percent."),
+  "learn.term.spreadDesc": t("Differenz zwischen Kauf- und Verkaufskurs eines Wertpapiers", "Difference between buy and sell price of a security"),
 
-  "learn.riskTitle": t("Risiko & Diversifikation", "Risk & Diversification"),
+  "learn.riskTitle": t("Risiko verstehen", "Understanding Risk"),
   "learn.riskP1": t(
-    "<strong>Risiko</strong> beschreibt die Möglichkeit, Geld zu verlieren. Es gibt verschiedene Risikoarten: <strong>Marktrisiko</strong> (der ganze Markt fällt), <strong>Einzeltitelrisiko</strong> (ein Unternehmen gerät in Schwierigkeiten), <strong>Währungsrisiko</strong> (Wechselkursschwankungen), <strong>Inflationsrisiko</strong> (Kaufkraftverlust) und <strong>Liquiditätsrisiko</strong> (schwer verkäufliche Anlage).",
-    "<strong>Risk</strong> describes the possibility of losing money. There are different risk types: <strong>market risk</strong> (whole market falls), <strong>individual stock risk</strong> (one company struggles), <strong>currency risk</strong> (exchange rate fluctuations), <strong>inflation risk</strong> (loss of purchasing power), and <strong>liquidity risk</strong> (hard-to-sell investment)."
+    "<strong>Risiko und Rendite</strong> sind untrennbar verbunden. Höhere potenzielle Renditen gehen immer mit höherem Risiko einher. Das wichtigste Prinzip: <strong>Nie mehr investieren, als man bereit ist zu verlieren.</strong>",
+    "<strong>Risk and return</strong> are inseparable. Higher potential returns always come with higher risk. The most important principle: <strong>Never invest more than you're willing to lose.</strong>"
   ),
   "learn.riskP2": t(
-    "<strong>Diversifikation</strong> ist die wichtigste Strategie zur Risikominimierung: Verteile dein Geld auf verschiedene Anlageklassen (Aktien, Anleihen, Immobilien), Branchen (Tech, Gesundheit, Energie), Regionen (USA, Europa, Asien) und Zeitpunkte (regelmäßig investieren).",
-    "<strong>Diversification</strong> is the most important risk-reduction strategy: spread your money across different asset classes (stocks, bonds, real estate), sectors (tech, healthcare, energy), regions (US, Europe, Asia), and time (invest regularly)."
+    "Es gibt verschiedene <strong>Risikokategorien</strong>: <strong>Marktrisiko</strong> (Gesamtmarkt fällt), <strong>Unternehmensrisiko</strong> (einzelnes Unternehmen scheitert), <strong>Liquiditätsrisiko</strong> (kann nicht zum gewünschten Preis verkaufen), <strong>Währungsrisiko</strong> (bei ausländischen Investments), <strong>Inflationsrisiko</strong> (Kaufkraft sinkt).",
+    "There are different <strong>risk categories</strong>: <strong>market risk</strong> (overall market declines), <strong>company risk</strong> (individual company fails), <strong>liquidity risk</strong> (can't sell at desired price), <strong>currency risk</strong> (with foreign investments), <strong>inflation risk</strong> (purchasing power decreases)."
   ),
   "learn.riskP3": t(
-    "Die <strong>Korrelation</strong> zwischen Anlagen bestimmt, wie effektiv Diversifikation wirkt. Anlagen mit niedriger oder negativer Korrelation (z. B. Aktien und Staatsanleihen) bieten den besten Schutz.",
-    "<strong>Correlation</strong> between assets determines how effective diversification is. Assets with low or negative correlation (e.g. stocks and government bonds) provide the best protection."
+    "<strong>Diversifikation</strong> ist der Schlüssel zur Risikominimierung: Verteile dein Investment über verschiedene Anlageklassen, Sektoren und Regionen. Die Faustregel: Mindestens 15-20 verschiedene Aktien aus verschiedenen Branchen, oder noch einfacher: breit gestreute ETFs.",
+    "<strong>Diversification</strong> is the key to risk reduction: Spread your investment across different asset classes, sectors, and regions. Rule of thumb: At least 15-20 different stocks from various industries, or even simpler: broadly diversified ETFs."
   ),
   "learn.riskInfo": t(
-    "\"Lege nie alle Eier in einen Korb.\" – Eine breite Streuung über mindestens 20–30 verschiedene Positionen reduziert das Einzeltitelrisiko um über 90%.",
-    "\"Don't put all your eggs in one basket.\" – Broad diversification across at least 20-30 positions reduces individual stock risk by over 90%."
+    "Investiere nie Geld, das du in den nächsten 3-5 Jahren brauchst. Baue zuerst einen Notfallfonds (3-6 Monatsausgaben) auf, bevor du investierst.",
+    "Never invest money you'll need in the next 3-5 years. Build an emergency fund (3-6 months expenses) before investing."
   ),
 
-  "learn.orderTypesTitle": t("Ordertypen verstehen", "Understanding Order Types"),
+  "learn.orderTypesTitle": t("Ordertypen im Überblick", "Order Types Overview"),
   "learn.orderTypesP1": t(
-    "Beim Kauf und Verkauf von Wertpapieren gibt es verschiedene Ordertypen, die du kennen solltest:",
-    "When buying and selling securities, there are various order types you should know:"
+    "Wenn du eine Aktie kaufen oder verkaufen willst, musst du eine Order aufgeben. Es gibt verschiedene Typen:",
+    "When you want to buy or sell a stock, you need to place an order. There are different types:"
   ),
   "learn.orderMarket": t("Market Order", "Market Order"),
-  "learn.orderMarketDesc": t("Sofortige Ausführung zum aktuellen Marktpreis. Schnell, aber der genaue Preis ist nicht garantiert.", "Immediate execution at current market price. Fast, but exact price not guaranteed."),
+  "learn.orderMarketDesc": t("Sofortige Ausführung zum aktuellen Marktpreis. Einfachster Ordertyp.", "Immediate execution at current market price. Simplest order type."),
   "learn.orderLimit": t("Limit Order", "Limit Order"),
-  "learn.orderLimitDesc": t("Kauf/Verkauf nur zu einem bestimmten Preis oder besser. Mehr Kontrolle, aber Ausführung nicht garantiert.", "Buy/sell only at a specific price or better. More control, but execution not guaranteed."),
+  "learn.orderLimitDesc": t("Wird nur zum festgelegten Preis oder besser ausgeführt. Du kontrollierst den Preis.", "Only executed at the set price or better. You control the price."),
   "learn.orderStopLoss": t("Stop-Loss Order", "Stop-Loss Order"),
-  "learn.orderStopLossDesc": t("Automatischer Verkauf wenn der Kurs unter ein Limit fällt. Schützt vor großen Verlusten.", "Automatic sell when price falls below a threshold. Protects against large losses."),
+  "learn.orderStopLossDesc": t("Automatischer Verkauf bei Erreichen eines festgelegten Kurses. Schützt vor großen Verlusten.", "Automatic sell when price reaches set level. Protects against large losses."),
   "learn.orderTrailingStop": t("Trailing Stop", "Trailing Stop"),
-  "learn.orderTrailingStopDesc": t("Ein Stop-Loss, der dem Kurs nach oben folgt. Sichert Gewinne ab, ohne Aufwärtspotenzial zu limitieren.", "A stop-loss that follows the price upward. Locks in profits without limiting upside potential."),
+  "learn.orderTrailingStopDesc": t("Stop-Preis bewegt sich mit dem Kurs nach oben. Sichert Gewinne ab.", "Stop price moves up with price. Locks in gains."),
 
   // ══════════════════════════════════════════════════════════════
   // SECTION 2: STOCKS & ETFs
   // ══════════════════════════════════════════════════════════════
   "learn.section2Title": t("Aktien & ETFs", "Stocks & ETFs"),
 
-  "learn.stocksTitle": t("Was sind Aktien?", "What Are Stocks?"),
+  "learn.stocksTitle": t("Aktien verstehen", "Understanding Stocks"),
   "learn.stocksP1": t(
-    "Eine <strong>Aktie</strong> ist ein Anteil an einem Unternehmen. Wenn du eine Aktie kaufst, wirst du Miteigentümer und profitierst von Kursgewinnen und Dividenden. Es gibt <strong>Stammaktien</strong> (mit Stimmrecht) und <strong>Vorzugsaktien</strong> (ohne Stimmrecht, aber mit Dividendenvorzug).",
-    "A <strong>stock</strong> is a share of ownership in a company. When you buy a stock, you become a co-owner and benefit from price gains and dividends. There are <strong>common stocks</strong> (with voting rights) and <strong>preferred stocks</strong> (no voting rights, but dividend preference)."
+    "Eine <strong>Aktie</strong> repräsentiert einen Eigentumsanteil an einem Unternehmen. Wenn du eine Apple-Aktie kaufst, gehört dir ein winziger Teil von Apple. Als Aktionär profitierst du von <strong>Kurssteigerungen</strong> und <strong>Dividenden</strong>.",
+    "A <strong>stock</strong> represents an ownership share in a company. When you buy an Apple stock, you own a tiny part of Apple. As a shareholder, you benefit from <strong>price appreciation</strong> and <strong>dividends</strong>."
   ),
   "learn.stocksP2": t(
-    "Aktien werden an Börsen gehandelt. Der Preis wird durch Angebot und Nachfrage bestimmt und spiegelt die Erwartungen der Investoren an die Zukunft des Unternehmens wider.",
-    "Stocks are traded on exchanges. The price is determined by supply and demand and reflects investors' expectations about the company's future."
+    "Aktien werden an Börsen gehandelt. Die wichtigsten sind NYSE, NASDAQ (USA), XETRA (Deutschland), LSE (London) und TSE (Tokio).",
+    "Stocks are traded on exchanges. The most important ones are NYSE, NASDAQ (USA), XETRA (Germany), LSE (London), and TSE (Tokyo)."
   ),
   "learn.stocksPros": t("Vorteile", "Advantages"),
-  "learn.stocksPro1": t("Historisch höchste Renditen aller Anlageklassen (Ø 7–10% p.a.)", "Historically highest returns of all asset classes (avg. 7–10% p.a.)"),
-  "learn.stocksPro2": t("Passives Einkommen durch Dividenden", "Passive income through dividends"),
-  "learn.stocksPro3": t("Mitspracherecht auf Hauptversammlungen", "Voting rights at shareholder meetings"),
-  "learn.stocksPro4": t("Langfristiger Inflationsschutz", "Long-term inflation protection"),
-  "learn.stocksCons": t("Risiken", "Risks"),
-  "learn.stocksCon1": t("Kursverluste bis hin zum Totalverlust möglich", "Price losses up to total loss possible"),
-  "learn.stocksCon2": t("Keine garantierte Rendite oder Dividende", "No guaranteed returns or dividends"),
-  "learn.stocksCon3": t("Hohe kurzfristige Volatilität", "High short-term volatility"),
-  "learn.stocksCon4": t("Emotionale Belastung bei Kurseinbrüchen", "Emotional stress during market crashes"),
+  "learn.stocksCons": t("Nachteile", "Disadvantages"),
+  "learn.stocksPro1": t("Langfristig höchste Rendite aller Anlageklassen (~10%/Jahr)", "Highest long-term returns of all asset classes (~10%/year)"),
+  "learn.stocksPro2": t("Hohe Liquidität – jederzeit kauf- und verkaufbar", "High liquidity – can buy and sell anytime"),
+  "learn.stocksPro3": t("Inflationsschutz durch Sachwertbeteiligung", "Inflation protection through real asset ownership"),
+  "learn.stocksPro4": t("Dividenden als passives Einkommen", "Dividends as passive income"),
+  "learn.stocksCon1": t("Kurzfristig hohe Volatilität möglich", "Short-term high volatility possible"),
+  "learn.stocksCon2": t("Totalverlust bei Unternehmensinsolvenz", "Total loss in case of company bankruptcy"),
+  "learn.stocksCon3": t("Emotionale Fallstricke (Panikverkäufe)", "Emotional pitfalls (panic selling)"),
+  "learn.stocksCon4": t("Zeitaufwand für Research und Überwachung", "Time required for research and monitoring"),
 
   "learn.stockTypesTitle": t("Aktientypen", "Stock Types"),
   "learn.blueChip": t("Blue-Chip Aktien", "Blue-Chip Stocks"),
-  "learn.blueChipDesc": t("Große, etablierte Unternehmen mit stabilen Gewinnen (z. B. Apple, Microsoft, Nestlé). Geringeres Risiko, moderate Rendite.", "Large, established companies with stable earnings (e.g. Apple, Microsoft, Nestlé). Lower risk, moderate returns."),
+  "learn.blueChipDesc": t("Große, etablierte Unternehmen mit stabilen Gewinnen (Apple, Microsoft, J&J)", "Large, established companies with stable earnings (Apple, Microsoft, J&J)"),
   "learn.growthStocks": t("Wachstumsaktien", "Growth Stocks"),
-  "learn.growthStocksDesc": t("Unternehmen mit hohem Umsatz-/Gewinnwachstum (z. B. Nvidia, Tesla). Hohes KGV, hohe Volatilität, hohes Potenzial.", "Companies with high revenue/earnings growth (e.g. Nvidia, Tesla). High P/E, high volatility, high potential."),
+  "learn.growthStocksDesc": t("Unternehmen mit hohem Umsatzwachstum, oft ohne Dividende (NVIDIA, Tesla)", "Companies with high revenue growth, often no dividend (NVIDIA, Tesla)"),
   "learn.dividendStocks": t("Dividendenaktien", "Dividend Stocks"),
-  "learn.dividendStocksDesc": t("Unternehmen, die regelmäßig hohe Dividenden ausschütten (z. B. Coca-Cola, P&G). Stetiges Einkommen, oft defensive Sektoren.", "Companies that regularly pay high dividends (e.g. Coca-Cola, P&G). Steady income, often defensive sectors."),
+  "learn.dividendStocksDesc": t("Unternehmen mit regelmäßiger, steigender Dividende (Coca-Cola, P&G)", "Companies with regular, growing dividends (Coca-Cola, P&G)"),
   "learn.pennyStocks": t("Penny Stocks", "Penny Stocks"),
-  "learn.pennyStocksDesc": t("Aktien mit sehr niedrigem Kurs (<$5). Extrem spekulativ, hohe Volatilität, Gefahr von Manipulation. Nur für erfahrene Trader!", "Stocks with very low prices (<$5). Extremely speculative, high volatility, risk of manipulation. Only for experienced traders!"),
+  "learn.pennyStocksDesc": t("Aktien unter $5 – sehr spekulativ, hohe Manipulation, oft illiquide", "Stocks under $5 – very speculative, high manipulation risk, often illiquid"),
 
-  "learn.etfTitle": t("Was sind ETFs?", "What Are ETFs?"),
+  "learn.etfTitle": t("ETFs – Exchange Traded Funds", "ETFs – Exchange Traded Funds"),
   "learn.etfP1": t(
-    "Ein <strong>ETF (Exchange Traded Fund)</strong> ist ein börsengehandelter Fonds, der einen Index nachbildet. Mit einem einzigen Kauf investierst du in hunderte oder tausende Unternehmen gleichzeitig – maximale Diversifikation mit minimalem Aufwand.",
-    "An <strong>ETF (Exchange Traded Fund)</strong> is a fund traded on stock exchanges that tracks an index. With a single purchase, you invest in hundreds or thousands of companies – maximum diversification with minimal effort."
+    "Ein <strong>ETF</strong> ist ein Fonds, der an der Börse gehandelt wird und einen Index, Sektor oder eine Anlageklasse abbildet. Mit einem einzigen Kauf investierst du in hunderte oder tausende Wertpapiere.",
+    "An <strong>ETF</strong> is a fund traded on exchanges that tracks an index, sector, or asset class. With a single purchase, you invest in hundreds or thousands of securities."
   ),
   "learn.etfP2": t(
-    "ETFs kombinieren die Diversifikation eines Fonds mit der einfachen Handelbarkeit einer Aktie. Die jährlichen Kosten (TER) liegen typischerweise bei 0,05–0,5%, verglichen mit 1–2% bei aktiven Fonds.",
-    "ETFs combine the diversification of a fund with the easy tradability of a stock. Annual costs (TER) are typically 0.05–0.5%, compared to 1–2% for active funds."
+    "ETFs haben typischerweise sehr niedrige Kosten (TER: 0,03–0,5% pro Jahr) im Vergleich zu aktiv verwalteten Fonds (1–2%).",
+    "ETFs typically have very low costs (TER: 0.03–0.5% per year) compared to actively managed funds (1–2%)."
   ),
-  "learn.etfTypes": t("ETF-Typen", "ETF Types"),
+  "learn.etfTypes": t("ETF-Typen:", "ETF Types:"),
   "learn.etfIndex": t("Index-ETFs", "Index ETFs"),
-  "learn.etfIndexDesc": t("Bilden einen Aktienindex nach (S&P 500, MSCI World, DAX). Die beliebteste und empfehlenswerteste Variante.", "Track a stock index (S&P 500, MSCI World, DAX). The most popular and recommended type."),
+  "learn.etfIndexDesc": t("Bilden einen Marktindex ab (z.B. S&P 500, MSCI World)", "Track a market index (e.g. S&P 500, MSCI World)"),
   "learn.etfSector": t("Sektor-ETFs", "Sector ETFs"),
-  "learn.etfSectorDesc": t("Fokussiert auf eine Branche: Technologie, Gesundheit, Energie, Finanzen, etc.", "Focused on an industry: technology, healthcare, energy, financials, etc."),
+  "learn.etfSectorDesc": t("Fokus auf bestimmte Branchen (Tech, Healthcare, Energy)", "Focus on specific industries (Tech, Healthcare, Energy)"),
   "learn.etfBond": t("Anleihen-ETFs", "Bond ETFs"),
-  "learn.etfBondDesc": t("Investieren in Staats- oder Unternehmensanleihen. Stabilisieren das Portfolio in Krisen.", "Invest in government or corporate bonds. Stabilize portfolio during crises."),
+  "learn.etfBondDesc": t("Investieren in Staats- oder Unternehmensanleihen", "Invest in government or corporate bonds"),
   "learn.etfThematic": t("Themen-ETFs", "Thematic ETFs"),
-  "learn.etfThematicDesc": t("Nische wie KI, Clean Energy, Blockchain, Cybersecurity. Höheres Risiko, aber Potenzial bei Trendthemen.", "Niches like AI, clean energy, blockchain, cybersecurity. Higher risk but potential with trending topics."),
+  "learn.etfThematicDesc": t("Spezielle Trends (KI, Clean Energy, Blockchain)", "Specific trends (AI, Clean Energy, Blockchain)"),
+  "learn.popularEtfs": t("Beliebte ETFs", "Popular ETFs"),
   "learn.etfInfo": t(
-    "Die 3 beliebtesten ETFs: iShares Core MSCI World (weltweite Streuung), Vanguard S&P 500 (Top-500 US), iShares MSCI EM (Schwellenländer). Ein MSCI World ETF reicht für die meisten Einsteiger völlig aus!",
-    "The 3 most popular ETFs: iShares Core MSCI World (global), Vanguard S&P 500 (top 500 US), iShares MSCI EM (emerging markets). An MSCI World ETF is sufficient for most beginners!"
+    "MSCI World (weltweite Streuung), S&P 500 (500 größte US-Unternehmen), MSCI Emerging Markets (Schwellenländer), Euro Stoxx 50 (Europa)",
+    "MSCI World (global diversification), S&P 500 (500 largest US companies), MSCI Emerging Markets (developing countries), Euro Stoxx 50 (Europe)"
   ),
 
-  "learn.analysisTitle": t("Aktien analysieren", "Analyzing Stocks"),
-  "learn.analysisIntro": t("Es gibt zwei Hauptansätze zur Aktienanalyse:", "There are two main approaches to stock analysis:"),
-  "learn.fundamentalTitle": t("📊 Fundamentalanalyse", "📊 Fundamental Analysis"),
-  "learn.fundamentalDesc": t("Bewertet den inneren Wert eines Unternehmens anhand von Kennzahlen wie KGV, KBV, Umsatz, Gewinn, Verschuldung und Wachstum. Ziel: Unterbewertete Unternehmen finden.", "Evaluates a company's intrinsic value using metrics like P/E, P/B, revenue, earnings, debt, and growth. Goal: Find undervalued companies."),
-  "learn.technicalTitle": t("📈 Technische Analyse", "📈 Technical Analysis"),
-  "learn.technicalDesc": t("Analysiert Kurscharts und Muster, um Trends und Einstiegspunkte zu identifizieren. Nutzt Indikatoren wie gleitende Durchschnitte, RSI, MACD und Bollinger Bänder.", "Analyzes price charts and patterns to identify trends and entry points. Uses indicators like moving averages, RSI, MACD, and Bollinger Bands."),
-
-  // ══════════════════════════════════════════════════════════════
-  // SECTION 3: BONDS & FUNDS
-  // ══════════════════════════════════════════════════════════════
-  "learn.section3Title": t("Anleihen & Fonds", "Bonds & Funds"),
-
-  "learn.bondsTitle": t("Anleihen (Bonds)", "Bonds"),
-  "learn.bondsP1": t(
-    "<strong>Anleihen</strong> sind Schuldverschreibungen – du leihst einem Unternehmen oder Staat Geld und bekommst dafür regelmäßige Zinszahlungen (Kupon). Am Ende der Laufzeit erhältst du dein Kapital zurück (Nominalwert).",
-    "<strong>Bonds</strong> are debt securities – you lend money to a company or government and receive regular interest payments (coupon). At maturity, you get your principal back (face value)."
+  "learn.analysisTitle": t("Fundamentale vs. Technische Analyse", "Fundamental vs. Technical Analysis"),
+  "learn.analysisIntro": t(
+    "Es gibt zwei Hauptansätze zur Aktienbewertung:",
+    "There are two main approaches to stock valuation:"
   ),
-  "learn.bondsP2": t(
-    "Anleihen gelten als sicherer als Aktien, bieten aber niedrigere Renditen. Wichtige Kennzahlen: <strong>Kupon</strong> (Zinssatz), <strong>Laufzeit</strong> (Duration), <strong>Rating</strong> (Bonität des Emittenten, z. B. AAA bis D) und <strong>Rendite bis Fälligkeit</strong> (Yield to Maturity).",
-    "Bonds are generally considered safer than stocks but offer lower returns. Key metrics: <strong>coupon</strong> (interest rate), <strong>duration</strong> (maturity), <strong>rating</strong> (issuer creditworthiness, e.g. AAA to D), and <strong>yield to maturity</strong> (YTM)."
-  ),
-  "learn.bondsTypes": t("Anleihetypen", "Bond Types"),
-  "learn.govBonds": t("Staatsanleihen", "Government Bonds"),
-  "learn.govBondsDesc": t("Von Staaten ausgegeben (US Treasuries, deutsche Bundesanleihen). Gelten als sehr sicher.", "Issued by governments (US Treasuries, German Bunds). Considered very safe."),
-  "learn.corpBonds": t("Unternehmensanleihen", "Corporate Bonds"),
-  "learn.corpBondsDesc": t("Von Unternehmen ausgegeben. Höhere Rendite, aber auch höheres Ausfallrisiko als Staatsanleihen.", "Issued by companies. Higher yield but also higher default risk than government bonds."),
-  "learn.highYield": t("High-Yield / Junk Bonds", "High-Yield / Junk Bonds"),
-  "learn.highYieldDesc": t("Anleihen mit niedrigem Rating (BB und darunter). Hohe Renditen, aber erhebliches Ausfallrisiko.", "Bonds with low ratings (BB and below). High yields but significant default risk."),
-  "learn.bondsInfo": t(
-    "Wenn die Zinsen steigen, fallen die Kurse bestehender Anleihen – und umgekehrt. Je länger die Laufzeit, desto stärker der Effekt. Dies nennt man Zinsänderungsrisiko.",
-    "When interest rates rise, existing bond prices fall – and vice versa. The longer the duration, the stronger the effect. This is called interest rate risk."
-  ),
-
-  "learn.fundsTitle": t("Investmentfonds", "Mutual Funds"),
-  "learn.fundsP1": t(
-    "<strong>Investmentfonds</strong> sammeln Geld von vielen Anlegern und investieren es nach einer bestimmten Strategie. Im Gegensatz zu ETFs werden sie von einem <strong>Fondsmanager</strong> aktiv verwaltet, der versucht, den Markt zu schlagen.",
-    "<strong>Mutual funds</strong> pool money from many investors and invest it according to a specific strategy. Unlike ETFs, they are actively managed by a <strong>fund manager</strong> who tries to beat the market."
-  ),
-  "learn.fundsComparison": t("ETF vs. aktiver Fonds", "ETF vs. Active Fund"),
-  "learn.fundsComparisonDesc": t(
-    "Über 90% aller aktiven Fonds schaffen es langfristig nicht, ihren Vergleichsindex nach Kosten zu schlagen (SPIVA-Studie). Der Hauptgrund: Die höheren Gebühren (1,5–2% TER) fressen die Mehrrendite auf. ETFs sind daher für die meisten Anleger die bessere und günstigere Wahl.",
-    "Over 90% of active funds fail to beat their benchmark index after fees over the long term (SPIVA study). The main reason: higher fees (1.5–2% TER) eat up any excess returns. ETFs are therefore the better and cheaper choice for most investors."
-  ),
-  "learn.reitsTitle": t("REITs (Immobilienfonds)", "REITs (Real Estate Investment Trusts)"),
-  "learn.reitsP1": t(
-    "<strong>REITs</strong> sind börsengehandelte Unternehmen, die in Immobilien investieren und mindestens 90% ihrer Gewinne als Dividende ausschütten müssen. Sie bieten eine einfache Möglichkeit, in Immobilien zu investieren, ohne selbst ein Gebäude kaufen zu müssen.",
-    "<strong>REITs</strong> are publicly traded companies that invest in real estate and must distribute at least 90% of their profits as dividends. They offer an easy way to invest in real estate without buying a building yourself."
-  ),
-  "learn.reitsP2": t(
-    "REITs gibt es für Wohnimmobilien, Bürogebäude, Einkaufszentren, Datenzentren, Logistik und mehr. Bekannte REITs: Realty Income, Prologis, Digital Realty.",
-    "REITs exist for residential properties, office buildings, shopping centers, data centers, logistics, and more. Well-known REITs: Realty Income, Prologis, Digital Realty."
-  ),
+  "learn.fundamentalTitle": t("Fundamentalanalyse", "Fundamental Analysis"),
+  "learn.fundamentalDesc": t("Bewertet den inneren Wert anhand von Finanzdaten (KGV, Umsatz, Gewinn)", "Evaluates intrinsic value based on financial data (P/E, revenue, profit)"),
+  "learn.technicalTitle": t("Technische Analyse", "Technical Analysis"),
+  "learn.technicalDesc": t("Analysiert Kursmuster und Indikatoren, um zukünftige Preise vorherzusagen", "Analyzes price patterns and indicators to predict future prices"),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 4: DERIVATIVES IN DETAIL
+  // SECTION 3: STRATEGIES (moved from 6, now Beginner)
   // ══════════════════════════════════════════════════════════════
-  "learn.section4Title": t("Derivate im Detail", "Derivatives in Detail"),
+  "learn.section3Title": t("Anlagestrategien", "Investment Strategies"),
 
-  "learn.derivativesIntro": t(
-    "<strong>Derivate</strong> sind Finanzinstrumente, deren Wert von einem Basiswert (Underlying) abgeleitet wird – das kann eine Aktie, ein Index, ein Rohstoff oder eine Währung sein. Sie werden zur Spekulation, Absicherung (Hedging) und Arbitrage eingesetzt.",
-    "<strong>Derivatives</strong> are financial instruments whose value is derived from an underlying asset – this can be a stock, an index, a commodity, or a currency. They are used for speculation, hedging, and arbitrage."
+  "learn.buyHoldTitle": t("Buy & Hold", "Buy & Hold"),
+  "learn.buyHoldP1": t(
+    "<strong>Buy & Hold</strong> ist die einfachste und für die meisten Anleger effektivste Strategie: Kaufe qualitativ hochwertige Aktien oder ETFs und halte sie langfristig (10+ Jahre). Historisch hat der S&P 500 über jeden 20-Jahres-Zeitraum eine positive Rendite erzielt.",
+    "<strong>Buy & Hold</strong> is the simplest and most effective strategy for most investors: Buy quality stocks or ETFs and hold them long-term (10+ years). Historically, the S&P 500 has delivered positive returns over every 20-year period."
   ),
-
-  "learn.optionsTitle": t("Optionen", "Options"),
-  "learn.optionsP1": t(
-    "Eine <strong>Option</strong> gibt dir das <em>Recht</em> (nicht die Pflicht), einen Basiswert zu einem festgelegten Preis (Strike) bis zu einem bestimmten Datum zu kaufen (Call) oder zu verkaufen (Put). Dafür zahlst du eine Prämie.",
-    "An <strong>option</strong> gives you the <em>right</em> (not the obligation) to buy (call) or sell (put) an underlying asset at a fixed price (strike) by a certain date. You pay a premium for this right."
+  "learn.buyHoldP2": t(
+    "\"Die Börse ist ein Instrument, um Geld von den Ungeduldigen zu den Geduldigen zu transferieren.\" – Warren Buffett",
+    "\"The stock market is a device for transferring money from the impatient to the patient.\" – Warren Buffett"
   ),
-  "learn.optionsCall": t("Call-Option", "Call Option"),
-  "learn.optionsCallDesc": t("Recht, einen Basiswert zu kaufen. Du profitierst, wenn der Kurs steigt. Maximaler Verlust: gezahlte Prämie.", "Right to buy an underlying asset. You profit when the price rises. Maximum loss: premium paid."),
-  "learn.optionsPut": t("Put-Option", "Put Option"),
-  "learn.optionsPutDesc": t("Recht, einen Basiswert zu verkaufen. Du profitierst, wenn der Kurs fällt. Kann als 'Versicherung' gegen Kursverluste genutzt werden.", "Right to sell an underlying asset. You profit when the price falls. Can be used as 'insurance' against price drops."),
-  "learn.optionsGreeks": t("Die Griechen (Greeks)", "The Greeks"),
-  "learn.optionsGreeksDesc": t(
-    "<strong>Delta</strong>: Preisänderung der Option bei $1 Bewegung des Basiswerts. <strong>Gamma</strong>: Änderungsrate von Delta. <strong>Theta</strong>: Zeitwertverfall pro Tag. <strong>Vega</strong>: Sensitivität gegenüber Volatilität. <strong>Rho</strong>: Sensitivität gegenüber Zinsen.",
-    "<strong>Delta</strong>: Option price change per $1 move in underlying. <strong>Gamma</strong>: Rate of change of delta. <strong>Theta</strong>: Time decay per day. <strong>Vega</strong>: Sensitivity to volatility. <strong>Rho</strong>: Sensitivity to interest rates."
-  ),
-  "learn.optionsStrategies": t("Optionsstrategien", "Options Strategies"),
-  "learn.coveredCall": t("Covered Call", "Covered Call"),
-  "learn.coveredCallDesc": t("Du besitzt die Aktie und verkaufst eine Call-Option darauf. Generiert Prämieneinnahmen, begrenzt aber das Aufwärtspotenzial.", "You own the stock and sell a call option on it. Generates premium income but caps upside potential."),
-  "learn.protectivePut": t("Protective Put", "Protective Put"),
-  "learn.protectivePutDesc": t("Du kaufst eine Put-Option auf eine Aktie, die du besitzt. Wie eine Versicherung – kostet Prämie, schützt vor starken Verlusten.", "You buy a put option on a stock you own. Like insurance – costs premium but protects against major losses."),
-  "learn.straddle": t("Straddle", "Straddle"),
-  "learn.straddleDesc": t("Gleichzeitiger Kauf von Call und Put mit gleichem Strike/Datum. Profitiert von starken Bewegungen in beide Richtungen.", "Simultaneous purchase of call and put with same strike/date. Profits from strong moves in either direction."),
-  "learn.ironCondor": t("Iron Condor", "Iron Condor"),
-  "learn.ironCondorDesc": t("Vier Optionen gleichzeitig – profitiert von Seitwärtsbewegung. Begrenztes Risiko und begrenzter Gewinn. Fortgeschrittene Strategie.", "Four options simultaneously – profits from sideways movement. Limited risk and limited profit. Advanced strategy."),
-
-  "learn.futuresTitle": t("Futures", "Futures"),
-  "learn.futuresP1": t(
-    "<strong>Futures</strong> sind verbindliche Verträge, einen Basiswert zu einem festgelegten Preis an einem bestimmten Datum in der Zukunft zu kaufen oder zu verkaufen. Im Gegensatz zu Optionen gibt es hier eine <em>Pflicht</em>, nicht nur ein Recht.",
-    "<strong>Futures</strong> are binding contracts to buy or sell an underlying asset at a fixed price on a specific future date. Unlike options, there is an <em>obligation</em>, not just a right."
-  ),
-  "learn.futuresP2": t(
-    "Futures werden häufig für Rohstoffe (Öl, Gold, Weizen), Indizes (S&P 500 E-mini) und Währungen gehandelt. Sie nutzen <strong>Hebel (Leverage)</strong> – du hinterlegst nur eine Margin (Sicherheitsleistung), kontrollierst aber einen viel größeren Vertragswert.",
-    "Futures are commonly traded for commodities (oil, gold, wheat), indices (S&P 500 E-mini), and currencies. They use <strong>leverage</strong> – you deposit only a margin, but control a much larger contract value."
-  ),
-  "learn.futuresWarning": t(
-    "Futures sind hochriskant! Durch den Hebel kannst du mehr verlieren als dein eingesetztes Kapital. Sie sind kein geeignetes Instrument für Privatanleger ohne Erfahrung.",
-    "Futures are high-risk! Due to leverage, you can lose more than your invested capital. They are not suitable for retail investors without experience."
+  "learn.buyHoldInfo": t(
+    "Wer seit 2000 monatlich $500 in den S&P 500 investiert hätte, hätte trotz Dotcom-Crash und Finanzkrise 2024 über $500.000 angesammelt.",
+    "Someone investing $500 monthly in the S&P 500 since 2000 would have accumulated over $500,000 by 2024, despite the dotcom crash and financial crisis."
   ),
 
-  "learn.cfdsTitle": t("CFDs (Contracts for Difference)", "CFDs (Contracts for Difference)"),
-  "learn.cfdsP1": t(
-    "<strong>CFDs</strong> sind Differenzkontrakte – du spekulierst auf die Kursbewegung eines Basiswerts, ohne ihn tatsächlich zu besitzen. Du kannst long (auf steigende Kurse) oder short (auf fallende Kurse) gehen.",
-    "<strong>CFDs</strong> are contracts for difference – you speculate on the price movement of an underlying asset without actually owning it. You can go long (betting on rising prices) or short (betting on falling prices)."
+  "learn.dcaTitle": t("Dollar-Cost Averaging (DCA)", "Dollar-Cost Averaging (DCA)"),
+  "learn.dcaP1": t(
+    "<strong>DCA</strong> bedeutet, regelmäßig einen festen Betrag zu investieren – unabhängig vom aktuellen Kurs. Bei hohen Kursen kaufst du weniger Anteile, bei niedrigen Kursen mehr. Dadurch erzielst du einen günstigen <strong>Durchschnittskosteneffekt</strong>.",
+    "<strong>DCA</strong> means investing a fixed amount regularly – regardless of the current price. At high prices you buy fewer shares, at low prices more. This creates a favorable <strong>average cost effect</strong>."
   ),
-  "learn.cfdsP2": t(
-    "CFDs bieten hohe Hebel (z. B. 1:30 für Aktien in der EU), was sowohl Gewinne als auch Verluste vervielfacht. Über 70% der Privatanleger verlieren Geld mit CFDs!",
-    "CFDs offer high leverage (e.g. 1:30 for stocks in the EU), which multiplies both profits and losses. Over 70% of retail investors lose money with CFDs!"
+  "learn.dcaP2": t(
+    "DCA eliminiert das Timing-Problem. Studien zeigen: Selbst professionelle Fondsmanager schaffen es selten, den Markt konsistent zu timen.",
+    "DCA eliminates the timing problem. Studies show: Even professional fund managers rarely succeed at consistently timing the market."
   ),
-  "learn.cfdsWarning": t(
-    "CFDs sind das riskanteste Finanzprodukt für Privatanleger. In einigen Ländern sind sie verboten (USA). Die EU hat zum Schutz Hebelbeschränkungen eingeführt. Niemals ohne fundiertes Wissen und striktes Risikomanagement handeln!",
-    "CFDs are the riskiest financial product for retail investors. They are banned in some countries (US). The EU has introduced leverage limits for protection. Never trade without solid knowledge and strict risk management!"
+  "learn.dcaInfo": t(
+    "Richte einen automatischen Sparplan ein (z.B. monatlich $500 in einen MSCI World ETF). Das ist die stressfreiste Art zu investieren.",
+    "Set up an automatic savings plan (e.g. $500 monthly into an MSCI World ETF). This is the most stress-free way to invest."
   ),
-
-  "learn.warrantsTitle": t("Optionsscheine (Warrants)", "Warrants"),
-  "learn.warrantsP1": t(
-    "<strong>Optionsscheine</strong> sind von Banken emittierte Derivate, die ähnlich wie Optionen funktionieren, aber einige wichtige Unterschiede haben: Sie haben ein Emittentenrisiko (die Bank kann ausfallen), sind oft weniger transparent bei der Preisbildung und haben in der Regel eine längere Laufzeit.",
-    "<strong>Warrants</strong> are bank-issued derivatives that work similarly to options but with key differences: they carry issuer risk (the bank can default), pricing is often less transparent, and they typically have longer maturities."
-  ),
-  "learn.warrantsP2": t(
-    "Besonders in Deutschland und der Schweiz sind Optionsscheine sehr beliebt, obwohl echte börsengehandelte Optionen oft fairer gepreist sind.",
-    "Warrants are particularly popular in Germany and Switzerland, although exchange-traded options are often more fairly priced."
-  ),
-
-  "learn.certificatesTitle": t("Zertifikate", "Structured Products / Certificates"),
-  "learn.certificatesP1": t(
-    "<strong>Zertifikate</strong> sind strukturierte Produkte, die von Banken ausgegeben werden. Sie kombinieren verschiedene Finanzinstrumente und können nahezu jede Auszahlungsstruktur abbilden: Bonus-Zertifikate, Discount-Zertifikate, Knock-out-Zertifikate, Faktor-Zertifikate etc.",
-    "<strong>Certificates</strong> (structured products) are bank-issued instruments that combine various financial products and can replicate almost any payoff structure: bonus certificates, discount certificates, knock-out certificates, factor certificates, etc."
-  ),
-  "learn.certificatesP2": t(
-    "Zertifikate tragen immer ein <strong>Emittentenrisiko</strong>: Wenn die ausgebende Bank insolvent wird, kann dein gesamtes Investment verloren gehen (Lehman Brothers 2008!). Zudem sind die eingebetteten Kosten oft intransparent.",
-    "Certificates always carry <strong>issuer risk</strong>: if the issuing bank goes bankrupt, your entire investment can be lost (Lehman Brothers 2008!). Also, embedded costs are often not transparent."
-  ),
-
-  "learn.derivativesSummary": t(
-    "Derivate sind mächtige Werkzeuge, aber sie erfordern tiefes Verständnis. Für die meisten Privatanleger sind sie unnötig und gefährlich. Lerne erst gründlich die Grundlagen, bevor du dich an Derivate wagst.",
-    "Derivatives are powerful tools, but they require deep understanding. For most retail investors, they are unnecessary and dangerous. Master the basics thoroughly before venturing into derivatives."
-  ),
-
-  // ══════════════════════════════════════════════════════════════
-  // SECTION 5: CRYPTO & ALTERNATIVES
-  // ══════════════════════════════════════════════════════════════
-  "learn.section5Title": t("Krypto & Alternative Anlagen", "Crypto & Alternative Assets"),
-
-  "learn.cryptoTitle": t("Kryptowährungen", "Cryptocurrencies"),
-  "learn.cryptoP1": t(
-    "<strong>Kryptowährungen</strong> sind digitale Währungen auf Blockchain-Basis. <strong>Bitcoin</strong> (2009) war die erste und ist die wertvollste. <strong>Ethereum</strong> ermöglicht Smart Contracts und dezentrale Anwendungen (DeFi, NFTs).",
-    "<strong>Cryptocurrencies</strong> are digital currencies based on blockchain technology. <strong>Bitcoin</strong> (2009) was the first and remains the most valuable. <strong>Ethereum</strong> enables smart contracts and decentralized applications (DeFi, NFTs)."
-  ),
-  "learn.cryptoP2": t(
-    "Krypto ist hochvolatil: Bitcoin schwankte historisch um 60–80% pro Jahr. Die Anlageklasse ist noch jung und weitgehend unreguliert. Als Beimischung (max. 5–10% des Portfolios) können Kryptowährungen zur Diversifikation beitragen.",
-    "Crypto is highly volatile: Bitcoin has historically fluctuated 60–80% per year. The asset class is still young and largely unregulated. As a portfolio addition (max 5–10%), cryptocurrencies can contribute to diversification."
-  ),
-  "learn.cryptoTypes": t("Krypto-Kategorien", "Crypto Categories"),
-  "learn.cryptoBtc": t("Bitcoin (BTC)", "Bitcoin (BTC)"),
-  "learn.cryptoBtcDesc": t("Digitales Gold / Wertaufbewahrungsmittel. Begrenzt auf 21 Millionen Coins. Größte und bekannteste Kryptowährung.", "Digital gold / store of value. Limited to 21 million coins. Largest and most well-known cryptocurrency."),
-  "learn.cryptoEth": t("Ethereum (ETH)", "Ethereum (ETH)"),
-  "learn.cryptoEthDesc": t("Plattform für Smart Contracts und dApps. Basis für DeFi, NFTs und Layer-2-Lösungen.", "Platform for smart contracts and dApps. Foundation for DeFi, NFTs, and Layer-2 solutions."),
-  "learn.cryptoAlt": t("Altcoins", "Altcoins"),
-  "learn.cryptoAltDesc": t("Alle anderen Kryptos: Solana, Cardano, Polkadot etc. Höheres Risiko, höheres Potenzial. Viele scheitern langfristig.", "All other cryptos: Solana, Cardano, Polkadot etc. Higher risk, higher potential. Many fail long-term."),
-  "learn.cryptoStable": t("Stablecoins", "Stablecoins"),
-  "learn.cryptoStableDesc": t("An Fiat-Währungen gebunden (USDT, USDC). Stabil im Wert, genutzt für Trading und DeFi. Kein Investment, eher Zahlungsmittel.", "Pegged to fiat currencies (USDT, USDC). Stable in value, used for trading and DeFi. Not an investment, more a payment method."),
-
-  "learn.commoditiesTitle": t("Rohstoffe", "Commodities"),
-  "learn.commoditiesP1": t(
-    "<strong>Rohstoffe</strong> umfassen Edelmetalle (Gold, Silber), Energieträger (Öl, Gas), Industriemetalle (Kupfer, Lithium) und Agrarprodukte (Weizen, Kaffee). Gold gilt traditionell als sicherer Hafen in Krisenzeiten.",
-    "<strong>Commodities</strong> include precious metals (gold, silver), energy (oil, gas), industrial metals (copper, lithium), and agricultural products (wheat, coffee). Gold is traditionally considered a safe haven during crises."
-  ),
-  "learn.commoditiesP2": t(
-    "Du kannst in Rohstoffe investieren über: physischen Kauf (Goldbarren), Rohstoff-ETFs/ETCs, Aktien von Rohstoffunternehmen oder Futures-Kontrakte (für Fortgeschrittene).",
-    "You can invest in commodities through: physical purchase (gold bars), commodity ETFs/ETCs, shares of commodity companies, or futures contracts (for advanced investors)."
-  ),
-
-  "learn.altInvestTitle": t("Weitere Alternative Anlagen", "Other Alternative Investments"),
-  "learn.altP2P": t("P2P-Kredite", "P2P Lending"),
-  "learn.altP2PDesc": t("Direktkredite an Privatpersonen/Unternehmen über Plattformen. Renditen von 5–12%, aber hohes Ausfallrisiko.", "Direct loans to individuals/businesses via platforms. Returns of 5–12% but high default risk."),
-  "learn.altPE": t("Private Equity", "Private Equity"),
-  "learn.altPEDesc": t("Beteiligungen an nicht-börsennotierten Unternehmen. Meist nur für institutionelle Investoren oder über spezielle Fonds zugänglich.", "Stakes in private companies. Usually only accessible to institutional investors or through special funds."),
-  "learn.altCollectibles": t("Sammlerwerte", "Collectibles"),
-  "learn.altCollectiblesDesc": t("Kunst, Uhren, Wein, seltene Sneaker, Oldtimer. Illiquide, schwer zu bewerten, aber potenziell hohe Renditen.", "Art, watches, wine, rare sneakers, vintage cars. Illiquid, hard to value, but potentially high returns."),
-
-  // ══════════════════════════════════════════════════════════════
-  // SECTION 6: STRATEGIES
-  // ══════════════════════════════════════════════════════════════
-  "learn.section6Title": t("Anlagestrategien", "Investment Strategies"),
-
-  "learn.buyHoldTitle": t("Buy & Hold – Langfristiges Investieren", "Buy & Hold – Long-Term Investing"),
-  "learn.buyHoldP1": t("Die <strong>Buy & Hold</strong>-Strategie bedeutet, Aktien zu kaufen und über viele Jahre zu halten, unabhängig von kurzfristigen Schwankungen. Historisch hat der Aktienmarkt langfristig im Durchschnitt 7–10% pro Jahr zugelegt.", "The <strong>Buy & Hold</strong> strategy means buying stocks and holding them for many years, regardless of short-term fluctuations. Historically, the stock market has averaged 7–10% annual returns over the long term."),
-  "learn.buyHoldP2": t('Warren Buffett: \u201EUnsere bevorzugte Haltedauer ist: f\u00FCr immer.\u201C', 'Warren Buffett: "Our favorite holding period is forever."'),
-  "learn.buyHoldInfo": t("Wer 1980 $10.000 in den S&P 500 investiert hätte, hätte heute über $1 Million – allein durch Halten und Reinvestieren der Dividenden.", "If you had invested $10,000 in the S&P 500 in 1980, you would have over $1 million today – just by holding and reinvesting dividends."),
-
-  "learn.dcaTitle": t("Cost-Average-Effekt (Sparplan)", "Dollar-Cost Averaging (DCA)"),
-  "learn.dcaP1": t("Beim <strong>Cost-Average-Effekt</strong> investierst du regelmäßig einen festen Betrag. Bei niedrigen Kursen kaufst du mehr Anteile, bei hohen weniger. So glättest du den Einstiegspreis über die Zeit.", "With <strong>Dollar-Cost Averaging</strong>, you invest a fixed amount regularly. When prices are low, you buy more shares; when high, fewer. This smooths your entry price over time."),
-  "learn.dcaP2": t("Sparpläne ab 25€/Monat sind bei den meisten Brokern möglich – eine der besten Strategien für Einsteiger.", "Savings plans starting at $25/month are available at most brokers – one of the best strategies for beginners."),
-  "learn.dcaInfo": t("Ein monatlicher Sparplan von 200€ in einen MSCI World ETF hätte in den letzten 20 Jahren ein Vermögen von über 100.000€ aufgebaut.", "A monthly savings plan of $200 into an MSCI World ETF would have built a portfolio of over $100,000 in the last 20 years."),
 
   "learn.valueTitle": t("Value Investing", "Value Investing"),
-  "learn.valueP1": t("<strong>Value Investing</strong> bedeutet, unterbewertete Aktien zu finden – Unternehmen, deren Aktienkurs unter ihrem inneren Wert liegt. Man analysiert KGV, KBV, Cashflow und Substanzwert.", "<strong>Value Investing</strong> means finding undervalued stocks – companies whose stock price is below their intrinsic value. You analyze P/E, P/B, cash flow, and book value."),
-  "learn.valueP2": t("Berühmte Value-Investoren: Benjamin Graham (\"Der intelligente Investor\"), Warren Buffett, Charlie Munger, Seth Klarman.", "Famous value investors: Benjamin Graham (\"The Intelligent Investor\"), Warren Buffett, Charlie Munger, Seth Klarman."),
+  "learn.valueP1": t(
+    "<strong>Value Investing</strong> (geprägt von Benjamin Graham, perfektioniert von Warren Buffett) sucht nach Aktien, die unter ihrem inneren Wert handeln. Kennzahlen: niedriges KGV, niedriges KBV, hohe Dividendenrendite, starker Free Cashflow.",
+    "<strong>Value Investing</strong> (pioneered by Benjamin Graham, perfected by Warren Buffett) seeks stocks trading below their intrinsic value. Metrics: low P/E, low P/B, high dividend yield, strong free cash flow."
+  ),
+  "learn.valueP2": t(
+    "Der Schlüssel: Eine \"Margin of Safety\" – kaufe nur, wenn der Preis deutlich unter dem geschätzten fairen Wert liegt.",
+    "The key: A \"margin of safety\" – only buy when the price is significantly below estimated fair value."
+  ),
 
   "learn.growthTitle": t("Growth Investing", "Growth Investing"),
-  "learn.growthP1": t("<strong>Growth Investing</strong> fokussiert sich auf Unternehmen mit überdurchschnittlichem Wachstum. Diese Aktien haben oft hohe Bewertungen (hohes KGV), aber das Potenzial für starke Kurssteigerungen.", "<strong>Growth Investing</strong> focuses on companies with above-average growth. These stocks often have high valuations (high P/E ratios), but potential for strong price appreciation."),
-  "learn.growthP2": t("Beispiele: Apple, Amazon, Nvidia, Tesla – alle waren einmal kleine Growth-Aktien.", "Examples: Apple, Amazon, Nvidia, Tesla – all were once small growth stocks."),
+  "learn.growthP1": t(
+    "<strong>Growth Investing</strong> fokussiert sich auf Unternehmen mit überdurchschnittlichem Umsatz- und Gewinnwachstum. Diese Aktien haben oft hohe Bewertungen (hohes KGV), da der Markt zukünftiges Wachstum einpreist. Beispiele: NVIDIA, Amazon in den Anfangsjahren.",
+    "<strong>Growth Investing</strong> focuses on companies with above-average revenue and earnings growth. These stocks often have high valuations (high P/E) as the market prices in future growth. Examples: NVIDIA, Amazon in its early years."
+  ),
+  "learn.growthP2": t(
+    "Risiko: Wenn das erwartete Wachstum nicht eintritt, kann der Kurs dramatisch fallen.",
+    "Risk: If expected growth doesn't materialize, the price can drop dramatically."
+  ),
 
   "learn.dividendStratTitle": t("Dividendenstrategie", "Dividend Strategy"),
   "learn.dividendStratP1": t(
-    "Fokus auf Unternehmen mit stabilen, wachsenden Dividenden. <strong>Dividendenaristokraten</strong> haben ihre Dividende mindestens 25 Jahre in Folge erhöht (z. B. Coca-Cola, Johnson & Johnson, P&G).",
-    "Focus on companies with stable, growing dividends. <strong>Dividend Aristocrats</strong> have increased their dividend for at least 25 consecutive years (e.g. Coca-Cola, Johnson & Johnson, P&G)."
+    "Die <strong>Dividendenstrategie</strong> setzt auf Unternehmen mit konstanter und steigender Dividende. Besonders beliebt: <strong>Dividend Aristocrats</strong> – S&P 500-Unternehmen, die ihre Dividende mindestens 25 Jahre in Folge erhöht haben.",
+    "The <strong>dividend strategy</strong> focuses on companies with consistent and growing dividends. Especially popular: <strong>Dividend Aristocrats</strong> – S&P 500 companies that have increased their dividend for at least 25 consecutive years."
   ),
   "learn.dividendStratP2": t(
-    "Vorteile: Regelmäßiges passives Einkommen, tendenziell geringere Volatilität, Zinseszins-Effekt durch Reinvestition. Ideal für den langfristigen Vermögensaufbau und die Altersvorsorge.",
-    "Advantages: Regular passive income, generally lower volatility, compound effect through reinvestment. Ideal for long-term wealth building and retirement planning."
+    "Durch den Zinseszinseffekt der Wiederanlage können Dividenden langfristig einen erheblichen Teil der Gesamtrendite ausmachen.",
+    "Through the compound interest effect of reinvestment, dividends can account for a significant portion of total returns over time."
   ),
 
-  "learn.momentumTitle": t("Momentum Investing", "Momentum Investing"),
+  "learn.momentumTitle": t("Momentum-Strategie", "Momentum Strategy"),
   "learn.momentumP1": t(
-    "<strong>Momentum Investing</strong> kauft Aktien, die bereits steigen, und verkauft fallende. Das Prinzip: \"The trend is your friend.\" Wissenschaftliche Studien bestätigen den Momentum-Effekt als eine der robustesten Marktanomalien.",
-    "<strong>Momentum Investing</strong> buys stocks that are already rising and sells falling ones. The principle: \"The trend is your friend.\" Scientific studies confirm the momentum effect as one of the most robust market anomalies."
+    "<strong>Momentum Investing</strong> setzt auf Aktien, die in den letzten 3-12 Monaten stark gestiegen sind, in der Erwartung, dass der Trend anhält. Akademische Studien (Jegadeesh & Titman, 1993) bestätigen den Momentum-Effekt. Risiko: Trendwenden können abrupt sein.",
+    "<strong>Momentum Investing</strong> bets on stocks that have risen strongly over the past 3-12 months, expecting the trend to continue. Academic studies (Jegadeesh & Titman, 1993) confirm the momentum effect. Risk: Trend reversals can be abrupt."
   ),
 
-  "learn.psychTitle": t("Börsenpsychologie", "Market Psychology"),
-  "learn.psychP1": t("Emotionen sind der größte Feind des Investors. <strong>Angst</strong> führt zu Panikverkäufen, <strong>Gier</strong> zu überhöhten Einstiegen bei Hypes.", "Emotions are the investor's greatest enemy. <strong>Fear</strong> leads to panic selling, <strong>greed</strong> leads to buying at inflated prices during hypes."),
-  "learn.psychP2": t('Warren Buffett: \u201ESei \u00E4ngstlich, wenn andere gierig sind, und gierig, wenn andere \u00E4ngstlich sind.\u201C', 'Warren Buffett: "Be fearful when others are greedy, and greedy when others are fearful."'),
-  "learn.psychBiases": t("Kognitive Verzerrungen (Biases)", "Cognitive Biases"),
+  "learn.psychTitle": t("Investmentpsychologie", "Investment Psychology"),
+  "learn.psychP1": t(
+    "Die größte Hürde beim Investieren sind nicht die Märkte – es sind <strong>deine Emotionen</strong>. Gier lässt dich zu teuer kaufen, Angst lässt dich am Tiefpunkt verkaufen. Die erfolgreichsten Investoren sind diszipliniert und folgen ihrem Plan.",
+    "The biggest hurdle in investing isn't the markets – it's <strong>your emotions</strong>. Greed makes you buy too high, fear makes you sell at the bottom. The most successful investors are disciplined and follow their plan."
+  ),
+  "learn.psychP2": t(
+    "\"Sei ängstlich, wenn andere gierig sind, und gierig, wenn andere ängstlich sind.\" – Warren Buffett",
+    "\"Be fearful when others are greedy, and greedy when others are fearful.\" – Warren Buffett"
+  ),
+  "learn.psychBiases": t("Kognitive Verzerrungen:", "Cognitive Biases:"),
   "learn.biasConfirmation": t("Bestätigungsfehler", "Confirmation Bias"),
-  "learn.biasConfirmationDesc": t("Du suchst nur nach Informationen, die deine Meinung bestätigen, und ignorierst Gegenargumente.", "You only seek information that confirms your opinion and ignore counterarguments."),
+  "learn.biasConfirmationDesc": t("Du suchst nur nach Infos, die deine Meinung bestätigen", "You only seek information that confirms your opinion"),
   "learn.biasLossAversion": t("Verlustaversion", "Loss Aversion"),
-  "learn.biasLossAversionDesc": t("Verluste schmerzen psychologisch doppelt so stark wie Gewinne gleicher Höhe erfreuen. Führt zu zu langem Halten von Verlustpositionen.", "Losses hurt psychologically twice as much as equivalent gains please. Leads to holding losing positions too long."),
-  "learn.biasRecency": t("Recency Bias", "Recency Bias"),
-  "learn.biasRecencyDesc": t("Jüngste Ereignisse werden überbewertet. Nach einem Crash glaubt man, es gehe nur noch abwärts; nach einem Boom, nur noch aufwärts.", "Recent events are overweighted. After a crash, you believe it only goes down; after a boom, only up."),
+  "learn.biasLossAversionDesc": t("Verluste schmerzen 2x mehr als gleich große Gewinne freuen", "Losses hurt 2x more than equal gains please"),
+  "learn.biasRecency": t("Aktualitätsfehler", "Recency Bias"),
+  "learn.biasRecencyDesc": t("Jüngste Ereignisse werden überbewertet", "Recent events are overweighted"),
   "learn.biasHerd": t("Herdenverhalten", "Herd Behavior"),
-  "learn.biasHerdDesc": t("Man kauft, was alle kaufen (FOMO), und verkauft, wenn alle verkaufen. Oft das Gegenteil der richtigen Strategie.", "You buy what everyone buys (FOMO) and sell when everyone sells. Often the opposite of the right strategy."),
-  "learn.psychInfo": t("Die meisten Privatanleger erzielen unterdurchschnittliche Renditen durch emotionale Entscheidungen. Disziplin und ein klarer Plan schlagen Market Timing.", "Most retail investors achieve below-average returns due to emotional decisions. Discipline and a clear plan beat market timing."),
-
-  // ══════════════════════════════════════════════════════════════
-  // SECTION 7: TECHNICAL ANALYSIS
-  // ══════════════════════════════════════════════════════════════
-  "learn.section7Title": t("Technische Analyse", "Technical Analysis"),
-
-  "learn.taIntro": t(
-    "Die <strong>Technische Analyse</strong> untersucht historische Kurs- und Volumendaten, um Muster zu erkennen und zukünftige Kursbewegungen vorherzusagen. Im Gegensatz zur Fundamentalanalyse schaut sie nicht auf Unternehmenskennzahlen, sondern ausschließlich auf Charts.",
-    "<strong>Technical Analysis</strong> studies historical price and volume data to identify patterns and predict future price movements. Unlike fundamental analysis, it doesn't look at company metrics but exclusively at charts."
-  ),
-
-  "learn.chartPatternsTitle": t("Chartmuster", "Chart Patterns"),
-  "learn.headShoulders": t("Kopf-Schulter (Head & Shoulders)", "Head & Shoulders"),
-  "learn.headShouldersDesc": t("Umkehrmuster: Drei Gipfel, wobei der mittlere (Kopf) der höchste ist. Signalisiert eine Trendwende nach unten.", "Reversal pattern: Three peaks, the middle one (head) being the highest. Signals a trend reversal downward."),
-  "learn.doubleTop": t("Doppelter Boden / Doppelte Spitze", "Double Bottom / Double Top"),
-  "learn.doubleTopDesc": t("Zwei ähnliche Tiefs/Hochs auf gleicher Höhe. Signalisiert Unterstützung (Boden) oder Widerstand (Spitze).", "Two similar lows/highs at the same level. Signals support (bottom) or resistance (top)."),
-  "learn.triangles": t("Dreiecke (Triangles)", "Triangles"),
-  "learn.trianglesDesc": t("Aufsteigend (bullisch), absteigend (bärisch) oder symmetrisch. Zeigen Konsolidierung vor einem Ausbruch an.", "Ascending (bullish), descending (bearish), or symmetrical. Indicate consolidation before a breakout."),
-  "learn.flagsPennants": t("Flaggen & Wimpel", "Flags & Pennants"),
-  "learn.flagsPennantsDesc": t("Kurzfristige Konsolidierungsmuster in einem starken Trend. Signalisieren Trendfortsetzung.", "Short-term consolidation patterns in a strong trend. Signal trend continuation."),
-
-  "learn.indicatorsTitle": t("Technische Indikatoren", "Technical Indicators"),
-  "learn.smaEma": t("Gleitende Durchschnitte (SMA/EMA)", "Moving Averages (SMA/EMA)"),
-  "learn.smaEmaDesc": t("SMA = einfacher Durchschnitt über X Tage. EMA = exponentiell gewichtet (neuere Daten stärker). 50-Tage und 200-Tage sind die wichtigsten. Golden Cross (50 > 200) = bullisch, Death Cross (50 < 200) = bärisch.", "SMA = simple average over X days. EMA = exponentially weighted (more weight on recent data). 50-day and 200-day are most important. Golden Cross (50 > 200) = bullish, Death Cross (50 < 200) = bearish."),
-  "learn.rsi": t("RSI (Relative Strength Index)", "RSI (Relative Strength Index)"),
-  "learn.rsiDesc": t("Oszillator von 0–100. Über 70 = überkauft (möglicher Rücksetzer), unter 30 = überverkauft (mögliche Erholung). Standard: 14-Tage-RSI.", "Oscillator from 0–100. Above 70 = overbought (possible pullback), below 30 = oversold (possible recovery). Standard: 14-day RSI."),
-  "learn.macd": t("MACD", "MACD"),
-  "learn.macdDesc": t("Moving Average Convergence Divergence: Differenz zweier EMAs (12 und 26 Tage). Signallinie = 9-Tage-EMA des MACD. Kreuzungen generieren Kauf-/Verkaufssignale.", "Moving Average Convergence Divergence: difference between two EMAs (12 and 26 days). Signal line = 9-day EMA of MACD. Crossovers generate buy/sell signals."),
-  "learn.bollinger": t("Bollinger Bänder", "Bollinger Bands"),
-  "learn.bollingerDesc": t("20-Tage-SMA ± 2 Standardabweichungen. Enge Bänder = niedrige Volatilität (Ausbruch erwartet). Kurs am oberen Band = potenziell überkauft.", "20-day SMA ± 2 standard deviations. Narrow bands = low volatility (breakout expected). Price at upper band = potentially overbought."),
-  "learn.volume": t("Volumen-Analyse", "Volume Analysis"),
-  "learn.volumeDesc": t("Hohes Volumen bestätigt Kursbewegungen. Steigender Kurs bei hohem Volumen = starker Trend. Steigender Kurs bei niedrigem Volumen = schwacher Trend, mögliche Umkehr.", "High volume confirms price movements. Rising price on high volume = strong trend. Rising price on low volume = weak trend, possible reversal."),
-
-  "learn.supportResistance": t("Unterstützung & Widerstand", "Support & Resistance"),
-  "learn.supportResistanceP1": t(
-    "<strong>Unterstützung</strong> ist ein Kursniveau, bei dem genügend Nachfrage besteht, um den Kursfall zu stoppen. <strong>Widerstand</strong> ist ein Niveau, bei dem genügend Angebot besteht, um den Kursanstieg zu stoppen. Durchbrochene Widerstände werden oft zu Unterstützungen – und umgekehrt.",
-    "<strong>Support</strong> is a price level where enough demand exists to stop a price decline. <strong>Resistance</strong> is a level where enough supply exists to stop a price increase. Broken resistance often becomes support – and vice versa."
-  ),
-  "learn.taWarning": t(
-    "Technische Analyse ist keine Kristallkugel! Kein Indikator funktioniert immer. Kombiniere immer mehrere Signale (Konfluenz) und nutze striktes Risikomanagement. Backtesting hilft, Strategien zu validieren.",
-    "Technical analysis is not a crystal ball! No indicator works all the time. Always combine multiple signals (confluence) and use strict risk management. Backtesting helps validate strategies."
+  "learn.biasHerdDesc": t("Der Masse folgen statt eigener Analyse", "Following the crowd instead of own analysis"),
+  "learn.psychInfo": t(
+    "Führe ein Investmenttagebuch! Schreibe bei jedem Kauf/Verkauf auf, warum du die Entscheidung triffst. Das hilft, emotionale Muster zu erkennen.",
+    "Keep an investment journal! Write down why you make each buy/sell decision. This helps identify emotional patterns."
   ),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 8: PORTFOLIO MANAGEMENT
+  // SECTION 4: TAXES & COSTS (moved from 9, still Beginner)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section4Title": t("Steuern & Kosten", "Taxes & Costs"),
+
+  "learn.taxTitle": t("Steuern auf Kapitalerträge", "Taxes on Capital Gains"),
+  "learn.taxP1": t(
+    "In Deutschland werden Kapitalerträge mit der <strong>Abgeltungsteuer</strong> von 25% plus Solidaritätszuschlag besteuert (effektiv ~26,375%). Es gibt einen <strong>Sparerpauschbetrag</strong> von 1.000€/Person (2.000€ für Paare).",
+    "In Germany, capital gains are taxed at the <strong>flat tax rate</strong> of 25% plus solidarity surcharge (effective ~26.375%). There is a <strong>saver's allowance</strong> of €1,000/person (€2,000 for couples)."
+  ),
+  "learn.taxP2": t(
+    "In den USA gelten <strong>Short-term Capital Gains</strong> (Haltedauer < 1 Jahr) als reguläres Einkommen (bis 37%). <strong>Long-term Capital Gains</strong> (> 1 Jahr) werden mit 0%, 15% oder 20% besteuert – ein starker Anreiz für langfristiges Halten.",
+    "In the US, <strong>short-term capital gains</strong> (held < 1 year) are taxed as ordinary income (up to 37%). <strong>Long-term capital gains</strong> (> 1 year) are taxed at 0%, 15%, or 20% – a strong incentive for long-term holding."
+  ),
+  "learn.taxLossHarvesting": t("Tax-Loss Harvesting", "Tax-Loss Harvesting"),
+  "learn.taxLossHarvestingDesc": t("Verlustpositionen strategisch verkaufen, um Gewinne steuerlich zu verrechnen", "Strategically selling losing positions to offset gains for tax purposes"),
+  "learn.taxInfo": t(
+    "Richte deinen Freistellungsauftrag bei deinem Broker ein, um den Sparerpauschbetrag automatisch zu nutzen!",
+    "Set up your tax exemption order with your broker to automatically use the saver's allowance!"
+  ),
+
+  "learn.costsTitle": t("Handelskosten verstehen", "Understanding Trading Costs"),
+  "learn.costsP1": t(
+    "Jeder Trade hat Kosten, die deine Rendite schmälern: <strong>Ordergebühren</strong> (0€ bei Neobrokern bis 10€+ bei Filialbanken), <strong>Spread</strong> (Differenz zwischen Kauf- und Verkaufskurs), <strong>TER</strong> (Total Expense Ratio bei ETFs/Fonds).",
+    "Every trade has costs that reduce your returns: <strong>order fees</strong> (€0 at neobrokers to €10+ at traditional banks), <strong>spread</strong> (difference between buy and sell price), <strong>TER</strong> (Total Expense Ratio for ETFs/funds)."
+  ),
+  "learn.costsP2": t(
+    "Ein Unterschied von 1% p.a. in den Kosten kann über 30 Jahre ~25% der Gesamtrendite ausmachen!",
+    "A 1% p.a. difference in costs can amount to ~25% of total returns over 30 years!"
+  ),
+  "learn.costsInfo": t(
+    "Bei einem Sparplan sind die Kosten besonders wichtig. Ein ETF mit 0,07% TER (z.B. Vanguard S&P 500) spart dir über 30 Jahre tausende Euro im Vergleich zu einem Fonds mit 1,5% TER.",
+    "For a savings plan, costs are especially important. An ETF with 0.07% TER (e.g. Vanguard S&P 500) saves you thousands over 30 years compared to a fund with 1.5% TER."
+  ),
+
+  "learn.compoundTitle": t("Die Macht des Zinseszins", "The Power of Compound Interest"),
+  "learn.compoundP1": t(
+    "Albert Einstein soll den Zinseszins als 'achtes Weltwunder' bezeichnet haben. Tatsächlich ist der Zinseszinseffekt das wichtigste Konzept für langfristigen Vermögensaufbau.",
+    "Albert Einstein allegedly called compound interest the 'eighth wonder of the world.' Indeed, the compound interest effect is the most important concept for long-term wealth building."
+  ),
+  "learn.compoundP2": t(
+    "Beispiel: $10.000 bei 8% Rendite werden nach 30 Jahren zu $100.627. Fängst du 10 Jahre früher an, werden daraus $217.245 – mehr als doppelt so viel!",
+    "Example: $10,000 at 8% return becomes $100,627 after 30 years. Start 10 years earlier, and it becomes $217,245 – more than double!"
+  ),
+  "learn.compoundInfo": t(
+    "Nutze den Zinseszins-Rechner auf unserer Rechner-Seite, um dein persönliches Wachstum zu berechnen!",
+    "Use the compound interest calculator on our tools page to calculate your personal growth!"
+  ),
+
+  "learn.brokerTitle": t("Den richtigen Broker wählen", "Choosing the Right Broker"),
+  "learn.brokerP1": t(
+    "Dein Broker ist dein Tor zur Börse. Die Wahl des richtigen Brokers beeinflusst deine Kosten und damit deine Rendite erheblich.",
+    "Your broker is your gateway to the stock market. Choosing the right broker significantly impacts your costs and therefore your returns."
+  ),
+  "learn.brokerP2": t(
+    "Wichtige Kriterien: Ordergebühren, Auswahl an handelbaren Wertpapieren, Sparplan-Angebot, Einlagensicherung, Benutzerfreundlichkeit.",
+    "Important criteria: Order fees, range of tradeable securities, savings plan options, deposit protection, user-friendliness."
+  ),
+  "learn.brokerTypes": t("Broker-Typen:", "Broker Types:"),
+  "learn.neobroker": t("Neobroker", "Neobrokers"),
+  "learn.neobrokerDesc": t("Günstig (oft 0€/Order), App-basiert, eingeschränkte Auswahl (Trade Republic, Scalable Capital)", "Cheap (often €0/order), app-based, limited selection (Trade Republic, Scalable Capital)"),
+  "learn.onlinebroker": t("Online-Broker", "Online Brokers"),
+  "learn.onlinebrokerDesc": t("Breite Auswahl, moderate Kosten (ING, comdirect, Consorsbank)", "Wide selection, moderate costs (ING, comdirect, Consorsbank)"),
+  "learn.probroker": t("Profi-Broker", "Professional Brokers"),
+  "learn.probrokerDesc": t("Niedrigste Kosten für Vieltrader, komplexe Plattformen (Interactive Brokers, DEGIRO)", "Lowest costs for frequent traders, complex platforms (Interactive Brokers, DEGIRO)"),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 5: YOUR FIRST INVESTMENT (NEW)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section5Title": t("Dein erstes Investment", "Your First Investment"),
+
+  "learn.firstStepsTitle": t("Schritt für Schritt zum ersten Kauf", "Step by Step to Your First Purchase"),
+  "learn.firstStep1": t("Notfallfonds aufbauen: 3-6 Monatsausgaben auf einem Tagesgeldkonto ansparen, bevor du investierst.", "Build an emergency fund: Save 3-6 months of expenses in a savings account before investing."),
+  "learn.firstStep2": t("Broker auswählen: Vergleiche Gebühren, Sparplan-Angebot und Benutzerfreundlichkeit. Für Anfänger sind Neobroker ideal.", "Choose a broker: Compare fees, savings plan offerings, and user-friendliness. Neobrokers are ideal for beginners."),
+  "learn.firstStep3": t("Depot eröffnen: Identifizierung per VideoIdent oder PostIdent. Dauert meist 1-3 Werktage.", "Open a brokerage account: Identity verification via VideoIdent or PostIdent. Usually takes 1-3 business days."),
+  "learn.firstStep4": t("Sparplan einrichten: Starte mit einem breit gestreuten ETF (z.B. MSCI World) – bereits ab 25€/Monat möglich.", "Set up a savings plan: Start with a broadly diversified ETF (e.g. MSCI World) – possible from as little as $25/month."),
+  "learn.firstStep5": t("Geduld haben: Nicht täglich ins Depot schauen. Langfristig denken. Der Markt schwankt – das ist normal.", "Be patient: Don't check your portfolio daily. Think long-term. The market fluctuates – that's normal."),
+
+  "learn.firstMistakesTitle": t("Häufige Anfängerfehler", "Common Beginner Mistakes"),
+  "learn.firstMistake1": t("Einzelaktien-Wetten statt breiter Streuung – setze nicht alles auf eine Karte", "Betting on single stocks instead of diversifying – don't put all eggs in one basket"),
+  "learn.firstMistake2": t("Market Timing versuchen – Zeit im Markt schlägt Timing des Markts", "Trying to time the market – time in the market beats timing the market"),
+  "learn.firstMistake3": t("Panikverkäufe bei Kursrückgängen – Crashs sind Kaufgelegenheiten für langfristige Anleger", "Panic selling during drops – crashes are buying opportunities for long-term investors"),
+  "learn.firstMistake4": t("Zu hohe Kosten durch häufiges Handeln – jeder Trade kostet Geld und Steuern", "Too high costs from frequent trading – each trade costs money and taxes"),
+  "learn.firstMistake5": t("Investieren ohne Notfallfonds – du brauchst einen finanziellen Puffer für Unerwartetes", "Investing without an emergency fund – you need a financial buffer for the unexpected"),
+
+  "learn.firstPortfolioTitle": t("Einfache Starter-Portfolios", "Simple Starter Portfolios"),
+  "learn.starterSimple": t("1-ETF-Portfolio", "1-ETF Portfolio"),
+  "learn.starterSimpleDesc": t("100% MSCI World oder FTSE All-World ETF – maximale Einfachheit, globale Streuung über 1.500+ Unternehmen", "100% MSCI World or FTSE All-World ETF – maximum simplicity, global diversification across 1,500+ companies"),
+  "learn.starterBalanced": t("2-ETF-Portfolio", "2-ETF Portfolio"),
+  "learn.starterBalancedDesc": t("70% MSCI World + 30% MSCI Emerging Markets – breitere Abdeckung inklusive Schwellenländer", "70% MSCI World + 30% MSCI Emerging Markets – broader coverage including developing markets"),
+  "learn.starterConservative": t("Konservatives Portfolio", "Conservative Portfolio"),
+  "learn.starterConservativeDesc": t("60% Aktien-ETF + 40% Anleihen-ETF – weniger Schwankungen, geeignet für kürzere Anlagezeiträume", "60% Stock ETF + 40% Bond ETF – less volatility, suitable for shorter investment horizons"),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 6: BONDS & FUNDS (moved from 3)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section6Title": t("Anleihen & Fonds", "Bonds & Funds"),
+
+  "learn.bondsTitle": t("Anleihen verstehen", "Understanding Bonds"),
+  "learn.bondsP1": t(
+    "Eine <strong>Anleihe</strong> (Bond) ist ein festverzinsliches Wertpapier – du leihst einem Staat oder Unternehmen Geld und erhältst dafür regelmäßige Zinszahlungen (<strong>Kupon</strong>) plus die Rückzahlung des Nennwerts am Ende der Laufzeit.",
+    "A <strong>bond</strong> is a fixed-income security – you lend money to a government or company and receive regular interest payments (<strong>coupon</strong>) plus repayment of face value at maturity."
+  ),
+  "learn.bondsP2": t(
+    "Anleihenpreise und Zinsen bewegen sich <strong>gegenläufig</strong>: Steigen die Zinsen, fallen bestehende Anleihenpreise (und umgekehrt). Die <strong>Rendite bis Fälligkeit</strong> (Yield to Maturity) berücksichtigt Kupon, Kaufpreis und Restlaufzeit.",
+    "Bond prices and interest rates move <strong>inversely</strong>: When rates rise, existing bond prices fall (and vice versa). <strong>Yield to Maturity</strong> accounts for coupon, purchase price, and remaining term."
+  ),
+  "learn.bondsTypes": t("Anleihe-Typen:", "Bond Types:"),
+  "learn.govBonds": t("Staatsanleihen", "Government Bonds"),
+  "learn.govBondsDesc": t("Gelten als sicherste Anlage – US Treasuries sind der weltweite Benchmark", "Considered the safest investment – US Treasuries are the global benchmark"),
+  "learn.corpBonds": t("Unternehmensanleihen", "Corporate Bonds"),
+  "learn.corpBondsDesc": t("Höhere Rendite als Staatsanleihen, aber höheres Ausfallrisiko", "Higher yield than government bonds, but higher default risk"),
+  "learn.highYield": t("High-Yield (Junk) Bonds", "High-Yield (Junk) Bonds"),
+  "learn.highYieldDesc": t("Anleihen von Unternehmen mit schlechter Bonität – hohe Rendite, hohes Risiko", "Bonds from companies with poor credit – high yield, high risk"),
+  "learn.bondsInfo": t(
+    "Die 10-jährige US-Staatsanleihe (10Y Treasury) ist der wichtigste Referenzzinssatz der Welt und beeinflusst Hypothekenzinsen, Unternehmenskredite und Aktienbewertungen.",
+    "The 10-year US Treasury is the most important reference rate in the world and affects mortgage rates, corporate loans, and stock valuations."
+  ),
+
+  "learn.fundsTitle": t("Investmentfonds", "Investment Funds"),
+  "learn.fundsP1": t(
+    "Ein <strong>Investmentfonds</strong> bündelt das Geld vieler Anleger und investiert es in ein diversifiziertes Portfolio. <strong>Aktiv verwaltete Fonds</strong> haben einen Fondsmanager, der versucht, den Markt zu schlagen. <strong>Passiv verwaltete Fonds</strong> (meist ETFs) bilden einfach einen Index ab.",
+    "An <strong>investment fund</strong> pools money from many investors and invests it in a diversified portfolio. <strong>Actively managed funds</strong> have a fund manager trying to beat the market. <strong>Passively managed funds</strong> (mostly ETFs) simply track an index."
+  ),
+  "learn.fundsComparison": t("Aktiv vs. Passiv", "Active vs. Passive"),
+  "learn.fundsComparisonDesc": t("Über 90% der aktiven Fonds schlagen ihren Vergleichsindex nicht über 15 Jahre (SPIVA-Studie). Passiv investieren ist für die meisten Anleger die bessere Wahl.", "Over 90% of active funds fail to beat their benchmark over 15 years (SPIVA study). Passive investing is the better choice for most investors."),
+
+  "learn.reitsTitle": t("REITs – Immobilienaktien", "REITs – Real Estate Stocks"),
+  "learn.reitsP1": t(
+    "<strong>REITs</strong> (Real Estate Investment Trusts) sind börsennotierte Unternehmen, die in Immobilien investieren. Sie müssen mindestens 90% ihrer Gewinne als Dividende ausschütten, was sie zu attraktiven Einkommensquellen macht.",
+    "<strong>REITs</strong> (Real Estate Investment Trusts) are publicly traded companies that invest in real estate. They must distribute at least 90% of profits as dividends, making them attractive income sources."
+  ),
+  "learn.reitsP2": t(
+    "Typen: Residential (Wohnimmobilien), Commercial (Büros/Einzelhandel), Industrial (Lagerhäuser/Rechenzentren), Healthcare (Krankenhäuser/Pflegeheime).",
+    "Types: Residential, Commercial (offices/retail), Industrial (warehouses/data centers), Healthcare (hospitals/nursing homes)."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 7: CRYPTO & ALTERNATIVES (moved from 5)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section7Title": t("Krypto & Alternative Anlagen", "Crypto & Alternative Assets"),
+
+  "learn.cryptoTitle": t("Kryptowährungen", "Cryptocurrencies"),
+  "learn.cryptoP1": t(
+    "<strong>Kryptowährungen</strong> sind digitale Währungen auf Basis der <strong>Blockchain-Technologie</strong>. Bitcoin wurde 2009 als erste Kryptowährung eingeführt. Heute gibt es über 20.000 verschiedene Kryptowährungen mit einer Gesamtmarktkapitalisierung von über $2 Billionen.",
+    "<strong>Cryptocurrencies</strong> are digital currencies based on <strong>blockchain technology</strong>. Bitcoin was introduced as the first cryptocurrency in 2009. Today there are over 20,000 different cryptocurrencies with a total market cap exceeding $2 trillion."
+  ),
+  "learn.cryptoP2": t(
+    "Kryptowährungen sind extrem volatil. Bitcoin hat mehrfach über 50% in wenigen Monaten verloren – und sich danach erholt. Investiere nur, was du bereit bist komplett zu verlieren.",
+    "Cryptocurrencies are extremely volatile. Bitcoin has lost over 50% multiple times in just months – and recovered afterwards. Only invest what you're prepared to lose entirely."
+  ),
+  "learn.cryptoTypes": t("Wichtige Kryptowährungen:", "Important Cryptocurrencies:"),
+  "learn.cryptoBtc": t("Bitcoin (BTC)", "Bitcoin (BTC)"),
+  "learn.cryptoBtcDesc": t("Erste und größte Kryptowährung. 'Digitales Gold'. Begrenztes Angebot (21 Mio.). ~60% Marktdominanz.", "First and largest cryptocurrency. 'Digital gold.' Limited supply (21M). ~60% market dominance."),
+  "learn.cryptoEth": t("Ethereum (ETH)", "Ethereum (ETH)"),
+  "learn.cryptoEthDesc": t("Plattform für Smart Contracts und DApps. Basis für DeFi und NFTs. Zweitgrößte Kryptowährung.", "Platform for smart contracts and DApps. Foundation for DeFi and NFTs. Second-largest cryptocurrency."),
+  "learn.cryptoAlt": t("Altcoins", "Altcoins"),
+  "learn.cryptoAltDesc": t("Alle anderen Kryptowährungen. Höheres Risiko, höheres Potenzial. Viele scheitern langfristig.", "All other cryptocurrencies. Higher risk, higher potential. Many fail long-term."),
+  "learn.cryptoStable": t("Stablecoins", "Stablecoins"),
+  "learn.cryptoStableDesc": t("An Fiatwährungen gekoppelt (USDT, USDC). Stabiler Wert, genutzt für DeFi-Protokolle.", "Pegged to fiat currencies (USDT, USDC). Stable value, used in DeFi protocols."),
+
+  "learn.commoditiesTitle": t("Rohstoffe", "Commodities"),
+  "learn.commoditiesP1": t(
+    "<strong>Rohstoffe</strong> umfassen Edelmetalle (Gold, Silber), Energie (Öl, Gas), Agrar (Weizen, Kaffee) und Industriemetalle (Kupfer, Lithium). Gold gilt traditionell als <strong>sicherer Hafen</strong> in Krisenzeiten und als Inflationsschutz.",
+    "<strong>Commodities</strong> include precious metals (gold, silver), energy (oil, gas), agriculture (wheat, coffee), and industrial metals (copper, lithium). Gold is traditionally considered a <strong>safe haven</strong> in times of crisis and inflation hedge."
+  ),
+  "learn.commoditiesP2": t(
+    "Die meisten Privatanleger investieren über ETFs in Rohstoffe, da direkter Handel komplex und kapitalintensiv ist.",
+    "Most retail investors invest in commodities through ETFs, as direct trading is complex and capital-intensive."
+  ),
+
+  "learn.altInvestTitle": t("Alternative Investments", "Alternative Investments"),
+  "learn.altP2P": t("P2P-Kredite", "P2P Lending"),
+  "learn.altP2PDesc": t("Direkte Kreditvergabe an Privatpersonen über Plattformen. 5-12% Rendite, aber hohes Ausfallrisiko.", "Direct lending to individuals via platforms. 5-12% return but high default risk."),
+  "learn.altPE": t("Private Equity", "Private Equity"),
+  "learn.altPEDesc": t("Beteiligung an nicht-börsennotierten Unternehmen. Hohe Mindesteinlage, lange Halteperioden, potenziell hohe Renditen.", "Investing in non-public companies. High minimum investment, long holding periods, potentially high returns."),
+  "learn.altCollectibles": t("Sammlerstücke", "Collectibles"),
+  "learn.altCollectiblesDesc": t("Kunst, Wein, Uhren, Sneaker – illiquide, subjektive Bewertung, aber Inflationsschutz und Spaßfaktor.", "Art, wine, watches, sneakers – illiquid, subjective valuation, but inflation protection and enjoyment."),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 8: PORTFOLIO MANAGEMENT (moved from 8, now Intermediate)
   // ══════════════════════════════════════════════════════════════
   "learn.section8Title": t("Portfoliomanagement", "Portfolio Management"),
 
   "learn.assetAllocTitle": t("Asset Allocation", "Asset Allocation"),
   "learn.assetAllocP1": t(
-    "<strong>Asset Allocation</strong> ist die Verteilung deines Vermögens auf verschiedene Anlageklassen. Sie ist der wichtigste Faktor für deine langfristige Rendite – wichtiger als die Auswahl einzelner Aktien!",
-    "<strong>Asset allocation</strong> is the distribution of your wealth across different asset classes. It is the most important factor for your long-term returns – more important than individual stock selection!"
+    "<strong>Asset Allocation</strong> – die Verteilung deines Vermögens auf verschiedene Anlageklassen – bestimmt laut Studien bis zu <strong>90% deiner Rendite</strong>. Die richtige Mischung hängt von deinem Alter, Risikotoleranz und Anlagehorizont ab.",
+    "<strong>Asset allocation</strong> – the distribution of your wealth across different asset classes – determines up to <strong>90% of your returns</strong> according to studies. The right mix depends on your age, risk tolerance, and investment horizon."
   ),
-  "learn.assetAllocModels": t("Klassische Modelle", "Classic Models"),
+  "learn.assetAllocModels": t("Bekannte Modelle:", "Well-Known Models:"),
   "learn.model6040": t("60/40 Portfolio", "60/40 Portfolio"),
-  "learn.model6040Desc": t("60% Aktien, 40% Anleihen. Der Klassiker für ausgewogene Risiko-Rendite. In Niedrigzinsphasen weniger attraktiv.", "60% stocks, 40% bonds. The classic balanced risk-return allocation. Less attractive in low-interest environments."),
-  "learn.modelAge": t("Altersregel", "Age Rule"),
-  "learn.modelAgeDesc": t("100 minus Alter = Aktienanteil in %. Mit 30: 70% Aktien. Mit 60: 40% Aktien. Einfache Faustregel, die mit dem Alter konservativer wird.", "100 minus age = stock percentage. At 30: 70% stocks. At 60: 40% stocks. Simple rule that becomes more conservative with age."),
-  "learn.modelAllWeather": t("All-Weather Portfolio (Ray Dalio)", "All-Weather Portfolio (Ray Dalio)"),
-  "learn.modelAllWeatherDesc": t("30% Aktien, 40% langfristige Anleihen, 15% mittelfristige Anleihen, 7,5% Gold, 7,5% Rohstoffe. Designed für jede Marktphase.", "30% stocks, 40% long-term bonds, 15% intermediate bonds, 7.5% gold, 7.5% commodities. Designed for every market condition."),
+  "learn.model6040Desc": t("60% Aktien, 40% Anleihen. Klassisches Modell für moderate Risikotoleranz.", "60% stocks, 40% bonds. Classic model for moderate risk tolerance."),
+  "learn.modelAge": t("Alter-basiert", "Age-Based"),
+  "learn.modelAgeDesc": t("Aktienanteil = 100 - Alter. Mit 30: 70% Aktien, 30% Anleihen. Konservativer mit dem Alter.", "Stock allocation = 100 - age. At 30: 70% stocks, 30% bonds. More conservative with age."),
+  "learn.modelAllWeather": t("All-Weather (Ray Dalio)", "All-Weather (Ray Dalio)"),
+  "learn.modelAllWeatherDesc": t("30% Aktien, 40% langfristige Anleihen, 15% mittelfristige, 7,5% Gold, 7,5% Rohstoffe", "30% stocks, 40% long-term bonds, 15% intermediate, 7.5% gold, 7.5% commodities"),
 
   "learn.rebalancingTitle": t("Rebalancing", "Rebalancing"),
   "learn.rebalancingP1": t(
-    "<strong>Rebalancing</strong> bedeutet, dein Portfolio regelmäßig auf die Ziel-Allokation zurückzusetzen. Wenn Aktien stark gestiegen sind, verkaufst du einen Teil und kaufst Anleihen nach (und umgekehrt). Das erzwingt ein systematisches \"Buy Low, Sell High\".",
-    "<strong>Rebalancing</strong> means regularly resetting your portfolio to the target allocation. If stocks have risen significantly, you sell some and buy bonds (and vice versa). This enforces a systematic \"buy low, sell high.\""
+    "<strong>Rebalancing</strong> ist die regelmäßige Anpassung deines Portfolios an die ursprüngliche Zielgewichtung. Wenn Aktien steigen, wird ihr Anteil zu groß – du verkaufst einen Teil und kaufst Anleihen nach (und umgekehrt).",
+    "<strong>Rebalancing</strong> is the regular adjustment of your portfolio to its target allocation. When stocks rise, their share becomes too large – you sell some and buy bonds (and vice versa)."
   ),
   "learn.rebalancingP2": t(
-    "Empfohlene Frequenz: jährlich oder bei Abweichungen von >5% von der Ziel-Allokation. Zu häufiges Rebalancing erhöht Transaktionskosten.",
-    "Recommended frequency: annually or when deviations exceed >5% from target allocation. Too frequent rebalancing increases transaction costs."
+    "Häufigkeit: Einmal pro Jahr oder bei Abweichungen von >5% von der Zielgewichtung.",
+    "Frequency: Once per year or when deviations exceed >5% from target allocation."
   ),
 
   "learn.riskMgmtTitle": t("Risikomanagement", "Risk Management"),
   "learn.riskMgmtP1": t(
-    "Professionelles Risikomanagement beinhaltet: <strong>Position Sizing</strong> (nie mehr als 5% in eine einzelne Aktie), <strong>Stop-Loss-Orders</strong> (maximalen Verlust pro Position begrenzen), <strong>Korrelationsanalyse</strong> (nicht alle Positionen sollen gleichzeitig fallen) und einen <strong>Notgroschen</strong> (3–6 Monatsgehälter in Cash behalten).",
-    "Professional risk management includes: <strong>position sizing</strong> (never more than 5% in a single stock), <strong>stop-loss orders</strong> (limit maximum loss per position), <strong>correlation analysis</strong> (not all positions should fall simultaneously), and an <strong>emergency fund</strong> (keep 3–6 months expenses in cash)."
+    "Professionelles Risikomanagement umfasst: <strong>Diversifikation</strong> über Anlageklassen und Regionen, <strong>Positionsgrößenlimitierung</strong> (max. 5-10% in eine einzelne Position), <strong>Stop-Loss Orders</strong> für spekulative Positionen, <strong>Korrelationsanalyse</strong> (nicht in stark korrelierten Assets übergewichten).",
+    "Professional risk management includes: <strong>diversification</strong> across asset classes and regions, <strong>position size limits</strong> (max 5-10% in a single position), <strong>stop-loss orders</strong> for speculative positions, <strong>correlation analysis</strong> (don't overweight in highly correlated assets)."
   ),
 
-  "learn.emergencyFundTitle": t("Notgroschen – Bevor du investierst!", "Emergency Fund – Before You Invest!"),
+  "learn.emergencyFundTitle": t("Notfallfonds & Liquiditätsplanung", "Emergency Fund & Liquidity Planning"),
   "learn.emergencyFundP1": t(
-    "Bevor du auch nur einen Euro investierst, solltest du einen <strong>Notgroschen</strong> von 3–6 Netto-Monatsgehältern auf einem Tagesgeldkonto haben. Dieser schützt dich davor, in einer Notlage Investments mit Verlust verkaufen zu müssen.",
-    "Before investing a single dollar, you should have an <strong>emergency fund</strong> of 3–6 months' net salary in a savings account. This protects you from having to sell investments at a loss during emergencies."
+    "Bevor du investierst, baue einen <strong>Notfallfonds</strong> auf: 3-6 Monatsausgaben auf einem sofort verfügbaren Konto. Investiere nie Geld, das du für Miete, Versicherungen oder andere fixe Kosten brauchst. Halte immer 5-10% deines Portfolios in Cash oder kurzfristigen Anleihen für Kaufgelegenheiten.",
+    "Before investing, build an <strong>emergency fund</strong>: 3-6 months of expenses in an immediately accessible account. Never invest money needed for rent, insurance, or other fixed costs. Always keep 5-10% of your portfolio in cash or short-term bonds for buying opportunities."
   ),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 9: TAXES & COSTS
+  // SECTION 9: STOCK ANALYSIS IN PRACTICE (NEW)
   // ══════════════════════════════════════════════════════════════
-  "learn.section9Title": t("Steuern & Kosten", "Taxes & Costs"),
+  "learn.section9Title": t("Aktienanalyse in der Praxis", "Stock Analysis in Practice"),
 
-  "learn.taxTitle": t("Kapitalertragsteuer", "Capital Gains Tax"),
-  "learn.taxP1": t(
-    "In Deutschland werden Kapitalerträge mit der <strong>Abgeltungsteuer</strong> von 25% + Solidaritätszuschlag + ggf. Kirchensteuer besteuert. Der effektive Steuersatz liegt bei ca. 26,375%.",
-    "Capital gains are subject to tax. In the US, long-term capital gains (held >1 year) are taxed at 0%, 15%, or 20% depending on income. Short-term gains are taxed as ordinary income."
+  "learn.annualReportsTitle": t("Geschäftsberichte lesen", "Reading Annual Reports"),
+  "learn.annualReportsP1": t(
+    "Der <strong>Geschäftsbericht</strong> (Annual Report / 10-K) ist die wichtigste Informationsquelle für Investoren. Er enthält geprüfte Finanzdaten, Risikofaktoren und die Strategie des Managements. Die <strong>10-Q</strong> (Quartalsberichte) liefern unterjährige Updates.",
+    "The <strong>annual report</strong> (10-K) is the most important information source for investors. It contains audited financial data, risk factors, and management strategy. <strong>10-Q</strong> (quarterly reports) provide interim updates."
   ),
-  "learn.taxP2": t(
-    "Jeder Bürger hat einen <strong>Sparerpauschbetrag</strong> von 1.000€ (2.000€ für Ehepaare). Stelle sicher, dass du einen Freistellungsauftrag bei deinem Broker einrichtest!",
-    "Tax-advantaged accounts like <strong>401(k)s, IRAs, and Roth IRAs</strong> (or ISAs in the UK) can significantly reduce your tax burden. Make sure to utilize them!"
-  ),
-  "learn.taxLossHarvesting": t("Tax-Loss Harvesting", "Tax-Loss Harvesting"),
-  "learn.taxLossHarvestingDesc": t(
-    "Durch den gezielten Verkauf von Verlustpositionen kannst du Gewinne steuerlich verrechnen. In Deutschland werden Verluste aus Aktien mit Gewinnen aus Aktien verrechnet (Verlustverrechnungstopf).",
-    "By strategically selling losing positions, you can offset gains for tax purposes. This can reduce your tax bill significantly, especially at year-end."
-  ),
-  "learn.taxInfo": t("Vergiss nicht den Freistellungsauftrag! Ohne ihn werden sofort Steuern auf alle Erträge abgezogen.", "Don't forget tax-loss harvesting! Selling investments at a loss to offset gains can reduce your tax bill significantly."),
-
-  "learn.costsTitle": t("Gebühren & Kosten", "Fees & Costs"),
-  "learn.costsP1": t(
-    "Gebühren fressen Rendite – besonders langfristig. Die wichtigsten: <strong>Ordergebühren</strong> (je Trade), <strong>Depotgebühren</strong> (jährlich), <strong>Spread</strong> (Geld-Brief-Spanne), <strong>TER</strong> (Total Expense Ratio bei ETFs/Fonds) und <strong>Performance Fee</strong> (bei Hedgefonds).",
-    "Fees eat into returns – especially long-term. The most important: <strong>trading commissions</strong> (per trade), <strong>account fees</strong> (annual), <strong>spread</strong> (bid-ask), <strong>TER</strong> (Total Expense Ratio for ETFs/funds), and <strong>performance fee</strong> (for hedge funds)."
-  ),
-  "learn.costsP2": t("Vergleiche Broker: Neobroker (Trade Republic, Scalable Capital) bieten oft 0–1€ pro Trade. Traditionelle Banken: 5–20€ pro Trade.", "Compare brokers: discount brokers (Fidelity, Schwab, IBKR) often offer $0 commissions. Traditional banks: $5–20 per trade."),
-  "learn.costsInfo": t(
-    "Ein ETF mit 0,2% TER kostet bei 100.000€ nur 200€/Jahr. Ein aktiver Fonds mit 1,5% TER: 1.500€/Jahr. Über 30 Jahre summiert sich das zu zehntausenden Euro Unterschied!",
-    "An ETF with 0.2% TER costs only $200/year on $100,000. An active fund with 1.5% TER: $1,500/year. Over 30 years, this difference amounts to tens of thousands of dollars!"
+  "learn.annualReportsP2": t(
+    "Achte besonders auf: Umsatzwachstum, Margenentwicklung, Free Cashflow-Trend, Verschuldungsgrad und die Aussagen des Managements zu Risiken und Chancen.",
+    "Pay special attention to: Revenue growth, margin trends, free cash flow trajectory, leverage ratios, and management's discussion of risks and opportunities."
   ),
 
-  "learn.compoundTitle": t("Die Macht des Zinseszins", "The Power of Compound Interest"),
-  "learn.compoundP1": t("Albert Einstein nannte den Zinseszins das \"achte Weltwunder\". Wenn du Gewinne reinvestierst, wächst dein Vermögen exponentiell.", "Albert Einstein called compound interest the \"eighth wonder of the world.\" When you reinvest your gains, your wealth grows exponentially."),
-  "learn.compoundP2": t("Beispiel: 10.000€ mit 8% Rendite → 21.600€ (10 J.) → 46.600€ (20 J.) → 100.600€ (30 J.). Ohne zusätzliche Einzahlung!", "Example: $10,000 at 8% → $21,600 (10y) → $46,600 (20y) → $100,600 (30y). Without any additional contributions!"),
-  "learn.compoundInfo": t("Nutze unseren Zinseszins-Rechner unter \"Rechner\" um dein persönliches Wachstum zu simulieren!", "Use our compound interest calculator under \"Tools\" to simulate your personal growth!"),
+  "learn.balanceSheetTitle": t("Bilanzen verstehen", "Understanding Balance Sheets"),
+  "learn.balanceSheetP1": t(
+    "Die <strong>Bilanz</strong> zeigt die finanzielle Gesundheit eines Unternehmens: <strong>Aktiva</strong> (was das Unternehmen besitzt) = <strong>Passiva</strong> (Schulden) + <strong>Eigenkapital</strong>. Gesunde Unternehmen haben mehr Eigenkapital als Schulden und wachsende Cashbestände.",
+    "The <strong>balance sheet</strong> shows a company's financial health: <strong>Assets</strong> (what the company owns) = <strong>Liabilities</strong> (debts) + <strong>Equity</strong>. Healthy companies have more equity than debt and growing cash reserves."
+  ),
 
-  "learn.brokerTitle": t("Den richtigen Broker wählen", "Choosing the Right Broker"),
-  "learn.brokerP1": t("Ein Broker ist der Vermittler, über den du Wertpapiere kaufst und verkaufst. Die richtige Wahl kann langfristig tausende Euro sparen.", "A broker is the intermediary through which you buy and sell securities. The right choice can save you thousands in the long run."),
-  "learn.brokerP2": t("Achte auf: Ordergebühren, Sparplan-Konditionen, Handelsplätze, Benutzerfreundlichkeit, Einlagensicherung und verfügbare Produkte.", "Pay attention to: trading fees, savings plan options, exchanges, user-friendliness, deposit protection, and available products."),
-  "learn.brokerTypes": t("Broker-Typen", "Broker Types"),
-  "learn.neobroker": t("Neobroker", "Discount/App Brokers"),
-  "learn.neobrokerDesc": t("Trade Republic, Scalable Capital, Smartbroker. Günstig (0–1€/Trade), gute Apps, aber limitierte Handelsplätze.", "Trade Republic, Robinhood, Webull. Cheap ($0/trade), good apps, but limited exchanges."),
-  "learn.onlinebroker": t("Online-Broker", "Online Brokers"),
-  "learn.onlinebrokerDesc": t("ING, Comdirect, Consorsbank. Mehr Handelsplätze, höhere Gebühren, besserer Service.", "Fidelity, Schwab, E*Trade. More exchanges, moderate fees, better service."),
-  "learn.probroker": t("Profi-Broker", "Professional Brokers"),
-  "learn.probrokerDesc": t("Interactive Brokers, DEGIRO. Niedrige Gebühren, weltweiter Zugang, komplexe Plattform. Für aktive Trader und Fortgeschrittene.", "Interactive Brokers, DEGIRO. Low fees, global access, complex platform. For active traders and advanced investors."),
+  "learn.evaluateMgmtTitle": t("Management bewerten", "Evaluating Management"),
+  "learn.evaluateMgmtP1": t(
+    "Gutes Management zeigt sich durch: konstantes Umsatz- und Gewinnwachstum, hohe Insider-Beteiligung (Skin in the Game), klare und ehrliche Kommunikation, Kapitalallokation im Aktionärsinteresse (Dividenden, Rückkäufe, kluge Akquisitionen). Vermeide Unternehmen mit exzessiver Verwässerung oder CEO-Gehältern, die nicht an Performance gebunden sind.",
+    "Good management shows through: consistent revenue and earnings growth, high insider ownership (skin in the game), clear and honest communication, capital allocation in shareholder interest (dividends, buybacks, smart acquisitions). Avoid companies with excessive dilution or CEO compensation not tied to performance."
+  ),
 
-  "learn.popularEtfs": t("Beliebte ETFs", "Popular ETFs"),
-  "learn.quoteTitle": t("📌 Zitat", "📌 Quote"),
+  "learn.industryCompareTitle": t("Branchenvergleich", "Industry Comparison"),
+  "learn.industryCompareP1": t(
+    "Vergleiche Unternehmen immer innerhalb ihrer Branche. Ein KGV von 25 ist für einen Tech-Konzern normal, für einen Versorger teuer. Nutze Peer-Vergleiche für KGV, Gewinnmarge, Verschuldungsgrad und Wachstumsrate, um relative Bewertungen einzuschätzen.",
+    "Always compare companies within their industry. A P/E of 25 is normal for a tech company but expensive for a utility. Use peer comparisons for P/E, profit margin, leverage, and growth rate to assess relative valuations."
+  ),
 
   // ══════════════════════════════════════════════════════════════
-  // FORMULAS & EXPERT ADDITIONS
+  // SECTION 10: TECHNICAL ANALYSIS (moved from 7)
   // ══════════════════════════════════════════════════════════════
+  "learn.section10Title": t("Technische Analyse", "Technical Analysis"),
 
-  // DCF
+  "learn.taIntro": t(
+    "Die <strong>Technische Analyse</strong> (TA) untersucht historische Kursdaten und Handelsvolumen, um zukünftige Preisbewegungen vorherzusagen. Im Gegensatz zur Fundamentalanalyse ignoriert sie den inneren Wert und konzentriert sich auf <strong>Muster, Trends und Indikatoren</strong>.",
+    "<strong>Technical Analysis</strong> (TA) studies historical price data and trading volume to predict future price movements. Unlike fundamental analysis, it ignores intrinsic value and focuses on <strong>patterns, trends, and indicators</strong>."
+  ),
+
+  "learn.chartPatternsTitle": t("Chart-Muster", "Chart Patterns"),
+  "learn.headShoulders": t("Kopf-Schulter-Formation", "Head and Shoulders"),
+  "learn.headShouldersDesc": t("Umkehrmuster mit drei Hochs – das mittlere (Kopf) am höchsten. Signal für Trendwende von bullisch zu bärisch.", "Reversal pattern with three highs – the middle (head) highest. Signal for trend change from bullish to bearish."),
+  "learn.doubleTop": t("Doppel-Top/Bottom", "Double Top/Bottom"),
+  "learn.doubleTopDesc": t("Kurs testet zweimal denselben Widerstand/Support und dreht um. Starkes Umkehrsignal.", "Price tests the same resistance/support twice and reverses. Strong reversal signal."),
+  "learn.triangles": t("Dreiecke", "Triangles"),
+  "learn.trianglesDesc": t("Symmetrisch, aufsteigend oder absteigend – Konsolidierungsmuster vor einem Ausbruch in eine Richtung.", "Symmetric, ascending, or descending – consolidation patterns before a breakout in one direction."),
+  "learn.flagsPennants": t("Flaggen & Wimpel", "Flags & Pennants"),
+  "learn.flagsPennantsDesc": t("Kurzfristige Konsolidierung in einem starken Trend. Signal für Trendfortsetzung.", "Short-term consolidation in a strong trend. Signal for trend continuation."),
+
+  "learn.indicatorsTitle": t("Technische Indikatoren", "Technical Indicators"),
+  "learn.smaEma": t("Gleitende Durchschnitte (SMA/EMA)", "Moving Averages (SMA/EMA)"),
+  "learn.smaEmaDesc": t("SMA (Simple) = gleichgewichteter Durchschnitt. EMA (Exponential) = neuere Kurse stärker gewichtet. 50-Tage und 200-Tage sind die wichtigsten. Golden Cross (50 > 200) = bullisch, Death Cross (50 < 200) = bärisch.", "SMA (Simple) = equally weighted average. EMA (Exponential) = recent prices weighted more. 50-day and 200-day are most important. Golden Cross (50 > 200) = bullish, Death Cross (50 < 200) = bearish."),
+  "learn.rsi": t("RSI (Relative Strength Index)", "RSI (Relative Strength Index)"),
+  "learn.rsiDesc": t("Oszillator von 0-100. Über 70 = überkauft (potenzielle Verkaufsgelegenheit). Unter 30 = überverkauft (potenzielle Kaufgelegenheit). RSI-Divergenzen sind besonders starke Signale.", "Oscillator 0-100. Above 70 = overbought (potential sell). Below 30 = oversold (potential buy). RSI divergences are particularly strong signals."),
+  "learn.macd": t("MACD", "MACD"),
+  "learn.macdDesc": t("Moving Average Convergence Divergence – zeigt Trend und Momentum. Signallinie-Kreuzungen und Histogramm-Divergenzen liefern Handelssignale.", "Moving Average Convergence Divergence – shows trend and momentum. Signal line crossovers and histogram divergences provide trading signals."),
+  "learn.bollinger": t("Bollinger Bänder", "Bollinger Bands"),
+  "learn.bollingerDesc": t("Mittlerer SMA ±2 Standardabweichungen. Kurs am oberen Band = potenziell überkauft. Am unteren Band = potenziell überverkauft. Band-Squeeze = Ausbruch steht bevor.", "Middle SMA ±2 standard deviations. Price at upper band = potentially overbought. At lower band = potentially oversold. Band squeeze = breakout imminent."),
+  "learn.volume": t("Volumenanalyse", "Volume Analysis"),
+  "learn.volumeDesc": t("Hohes Volumen bestätigt Trends. Steigender Kurs bei fallendem Volumen = schwacher Trend. OBV (On-Balance Volume) summiert Volumen bei steigenden/fallenden Tagen.", "High volume confirms trends. Rising price with falling volume = weak trend. OBV (On-Balance Volume) sums volume on up/down days."),
+
+  "learn.supportResistance": t("Support & Resistance", "Support & Resistance"),
+  "learn.supportResistanceP1": t(
+    "<strong>Support</strong> ist ein Preisniveau, an dem eine Aktie historisch Käufer findet und der Kurs sich stabilisiert. <strong>Resistance</strong> ist das Gegenstück – hier trifft der Kurs auf Verkaufsdruck. Wenn Support gebrochen wird, wird er oft zu Resistance (und umgekehrt). Runde Zahlen ($100, $50) wirken oft als psychologische Support/Resistance-Level.",
+    "<strong>Support</strong> is a price level where a stock historically finds buyers and stabilizes. <strong>Resistance</strong> is the opposite – where the price meets selling pressure. When support is broken, it often becomes resistance (and vice versa). Round numbers ($100, $50) often act as psychological support/resistance levels."
+  ),
+  "learn.taWarning": t(
+    "Technische Analyse ist keine exakte Wissenschaft. Kein Indikator funktioniert immer. Verwende TA immer in Kombination mit Fundamentalanalyse und Risikomanagement.",
+    "Technical analysis is not an exact science. No indicator works all the time. Always use TA in combination with fundamental analysis and risk management."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 11: DERIVATIVES (moved from 4)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section11Title": t("Derivate im Detail", "Derivatives in Detail"),
+
+  "learn.derivativesIntro": t(
+    "<strong>Derivate</strong> sind Finanzinstrumente, deren Wert von einem zugrunde liegenden Basiswert (Aktie, Index, Rohstoff, Währung) abgeleitet wird. Sie werden sowohl zur <strong>Absicherung</strong> (Hedging) als auch zur <strong>Spekulation</strong> mit Hebelwirkung eingesetzt.",
+    "<strong>Derivatives</strong> are financial instruments whose value is derived from an underlying asset (stock, index, commodity, currency). They are used for both <strong>hedging</strong> and <strong>speculation</strong> with leverage."
+  ),
+
+  "learn.optionsTitle": t("Optionen", "Options"),
+  "learn.optionsP1": t(
+    "<strong>Optionen</strong> geben dir das <strong>Recht, aber nicht die Pflicht</strong>, einen Basiswert zu einem festgelegten Preis (Strike) bis zu einem bestimmten Datum zu kaufen (Call) oder verkaufen (Put).",
+    "<strong>Options</strong> give you the <strong>right, but not the obligation</strong>, to buy (call) or sell (put) an underlying asset at a set price (strike) by a certain date."
+  ),
+  "learn.optionsCall": t("Call-Option", "Call Option"),
+  "learn.optionsCallDesc": t("Recht zum KAUF. Profitiert von steigenden Kursen. Max. Verlust = gezahlte Prämie.", "Right to BUY. Profits from rising prices. Max loss = premium paid."),
+  "learn.optionsPut": t("Put-Option", "Put Option"),
+  "learn.optionsPutDesc": t("Recht zum VERKAUF. Profitiert von fallenden Kursen. Max. Verlust = gezahlte Prämie.", "Right to SELL. Profits from falling prices. Max loss = premium paid."),
+  "learn.optionsGreeks": t("Die Griechen (Options-Greeks):", "The Greeks (Options Greeks):"),
+  "learn.optionsGreeksDesc": t(
+    "<strong>Delta</strong> (Δ): Preisänderung der Option pro $1 Änderung im Basiswert. <strong>Gamma</strong> (Γ): Änderungsrate von Delta. <strong>Theta</strong> (Θ): Zeitwertverfall pro Tag – Optionen verlieren täglich an Wert! <strong>Vega</strong> (ν): Sensitivität gegenüber Volatilitätsänderungen. <strong>Rho</strong> (ρ): Zinssensitivität.",
+    "<strong>Delta</strong> (Δ): Option price change per $1 move in underlying. <strong>Gamma</strong> (Γ): Rate of change of Delta. <strong>Theta</strong> (Θ): Time decay per day – options lose value daily! <strong>Vega</strong> (ν): Sensitivity to volatility changes. <strong>Rho</strong> (ρ): Interest rate sensitivity."
+  ),
+  "learn.optionsStrategies": t("Beliebte Optionsstrategien:", "Popular Option Strategies:"),
+  "learn.coveredCall": t("Covered Call", "Covered Call"),
+  "learn.coveredCallDesc": t("Besitze 100 Aktien + verkaufe Call darauf. Einnahme: Prämie. Risiko: Kursgewinne über dem Strike verpasst.", "Own 100 shares + sell call. Income: premium. Risk: miss gains above strike."),
+  "learn.protectivePut": t("Protective Put", "Protective Put"),
+  "learn.protectivePutDesc": t("Besitze Aktien + kaufe Put als Versicherung. Schützt vor großen Verlusten, kostet aber Prämie.", "Own shares + buy put as insurance. Protects against large losses but costs premium."),
+  "learn.straddle": t("Straddle", "Straddle"),
+  "learn.straddleDesc": t("Kaufe Call + Put mit gleichem Strike. Profitiert von großer Bewegung in jede Richtung (z.B. vor Earnings).", "Buy call + put at same strike. Profits from big move in either direction (e.g. before earnings)."),
+  "learn.ironCondor": t("Iron Condor", "Iron Condor"),
+  "learn.ironCondorDesc": t("Kombination aus Bull Put Spread + Bear Call Spread. Profitiert, wenn die Aktie in einer Spanne bleibt. Beliebte Einkommensstrategie.", "Combination of bull put spread + bear call spread. Profits when stock stays in a range. Popular income strategy."),
+
+  "learn.futuresTitle": t("Futures", "Futures"),
+  "learn.futuresP1": t(
+    "<strong>Futures</strong> sind standardisierte Verträge zum Kauf oder Verkauf eines Basiswerts zu einem festgelegten Preis an einem zukünftigen Datum. Im Gegensatz zu Optionen besteht eine <strong>Verpflichtung</strong> zur Ausführung.",
+    "<strong>Futures</strong> are standardized contracts to buy or sell an underlying asset at a set price on a future date. Unlike options, there is an <strong>obligation</strong> to execute."
+  ),
+  "learn.futuresP2": t(
+    "Futures werden mit Hebel gehandelt (Margin). Beispiel: S&P 500 E-mini Future kontrolliert ~$200.000 mit nur ~$12.000 Margin (16x Hebel).",
+    "Futures are traded with leverage (margin). Example: S&P 500 E-mini future controls ~$200,000 with only ~$12,000 margin (16x leverage)."
+  ),
+  "learn.futuresWarning": t(
+    "Futures-Handel ist hochriskant! Margin Calls können zu Verlusten führen, die dein eingesetztes Kapital übersteigen.",
+    "Futures trading is highly risky! Margin calls can lead to losses exceeding your invested capital."
+  ),
+
+  "learn.cfdsTitle": t("CFDs (Differenzkontrakte)", "CFDs (Contracts for Difference)"),
+  "learn.cfdsP1": t(
+    "<strong>CFDs</strong> ermöglichen es, auf Preisbewegungen zu spekulieren, ohne den Basiswert zu besitzen. Du handelst die Preisdifferenz zwischen Eröffnung und Schließung der Position.",
+    "<strong>CFDs</strong> allow you to speculate on price movements without owning the underlying asset. You trade the price difference between opening and closing a position."
+  ),
+  "learn.cfdsP2": t(
+    "CFDs sind in den USA verboten, in der EU auf 1:30 Hebel begrenzt (für Privatanleger). In Großbritannien und Australien sind sie sehr populär.",
+    "CFDs are banned in the US, limited to 1:30 leverage in the EU (for retail investors). They are very popular in the UK and Australia."
+  ),
+  "learn.cfdsWarning": t(
+    "Laut ESMA verlieren 74-89% der CFD-Privatanleger Geld! CFDs sind keine langfristige Anlage, sondern ein Spekulationsinstrument.",
+    "According to ESMA, 74-89% of retail CFD investors lose money! CFDs are not a long-term investment but a speculation instrument."
+  ),
+
+  "learn.warrantsTitle": t("Optionsscheine", "Warrants"),
+  "learn.warrantsP1": t(
+    "<strong>Optionsscheine</strong> sind ähnlich wie Optionen, werden aber von Banken emittiert (nicht an Terminbörsen). Sie geben das Recht, einen Basiswert zu einem bestimmten Preis zu kaufen (Call-OS) oder verkaufen (Put-OS).",
+    "<strong>Warrants</strong> are similar to options but are issued by banks (not on futures exchanges). They give the right to buy (call warrant) or sell (put warrant) an underlying asset at a set price."
+  ),
+  "learn.warrantsP2": t(
+    "Vorsicht: Der Emittent (Bank) kann als Gegenpartei und Market Maker gleichzeitig auftreten – ein potenzieller Interessenkonflikt.",
+    "Caution: The issuer (bank) can act as both counterparty and market maker simultaneously – a potential conflict of interest."
+  ),
+
+  "learn.certificatesTitle": t("Zertifikate", "Certificates"),
+  "learn.certificatesP1": t(
+    "<strong>Zertifikate</strong> sind strukturierte Produkte, die von Banken emittiert werden. Sie können komplexe Auszahlungsprofile abbilden: <strong>Bonus-Zertifikate</strong> (Bonus wenn Barriere nicht berührt), <strong>Discount-Zertifikate</strong> (Rabatt auf Basiswert, aber Gewinn begrenzt), <strong>Knock-Out-Zertifikate</strong> (Hebel, aber Totalverlust bei Knock-Out).",
+    "<strong>Certificates</strong> are structured products issued by banks. They can create complex payout profiles: <strong>bonus certificates</strong> (bonus if barrier not touched), <strong>discount certificates</strong> (discount on underlying, but gains capped), <strong>knock-out certificates</strong> (leverage, but total loss at knock-out)."
+  ),
+  "learn.certificatesP2": t(
+    "Achtung: Zertifikate sind <strong>Schuldverschreibungen</strong> des Emittenten! Bei Insolvenz der Bank (wie Lehman Brothers 2008) droht Totalverlust, unabhängig vom Basiswert.",
+    "Warning: Certificates are <strong>debt instruments</strong> of the issuer! If the bank goes bankrupt (like Lehman Brothers 2008), you face total loss regardless of the underlying asset."
+  ),
+  "learn.derivativesSummary": t(
+    "Derivate sind mächtige Werkzeuge, aber nicht für Anfänger. Beginne mit Aktien und ETFs. Wenn du Derivate nutzen möchtest, starte mit Covered Calls auf Aktien, die du bereits besitzt.",
+    "Derivatives are powerful tools but not for beginners. Start with stocks and ETFs. If you want to use derivatives, begin with covered calls on stocks you already own."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 12: FORMULAS & EXPERT KNOWLEDGE (moved from 10)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section12Title": t("Formeln & Expertenwissen", "Formulas & Expert Knowledge"),
+
   "learn.dcfTitle": t("Discounted Cash Flow (DCF)", "Discounted Cash Flow (DCF)"),
-  "learn.dcfFormula": t("V = Σ [FCFₜ / (1 + r)ᵗ] + TV / (1 + r)ⁿ", "V = Σ [FCFₜ / (1 + r)ᵗ] + TV / (1 + r)ⁿ"),
+  "learn.dcfFormula": t("DCF = Σ [FCFₜ / (1 + r)ᵗ]", "DCF = Σ [FCFₜ / (1 + r)ᵗ]"),
   "learn.dcfExplanation": t(
-    "V = Unternehmenswert, FCF = Freier Cashflow im Jahr t, r = Diskontierungsrate (WACC), TV = Terminal Value. Die DCF-Analyse berechnet den heutigen Wert aller zukünftigen Cashflows. Sie ist die Basis der Fundamentalanalyse und wird von Warren Buffett und institutionellen Investoren verwendet.",
-    "V = Enterprise value, FCF = Free cash flow in year t, r = Discount rate (WACC), TV = Terminal value. DCF analysis calculates the present value of all future cash flows. It's the foundation of fundamental analysis, used by Warren Buffett and institutional investors."
+    "FCF = Free Cash Flow, r = Diskontierungssatz (WACC), t = Jahr. DCF berechnet den heutigen Wert aller zukünftigen Cashflows. Wenn der DCF-Wert höher ist als der aktuelle Aktienkurs, ist die Aktie theoretisch unterbewertet.",
+    "FCF = Free Cash Flow, r = Discount rate (WACC), t = Year. DCF calculates today's value of all future cash flows. If DCF value is higher than current stock price, the stock is theoretically undervalued."
   ),
 
-  // CAPM
   "learn.capmTitle": t("Capital Asset Pricing Model (CAPM)", "Capital Asset Pricing Model (CAPM)"),
   "learn.capmFormula": t("E(Rᵢ) = Rf + βᵢ × (E(Rm) - Rf)", "E(Rᵢ) = Rf + βᵢ × (E(Rm) - Rf)"),
   "learn.capmExplanation": t(
-    "E(Rᵢ) = erwartete Rendite der Anlage, Rf = risikofreier Zinssatz, βᵢ = Beta der Anlage, E(Rm) = erwartete Marktrendite. Die Marktrisikoprämie (E(Rm) - Rf) beträgt historisch ca. 5-7%. Beispiel: β=1.5, Rf=4%, Marktprämie=6% → E(R)=4%+1.5×6%=13%.",
-    "E(Rᵢ) = expected return, Rf = risk-free rate, βᵢ = asset beta, E(Rm) = expected market return. The market risk premium (E(Rm) - Rf) is historically ~5-7%. Example: β=1.5, Rf=4%, premium=6% → E(R)=4%+1.5×6%=13%."
+    "E(Rᵢ) = erwartete Rendite, Rf = risikofreier Zinssatz, βᵢ = Beta der Aktie, E(Rm) = erwartete Marktrendite. CAPM sagt: Höheres Beta → höhere erwartete Rendite als Kompensation für höheres Risiko.",
+    "E(Rᵢ) = expected return, Rf = risk-free rate, βᵢ = stock's beta, E(Rm) = expected market return. CAPM says: Higher beta → higher expected return as compensation for higher risk."
   ),
 
-  // Sharpe Ratio
   "learn.sharpeTitle": t("Sharpe Ratio", "Sharpe Ratio"),
-  "learn.sharpeFormula": t("S = (Rp - Rf) / σp", "S = (Rp - Rf) / σp"),
+  "learn.sharpeFormula": t("Sharpe = (Rp - Rf) / σp", "Sharpe = (Rp - Rf) / σp"),
   "learn.sharpeExplanation": t(
-    "Rp = Portfolio-Rendite, Rf = risikofreier Zinssatz, σp = Standardabweichung der Portfolio-Rendite. Misst die risikoadjustierte Rendite. S > 1 = gut, S > 2 = sehr gut, S > 3 = exzellent. Ein Sharpe Ratio von 2 bedeutet: Pro Einheit Risiko erhältst du 2 Einheiten Überrendite.",
-    "Rp = Portfolio return, Rf = risk-free rate, σp = Standard deviation of portfolio return. Measures risk-adjusted return. S > 1 = good, S > 2 = very good, S > 3 = excellent. A Sharpe Ratio of 2 means: per unit of risk, you get 2 units of excess return."
+    "Rp = Portfolio-Rendite, Rf = risikofreier Zinssatz, σp = Standardabweichung. Misst risikobereinigte Rendite. Sharpe > 1 = gut, > 2 = sehr gut, > 3 = exzellent. Der S&P 500 hat historisch eine Sharpe Ratio von ~0,4-0,5.",
+    "Rp = Portfolio return, Rf = risk-free rate, σp = Standard deviation. Measures risk-adjusted return. Sharpe > 1 = good, > 2 = very good, > 3 = excellent. S&P 500 historically has a Sharpe Ratio of ~0.4-0.5."
   ),
 
-  // Black-Scholes
-  "learn.bsTitle": t("Black-Scholes Optionspreismodell", "Black-Scholes Option Pricing Model"),
-  "learn.bsFormula": t("C = S·N(d₁) - K·e⁻ʳᵗ·N(d₂)", "C = S·N(d₁) - K·e⁻ʳᵗ·N(d₂)"),
+  "learn.bsTitle": t("Black-Scholes-Modell", "Black-Scholes Model"),
+  "learn.bsFormula": t("C = S₀N(d₁) - Ke⁻ʳᵀN(d₂)", "C = S₀N(d₁) - Ke⁻ʳᵀN(d₂)"),
   "learn.bsExplanation": t(
-    "C = Call-Preis, S = aktueller Aktienkurs, K = Strike-Preis, r = risikofreier Zins, t = Restlaufzeit, N() = kumulative Normalverteilung. d₁ = [ln(S/K) + (r + σ²/2)·t] / (σ·√t), d₂ = d₁ - σ·√t. Das Black-Scholes-Modell ist die Grundlage der modernen Optionsbewertung und brachte Scholes und Merton den Nobelpreis.",
-    "C = Call price, S = current stock price, K = strike price, r = risk-free rate, t = time to expiry, N() = cumulative normal distribution. d₁ = [ln(S/K) + (r + σ²/2)·t] / (σ·√t), d₂ = d₁ - σ·√t. The Black-Scholes model is the foundation of modern option pricing and earned Scholes and Merton the Nobel Prize."
+    "S₀ = aktueller Kurs, K = Strike-Preis, r = risikofreier Zins, T = Zeit bis Verfall, N() = kumulative Normalverteilung. Das Black-Scholes-Modell berechnet den theoretischen Preis europäischer Optionen. Limitierung: Geht von konstanter Volatilität aus.",
+    "S₀ = current price, K = strike price, r = risk-free rate, T = time to expiry, N() = cumulative normal distribution. The Black-Scholes model calculates theoretical prices of European options. Limitation: Assumes constant volatility."
   ),
 
-  // Gordon Growth Model
-  "learn.gordonTitle": t("Gordon Growth Model (Dividendenmodell)", "Gordon Growth Model (Dividend Model)"),
-  "learn.gordonFormula": t("P = D₁ / (r - g)", "P = D₁ / (r - g)"),
+  "learn.gordonTitle": t("Gordon Growth Model", "Gordon Growth Model"),
+  "learn.gordonFormula": t("P₀ = D₁ / (r - g)", "P₀ = D₁ / (r - g)"),
   "learn.gordonExplanation": t(
-    "P = fairer Aktienkurs, D₁ = erwartete Dividende nächstes Jahr, r = geforderte Rendite, g = Dividendenwachstumsrate. Beispiel: D₁=$3, r=10%, g=5% → P=$3/(0.10-0.05)=$60. Nur gültig wenn r > g. Ideal für stabile Dividendenzahler wie Coca-Cola oder P&G.",
-    "P = fair stock price, D₁ = expected dividend next year, r = required return, g = dividend growth rate. Example: D₁=$3, r=10%, g=5% → P=$3/(0.10-0.05)=$60. Only valid when r > g. Ideal for stable dividend payers like Coca-Cola or P&G."
+    "P₀ = fairer Aktienkurs, D₁ = erwartete Dividende nächstes Jahr, r = geforderte Rendite, g = Dividendenwachstumsrate. Einfaches Modell für Dividendenaktien. Funktioniert nur wenn r > g.",
+    "P₀ = fair stock price, D₁ = expected dividend next year, r = required return, g = dividend growth rate. Simple model for dividend stocks. Only works when r > g."
   ),
 
-  // Kelly Criterion
-  "learn.kellyTitle": t("Kelly-Kriterium (Positionsgröße)", "Kelly Criterion (Position Sizing)"),
-  "learn.kellyFormula": t("f* = (p·b - q) / b", "f* = (p·b - q) / b"),
+  "learn.kellyTitle": t("Kelly Criterion", "Kelly Criterion"),
+  "learn.kellyFormula": t("f* = (bp - q) / b", "f* = (bp - q) / b"),
   "learn.kellyExplanation": t(
-    "f* = optimaler Anteil des Kapitals, p = Gewinnwahrscheinlichkeit, q = 1-p (Verlustwahrscheinlichkeit), b = Gewinn/Verlust-Verhältnis. Beispiel: 60% Gewinnrate, 2:1 R/R → f*=(0.6×2-0.4)/2=0.4=40%. In der Praxis nutzt man oft \"Half Kelly\" (f*/2) für mehr Sicherheit.",
-    "f* = optimal capital fraction, p = win probability, q = 1-p (loss probability), b = win/loss ratio. Example: 60% win rate, 2:1 R/R → f*=(0.6×2-0.4)/2=0.4=40%. In practice, \"Half Kelly\" (f*/2) is often used for extra safety."
+    "f* = optimaler Einsatz (Anteil des Kapitals), b = Gewinnquote (Gewinn/Einsatz), p = Gewinnwahrscheinlichkeit, q = Verlustwahrscheinlichkeit (1-p). Bestimmt die optimale Positionsgröße, um langfristiges Wachstum zu maximieren. In der Praxis: Verwende 'Half Kelly' (f*/2) für konservativere Positionsgrößen.",
+    "f* = optimal bet size (fraction of capital), b = win ratio (profit/stake), p = probability of winning, q = probability of losing (1-p). Determines optimal position size to maximize long-term growth. In practice: Use 'Half Kelly' (f*/2) for more conservative position sizes."
   ),
 
-  // WACC
   "learn.waccTitle": t("WACC (Kapitalkosten)", "WACC (Cost of Capital)"),
-  "learn.waccFormula": t("WACC = (E/V)·Re + (D/V)·Rd·(1-Tc)", "WACC = (E/V)·Re + (D/V)·Rd·(1-Tc)"),
+  "learn.waccFormula": t("WACC = (E/V)×Re + (D/V)×Rd×(1-Tc)", "WACC = (E/V)×Re + (D/V)×Rd×(1-Tc)"),
   "learn.waccExplanation": t(
-    "E = Marktwert Eigenkapital, D = Marktwert Fremdkapital, V = E+D, Re = Eigenkapitalkosten (aus CAPM), Rd = Fremdkapitalkosten, Tc = Steuersatz. WACC wird als Diskontierungsrate in DCF-Analysen verwendet. Typische Werte: 8-12% für etablierte Unternehmen, 15-25% für Startups.",
-    "E = Equity market value, D = Debt market value, V = E+D, Re = Cost of equity (from CAPM), Rd = Cost of debt, Tc = Tax rate. WACC is used as the discount rate in DCF analyses. Typical values: 8-12% for established companies, 15-25% for startups."
+    "E = Marktwert des Eigenkapitals, D = Marktwert der Schulden, V = E+D, Re = Eigenkapitalkosten, Rd = Fremdkapitalkosten, Tc = Steuersatz. WACC ist der Diskontierungssatz für DCF-Bewertungen und repräsentiert die durchschnittlichen Kapitalkosten eines Unternehmens.",
+    "E = Market value of equity, D = Market value of debt, V = E+D, Re = Cost of equity, Rd = Cost of debt, Tc = Tax rate. WACC is the discount rate for DCF valuations and represents a company's average cost of capital."
   ),
 
-  // Valuation Ratios Deep Dive
-  "learn.valuationDeepTitle": t("Bewertungskennzahlen im Detail", "Valuation Metrics Deep Dive"),
   "learn.evFormulaTitle": t("Enterprise Value (EV)", "Enterprise Value (EV)"),
-  "learn.evFormula": t("EV = Marktkapitalisierung + Schulden - Cash", "EV = Market Cap + Debt - Cash"),
+  "learn.evFormula": t("EV = Market Cap + Total Debt - Cash", "EV = Market Cap + Total Debt - Cash"),
   "learn.evExplanation": t(
-    "Enterprise Value repräsentiert den theoretischen Übernahmepreis eines Unternehmens. EV/EBITDA ist ein besserer Vergleichsmaßstab als KGV, da es Verschuldung und Cash berücksichtigt. EV/EBITDA < 10 gilt oft als günstig, > 20 als teuer (branchenabhängig).",
-    "Enterprise Value represents the theoretical takeover price of a company. EV/EBITDA is a better comparison metric than P/E as it accounts for debt and cash. EV/EBITDA < 10 is often considered cheap, > 20 expensive (industry-dependent)."
+    "Der Enterprise Value gibt den theoretischen Übernahmepreis eines Unternehmens an. EV/EBITDA ist ein beliebtes Bewertungsmaß, da es kapitalstruktur-neutral ist: EV/EBITDA < 10 gilt oft als günstig, > 20 als teuer (branchenabhängig).",
+    "Enterprise Value represents the theoretical acquisition price of a company. EV/EBITDA is a popular valuation metric because it's capital structure-neutral: EV/EBITDA < 10 is often considered cheap, > 20 expensive (industry-dependent)."
   ),
 
-  // Fibonacci
-  "learn.fibonacciTitle": t("Fibonacci-Retracement", "Fibonacci Retracement"),
-  "learn.fibonacciP1": t(
-    "Fibonacci-Retracements basieren auf der mathematischen Fibonacci-Folge und werden zur Identifikation potenzieller Unterstützungs-/Widerstandsniveaus verwendet. Die wichtigsten Levels: <strong>23.6%</strong> (schwaches Retracement), <strong>38.2%</strong> (moderates Retracement), <strong>50%</strong> (psychologisch wichtig), <strong>61.8%</strong> (\"Goldener Schnitt\" – stärkstes Level), <strong>78.6%</strong> (tiefes Retracement).",
-    "Fibonacci retracements are based on the mathematical Fibonacci sequence and are used to identify potential support/resistance levels. Key levels: <strong>23.6%</strong> (shallow retracement), <strong>38.2%</strong> (moderate retracement), <strong>50%</strong> (psychologically important), <strong>61.8%</strong> (\"Golden Ratio\" – strongest level), <strong>78.6%</strong> (deep retracement)."
-  ),
-
-  // Elliott Wave
-  "learn.elliottTitle": t("Elliott-Wellen-Theorie", "Elliott Wave Theory"),
-  "learn.elliottP1": t(
-    "Die Elliott-Wellen-Theorie beschreibt Marktbewegungen als Fraktalmuster: <strong>5 Impulswellen</strong> in Trendrichtung (1-2-3-4-5) gefolgt von <strong>3 Korrekturwellen</strong> (A-B-C). Welle 3 ist typischerweise die stärkste und längste. Die Theorie nutzt Fibonacci-Verhältnisse für Kursziele: Welle 3 = 1.618 × Welle 1, Welle 5 = Welle 1.",
-    "Elliott Wave Theory describes market movements as fractal patterns: <strong>5 impulse waves</strong> in the trend direction (1-2-3-4-5) followed by <strong>3 corrective waves</strong> (A-B-C). Wave 3 is typically the strongest and longest. The theory uses Fibonacci ratios for price targets: Wave 3 = 1.618 × Wave 1, Wave 5 = Wave 1."
-  ),
-
-  // Monte Carlo
-  "learn.monteCarloTitle": t("Monte-Carlo-Simulation", "Monte Carlo Simulation"),
-  "learn.monteCarloP1": t(
-    "Monte-Carlo-Simulationen nutzen <strong>Zufallszahlen</strong>, um tausende mögliche Portfolio-Entwicklungen zu simulieren. Damit berechnet man z.B. die Wahrscheinlichkeit, ein bestimmtes Ruhestandsziel zu erreichen. Man modelliert Rendite und Volatilität als Zufallsvariablen und führt 10.000+ Simulationen durch. Das Ergebnis: eine Wahrscheinlichkeitsverteilung der Portfoliowerte.",
-    "Monte Carlo simulations use <strong>random numbers</strong> to simulate thousands of possible portfolio outcomes. They calculate, for example, the probability of reaching a specific retirement goal. Returns and volatility are modeled as random variables, with 10,000+ simulations run. The result: a probability distribution of portfolio values."
-  ),
-
-  // Modern Portfolio Theory
-  "learn.mptTitle": t("Moderne Portfoliotheorie (Markowitz)", "Modern Portfolio Theory (Markowitz)"),
+  "learn.mptTitle": t("Moderne Portfoliotheorie (MPT)", "Modern Portfolio Theory (MPT)"),
   "learn.mptP1": t(
-    "Harry Markowitz entwickelte 1952 die Moderne Portfoliotheorie (Nobelpreis 1990). Kernidee: Durch geschickte Kombination von Anlagen kann man bei gleichem Risiko eine höhere Rendite erzielen (oder bei gleicher Rendite weniger Risiko). Die <strong>Effizienzgrenze</strong> zeigt die optimalen Portfolio-Kombinationen. Das <strong>Tangentialportfolio</strong> ist der Punkt, an dem die Kapitalmarktlinie die Effizienzgrenze berührt – das theoretisch beste risikobereinigte Portfolio.",
-    "Harry Markowitz developed Modern Portfolio Theory in 1952 (Nobel Prize 1990). Core idea: Through clever asset combination, you can achieve higher returns at the same risk (or less risk at the same return). The <strong>efficient frontier</strong> shows optimal portfolio combinations. The <strong>tangency portfolio</strong> is where the capital market line touches the efficient frontier – the theoretically best risk-adjusted portfolio."
+    "Harry Markowitz' <strong>MPT</strong> (Nobelpreis 1990) zeigt, wie man durch optimale Diversifikation die <strong>Efficient Frontier</strong> erreicht – das beste Verhältnis von Rendite zu Risiko.",
+    "Harry Markowitz's <strong>MPT</strong> (Nobel Prize 1990) shows how optimal diversification reaches the <strong>Efficient Frontier</strong> – the best ratio of return to risk."
   ),
-  "learn.mptFormula": t("σp² = Σᵢ Σⱼ wᵢ·wⱼ·σᵢⱼ", "σp² = Σᵢ Σⱼ wᵢ·wⱼ·σᵢⱼ"),
+  "learn.mptFormula": t("σp² = ΣΣ wᵢwⱼσᵢⱼ", "σp² = ΣΣ wᵢwⱼσᵢⱼ"),
   "learn.mptExplanation": t(
     "σp² = Portfolio-Varianz, wᵢ = Gewichtung der Anlage i, σᵢⱼ = Kovarianz zwischen Anlage i und j. Je niedriger die Korrelation zwischen Anlagen, desto stärker der Diversifikationseffekt. Bei perfekt negativ korrellierten Anlagen (ρ = -1) kann das Risiko theoretisch auf null reduziert werden.",
     "σp² = Portfolio variance, wᵢ = Weight of asset i, σᵢⱼ = Covariance between asset i and j. The lower the correlation between assets, the stronger the diversification effect. With perfectly negatively correlated assets (ρ = -1), risk can theoretically be reduced to zero."
   ),
 
-  // Section 10 headers
-  "learn.toc10": t("10. Formeln & Expertenwissen", "10. Formulas & Expert Knowledge"),
-  "learn.section10Title": t("Formeln & Expertenwissen", "Formulas & Expert Knowledge"),
+  "learn.fibonacciTitle": t("Fibonacci-Retracements", "Fibonacci Retracements"),
+  "learn.fibonacciP1": t(
+    "<strong>Fibonacci-Retracements</strong> basieren auf der mathematischen Fibonacci-Folge. Die Schlüssel-Level (23,6%, 38,2%, 50%, 61,8%, 78,6%) werden als potenzielle Support/Resistance-Zonen genutzt. Besonders das 61,8%-Level ('Goldener Schnitt') gilt als starkes Korrekturziel.",
+    "<strong>Fibonacci Retracements</strong> are based on the mathematical Fibonacci sequence. Key levels (23.6%, 38.2%, 50%, 61.8%, 78.6%) are used as potential support/resistance zones. The 61.8% level ('Golden Ratio') is considered a particularly strong correction target."
+  ),
+
+  "learn.elliottTitle": t("Elliott-Wellen-Theorie", "Elliott Wave Theory"),
+  "learn.elliottP1": t(
+    "Die <strong>Elliott-Wellen-Theorie</strong> beschreibt wiederkehrende Kursmuster in 5 Impulswellen (in Trendrichtung) und 3 Korrekturwellen (gegen den Trend). Jede Welle lässt sich in kleinere Subwellen unterteilen (fraktale Struktur).",
+    "<strong>Elliott Wave Theory</strong> describes recurring price patterns in 5 impulse waves (with the trend) and 3 corrective waves (against the trend). Each wave can be subdivided into smaller sub-waves (fractal structure)."
+  ),
+
+  "learn.monteCarloTitle": t("Monte-Carlo-Simulation", "Monte Carlo Simulation"),
+  "learn.monteCarloP1": t(
+    "<strong>Monte-Carlo-Simulationen</strong> verwenden tausende Zufalls-Szenarien, um die Wahrscheinlichkeitsverteilung von Portfolio-Ergebnissen zu modellieren. Statt eines einzigen erwarteten Ergebnisses erhältst du eine Bandbreite: 'In 95% der Fälle liegt dein Portfolio nach 20 Jahren zwischen $X und $Y.'",
+    "<strong>Monte Carlo simulations</strong> use thousands of random scenarios to model the probability distribution of portfolio outcomes. Instead of a single expected result, you get a range: 'In 95% of cases, your portfolio will be between $X and $Y after 20 years.'"
+  ),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 11: MARKET MICROSTRUCTURE & ADVANCED TRADING
+  // SECTION 13: MARKET MICROSTRUCTURE (moved from 11)
   // ══════════════════════════════════════════════════════════════
-  "learn.toc11": t("11. Marktmikrostruktur & Trading", "11. Market Microstructure & Trading"),
-  "learn.section11Title": t("Marktmikrostruktur & Advanced Trading", "Market Microstructure & Advanced Trading"),
+  "learn.section13Title": t("Marktmikrostruktur & Advanced Trading", "Market Microstructure & Advanced Trading"),
 
   "learn.orderBookTitle": t("Das Orderbuch verstehen", "Understanding the Order Book"),
   "learn.orderBookP1": t(
@@ -697,10 +813,9 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
   ),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 12: BEHAVIORAL FINANCE & MARKET ANOMALIES
+  // SECTION 14: BEHAVIORAL FINANCE (moved from 12)
   // ══════════════════════════════════════════════════════════════
-  "learn.toc12": t("12. Verhaltensökonomie & Marktanomalien", "12. Behavioral Finance & Market Anomalies"),
-  "learn.section12Title": t("Verhaltensökonomie & Marktanomalien", "Behavioral Finance & Market Anomalies"),
+  "learn.section14Title": t("Verhaltensökonomie & Marktanomalien", "Behavioral Finance & Market Anomalies"),
 
   "learn.behavioralIntro": t(
     "Die <strong>Verhaltensökonomie</strong> (Behavioral Finance) untersucht, wie psychologische Faktoren und kognitive Verzerrungen Anlageentscheidungen beeinflussen. Daniel Kahneman erhielt 2002 den Nobelpreis für seine Arbeit zu Entscheidungen unter Unsicherheit.",
@@ -748,10 +863,9 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
   ),
 
   // ══════════════════════════════════════════════════════════════
-  // SECTION 13: GLOBAL MARKETS & MACRO
+  // SECTION 15: GLOBAL MARKETS & MACRO (moved from 13)
   // ══════════════════════════════════════════════════════════════
-  "learn.toc13": t("13. Globale Märkte & Makroökonomie", "13. Global Markets & Macroeconomics"),
-  "learn.section13Title": t("Globale Märkte & Makroökonomie", "Global Markets & Macroeconomics"),
+  "learn.section15Title": t("Globale Märkte & Makroökonomie", "Global Markets & Macroeconomics"),
 
   "learn.centralBanksTitle": t("Zentralbanken & Geldpolitik", "Central Banks & Monetary Policy"),
   "learn.centralBanksP1": t(
@@ -780,6 +894,40 @@ export const learnTranslations: Record<string, Record<Language, string>> = {
   "learn.geopoliticsTitle": t("Geopolitik & Black Swans", "Geopolitics & Black Swans"),
   "learn.geopoliticsP1": t(
     "<strong>Black Swans</strong> sind unvorhersehbare Ereignisse mit massivem Marktimpact: COVID-19 (-34% in 23 Tagen), Lehman Brothers 2008 (-57% vom Hoch), 9/11 (-12% in 1 Woche). Man kann sie nicht vorhersagen, aber man kann sich vorbereiten: Diversifikation, Cash-Reserve, keine übermäßige Hebelung, Stop-Losses bei spekulativen Positionen.",
-    "<strong>Black Swans</strong> are unpredictable events with massive market impact: COVID-19 (-34% in 23 days), Lehman Brothers 2008 (-57% from peak), 9/11 (-12% in 1 week). You can't predict them, but you can prepare: diversification, cash reserve, no excessive leverage, stop-losses on speculative positions."
+    "<strong>Black Swans</strong> are unpredictable events with massive market impact: COVID-19 (-34% in 23 days), Lehman Brothers 2008 (-57% from high), 9/11 (-12% in 1 week). You can't predict them, but you can prepare: diversification, cash reserves, no excessive leverage, stop-losses on speculative positions."
   ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 16: QUANTITATIVE ANALYSIS (NEW)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section16Title": t("Quantitative Analyse", "Quantitative Analysis"),
+
+  "learn.factorModelsTitle": t("Faktormodelle", "Factor Models"),
+  "learn.factorModelsP1": t(
+    "<strong>Faktormodelle</strong> erklären Aktienrenditen durch systematische Risikofaktoren. Das bekannteste ist das <strong>Fama-French 3-Faktor-Modell</strong>: Marktrisiko, Size (Small vs. Large), Value (Low vs. High P/B). Erweitert zum <strong>5-Faktor-Modell</strong> mit Profitabilität und Investment. Smart-Beta-ETFs nutzen diese Faktoren, um systematisch Überrenditen zu erzielen.",
+    "<strong>Factor models</strong> explain stock returns through systematic risk factors. The most famous is the <strong>Fama-French 3-Factor Model</strong>: market risk, size (small vs. large), value (low vs. high P/B). Extended to the <strong>5-factor model</strong> with profitability and investment. Smart-beta ETFs use these factors to systematically generate excess returns."
+  ),
+
+  "learn.statArbTitle": t("Statistische Arbitrage", "Statistical Arbitrage"),
+  "learn.statArbP1": t(
+    "<strong>Statistische Arbitrage</strong> identifiziert Preisabweichungen zwischen korrelierten Wertpapieren. <strong>Pairs Trading</strong>: Kaufe die unterbewertete und shorte die überbewertete Aktie eines Paares (z.B. Coca-Cola/Pepsi). Die Strategie profitiert von der Mean-Reversion – der Tendenz, dass Preise zu ihrem Durchschnitt zurückkehren.",
+    "<strong>Statistical arbitrage</strong> identifies price deviations between correlated securities. <strong>Pairs trading</strong>: Buy the undervalued and short the overvalued stock of a pair (e.g. Coca-Cola/Pepsi). The strategy profits from mean reversion – the tendency for prices to return to their average."
+  ),
+
+  "learn.backtestingTitle": t("Backtesting-Grundlagen", "Backtesting Basics"),
+  "learn.backtestingP1": t(
+    "<strong>Backtesting</strong> testet eine Handelsstrategie an historischen Daten. Wichtige Fallstricke: <strong>Overfitting</strong> (Strategie funktioniert nur auf historischen Daten), <strong>Survivorship Bias</strong> (nur überlebende Aktien getestet), <strong>Look-ahead Bias</strong> (Verwendung zukünftiger Informationen). Eine robuste Strategie sollte auf verschiedenen Zeiträumen und Märkten funktionieren.",
+    "<strong>Backtesting</strong> tests a trading strategy on historical data. Important pitfalls: <strong>overfitting</strong> (strategy only works on historical data), <strong>survivorship bias</strong> (only surviving stocks tested), <strong>look-ahead bias</strong> (using future information). A robust strategy should work across different time periods and markets."
+  ),
+
+  "learn.alphaBetaTitle": t("Alpha vs. Beta", "Alpha vs. Beta"),
+  "learn.alphaBetaP1": t(
+    "<strong>Beta</strong> misst das systematische Marktrisiko und die damit verbundene Rendite – jeder kann Beta durch Index-ETFs kaufen. <strong>Alpha</strong> ist die Überrendite, die über das Beta hinausgeht – die 'Skill'-Komponente eines Fondsmanagers. Die meisten aktiven Manager erzeugen nach Kosten negatives Alpha. Echtes Alpha ist selten, teuer und wird durch Wettbewerb schnell arbitriert.",
+    "<strong>Beta</strong> measures systematic market risk and the associated return – anyone can buy beta through index ETFs. <strong>Alpha</strong> is the excess return beyond beta – the 'skill' component of a fund manager. Most active managers generate negative alpha after fees. True alpha is rare, expensive, and quickly arbitraged by competition."
+  ),
+
+  // ── Quiz translations for new sections ──
+  "learn.quizStrategies": t("Quiz: Anlagestrategien", "Quiz: Investment Strategies"),
+  "learn.quizPortfolio": t("Quiz: Portfoliomanagement", "Quiz: Portfolio Management"),
+  "learn.quizTA": t("Quiz: Technische Analyse", "Quiz: Technical Analysis"),
 };
