@@ -28,6 +28,8 @@ export default function SettingsPage() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [priceAlerts, setPriceAlerts] = useState(() => localStorage.getItem("pref_price_alerts") !== "false");
   const [newsAlerts, setNewsAlerts] = useState(() => localStorage.getItem("pref_news_alerts") !== "false");
+  const [commentReplyAlerts, setCommentReplyAlerts] = useState(false);
+  const [showUsername, setShowUsername] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
 
   // Fetch active price alerts
