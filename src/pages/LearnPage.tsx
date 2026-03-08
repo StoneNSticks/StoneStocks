@@ -29,19 +29,15 @@ function useReadProgress() {
   return { read, markRead };
 }
 
-// Collapsible super-section wrapper
-function SuperSection({ id, title, level, children, defaultOpen = true }: { id: string; title: string; level: string; children: React.ReactNode; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+// Simple section divider (no collapse)
+function SuperSection({ id, title, level, children }: { id: string; title: string; level: string; children: React.ReactNode; defaultOpen?: boolean }) {
   return (
-    <div className="space-y-8">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-3 rounded-xl border-2 border-primary/20 bg-primary/[0.03] px-5 py-4 hover:bg-primary/[0.06] transition-colors text-left">
-        {open ? <ChevronDown className="h-5 w-5 text-primary shrink-0" /> : <ChevronRight className="h-5 w-5 text-primary shrink-0" />}
-        <div>
-          <h2 className="font-display font-bold text-lg text-foreground">{title}</h2>
-          <p className="text-xs text-muted-foreground">{level}</p>
-        </div>
-      </button>
-      {open && <div className="space-y-12 pl-0 md:pl-2">{children}</div>}
+    <div className="space-y-10" id={id}>
+      <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+        <h2 className="font-display font-bold text-lg text-foreground">{title}</h2>
+        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{level}</span>
+      </div>
+      <div className="space-y-12">{children}</div>
     </div>
   );
 }
