@@ -155,6 +155,12 @@ const NewsPage = () => {
                         <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatTime(article.datetime)}</span>
                         {article.source && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{article.source}</Badge>}
                         {article.category && article.category !== "top news" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{article.category}</Badge>}
+                        {sentiments[i] && (
+                          <Badge className={`text-[10px] px-1.5 py-0 gap-0.5 ${sentiments[i].sentiment === "bullish" ? "bg-chart-2/10 text-chart-2" : sentiments[i].sentiment === "bearish" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                            {sentiments[i].sentiment === "bullish" ? <TrendingUp className="h-2.5 w-2.5" /> : sentiments[i].sentiment === "bearish" ? <TrendingDown className="h-2.5 w-2.5" /> : <Minus className="h-2.5 w-2.5" />}
+                            {sentiments[i].score}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </a>
