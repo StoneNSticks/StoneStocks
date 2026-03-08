@@ -5,6 +5,7 @@
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { MarketOverview } from "@/components/MarketOverview";
 import { useMarketNews } from "@/hooks/useStockData";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
