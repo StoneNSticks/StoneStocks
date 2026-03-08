@@ -1,8 +1,9 @@
 import type { Language } from "@/contexts/LanguageContext";
+import { learnTranslationsExtended } from "./learnTranslationsExtended";
 
 const t = (de: string, en: string): Record<Language, string> => ({ de, en });
 
-export const learnTranslations: Record<string, Record<Language, string>> = {
+const baseTranslations: Record<string, Record<Language, string>> = {
   // ── Badge & Header ──
   "learn.badge": t("Finanzwissen", "Financial Knowledge"),
   "learn.title": t("Dein Weg zum informierten Investor", "Your Path to Becoming an Informed Investor"),
