@@ -536,7 +536,7 @@ export function runDCAStrategy(data: OHLC[], capital: number, intervalDays = 20)
     return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
   });
 
-  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+  return { equity, trades, metrics: calculateMetrics(equity, trades, capital) };
 }
 
 // === 17. 52-Week High Strategy ===
