@@ -45,6 +45,9 @@ export function Header() {
   const { user, signOut } = useAuth();
   const t = useT();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const isHome = location.pathname === "/";
+  const mainSearchVisible = useElementVisible("main-search-bar");
+  const mainIndicesVisible = useElementVisible("main-market-overview");
 
   useEffect(() => { setSheetOpen(false); }, [location.pathname]);
 
