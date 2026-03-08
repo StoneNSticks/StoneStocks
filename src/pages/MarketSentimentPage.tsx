@@ -556,6 +556,9 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
 function AdditionalIndicators({ indices, gainers, losers, commodities }: { indices: any[]; gainers: any[]; losers: any[]; commodities: any[] }) {
   const { lang } = useLanguage();
 
+  const commodityChanges = (commodities || []).filter((c: any) => c.changePercent != null).map((c: any) => c.changePercent as number);
+  const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
+
   const indexChanges = (indices || [])
     .filter((i: any) => i.changePercent != null && !isNaN(i.changePercent))
     .map((i: any) => i.changePercent as number);
