@@ -7,7 +7,7 @@ interface EarningsCardProps {
   earnings: any;
 }
 
-export function EarningsCard({ earnings }: EarningsCardProps) {
+export const EarningsCard = memo(function EarningsCard({ earnings }: EarningsCardProps) {
   const t = useT();
   const { symbol: cSym } = useCurrency();
 
