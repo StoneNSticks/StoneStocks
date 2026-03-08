@@ -124,11 +124,11 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
               <svg viewBox="0 0 200 110" className="w-full h-full">
                 <defs>
                   <linearGradient id="analystArc" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor={COLORS.strongBuy} />
-                    <stop offset="25%" stopColor={COLORS.buy} />
+                    <stop offset="0%" stopColor={COLORS.strongSell} />
+                    <stop offset="25%" stopColor={COLORS.sell} />
                     <stop offset="50%" stopColor={COLORS.hold} />
-                    <stop offset="75%" stopColor={COLORS.sell} />
-                    <stop offset="100%" stopColor={COLORS.strongSell} />
+                    <stop offset="75%" stopColor={COLORS.buy} />
+                    <stop offset="100%" stopColor={COLORS.strongBuy} />
                   </linearGradient>
                 </defs>
                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="hsl(var(--muted))" strokeWidth="12" strokeLinecap="round" />
@@ -140,15 +140,14 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                   stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round"
                 />
                 <circle cx="100" cy="100" r="4" fill="hsl(var(--foreground))" />
-                {/* Labels */}
-                <text x="18" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="start">{lang === "de" ? "Kauf" : "Buy"}</text>
-                <text x="182" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="end">{lang === "de" ? "Verkauf" : "Sell"}</text>
+                <text x="18" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="start">{lang === "de" ? "Verkauf" : "Sell"}</text>
+                <text x="182" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="end">{lang === "de" ? "Kauf" : "Buy"}</text>
               </svg>
             </div>
             {/* Score */}
             <div className="text-center sm:text-left flex-1">
               <div className="text-2xl font-display font-bold" style={{ color: consensusColor }}>{consensusLabel}</div>
-              <div className="font-mono text-lg font-bold text-foreground">{consensus.toFixed(2)}<span className="text-muted-foreground text-sm"> / 5.00</span></div>
+              <div className="font-mono text-lg font-bold text-foreground">{consensus.toFixed(1)}<span className="text-muted-foreground text-sm"> / 5.0</span></div>
             </div>
           </div>
         </div>
