@@ -281,6 +281,21 @@ export default function ScreenerPage() {
             })
           )}
         </div>
+
+          </TabsContent>
+
+          <TabsContent value="magic">
+            <MagicFormulaRanking />
+          </TabsContent>
+
+          <TabsContent value="piotroski">
+            <PiotroskiScore />
+          </TabsContent>
+
+          <TabsContent value="momentum">
+            <MomentumScreener />
+          </TabsContent>
+        </Tabs>
       </main>
       <Footer />
     </div>
