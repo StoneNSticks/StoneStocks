@@ -195,6 +195,9 @@ const translations: Record<string, Record<Language, string>> = {
   "m.roe": { de: "EKR", en: "ROE" },
   "m.roa": { de: "GKR", en: "ROA" },
   "m.revenueTTM": { de: "Umsatz TTM", en: "Revenue TTM" },
+  "m.dayRange": { de: "Tagesspanne", en: "Day Range" },
+  "m.keyRanges": { de: "Kennzahlen-Bereiche", en: "Key Ranges" },
+  "m.52wRange": { de: "52-Wochen-Spanne", en: "52-Week Range" },
 
   // ── StockDetail ──
   "sd.website": { de: "Webseite", en: "Website" },
