@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { StockChart } from "@/components/StockChart";
 import { useMarketIndices } from "@/hooks/useStockData";
 import { priceChangeColor } from "@/lib/formatters";
