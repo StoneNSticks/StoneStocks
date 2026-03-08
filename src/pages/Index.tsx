@@ -9,6 +9,7 @@ import { MostActive } from "@/components/MostActive";
 import { HiddenGems } from "@/components/HiddenGems";
 import { CommoditiesSection } from "@/components/CommoditiesSection";
 import { SentimentGauge } from "@/components/SentimentGauge";
+import { VixIndicator } from "@/components/VixIndicator";
 import { SectorPerformance } from "@/components/SectorPerformance";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
