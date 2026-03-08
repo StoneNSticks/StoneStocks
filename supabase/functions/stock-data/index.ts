@@ -1048,8 +1048,9 @@ async function handleTopCompanies() {
         const shareOutstanding = profile?.shareOutstanding || 0;
         const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
         // Prefer Finnhub for accuracy, only use Polygon if reasonable, fallback to computed
+        // Apply MAX_REASONABLE_MCAP sanity cap to ALL sources (fixes ADR issues like TSM)
         let marketCap = 0;
-        if (finnhubMarketCap > 0) {
+        if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = finnhubMarketCap;
         } else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = polygonMarketCap;
