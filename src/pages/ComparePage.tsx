@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { NormalizedChart } from "@/components/NormalizedChart";
 import { CompareRadar } from "@/components/CompareRadar";
 import { CompareFinancials } from "@/components/CompareFinancials";
+import { CorrelationMatrix } from "@/components/CorrelationMatrix";
 import { ShareButton } from "@/components/ShareButton";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
