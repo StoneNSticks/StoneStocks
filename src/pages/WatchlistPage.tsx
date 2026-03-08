@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { EarningsCalendar } from "@/components/EarningsCalendar";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWatchlist, useUpdateWatchlistItem } from "@/hooks/useWatchlist";
@@ -549,6 +550,13 @@ export default function WatchlistPage() {
               </AnimatePresence>
             </motion.div>
           </div>
+        )}
+
+        {/* Earnings Calendar for watchlist stocks */}
+        {user && watchlist && watchlist.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6">
+            <EarningsCalendar symbols={watchlist.map(w => w.symbol)} />
+          </motion.div>
         )}
 
         {user && count > 0 && (

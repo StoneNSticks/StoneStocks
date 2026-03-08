@@ -41,6 +41,7 @@ const TTL: Record<string, number> = {
   simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
   commodities: 10,
   insider_transactions: 30,
+  earnings_calendar: 60,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
@@ -1401,6 +1402,56 @@ async function handleInsiderTransactions(symbol: string) {
   }
 }
 
+async function handleEarningsCalendar(symbols: string) {
+  const cacheKey = `earnings_calendar:${symbols}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  try {
+    // Get upcoming earnings dates from Finnhub for each symbol
+    const symbolList = symbols.split(",").map(s => s.trim()).filter(Boolean);
+    const now = new Date();
+    const from = now.toISOString().slice(0, 10);
+    const futureDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
+    const to = futureDate.toISOString().slice(0, 10);
+
+    // Finnhub earnings calendar endpoint
+    const calendarData = await fetchFinnhub("calendar/earnings", { from, to, symbol: "" });
+    const allEarnings = calendarData?.earningsCalendar || [];
+
+    // Filter to requested symbols
+    const filtered = symbolList.length > 0
+      ? allEarnings.filter((e: any) => symbolList.includes(e.symbol))
+      : allEarnings.slice(0, 50);
+
+    // If Finnhub returns nothing for those symbols, try individual lookups
+    if (filtered.length === 0 && symbolList.length > 0 && symbolList.length <= 20) {
+      const results: any[] = [];
+      await Promise.all(symbolList.map(async (sym) => {
+        try {
+          const data = await fetchFinnhub("calendar/earnings", { from, to, symbol: sym });
+          if (data?.earningsCalendar?.length) {
+            results.push(...data.earningsCalendar);
+          }
+        } catch {}
+      }));
+      if (results.length > 0) {
+        results.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
+        await setCache(cacheKey, results, "finnhub", 60);
+        return results;
+      }
+    }
+
+    // Sort by date
+    filtered.sort((a: any, b: any) => (a.date || "").localeCompare(b.date || ""));
+    await setCache(cacheKey, filtered, "finnhub", 60);
+    return filtered;
+  } catch (e) {
+    console.warn("Earnings calendar fetch failed:", e);
+    return [];
+  }
+}
+
 // === Full Stock (with cross-source gap filling) ===
 
 async function handleFullStock(symbol: string) {
@@ -1616,6 +1667,7 @@ Deno.serve(async (req) => {
       case "commodities": result = await handleCommodities(); break;
       case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
       case "insider_transactions": result = await handleInsiderTransactions(symbol!); break;
+      case "earnings_calendar": result = await handleEarningsCalendar(url.searchParams.get("symbols") || symbol || ""); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

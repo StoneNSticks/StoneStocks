@@ -55,3 +55,4 @@ export const getHiddenGems = () => callStockApi({ action: "hidden_gems" });
 export const getCommodities = () => callStockApi({ action: "commodities" });
 export const getCommodityHistory = (name: string, period: string) => callStockApi({ action: "commodity_history", symbol: name, interval: period });
 export const getInsiderTransactions = (symbol: string) => callStockApi({ action: "insider_transactions", symbol });
+export const getEarningsCalendar = (symbols: string) => callStockApi({ action: "earnings_calendar", symbols });
