@@ -4,6 +4,7 @@
  */
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { TopCompanies } from "@/components/TopCompanies";
 import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
