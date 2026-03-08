@@ -654,6 +654,7 @@ function DividendProjector() {
 
 const CalculatorPage = () => {
   const t = useT();
+  const { lang } = useLanguage();
   return (
     <div className="min-h-screen bg-background">
       <Header />
