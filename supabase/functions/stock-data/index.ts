@@ -556,20 +556,43 @@ async function handleSearch(query: string) {
 }
 
 async function handleTechnicals(symbol: string) {
-  const cacheKey = `technicals:${symbol}`;
+  const cacheKey = `technicals:${symbol}:v2`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
   try {
-    const [rsi, macd] = await Promise.all([
-      fetchTwelveData("rsi", { symbol, interval: "1day", time_period: "14", outputsize: "30" }).catch(() => null),
-      fetchTwelveData("macd", { symbol, interval: "1day", outputsize: "30" }).catch(() => null),
+    const [rsi, macd, sma20, sma50, sma200, ema12, ema26, stoch, adx, atr, bbands, cci] = await Promise.all([
+      fetchTwelveData("rsi", { symbol, interval: "1day", time_period: "14", outputsize: "5" }).catch(() => null),
+      fetchTwelveData("macd", { symbol, interval: "1day", outputsize: "5" }).catch(() => null),
+      fetchTwelveData("sma", { symbol, interval: "1day", time_period: "20", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("sma", { symbol, interval: "1day", time_period: "50", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("sma", { symbol, interval: "1day", time_period: "200", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("ema", { symbol, interval: "1day", time_period: "12", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("ema", { symbol, interval: "1day", time_period: "26", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("stoch", { symbol, interval: "1day", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("adx", { symbol, interval: "1day", time_period: "14", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("atr", { symbol, interval: "1day", time_period: "14", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("bbands", { symbol, interval: "1day", time_period: "20", outputsize: "2" }).catch(() => null),
+      fetchTwelveData("cci", { symbol, interval: "1day", time_period: "20", outputsize: "2" }).catch(() => null),
     ]);
-    const result = { rsi: rsi?.values || [], macd: macd?.values || [] };
+    const result = {
+      rsi: rsi?.values || [],
+      macd: macd?.values || [],
+      sma20: sma20?.values || [],
+      sma50: sma50?.values || [],
+      sma200: sma200?.values || [],
+      ema12: ema12?.values || [],
+      ema26: ema26?.values || [],
+      stoch: stoch?.values || [],
+      adx: adx?.values || [],
+      atr: atr?.values || [],
+      bbands: bbands?.values || [],
+      cci: cci?.values || [],
+    };
     await setCache(cacheKey, result, "twelvedata", TTL.technicals);
     return result;
   } catch (e) {
     console.warn("Technicals fetch failed:", e);
-    return { rsi: [], macd: [] };
+    return { rsi: [], macd: [], sma20: [], sma50: [], sma200: [], ema12: [], ema26: [], stoch: [], adx: [], atr: [], bbands: [], cci: [] };
   }
 }
 
