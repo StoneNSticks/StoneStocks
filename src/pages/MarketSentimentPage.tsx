@@ -153,7 +153,7 @@ function computeSubIndicators(
   return indicators;
 }
 
-/* ─── Composite score from weighted indicators ─── */
+/* ── Composite score from weighted indicators ── */
 function computeCompositeScore(indicators: SubIndicator[]): number {
   if (indicators.length === 0) return 50;
   const totalWeight = indicators.reduce((s, i) => s + i.weight, 0);
