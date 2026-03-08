@@ -196,7 +196,7 @@ export function Header() {
                   return (
                     <Link key={item.to} to={item.to} className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
                       <Icon className="h-4 w-4" />
-                      {t(item.key) !== item.key ? t(item.key) : ('fallbackLabel' in item && item.fallbackLabel ? (document.documentElement.lang === "de" ? item.fallbackLabel.de : item.fallbackLabel.en) : item.key)}
+                      {t(item.key) !== item.key ? t(item.key) : ('fallbackLabel' in item && item.fallbackLabel ? (document.documentElement.lang === "de" ? (item.fallbackLabel as {de:string;en:string}).de : (item.fallbackLabel as {de:string;en:string}).en) : item.key)}
                     </Link>
                   );
                 })}
