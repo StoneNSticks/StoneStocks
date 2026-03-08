@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Link as LinkIcon } from "lucide-react";
+import { toast } from "sonner";
 
 export const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 export const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
