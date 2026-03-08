@@ -29,6 +29,30 @@ const NewsPage = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [limit, setLimit] = useState(20);
+  const [sentiments, setSentiments] = useState<Record<number, { sentiment: string; score: number }>>({});
+  const [sentimentLoading, setSentimentLoading] = useState(false);
+
+  const analyzeSentiment = async () => {
+    if (!news || (news as any[]).length === 0) return;
+    setSentimentLoading(true);
+    try {
+      const headlines = (news as any[]).slice(0, 20).map((n: any) => n.headline || "");
+      const { data, error } = await supabase.functions.invoke("news-sentiment", {
+        body: { headlines },
+      });
+      if (error) throw error;
+      if (data?.sentiments) {
+        const map: Record<number, { sentiment: string; score: number }> = {};
+        data.sentiments.forEach((s: any) => { map[s.index] = { sentiment: s.sentiment, score: s.score }; });
+        setSentiments(map);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Sentiment analysis failed");
+    } finally {
+      setSentimentLoading(false);
+    }
+  };
+  const [limit, setLimit] = useState(20);
 
   const filtered = useMemo(() => {
     if (!news) return [];
