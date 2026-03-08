@@ -601,7 +601,7 @@ export function runEnvelopeStrategy(data: OHLC[], capital: number, smaPeriod = 2
     return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
   });
 
-  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+  return { equity, trades, metrics: calculateMetrics(equity, trades, capital) };
 }
 
 function emptyMetrics(capital: number): BacktestMetrics {
