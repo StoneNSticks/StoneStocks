@@ -273,6 +273,9 @@ const StockDetail = () => {
                 ══════════════════════════════════════════════════════════ */}
             <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
 
+            {/* Advanced Alerts */}
+            <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
+
             {/* ══════════════════════════════════════════════════════════
                 SECTION 6b: Fair Value Estimate + DCF Calculator
                 Multiple valuation methods + interactive DCF with sensitivity

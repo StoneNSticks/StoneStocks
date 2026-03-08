@@ -418,6 +418,13 @@ export default function PortfolioPage() {
               </div>
             )}
 
+            {/* Portfolio Performance Chart */}
+            {count > 0 && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-4">
+                <PortfolioPerformance positions={positions!} />
+              </motion.div>
+            )}
+
             {/* Allocation pie chart */}
             {count > 0 && count <= 20 && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-6 rounded-xl border border-border/60 bg-card p-5">
