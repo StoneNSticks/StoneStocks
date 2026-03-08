@@ -781,7 +781,7 @@ export default function LearnPage() {
             <SectionCard icon={<Gem className="h-5 w-5" />} title={t("learn.goodwillTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.goodwillP1") }} />
             </SectionCard>
-            <QuizSection sectionId="accounting" title={t("learn.quizAccounting")} questions={quizAccounting} />
+            
           </motion.section>
 
           {/* Section 19: International Finance */}
