@@ -217,7 +217,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             )}
             <div className="rounded-lg bg-background p-2 border border-primary/30 shadow-sm">
               <div className="text-[9px] text-primary font-semibold uppercase tracking-wider">Target</div>
-              <div className="font-mono font-bold text-sm text-foreground">{cSym}{convert(target)?.toFixed(2)}</div>
+              <div className="font-mono font-bold text-sm text-foreground">{cSym}{(convert(target) ?? target).toFixed(2)}</div>
             </div>
             {high > 0 && (
               <div className="rounded-lg bg-background p-2 border border-border/30">
