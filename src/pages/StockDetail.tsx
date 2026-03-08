@@ -52,6 +52,8 @@ import { MetricBars } from "@/components/MetricBars";
 import { PeerComparison } from "@/components/PeerComparison";
 import { EarningsCalendar } from "@/components/EarningsCalendar";
 import { SecFilings } from "@/components/SecFilings";
+import { FairValue } from "@/components/FairValue";
+import { DCFCalculator } from "@/components/DCFCalculator";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -266,6 +268,15 @@ const StockDetail = () => {
                 Right: Community bullish/bearish vote
                 ══════════════════════════════════════════════════════════ */}
             <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
+
+            {/* ══════════════════════════════════════════════════════════
+                SECTION 6b: Fair Value Estimate + DCF Calculator
+                Multiple valuation methods + interactive DCF with sensitivity
+                ══════════════════════════════════════════════════════════ */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              <FairValue quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
+              <DCFCalculator overview={overview} quote={quote} derived={derived} />
+            </div>
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 7: Financial Charts (10 charts)
