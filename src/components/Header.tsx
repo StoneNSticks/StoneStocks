@@ -89,6 +89,7 @@ export function Header() {
             <CurrencyToggle />
             <LanguageToggle />
             <ThemeToggle />
+            <NotificationCenter />
             <NotificationBell />
 
             {user ? (
