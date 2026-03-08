@@ -116,13 +116,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center gap-2 cursor-pointer">Dashboard</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link to="/compare" className="flex items-center gap-2 cursor-pointer">Compare</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/macro" className="flex items-center gap-2 cursor-pointer">Macro</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/calculators" className="flex items-center gap-2 cursor-pointer">{t("nav.tools")}</Link>
