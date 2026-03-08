@@ -121,11 +121,11 @@ export default function ComparePage() {
           <div className="inline-flex items-center gap-2 mb-3">
             <GitCompare className="h-6 w-6 text-primary" />
             <h1 className="font-display text-2xl sm:text-3xl font-bold">
-              {lang === "de" ? "Aktien" : "Stock"} <span className="text-primary">{lang === "de" ? "Vergleich" : "Compare"}</span>
+              {t("compare.title")} <span className="text-primary">{t("compare.titleHighlight")}</span>
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            {lang === "de" ? "Bis zu 4 Aktien nebeneinander vergleichen" : "Compare up to 4 stocks side by side"}
+            {t("compare.subtitle")}
           </p>
         </motion.div>
 
