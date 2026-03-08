@@ -1429,6 +1429,33 @@ async function handleHiddenGems() {
   return gems;
 }
 
+// === Cache Cleanup (probabilistic) ===
+async function maybeCleanupCache() {
+  // Run cleanup ~1% of requests
+  if (Math.random() > 0.01) return;
+  try {
+    await supabase.from("api_cache").delete().lt("expires_at", new Date().toISOString());
+    console.log("Cache cleanup executed");
+  } catch (e) {
+    console.warn("Cache cleanup failed:", e);
+  }
+}
+
+// === Exponential backoff fetch wrapper ===
+async function fetchWithBackoff(url: string, options?: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, options);
+    if (res.status === 429 && attempt < maxRetries) {
+      const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+      console.warn(`Rate limited on ${url}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, delay));
+      continue;
+    }
+    return res;
+  }
+  throw new Error("Max retries exceeded");
+}
+
 
 function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null) {
   const price = parseFloat(quote?.c?.toString() || overview?.Price || "0");
