@@ -20,6 +20,35 @@ const items = [
 export function BottomNav() {
   const location = useLocation();
   const t = useT();
+  const { user } = useAuth();
+
+  const { data: watchlistCount } = useQuery({
+    queryKey: ["watchlist-count", user?.id],
+    queryFn: async () => {
+      if (!user) return 0;
+      const { count } = await supabase
+        .from("watchlist")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      return count || 0;
+    },
+    enabled: !!user,
+    staleTime: 60_000,
+  });
+
+  const { data: portfolioCount } = useQuery({
+    queryKey: ["portfolio-count", user?.id],
+    queryFn: async () => {
+      if (!user) return 0;
+      const { count } = await supabase
+        .from("portfolio_positions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      return count || 0;
+    },
+    enabled: !!user,
+    staleTime: 60_000,
+  });
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl pb-safe">
@@ -27,15 +56,23 @@ export function BottomNav() {
         {items.map((item) => {
           const isActive = location.pathname === item.to;
           const Icon = item.icon;
+          const badge = item.to === "/watchlist" ? watchlistCount : item.to === "/portfolio" ? portfolioCount : 0;
           return (
             <Link
               key={item.to}
               to={item.to}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <Icon className="h-5 w-5" />
+              <div className="relative">
+                <Icon className="h-5 w-5" />
+                {badge != null && badge > 0 && (
+                  <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold px-1">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
+              </div>
               <span className="text-[10px] font-medium">{t(item.key)}</span>
             </Link>
           );

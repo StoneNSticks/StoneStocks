@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getQuote, getProfile } from "@/lib/stockApi";
@@ -15,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon } from "lucide-react";
+import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon, DollarSign, Percent, BarChart3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
@@ -45,8 +46,8 @@ function usePortfolio() {
   });
 }
 
-function PositionRow({ position, onDelete }: { position: any; onDelete: (id: string) => void }) {
-  const { convert, symbol: cSym } = useCurrency();
+// Hook to fetch quote for a position and report values upward
+function usePositionData(position: any) {
   const { data: quote } = useQuery({
     queryKey: ["portfolio-quote", position.symbol],
     queryFn: () => getQuote(position.symbol),
@@ -65,6 +66,14 @@ function PositionRow({ position, onDelete }: { position: any; onDelete: (id: str
   const currentValue = shares * currentPrice;
   const pnl = currentValue - totalCost;
   const pnlPct = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
+  const dayChange = (quote?.dp || 0) / 100 * currentValue;
+
+  return { currentPrice, shares, avgCost, totalCost, currentValue, pnl, pnlPct, dayChange, profile, isLoaded: !!quote };
+}
+
+function PositionRow({ position, onDelete }: { position: any; onDelete: (id: string) => void }) {
+  const { convert, symbol: cSym } = useCurrency();
+  const { currentPrice, shares, avgCost, totalCost, currentValue, pnl, pnlPct, profile } = usePositionData(position);
   const isUp = pnl >= 0;
 
   return (
@@ -76,7 +85,7 @@ function PositionRow({ position, onDelete }: { position: any; onDelete: (id: str
     >
       <Link to={`/stock/${position.symbol}`} className="flex items-center gap-3 flex-1 min-w-0">
         {profile?.logo ? (
-          <img src={profile.logo} alt="" className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-1 shrink-0" />
+          <img src={profile.logo} alt="" className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         ) : (
           <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
             {position.symbol.slice(0, 2)}
@@ -103,6 +112,103 @@ function PositionRow({ position, onDelete }: { position: any; onDelete: (id: str
   );
 }
 
+/** Portfolio Summary Cards */
+function PortfolioSummary({ positions }: { positions: any[] }) {
+  const { convert, symbol: cSym } = useCurrency();
+  const { lang } = useLanguage();
+
+  // Fetch all quotes in parallel
+  const quoteQueries = positions.map(pos =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery({
+      queryKey: ["portfolio-quote", pos.symbol],
+      queryFn: () => getQuote(pos.symbol),
+      staleTime: 60_000,
+    })
+  );
+
+  const allLoaded = quoteQueries.every(q => q.data);
+
+  const totals = useMemo(() => {
+    let totalValue = 0;
+    let totalCost = 0;
+    let totalDayChange = 0;
+
+    positions.forEach((pos, i) => {
+      const quote = quoteQueries[i]?.data;
+      const price = quote?.c || 0;
+      const shares = Number(pos.shares);
+      const avgCost = Number(pos.avg_cost);
+      totalValue += shares * price;
+      totalCost += shares * avgCost;
+      totalDayChange += (quote?.dp || 0) / 100 * shares * price;
+    });
+
+    const totalPnl = totalValue - totalCost;
+    const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+    const dayChangePct = totalValue > 0 ? (totalDayChange / totalValue) * 100 : 0;
+
+    return { totalValue, totalCost, totalPnl, totalPnlPct, totalDayChange, dayChangePct };
+  }, [positions, quoteQueries.map(q => q.data)]);
+
+  if (!allLoaded) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+      </div>
+    );
+  }
+
+  const cards = [
+    {
+      label: lang === "de" ? "Gesamtwert" : "Total Value",
+      value: `${cSym}${convert(totals.totalValue)?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      icon: <DollarSign className="h-4 w-4" />,
+      color: "text-foreground",
+    },
+    {
+      label: lang === "de" ? "Investiert" : "Invested",
+      value: `${cSym}${convert(totals.totalCost)?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      icon: <Briefcase className="h-4 w-4" />,
+      color: "text-muted-foreground",
+    },
+    {
+      label: lang === "de" ? "Gesamt P&L" : "Total P&L",
+      value: `${totals.totalPnl >= 0 ? "+" : ""}${cSym}${convert(Math.abs(totals.totalPnl))?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      sub: `${totals.totalPnlPct >= 0 ? "+" : ""}${totals.totalPnlPct.toFixed(2)}%`,
+      icon: <Percent className="h-4 w-4" />,
+      color: totals.totalPnl >= 0 ? "text-chart-2" : "text-destructive",
+    },
+    {
+      label: lang === "de" ? "Tagesänderung" : "Day Change",
+      value: `${totals.totalDayChange >= 0 ? "+" : ""}${cSym}${convert(Math.abs(totals.totalDayChange))?.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      sub: `${totals.dayChangePct >= 0 ? "+" : ""}${totals.dayChangePct.toFixed(2)}%`,
+      icon: <BarChart3 className="h-4 w-4" />,
+      color: totals.totalDayChange >= 0 ? "text-chart-2" : "text-destructive",
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      {cards.map((card) => (
+        <motion.div
+          key={card.label}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl border border-border/60 bg-card p-4"
+        >
+          <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+            {card.icon}
+            <span className="text-[11px] font-medium">{card.label}</span>
+          </div>
+          <div className={`font-mono font-bold text-lg ${card.color}`}>{card.value}</div>
+          {card.sub && <div className={`text-xs font-mono ${card.color}`}>{card.sub}</div>}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function PortfolioPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: positions, isLoading } = usePortfolio();
@@ -110,6 +216,11 @@ export default function PortfolioPage() {
   const t = useT();
   const { lang } = useLanguage();
   const queryClient = useQueryClient();
+
+  usePageTitle(
+    lang === "de" ? "Mein Portfolio" : "My Portfolio",
+    lang === "de" ? "Verwalte deine Investments und verfolge P&L in Echtzeit" : "Manage your investments and track P&L in real-time"
+  );
 
   const [showAdd, setShowAdd] = useState(false);
   const [newSymbol, setNewSymbol] = useState("");
@@ -151,7 +262,6 @@ export default function PortfolioPage() {
     },
   });
 
-  // Aggregate portfolio data (we need quotes for this)
   const count = positions?.length || 0;
 
   return (
@@ -183,6 +293,9 @@ export default function PortfolioPage() {
           </motion.div>
         ) : (
           <>
+            {/* Portfolio Summary Dashboard */}
+            {count > 0 && !isLoading && <PortfolioSummary positions={positions!} />}
+
             {/* Add position button / form */}
             <div className="mb-5">
               {!showAdd ? (

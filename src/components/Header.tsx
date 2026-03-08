@@ -166,6 +166,8 @@ export function Header() {
           </nav>
         </div>
       </div>
+      {/* Row 3: Ticker tape */}
+      <TickerTape />
     </header>
   );
 }

@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 const NotFound = () => {
   const location = useLocation();
   const t = useT();
+  usePageTitle("404 - Page Not Found");
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
