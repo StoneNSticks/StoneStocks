@@ -18,6 +18,7 @@ import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/use
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Gauge, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Shield, Flame, Globe,
