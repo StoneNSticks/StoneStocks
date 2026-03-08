@@ -135,9 +135,20 @@ export function PortfolioPerformance({ positions }: PortfolioPerformanceProps) {
             </defs>
             <XAxis
               dataKey="date"
+              axisLine={false}
+              tickLine={false}
               tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-              tickFormatter={(d: string) => d.slice(5, 10)}
-              interval="preserveStartEnd"
+              minTickGap={50}
+              tickFormatter={(d: string) => {
+                if (!d) return "";
+                const date = new Date(d);
+                const span = chartData.length > 0
+                  ? (new Date(chartData[chartData.length - 1].date).getTime() - new Date(chartData[0].date).getTime()) / (1000 * 60 * 60 * 24)
+                  : 0;
+                if (span > 365) return date.toLocaleDateString(undefined, { year: "numeric" });
+                if (span > 90) return date.toLocaleDateString(undefined, { month: "short" });
+                return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+              }}
             />
             <YAxis
               tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
