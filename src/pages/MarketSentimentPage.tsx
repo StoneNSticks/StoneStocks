@@ -548,6 +548,9 @@ export default function MarketSentimentPage() {
             {/* Commodities */}
             {commodities?.length > 0 && <CommodityGrid commodities={commodities} />}
 
+            {/* Macro Economic Indicators */}
+            <MacroSection />
+
             {/* Quick Links */}
             <motion.div initial="hidden" animate="visible" variants={fadeIn} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
