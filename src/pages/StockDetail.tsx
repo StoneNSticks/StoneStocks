@@ -240,12 +240,7 @@ const StockDetail = () => {
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
             </div>
 
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 6: Analyst Consensus + Community Sentiment
-                Left: Gauge showing Strong Buy → Strong Sell + price targets
-                Right: Community bullish/bearish vote
-                ══════════════════════════════════════════════════════════ */}
-            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
+            {/* Analyst Consensus moved to after Company Intelligence */}
 
             {/* Advanced Alerts */}
             <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
