@@ -9,6 +9,9 @@ import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useLearnProgress } from "@/hooks/useLearnProgress";
+import { useAuth } from "@/contexts/AuthContext";
+import { Progress } from "@/components/ui/progress";
 
 // Progress tracker using localStorage
 function useReadProgress() {
