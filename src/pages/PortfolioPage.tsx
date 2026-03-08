@@ -378,6 +378,11 @@ export default function PortfolioPage() {
                 </div>
               </motion.div>
             )}
+
+            {/* Portfolio Analytics */}
+            {count > 1 && (
+              <PortfolioAnalyticsWrapper positions={positions!} />
+            )}
           </>
         )}
       </main>
