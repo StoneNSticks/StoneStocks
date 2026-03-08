@@ -52,20 +52,21 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
   const prev = chartData.length > 3 ? chartData[chartData.length - 4] : null;
   const total = latest ? latest.strongBuy + latest.buy + latest.hold + latest.sell + latest.strongSell : 0;
 
+  // Invert: 5 = strong buy, 0 = strong sell
   const consensus = total > 0
-    ? (latest.strongBuy * 1 + latest.buy * 2 + latest.hold * 3 + latest.sell * 4 + latest.strongSell * 5) / total
+    ? 5 - ((latest.strongBuy * 1 + latest.buy * 2 + latest.hold * 3 + latest.sell * 4 + latest.strongSell * 5) / total) + 1
     : 0;
 
+  const prevTotal = prev ? (prev.strongBuy + prev.buy + prev.hold + prev.sell + prev.strongSell || 1) : 1;
   const prevConsensus = prev
-    ? ((prev.strongBuy * 1 + prev.buy * 2 + prev.hold * 3 + prev.sell * 4 + prev.strongSell * 5) /
-      (prev.strongBuy + prev.buy + prev.hold + prev.sell + prev.strongSell || 1))
+    ? 5 - ((prev.strongBuy * 1 + prev.buy * 2 + prev.hold * 3 + prev.sell * 4 + prev.strongSell * 5) / prevTotal) + 1
     : consensus;
 
-  const trendImproved = consensus < prevConsensus - 0.1;
-  const trendWorsened = consensus > prevConsensus + 0.1;
+  const trendImproved = consensus > prevConsensus + 0.1;
+  const trendWorsened = consensus < prevConsensus - 0.1;
 
-  const consensusLabel = consensus <= 1.5 ? t("rec.strongBuy") : consensus <= 2.5 ? t("rec.buy") : consensus <= 3.5 ? t("rec.hold") : consensus <= 4.5 ? t("rec.sell") : t("rec.strongSell");
-  const consensusColor = consensus <= 2.0 ? COLORS.strongBuy : consensus <= 2.5 ? COLORS.buy : consensus <= 3.5 ? COLORS.hold : consensus <= 4.5 ? COLORS.sell : COLORS.strongSell;
+  const consensusLabel = consensus >= 4.0 ? t("rec.strongBuy") : consensus >= 3.0 ? t("rec.buy") : consensus >= 2.0 ? t("rec.hold") : consensus >= 1.0 ? t("rec.sell") : t("rec.strongSell");
+  const consensusColor = consensus >= 4.0 ? COLORS.strongBuy : consensus >= 3.0 ? COLORS.buy : consensus >= 2.0 ? COLORS.hold : consensus >= 1.0 ? COLORS.sell : COLORS.strongSell;
 
   const target = parseFloat(overview?.AnalystTargetPrice || "0");
   const high = parseFloat(overview?.AnalystHighTarget || "0");

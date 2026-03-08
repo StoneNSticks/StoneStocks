@@ -328,14 +328,11 @@ const StockDetail = () => {
             {/* Options Chain */}
             <OptionsChainViewer symbol={upperSymbol} currentPrice={quote?.c} />
 
-            {/* Insider Trades */}
-            <InsiderTrades symbol={upperSymbol} />
-
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 12b: SEC Filings
-                Recent 10-K, 10-Q, 8-K filings from SEC EDGAR
-                ══════════════════════════════════════════════════════════ */}
-            <SecFilings symbol={upperSymbol} />
+            {/* Insider Trades & SEC Filings side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              <InsiderTrades symbol={upperSymbol} />
+              <SecFilings symbol={upperSymbol} />
+            </div>
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 13: Community: Sentiment Vote + Threaded Comments
