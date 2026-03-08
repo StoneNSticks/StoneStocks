@@ -9,6 +9,9 @@ import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useLearnProgress } from "@/hooks/useLearnProgress";
+import { useAuth } from "@/contexts/AuthContext";
+import { Progress } from "@/components/ui/progress";
 
 // Progress tracker using localStorage
 function useReadProgress() {
@@ -62,6 +65,9 @@ export default function LearnPage() {
     lang === "de" ? "Umfassender Leitfaden für Einsteiger und Fortgeschrittene" : "Comprehensive guide for beginners and advanced investors"
   );
   const { read, markRead } = useReadProgress();
+  const { user } = useAuth();
+  const { completedCount, markComplete, isCompleted } = useLearnProgress();
+  const totalSections = 12; // approximate number of main learn sections
 
   // Track which sections are in view
   useEffect(() => {
@@ -189,6 +195,15 @@ export default function LearnPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-destructive/10 text-destructive">{t("learn.levelAdvanced")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">{t("learn.levelExpert")}</span>
           </div>
+          {user && (
+            <div className="max-w-xs mx-auto pt-3 space-y-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{lang === "de" ? "Fortschritt" : "Progress"}</span>
+                <span className="font-mono font-bold text-primary">{completedCount}/{totalSections}</span>
+              </div>
+              <Progress value={(completedCount / totalSections) * 100} className="h-2" />
+            </div>
+          )}
         </motion.div>
 
         {/* TOC with grouped super-sections */}

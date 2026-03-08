@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
+import { AIRecommendations } from "@/components/AIRecommendations";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -450,6 +451,11 @@ export default function PortfolioPage() {
             {/* Portfolio Analytics */}
             {count > 1 && (
               <PortfolioAnalyticsWrapper positions={positions!} />
+            )}
+
+            {/* AI Recommendations */}
+            {count > 0 && (
+              <AIRecommendations portfolio={positions!} watchlist={[]} />
             )}
           </>
         )}
