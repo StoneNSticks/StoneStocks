@@ -164,7 +164,7 @@ function computeSubIndicators(
 
   /* 5. Stock Price Strength (5%) — CNN: 52-week highs vs lows proxy */
   // Proxy: stocks with gains > 3% approximate "near 52-week highs", losses > 3% approximate "near 52-week lows"
-  const allMovers = [...(gainersLosers?.gainers || []), ...(gainersLosers?.losers || [])];
+  const allMovers = [...gainers, ...losers];
   const nearHighs = allMovers.filter((s: any) => (s.changePercent || 0) > 3).length;
   const nearLows = allMovers.filter((s: any) => (s.changePercent || 0) < -3).length;
   const totalHL = nearHighs + nearLows;
