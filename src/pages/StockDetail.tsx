@@ -1,34 +1,5 @@
 /**
  * StockDetail — The main stock analysis page.
- * 
- * HOW IT WORKS:
- * This is the most complex page in the app. When a user visits /stock/AAPL,
- * this page loads ALL available data about Apple and displays it in sections.
- * 
- * WHAT IT SHOWS (from top to bottom):
- * 1. Company header (name, logo, industry, website link)
- * 2. Key metrics grid (price, market cap, P/E ratio, etc.)
- * 3. 52-week price range bar
- * 4. Metric range bars (P/E, RSI, margins compared to typical ranges)
- * 5. Price chart + Performance summary (side by side)
- * 6. Analyst consensus gauge + Community sentiment vote
- * 7. 10 Financial charts (revenue, profit, EBITDA, EPS, dividends, etc.)
- * 8. Company intelligence (products, risk score, market position)
- * 9. Peer comparison table
- * 10. Technical indicators + Historical earnings
- * 11. Earnings calendar (upcoming quarterly reports)
- * 12. Insider trades
- * 13. User comments
- * 14. Similar stocks list
- * 15. Dividend growth chart
- * 16. News articles
- * 
- * DATA SOURCE: useFullStock hook → stock-data edge function → multiple APIs
- * 
- * CONNECTED TO:
- * - CurrencyContext: All prices converted to selected currency (USD/EUR)
- * - LanguageContext: All labels translated (German/English)
- * - AuthContext: Comments and voting require login
  */
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
