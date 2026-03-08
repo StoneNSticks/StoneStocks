@@ -1,92 +1,50 @@
 
 
-# Vier Aenderungen umsetzen
+## Plan: Navigation komplett neu aufbauen
 
-## 1. Auth-Seite auf Englisch umstellen
+### Problem
+Der Header ist vollgestopft: 5 Nav-Links + More-Dropdown + Search + Online-Status + MarketClock + Currency + Language + Theme + Notifications + Learn + User-Dropdown. Die Suchleiste hat kaum Platz und sekundaere Seiten sind versteckt.
 
-Alle deutschen Texte in `src/pages/AuthPage.tsx` werden ins Englische uebersetzt:
-- "Einloggen" -> "Sign In"
-- "Registrieren" -> "Sign Up"
-- "Passwort zuruecksetzen" -> "Reset Password"
-- "Benutzername" -> "Username"
-- "Anzeigename" -> "Display Name"
-- "Laden..." -> "Loading..."
-- Toast-Meldungen, Platzhalter, Labels, Links
+### Neues Konzept
 
-## 2. ETFs/Leveraged Products aus Listen filtern
+**Desktop Header (schlank, 3 Zonen):**
 
-Das Problem: Produkte wie NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL sind Leveraged/Inverse ETFs, die den `isCommonStock`-Filter passieren, weil sie kurze Ticker haben und nicht in der Blacklist stehen.
-
-Loesung in `supabase/functions/stock-data/index.ts`:
-- Blacklist erweitern um bekannte Ticker: NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL, NVD, NVDL, NVDS, CONL, MSTZ, MSTU
-- Zusaetzlichen **Name-basierten Filter** nach dem Enrichment einbauen: Eintraege deren Name Begriffe wie "ETF", "2x", "2X", "3x", "3X", "Leveraged", "Short", "Long Daily", "Direxion", "Defiance", "GraniteShares", "Tradr", "ProShares", "Trust" + "ETF" enthaelt, werden entfernt
-- Diesen Filter auf `handleGainersLosers` und `handleMostActive` anwenden (nach `enrichWithProfileData`)
-
-## 3. User-Datenbank leeren
-
-Per SQL alle bestehenden Eintraege aus der `profiles`-Tabelle loeschen. Da `profiles.id` per `ON DELETE CASCADE` an `auth.users` haengt, muss zuerst der Eintrag in `auth.users` (ueber Lovable Cloud) oder die `profiles`-Tabelle direkt geleert werden.
-
-Konkret: `DELETE FROM profiles;` und `DELETE FROM watchlist;` ausfuehren.
-
-## 4. Waehrungsumrechnung auf Stock-Detail-Seiten
-
-Folgende Komponenten zeigen Preise aktuell immer in USD (`$`) an und muessen die Waehrungsumrechnung nutzen:
-
-### StockChart.tsx
-- `useCurrency` importieren
-- Y-Achse: `$` durch `symbol` ersetzen und Werte konvertieren
-- Tooltip: Konvertierte Werte mit korrektem Waehrungssymbol anzeigen
-- Chartdaten: `close`-Werte bei der Anzeige konvertieren
-
-### FinancialChart.tsx
-- `useCurrency` importieren
-- `formatLargeNumber` dynamisch mit Waehrungssymbol versehen
-- Y-Achse und Tooltip nutzen konvertierte Werte
-
-### MetricsGrid.tsx
-- `useFormattedCurrency` und `useCurrency` importieren
-- Alle `formatCurrency`-Aufrufe durch die Hook-basierte Version ersetzen
-
-### KeyMetrics.tsx
-- `useFormattedCurrency` importieren
-- Alle Waehrungswerte (Market Cap, EPS, 52W High/Low, Revenue, Gross Profit) konvertieren
-
-### StockDetail.tsx
-- `formatDividendValue` mit dem Waehrungssymbol versehen
-- Preis-Header-Anzeige mit Konvertierung
-
----
-
-## Technische Details
-
-### Betroffene Dateien
-- `src/pages/AuthPage.tsx` (Texte uebersetzen)
-- `supabase/functions/stock-data/index.ts` (ETF-Filter erweitern)
-- `src/components/StockChart.tsx` (Waehrung)
-- `src/components/FinancialChart.tsx` (Waehrung)
-- `src/components/MetricsGrid.tsx` (Waehrung)
-- `src/components/KeyMetrics.tsx` (Waehrung)
-- `src/pages/StockDetail.tsx` (Waehrung)
-
-### Name-basierter ETF-Filter (Pseudocode)
 ```text
-function isETFByName(name: string): boolean {
-  const lower = name.toLowerCase();
-  return lower.includes(" etf") ||
-    /\b[23]x\b/.test(lower) ||
-    lower.includes("leveraged") ||
-    lower.includes("direxion") ||
-    lower.includes("proshares") ||
-    lower.includes("graniteshares") ||
-    lower.includes("defiance") ||
-    lower.includes("tradr") ||
-    (lower.includes("daily") && (lower.includes("short") || lower.includes("long")));
-}
+┌─────────────────────────────────────────────────────────────────┐
+│ [S] StoneStocks  │  [══════ Search Bar (breit) ══════]  │ ⚙ 🔔 👤│
+│                  │                                       │       │
+└─────────────────────────────────────────────────────────────────┘
+│ Markets  Sentiment  Rankings  News  Screener  Portfolio  Watchlist  Tools ▾  │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Reihenfolge
-1. Auth-Seite uebersetzen
-2. ETF-Filter in Edge Function erweitern + deployen
-3. User-Daten loeschen
-4. Waehrungsumrechnung in alle Stock-Detail-Komponenten einbauen
+- **Obere Zeile**: Logo links, prominente Suchleiste in der Mitte (immer sichtbar, kein Scroll-Trigger noetig), rechts nur Theme + Notifications + User-Icon
+- **Untere Zeile**: Alle Hauptseiten als horizontale Tabs. "Tools" Dropdown fuer: Calculator, Compare, Glossary, Learn. MarketClock, Currency, Language, Online-Status wandern in den User-Dropdown oder Footer
+- Die Suchleiste bekommt endlich genug Platz (flex-1, max-w-lg)
+
+**Desktop Header Detail:**
+- Zeile 1 (h-12): Logo | SearchBar (flex-1, max-w-lg, immer sichtbar) | ThemeToggle, NotificationBell, UserDropdown (mit Settings/Profile/Currency/Language/MarketClock drin)
+- Zeile 2 (h-10): Alle 7 Hauptseiten als flache Links + "Tools" Dropdown (Calculator, Compare, Glossary, Learn)
+- Kein Online/Offline Badge mehr im Header (unwichtig, stoert nur)
+- Currency, Language, MarketClock in den User-Dropdown verschieben (oder in einen kleinen Footer-Bereich)
+
+**Mobile (<768px):**
+- Header: Logo + SearchBar + Hamburger (3 Elemente, sauber)
+- BottomNav bleibt mit 5 Items (Markets, Sentiment, Rankings, Portfolio, Watchlist)
+- Hamburger-Sheet zeigt ALLE Seiten gruppiert: Hauptseiten, Tools, Account
+
+### Dateien
+
+| Datei | Aenderung |
+|---|---|
+| `src/components/Header.tsx` | Komplett umgebaut: 2-Zeilen Desktop, schlanker Mobile |
+| `src/components/BottomNav.tsx` | Keine Aenderung (bleibt wie ist) |
+
+### Details
+
+- Alle 13 Pages erreichbar: /, /sentiment, /rankings, /news, /screener, /portfolio, /watchlist, /calculators, /compare, /glossary, /learn, /profile, /settings
+- Search bekommt `max-w-lg flex-1` und ist immer sichtbar (kein Scroll-basiertes Ein/Ausblenden mehr)
+- Zweite Zeile nur auf Desktop (hidden auf mobile)
+- User-Dropdown enthaelt: Profile, Settings, Watchlist, Currency-Toggle, Language-Toggle, MarketClock, Logout
+- Nicht eingeloggt: Login-Button statt User-Dropdown
 
