@@ -838,6 +838,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP2") }} />
             </SectionCard>
+            {interactive && <LeverageCalc lang={lang} />}
             <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.maTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.maP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.maP2") }} />
