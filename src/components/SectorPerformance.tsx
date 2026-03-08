@@ -282,15 +282,27 @@ export function SectorPerformance() {
     if (allStocks.length === 0) return [];
     const map: Record<string, { sum: number; count: number; sector: string }> = {};
     allStocks.forEach((c: any) => {
-      const key = c.industry ? c.industry.toLowerCase() : c.sector || "other";
-      if (key === "other" || !key) return;
-      const sector = mapToSector(c.industry, c.sector);
-      if (!map[key]) map[key] = { sum: 0, count: 0, sector };
-      map[key].sum += c.changePercent || 0;
-      map[key].count += 1;
+      // Use industry if available; if not, use sector as the key
+      const rawIndustry = c.industry ? c.industry.toLowerCase().trim() : "";
+      const rawSector = c.sector ? c.sector.trim() : "";
+      
+      // Create entries for BOTH the broad sector AND the specific industry
+      const sectorName = mapToSector(c.industry, c.sector);
+      
+      // Add to specific industry (if we have one and it's different from sector)
+      if (rawIndustry && rawIndustry !== "other" && rawIndustry !== rawSector.toLowerCase()) {
+        if (!map[rawIndustry]) map[rawIndustry] = { sum: 0, count: 0, sector: sectorName };
+        map[rawIndustry].sum += c.changePercent || 0;
+        map[rawIndustry].count += 1;
+      } else if (rawSector && rawSector !== "Other") {
+        // Stocks with only sector info → use sector as industry entry
+        const key = rawSector.toLowerCase();
+        if (!map[key]) map[key] = { sum: 0, count: 0, sector: sectorName };
+        map[key].sum += c.changePercent || 0;
+        map[key].count += 1;
+      }
     });
     return Object.entries(map)
-      .filter(([, v]) => v.count >= 1)
       .map(([key, { sum, count, sector }]) => ({
         name: getIndustryLabel(key),
         avg: sum / count,
