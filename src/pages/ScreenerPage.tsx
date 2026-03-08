@@ -147,6 +147,16 @@ export default function ScreenerPage() {
           )}
         </div>
 
+        {/* Presets */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono uppercase mr-1"><Zap className="h-3 w-3" />{lang === "de" ? "Schnellfilter" : "Quick filters"}</span>
+          {PRESETS.map((p) => (
+            <button key={p.label} onClick={() => applyPreset(p)} className="px-2.5 py-1 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors">
+              {lang === "de" ? p.labelDe : p.label}
+            </button>
+          ))}
+        </div>
+
         {/* Filters */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
           <div className="col-span-2 sm:col-span-1">

@@ -673,4 +673,13 @@ const translations: Record<string, Record<Language, string>> = {
   "pa.topConcentration": { de: "Top-Konzentration", en: "Top Concentration" },
   "pa.sectorAlloc": { de: "Sektor-Allokation", en: "Sector Allocation" },
   "pa.posWeights": { de: "Gewichtung", en: "Position Weights" },
+
+  // ── Compare Radar ──
+  "compare.radar": { de: "Kennzahlen-Radar", en: "Metrics Radar" },
+
+  // ── News Sentiment ──
+  "news.sentimentAI": { de: "Sentiment AI", en: "Sentiment AI" },
+  "news.bullish": { de: "Bullisch", en: "Bullish" },
+  "news.bearish": { de: "Bärisch", en: "Bearish" },
+  "news.neutral": { de: "Neutral", en: "Neutral" },
 };
