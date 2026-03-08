@@ -614,6 +614,9 @@ export default function MarketSentimentPage() {
               </div>
             </div>
 
+            {/* ── Additional Market Indicators ── */}
+            <AdditionalIndicators indices={indices} gainers={gainers} losers={losers} commodities={commodities} />
+
             {/* Sector Performance */}
             <SectorPerformance />
 
