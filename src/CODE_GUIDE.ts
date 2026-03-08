@@ -11,7 +11,7 @@
  * TABLE OF CONTENTS
  * ═══════════════════════════════════════════════════════════════════════
  * 
- * 1. PROJECT STRUCTURE — How folders are organized
+ * 1. PROJECT STRUCTURE: How folders are organized
  * 2. PAGES — Each screen/view the user sees
  * 3. COMPONENTS — Reusable building blocks
  * 4. HOOKS — Shared logic (data fetching, state management)
