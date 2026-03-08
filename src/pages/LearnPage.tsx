@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical } from "lucide-react";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical, Leaf, Gavel, CircleDollarSign, History, PiggyBank, Binary, BanknoteIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, StepList, fadeIn, stagger } from "@/components/learn/LearnComponents";
@@ -67,7 +67,7 @@ export default function LearnPage() {
   const { read, markRead } = useReadProgress();
   const { user } = useAuth();
   const { completedCount, markComplete, isCompleted } = useLearnProgress();
-  const totalSections = 12; // approximate number of main learn sections
+  const totalSections = 28; // total main learn sections
 
   // Track which sections are in view
   useEffect(() => {
@@ -135,6 +135,38 @@ export default function LearnPage() {
     { question: "RSI above 70 means:", options: ["Oversold", "Overbought", "Neutral", "No signal"], correct: 1 },
   ];
 
+  const quizCorporateFinance: QuizQuestion[] = lang === "de" ? [
+    { question: "Was besagt das Modigliani-Miller-Theorem?", options: ["Dividenden sind immer besser als Rückkäufe", "Kapitalstruktur ist in perfekten Märkten irrelevant", "Schulden sind immer besser als Eigenkapital", "IPOs sind profitabler als Direktlistings"], correct: 1 },
+    { question: "Was ist ein SPAC?", options: ["Ein Aktien-Index", "Eine Kryptowährung", "Eine Blankocheck-Gesellschaft für Börsengang", "Ein Hedgefonds-Typ"], correct: 2 },
+  ] : [
+    { question: "What does the Modigliani-Miller theorem state?", options: ["Dividends are always better than buybacks", "Capital structure is irrelevant in perfect markets", "Debt is always better than equity", "IPOs are more profitable than direct listings"], correct: 1 },
+    { question: "What is a SPAC?", options: ["A stock index", "A cryptocurrency", "A blank check company for IPO", "A hedge fund type"], correct: 2 },
+  ];
+
+  const quizAccounting: QuizQuestion[] = lang === "de" ? [
+    { question: "Was ist Free Cash Flow?", options: ["Nettogewinn minus Dividenden", "Operativer Cashflow minus CapEx", "Umsatz minus Kosten", "EBITDA minus Steuern"], correct: 1 },
+    { question: "Die DuPont-Analyse zerlegt ROE in:", options: ["Zwei Komponenten", "Drei Komponenten", "Vier Komponenten", "Fünf Komponenten"], correct: 1 },
+  ] : [
+    { question: "What is Free Cash Flow?", options: ["Net income minus dividends", "Operating cash flow minus CapEx", "Revenue minus costs", "EBITDA minus taxes"], correct: 1 },
+    { question: "DuPont Analysis breaks ROE into:", options: ["Two components", "Three components", "Four components", "Five components"], correct: 1 },
+  ];
+
+  const quizValuation: QuizQuestion[] = lang === "de" ? [
+    { question: "Was liefert die Precedent Transactions Analyse typischerweise?", options: ["Niedrigere Bewertungen als Comps", "Höhere Bewertungen als Comps", "Gleiche Bewertungen wie DCF", "Keine verwertbaren Ergebnisse"], correct: 1 },
+    { question: "Was ist der Terminal Value in einem DCF?", options: ["Der Anfangsinvestment", "Der Wert aller Cashflows nach der Prognoseperiode", "Die jährliche Dividende", "Die Aktienanzahl"], correct: 1 },
+  ] : [
+    { question: "What does Precedent Transactions analysis typically yield?", options: ["Lower valuations than comps", "Higher valuations than comps", "Same valuations as DCF", "No usable results"], correct: 1 },
+    { question: "What is Terminal Value in a DCF?", options: ["The initial investment", "The value of all cash flows after the forecast period", "The annual dividend", "The share count"], correct: 1 },
+  ];
+
+  const quizMarketHistory: QuizQuestion[] = lang === "de" ? [
+    { question: "Wie lange brauchte der Dow Jones nach 1929 zur Erholung?", options: ["5 Jahre", "10 Jahre", "25 Jahre", "50 Jahre"], correct: 2 },
+    { question: "Was löste die Finanzkrise 2008 aus?", options: ["Dotcom-Aktien", "Subprime-Hypotheken", "COVID-19", "Tulpenzwiebeln"], correct: 1 },
+  ] : [
+    { question: "How long did the Dow Jones take to recover after 1929?", options: ["5 years", "10 years", "25 years", "50 years"], correct: 2 },
+    { question: "What triggered the 2008 financial crisis?", options: ["Dotcom stocks", "Subprime mortgages", "COVID-19", "Tulip bulbs"], correct: 1 },
+  ];
+
   const terms = [
     { term: t("learn.term.marketCap"), desc: t("learn.term.marketCapDesc") },
     { term: t("learn.term.dividend"), desc: t("learn.term.dividendDesc") },
@@ -175,6 +207,22 @@ export default function LearnPage() {
       { label: t("learn.toc15"), href: "#macro" },
       { label: t("learn.toc16"), href: "#quantitative" },
     ]},
+    { title: `E: ${t("learn.superE")}`, level: t("learn.levelAcademic"), items: [
+      { label: t("learn.toc17"), href: "#corporate-finance" },
+      { label: t("learn.toc18"), href: "#rechnungswesen" },
+      { label: t("learn.toc19"), href: "#international-finance" },
+      { label: t("learn.toc20"), href: "#fixed-income-advanced" },
+      { label: t("learn.toc21"), href: "#esg" },
+      { label: t("learn.toc22"), href: "#regulierung" },
+    ]},
+    { title: `F: ${t("learn.superF")}`, level: t("learn.levelMaster"), items: [
+      { label: t("learn.toc23"), href: "#bewertungsmethoden" },
+      { label: t("learn.toc24"), href: "#alternative-advanced" },
+      { label: t("learn.toc25"), href: "#marktgeschichte" },
+      { label: t("learn.toc26"), href: "#personal-finance" },
+      { label: t("learn.toc27"), href: "#okonometrie" },
+      { label: t("learn.toc28"), href: "#geldpolitik" },
+    ]},
   ];
 
   return (
@@ -198,6 +246,8 @@ export default function LearnPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground">{t("learn.levelIntermediate")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-destructive/10 text-destructive">{t("learn.levelAdvanced")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">{t("learn.levelExpert")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">{t("learn.levelAcademic")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-foreground/10 text-foreground">{t("learn.levelMaster")}</span>
           </div>
           {user && (
             <div className="max-w-xs mx-auto pt-3 space-y-1">
@@ -747,6 +797,278 @@ export default function LearnPage() {
             </SectionCard>
             <SectionCard icon={<Sigma className="h-5 w-5" />} title={t("learn.alphaBetaTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.alphaBetaP1") }} />
+            </SectionCard>
+          </motion.section>
+        </SuperSection>
+
+        {/* ═══════════════════════════════════════════════
+            OBERSEKTION E: AKADEMISCH (Academic)
+            ═══════════════════════════════════════════════ */}
+        <SuperSection id="super-e" title={`E: ${t("learn.superE")}`} level={t("learn.levelAcademic")} defaultOpen={false}>
+          {/* Section 17: Corporate Finance */}
+          <motion.section id="corporate-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={17} title={t("learn.section17Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.capitalStructureTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP1") }} />
+              <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP2") }} />
+            </SectionCard>
+            <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.maTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.maP1") }} />
+              <p dangerouslySetInnerHTML={{ __html: t("learn.maP2") }} />
+            </SectionCard>
+            <SectionCard icon={<Rocket className="h-5 w-5" />} title={t("learn.ipoTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.ipoP1") }} />
+              <p dangerouslySetInnerHTML={{ __html: t("learn.ipoP2") }} />
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.corpGovTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.corpGovP1") }} />
+            </SectionCard>
+            <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.dividendPolicyTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.dividendPolicyP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.shareRepurchaseTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.shareRepurchaseP1") }} />
+            </SectionCard>
+            <QuizSection sectionId="corporate-finance" title={t("learn.quizCorporateFinance")} questions={quizCorporateFinance} />
+          </motion.section>
+
+          {/* Section 18: Accounting & Financial Statements */}
+          <motion.section id="rechnungswesen" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={18} title={t("learn.section18Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.threeStatementsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.threeStatementsP1") }} />
+            </SectionCard>
+            <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.incomeStatementTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.incomeStatementP1") }} />
+            </SectionCard>
+            <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.cashFlowStatementTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.cashFlowStatementP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.ratioAnalysisTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.ratioAnalysisP1") }} />
+            </SectionCard>
+            <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.duPontTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.duPontP1") }} />
+              <FormulaBox title="DuPont" formula="ROE = Net Margin × Asset Turnover × Equity Multiplier" explanation={t("learn.duPontP1").replace(/<[^>]*>/g, '').slice(0, 120) + '...'} />
+            </SectionCard>
+            <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.accrualVsCashTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.accrualVsCashP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Gem className="h-5 w-5" />} title={t("learn.goodwillTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.goodwillP1") }} />
+            </SectionCard>
+            <QuizSection sectionId="accounting" title={t("learn.quizAccounting")} questions={quizAccounting} />
+          </motion.section>
+
+          {/* Section 19: International Finance */}
+          <motion.section id="international-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={19} title={t("learn.section19Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.forexMarketsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.forexMarketsP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.pppTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.pppP1") }} />
+            </SectionCard>
+            <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.irpTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.irpP1") }} />
+            </SectionCard>
+            <SectionCard icon={<TrendingUp className="h-5 w-5" />} title={t("learn.carryTradeTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.carryTradeP1") }} />
+              <WarningBox title={t("learn.warning")}>{lang === "de" ? "Carry Trades können bei Risk-off Events massive Verluste verursachen." : "Carry trades can cause massive losses during risk-off events."}</WarningBox>
+            </SectionCard>
+            <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.emergingMarketsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.emergingMarketsP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 20: Fixed Income Advanced */}
+          <motion.section id="fixed-income-advanced" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={20} title={t("learn.section20Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.durationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.durationP1") }} />
+            </SectionCard>
+            <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.convexityTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.convexityP1") }} />
+              <FormulaBox title="Price Change" formula="ΔP ≈ -Duration × Δy + ½ × Convexity × (Δy)²" explanation={lang === "de" ? "Genauere Preisschätzung durch Berücksichtigung der Konvexität." : "More accurate price estimation by accounting for convexity."} />
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.creditAnalysisTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.creditAnalysisP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.bondValuationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.bondValuationP1") }} />
+              <FormulaBox title="Bond Price" formula="P = Σ C/(1+r)^t + FV/(1+r)^n" explanation={lang === "de" ? "C = Kupon, r = Marktzins, FV = Nennwert, n = Restlaufzeit." : "C = coupon, r = market rate, FV = face value, n = remaining term."} />
+            </SectionCard>
+            <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.yieldMeasuresTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.yieldMeasuresP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 21: ESG */}
+          <motion.section id="esg" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={21} title={t("learn.section21Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<Leaf className="h-5 w-5" />} title={t("learn.esgOverviewTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.esgOverviewP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.esgStrategiesTitle")}>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <TermCard term={t("learn.negativeScreening")} desc={t("learn.negativeScreeningDesc")} />
+                <TermCard term={t("learn.bestInClass")} desc={t("learn.bestInClassDesc")} />
+                <TermCard term={t("learn.impactInvesting")} desc={t("learn.impactInvestingDesc")} />
+                <TermCard term={t("learn.thematicESG")} desc={t("learn.thematicESGDesc")} />
+              </div>
+            </SectionCard>
+            <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.greenwashingTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.greenwashingP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 22: Financial Regulation */}
+          <motion.section id="regulierung" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={22} title={t("learn.section22Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<Gavel className="h-5 w-5" />} title={t("learn.regulatorsTitle")}>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <TermCard term={t("learn.sec")} desc={t("learn.secDesc")} />
+                <TermCard term={t("learn.bafin")} desc={t("learn.bafinDesc")} />
+                <TermCard term={t("learn.ecb")} desc={t("learn.ecbDesc")} />
+                <TermCard term={t("learn.esma")} desc={t("learn.esmaDesc")} />
+              </div>
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.mifidTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.mifidP1") }} />
+            </SectionCard>
+            <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.insiderTradingTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.insiderTradingP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.baselTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.baselP1") }} />
+            </SectionCard>
+          </motion.section>
+        </SuperSection>
+
+        {/* ═══════════════════════════════════════════════
+            OBERSEKTION F: MEISTERKLASSE (Master Class)
+            ═══════════════════════════════════════════════ */}
+        <SuperSection id="super-f" title={`F: ${t("learn.superF")}`} level={t("learn.levelMaster")} defaultOpen={false}>
+          {/* Section 23: Valuation Methods */}
+          <motion.section id="bewertungsmethoden" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={23} title={t("learn.section23Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.multiplesTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.multiplesP1") }} />
+            </SectionCard>
+            <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.comparablesTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.comparablesP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.precedentTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.precedentP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.dcfDeepTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.dcfDeepP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.lboTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.lboP1") }} />
+            </SectionCard>
+            <CalcLink to="/calculators" label="DCF Calculator" />
+            <QuizSection sectionId="valuation" title={t("learn.quizValuation")} questions={quizValuation} />
+          </motion.section>
+
+          {/* Section 24: Alternative Investments Advanced */}
+          <motion.section id="alternative-advanced" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={24} title={t("learn.section24Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.hedgeFundsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.hedgeFundsP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.privateEquityTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.privateEquityP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Rocket className="h-5 w-5" />} title={t("learn.ventureCapitalTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.ventureCapitalP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.infrastructureTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.infrastructureP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 25: Market History & Crises */}
+          <motion.section id="marktgeschichte" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={25} title={t("learn.section25Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<History className="h-5 w-5" />} title={t("learn.tulipManiaTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.tulipManiaP1") }} />
+            </SectionCard>
+            <SectionCard icon={<TrendingDown className="h-5 w-5" />} title={t("learn.crash1929Title")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.crash1929P1") }} />
+            </SectionCard>
+            <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.dotcomTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.dotcomP1") }} />
+            </SectionCard>
+            <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.gfc2008Title")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.gfc2008P1") }} />
+            </SectionCard>
+            <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.covidCrashTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.covidCrashP1") }} />
+            </SectionCard>
+            <QuizSection sectionId="market-history" title={t("learn.quizMarketHistory")} questions={quizMarketHistory} />
+          </motion.section>
+
+          {/* Section 26: Personal Finance & Retirement */}
+          <motion.section id="personal-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={26} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<PiggyBank className="h-5 w-5" />} title={t("learn.budgetingTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.budgetingP1") }} />
+            </SectionCard>
+            <SectionCard icon={<GraduationCap className="h-5 w-5" />} title={t("learn.retirementPlanningTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.retirementPlanningP1") }} />
+              <FormulaBox title={lang === "de" ? "4%-Regel" : "4% Rule"} formula={lang === "de" ? "Benötigtes Kapital = Jährliche Ausgaben × 25" : "Required Capital = Annual Expenses × 25"} explanation={lang === "de" ? "Bei €40.000 Jahresausgaben brauchst du €1.000.000 für finanzielle Unabhängigkeit." : "With $40,000 annual expenses you need $1,000,000 for financial independence."} />
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.insuranceTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.insuranceP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.debtManagementTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.debtManagementP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.humanCapitalTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.humanCapitalP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 27: Econometrics & Financial Modeling */}
+          <motion.section id="okonometrie" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={27} title={t("learn.section27Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<Sigma className="h-5 w-5" />} title={t("learn.regressionTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.regressionP1") }} />
+              <FormulaBox title={lang === "de" ? "Lineare Regression" : "Linear Regression"} formula="Y = α + βX + ε" explanation={lang === "de" ? "Y = abhängige Variable, α = Intercept, β = Steigung, X = unabhängige Variable, ε = Fehlerterm." : "Y = dependent variable, α = intercept, β = slope, X = independent variable, ε = error term."} />
+            </SectionCard>
+            <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.timeSeriesTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.timeSeriesP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.varModelTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.varModelP1") }} />
+            </SectionCard>
+            <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.financialModelingTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.financialModelingP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Network className="h-5 w-5" />} title={t("learn.correlationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.correlationP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 28: Monetary Policy & Banking */}
+          <motion.section id="geldpolitik" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={28} title={t("learn.section28Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.moneyCreationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.moneyCreationP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Zap className="h-5 w-5" />} title={t("learn.centralBankToolsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.centralBankToolsP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.bankingSystemTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.bankingSystemP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.transmissionTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.transmissionP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.modernMonetaryTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.modernMonetaryP1") }} />
+              <WarningBox title={t("learn.warning")}>{lang === "de" ? "MMT ist hochkontrovers und wird von der Mehrheit der Ökonomen kritisch gesehen." : "MMT is highly controversial and viewed critically by most economists."}</WarningBox>
             </SectionCard>
           </motion.section>
         </SuperSection>
