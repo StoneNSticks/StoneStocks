@@ -34,13 +34,11 @@ const navItems: NavItem[] = [
   { to: "/news", key: "nav.news", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/calculators", key: "nav.tools", fallback: "Calculators", group: "main" },
-  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
+  { to: "/calculators", key: "nav.calculators", fallback: "Rechner", group: "main" },
+  { to: "/compare", key: "nav.compare", fallback: "Compare", group: "main" },
   { to: "/learn", key: "nav.learn", group: "main" },
-];
-
-const toolItems = [
-  { to: "/compare", label: "Compare" },
+  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
+  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
 ];
 
 export function Header() {
