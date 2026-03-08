@@ -42,6 +42,10 @@ const TTL: Record<string, number> = {
   commodities: 10,
   insider_transactions: 30,
   earnings_calendar: 60 * 12,
+  yahoo_sector_performance: 60,
+  fred_series: 60 * 24,
+  sec_filings: 60 * 4,
+  openfigi: 60 * 24 * 30,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
@@ -1730,6 +1734,206 @@ async function handleFullStock(symbol: string) {
   return { profile, quote, overview: filledOverview, derived, news, peers, recommendation, massiveFinancials, massiveTicker, massiveDividends, massiveSnapshot };
 }
 
+// === Yahoo Finance Sector Performance ===
+async function handleYahooSectorPerformance(): Promise<unknown> {
+  const cacheKey = "yahoo:sector_performance";
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const sectors = [
+    { symbol: "XLK", name: "Technology" },
+    { symbol: "XLV", name: "Healthcare" },
+    { symbol: "XLF", name: "Financials" },
+    { symbol: "XLY", name: "Consumer Discretionary" },
+    { symbol: "XLP", name: "Consumer Staples" },
+    { symbol: "XLE", name: "Energy" },
+    { symbol: "XLI", name: "Industrials" },
+    { symbol: "XLB", name: "Materials" },
+    { symbol: "XLRE", name: "Real Estate" },
+    { symbol: "XLU", name: "Utilities" },
+    { symbol: "XLC", name: "Communication Services" },
+  ];
+
+  const results = await Promise.allSettled(
+    sectors.map(async (s) => {
+      try {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.symbol}?range=5d&interval=1d`;
+        const res = await fetchWithBackoff(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+        if (!res.ok) return { ...s, change: null };
+        const json = await res.json();
+        const meta = json.chart?.result?.[0]?.meta;
+        const prev = meta?.chartPreviousClose || meta?.previousClose;
+        const price = meta?.regularMarketPrice;
+        const change = prev && price ? ((price - prev) / prev) * 100 : null;
+        return { ...s, price, previousClose: prev, changePercent: change ? +change.toFixed(2) : null };
+      } catch { return { ...s, changePercent: null }; }
+    })
+  );
+
+  const data = results
+    .filter((r): r is PromiseFulfilledResult<any> => r.status === "fulfilled")
+    .map((r) => r.value);
+
+  await setCache(cacheKey, data, "yahoo", TTL.yahoo_sector_performance);
+  return data;
+}
+
+// === FRED API (Federal Reserve Economic Data) ===
+async function handleFredSeries(seriesId: string): Promise<unknown> {
+  const cacheKey = `fred:${seriesId}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  // FRED API is free, no key needed for basic access (but rate-limited)
+  // We use the public JSON endpoint
+  const FRED_BASE = "https://api.stlouisfed.org/fred/series/observations";
+  // Try with API key if available, otherwise use public access
+  const fredKey = Deno.env.get("FRED_API_KEY");
+  const params = new URLSearchParams({
+    series_id: seriesId,
+    file_type: "json",
+    sort_order: "desc",
+    limit: "365",
+  });
+  if (fredKey) params.set("api_key", fredKey);
+  else params.set("api_key", "DEMO_KEY"); // FRED provides a demo key
+
+  const res = await fetchWithBackoff(`${FRED_BASE}?${params.toString()}`);
+  if (!res.ok) throw new Error(`FRED API error: ${res.status}`);
+  const json = await res.json();
+
+  const observations = (json.observations || []).map((o: any) => ({
+    date: o.date,
+    value: o.value === "." ? null : parseFloat(o.value),
+  }));
+
+  // Also fetch series info
+  const infoParams = new URLSearchParams({
+    series_id: seriesId,
+    file_type: "json",
+  });
+  if (fredKey) infoParams.set("api_key", fredKey);
+  else infoParams.set("api_key", "DEMO_KEY");
+
+  let seriesInfo: any = {};
+  try {
+    const infoRes = await fetchWithBackoff(`https://api.stlouisfed.org/fred/series?${infoParams.toString()}`);
+    if (infoRes.ok) {
+      const infoJson = await infoRes.json();
+      seriesInfo = infoJson.seriess?.[0] || {};
+    }
+  } catch { /* ignore */ }
+
+  const data = {
+    id: seriesId,
+    title: seriesInfo.title || seriesId,
+    units: seriesInfo.units || "",
+    frequency: seriesInfo.frequency || "",
+    lastUpdated: seriesInfo.last_updated || "",
+    observations,
+  };
+
+  await setCache(cacheKey, data, "fred", TTL.fred_series);
+  return data;
+}
+
+// === SEC EDGAR Filings ===
+async function handleSecFilings(symbol: string): Promise<unknown> {
+  const cacheKey = `sec:filings:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  // Step 1: Get CIK from ticker
+  const tickerRes = await fetchWithBackoff(
+    "https://www.sec.gov/files/company_tickers.json",
+    { headers: { "User-Agent": "StoneStocks app@stonestocks.com", "Accept": "application/json" } }
+  );
+  if (!tickerRes.ok) throw new Error(`SEC ticker lookup failed: ${tickerRes.status}`);
+  const tickerData = await tickerRes.json();
+
+  let cik: string | null = null;
+  for (const entry of Object.values(tickerData) as any[]) {
+    if (entry.ticker?.toUpperCase() === symbol.toUpperCase()) {
+      cik = String(entry.cik_str).padStart(10, "0");
+      break;
+    }
+  }
+  if (!cik) return { symbol, filings: [], error: "CIK not found" };
+
+  // Step 2: Fetch recent filings
+  const filingsRes = await fetchWithBackoff(
+    `https://data.sec.gov/submissions/CIK${cik}.json`,
+    { headers: { "User-Agent": "StoneStocks app@stonestocks.com", "Accept": "application/json" } }
+  );
+  if (!filingsRes.ok) throw new Error(`SEC filings fetch failed: ${filingsRes.status}`);
+  const filingsJson = await filingsRes.json();
+
+  const recent = filingsJson.filings?.recent || {};
+  const filings = [];
+  const maxFilings = Math.min(recent.form?.length || 0, 50);
+
+  for (let i = 0; i < maxFilings; i++) {
+    const form = recent.form?.[i];
+    if (!form) continue;
+    // Only include significant filings
+    if (!["10-K", "10-Q", "8-K", "S-1", "DEF 14A", "13F-HR", "4", "SC 13G", "SC 13D"].includes(form)) continue;
+    filings.push({
+      form,
+      filingDate: recent.filingDate?.[i],
+      primaryDocument: recent.primaryDocument?.[i],
+      accessionNumber: recent.accessionNumber?.[i]?.replace(/-/g, ""),
+      description: recent.primaryDocDescription?.[i] || "",
+      url: recent.primaryDocument?.[i]
+        ? `https://www.sec.gov/Archives/edgar/data/${parseInt(cik)}/${recent.accessionNumber?.[i]?.replace(/-/g, "")}/${recent.primaryDocument?.[i]}`
+        : null,
+    });
+  }
+
+  const data = {
+    symbol,
+    cik,
+    companyName: filingsJson.name || symbol,
+    filings,
+  };
+
+  await setCache(cacheKey, data, "sec", TTL.sec_filings);
+  return data;
+}
+
+// === OpenFIGI Mapping ===
+async function handleOpenFigi(symbol: string): Promise<unknown> {
+  const cacheKey = `openfigi:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+
+  const res = await fetchWithBackoff("https://api.openfigi.com/v3/mapping", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify([{ idType: "TICKER", idValue: symbol, exchCode: "US" }]),
+  });
+  if (!res.ok) throw new Error(`OpenFIGI error: ${res.status}`);
+  const json = await res.json();
+
+  const mappings = json[0]?.data || [];
+  const data = {
+    symbol,
+    mappings: mappings.map((m: any) => ({
+      figi: m.figi,
+      name: m.name,
+      ticker: m.ticker,
+      exchCode: m.exchCode,
+      marketSector: m.marketSector,
+      securityType: m.securityType,
+      securityType2: m.securityType2,
+      compositeFIGI: m.compositeFIGI,
+      shareClassFIGI: m.shareClassFIGI,
+    })),
+  };
+
+  await setCache(cacheKey, data, "openfigi", TTL.openfigi);
+  return data;
+}
+
 // === Main Handler ===
 
 Deno.serve(async (req) => {
@@ -1783,6 +1987,10 @@ Deno.serve(async (req) => {
       case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
       case "insider_transactions": result = await handleInsiderTransactions(symbol!); break;
       case "earnings_calendar": result = await handleEarningsCalendar(url.searchParams.get("symbols") || symbol || ""); break;
+      case "yahoo_sectors": result = await handleYahooSectorPerformance(); break;
+      case "fred_series": result = await handleFredSeries(symbol || url.searchParams.get("series_id") || ""); break;
+      case "sec_filings": result = await handleSecFilings(symbol!); break;
+      case "openfigi": result = await handleOpenFigi(symbol!); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

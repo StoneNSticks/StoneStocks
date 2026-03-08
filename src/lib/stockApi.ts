@@ -56,3 +56,7 @@ export const getCommodities = () => callStockApi({ action: "commodities" });
 export const getCommodityHistory = (name: string, period: string) => callStockApi({ action: "commodity_history", symbol: name, interval: period });
 export const getInsiderTransactions = (symbol: string) => callStockApi({ action: "insider_transactions", symbol });
 export const getEarningsCalendar = (symbols: string) => callStockApi({ action: "earnings_calendar", symbols });
+export const getYahooSectors = () => callStockApi({ action: "yahoo_sectors" });
+export const getFredSeries = (seriesId: string) => callStockApi({ action: "fred_series", symbol: seriesId });
+export const getSecFilings = (symbol: string) => callStockApi({ action: "sec_filings", symbol });
+export const getOpenFigi = (symbol: string) => callStockApi({ action: "openfigi", symbol });
