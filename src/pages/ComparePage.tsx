@@ -1,5 +1,6 @@
 /**
  * ComparePage — Side-by-side stock comparison with key metrics.
+ * Enhanced with more metrics, winner highlighting, and improved UX.
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
@@ -8,16 +9,23 @@ import { useFullStock } from "@/hooks/useStockData";
 import { useSearchStocks } from "@/hooks/useStockData";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { Search, X, GitCompare, Plus, TrendingUp, TrendingDown, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { NormalizedChart } from "@/components/NormalizedChart";
 
 function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) ? 0 : n; }
+
+interface MetricRow {
+  label: string;
+  values: { symbol: string; raw: number; display: string; color: string }[];
+  higherIsBetter: boolean;
+}
 
 function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => void }) {
   const { data, isLoading } = useFullStock(symbol);
@@ -39,10 +47,15 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
   const mcap = safeNum(derived?.marketCap) || safeNum(overview?.MarketCapitalization);
   const divYield = safeNum(derived?.dividendYield) || (overview?.DividendYield ? safeNum(overview.DividendYield) * 100 : 0);
   const profitMargin = overview?.ProfitMargin ? safeNum(overview.ProfitMargin) * 100 : 0;
+  const opMargin = overview?.OperatingMarginTTM ? safeNum(overview.OperatingMarginTTM) * 100 : 0;
   const roe = overview?.ReturnOnEquityTTM ? safeNum(overview.ReturnOnEquityTTM) * 100 : 0;
+  const roa = overview?.ReturnOnAssetsTTM ? safeNum(overview.ReturnOnAssetsTTM) * 100 : 0;
   const eps = safeNum(overview?.EPS);
   const beta = safeNum(overview?.Beta);
   const revGrowth = overview?.QuarterlyRevenueGrowthYOY ? safeNum(overview.QuarterlyRevenueGrowthYOY) * 100 : 0;
+  const fcfYield = safeNum(derived?.fcfYield);
+  const evEbitda = safeNum(derived?.evToEbitda);
+  const debtToEquity = overview?.DebtToEquity ? safeNum(overview.DebtToEquity) : 0;
 
   const fmtCur = (v: number) => v ? `${cSym}${(convert(v) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}` : "—";
   const fmtMcap = (v: number) => {
@@ -62,18 +75,29 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
     { label: t("compare.marketCap"), value: fmtMcap(mcap), color: "" },
     { label: "P/E", value: fmtNum(pe), color: "" },
     { label: "P/B", value: fmtNum(pb), color: "" },
+    { label: "EV/EBITDA", value: fmtNum(evEbitda), color: "" },
     { label: "EPS", value: fmtCur(eps), color: "" },
     { label: "Beta", value: fmtNum(beta), color: "" },
     { label: t("compare.divYield"), value: fmtPct(divYield), color: pctColor(divYield) },
+    { label: "FCF Yield", value: fmtPct(fcfYield), color: pctColor(fcfYield) },
     { label: t("compare.profitMargin"), value: fmtPct(profitMargin), color: pctColor(profitMargin) },
+    { label: "Op. Margin", value: fmtPct(opMargin), color: pctColor(opMargin) },
     { label: "ROE", value: fmtPct(roe), color: pctColor(roe) },
+    { label: "ROA", value: fmtPct(roa), color: pctColor(roa) },
     { label: t("compare.revGrowth"), value: fmtPct(revGrowth), color: pctColor(revGrowth) },
+    { label: "D/E", value: debtToEquity ? debtToEquity.toFixed(2) : "—", color: "" },
   ];
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="flex items-center gap-3 p-4 border-b border-border/40 bg-muted/30">
-        {logo && <img src={logo} alt={name} className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-0.5" />}
+        {logo ? (
+          <img src={logo} alt={name} className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-0.5" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        ) : (
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+            {symbol.slice(0, 2)}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <Link to={`/stock/${symbol}`} className="font-display font-bold text-sm hover:text-primary transition-colors">{name}</Link>
           <div className="text-xs text-muted-foreground font-mono">{symbol}</div>
@@ -101,6 +125,12 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
 export default function ComparePage() {
   const t = useT();
   const { lang } = useLanguage();
+
+  usePageTitle(
+    lang === "de" ? "Aktienvergleich" : "Stock Compare",
+    lang === "de" ? "Bis zu 4 Aktien nebeneinander vergleichen" : "Compare up to 4 stocks side by side"
+  );
+
   const [symbols, setSymbols] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: searchResults } = useSearchStocks(searchQuery);

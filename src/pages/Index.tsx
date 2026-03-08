@@ -10,11 +10,17 @@ import { HiddenGems } from "@/components/HiddenGems";
 import { CommoditiesSection } from "@/components/CommoditiesSection";
 import { SentimentGauge } from "@/components/SentimentGauge";
 import { SectorPerformance } from "@/components/SectorPerformance";
-import { useT } from "@/contexts/LanguageContext";
+import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 
 const Index = () => {
   const t = useT();
+  const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Aktienmarkt Überblick" : "Stock Market Overview",
+    lang === "de" ? "Echtzeitkurse, Nachrichten und Marktdaten auf einen Blick" : "Real-time quotes, news, and market data at a glance"
+  );
   return (
     <div className="min-h-screen bg-background">
       <Header />

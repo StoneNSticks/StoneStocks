@@ -1,6 +1,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useT } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { motion } from "framer-motion";
 const NotFound = () => {
   const location = useLocation();
   const t = useT();
+  usePageTitle("404 - Page Not Found");
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
