@@ -531,7 +531,7 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
   );
 }
 
-/* ─── Additional Market Indicators Panel ─── */
+/* ─── Additional Market Indicators Panel (non-overlapping with F&G) ─── */
 function AdditionalIndicators({ indices, gainers, losers, commodities }: { indices: any[]; gainers: any[]; losers: any[]; commodities: any[] }) {
   const { lang } = useLanguage();
 
@@ -540,31 +540,7 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
     .map((i: any) => i.changePercent as number);
   const avg = indexChanges.length > 0 ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length : 0;
 
-  // VIX proxy
-  const variance = indexChanges.length >= 3
-    ? indexChanges.reduce((s, v) => s + (v - avg) ** 2, 0) / indexChanges.length : 0;
-  const stdDev = Math.sqrt(variance);
-  const vix = Math.min(50, 12 + stdDev * 15);
-  const vixLevel = vix <= 15 ? { label: lang === "de" ? "Niedrig" : "Low", color: "text-chart-2", bar: "bg-chart-2" }
-    : vix <= 20 ? { label: "Normal", color: "text-muted-foreground", bar: "bg-primary/60" }
-    : vix <= 30 ? { label: lang === "de" ? "Erhöht" : "Elevated", color: "text-orange-500", bar: "bg-orange-500" }
-    : { label: lang === "de" ? "Hoch" : "High", color: "text-destructive", bar: "bg-destructive" };
-  const vixPct = Math.min(100, Math.max(0, ((vix - 10) / 40) * 100));
-
-  // Put/Call Ratio proxy
-  const totalStocks = gainers.length + losers.length;
-  const pcRatio = totalStocks > 0 ? losers.length / Math.max(1, gainers.length) : 1;
-  const pcLevel = pcRatio < 0.7 ? { label: lang === "de" ? "Bullisch" : "Bullish", color: "text-chart-2" }
-    : pcRatio <= 1.0 ? { label: "Neutral", color: "text-muted-foreground" }
-    : { label: lang === "de" ? "Bärisch" : "Bearish", color: "text-destructive" };
-
-  // Advance/Decline ratio
-  const adRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
-  const adLevel = adRatio > 0.6 ? { label: lang === "de" ? "Stark" : "Strong", color: "text-chart-2" }
-    : adRatio >= 0.4 ? { label: "Neutral", color: "text-muted-foreground" }
-    : { label: lang === "de" ? "Schwach" : "Weak", color: "text-destructive" };
-
-  // Gold/Oil ratio (risk indicator)
+  // 1. Gold/Oil Ratio — risk appetite
   const gold = (commodities || []).find((c: any) => c.name === "Gold");
   const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI"));
   const goldPrice = gold?.price || 1;
@@ -574,65 +550,69 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
     : goldOilRatio > 20 ? { label: "Normal", color: "text-muted-foreground" }
     : { label: lang === "de" ? "Risikofreudig" : "Risk On", color: "text-chart-2" };
 
-  // Market momentum (% of indices positive)
-  const posCount = indexChanges.filter(c => c >= 0).length;
-  const momPct = indexChanges.length > 0 ? (posCount / indexChanges.length) * 100 : 50;
-
-  // Dollar strength proxy (inverse of commodity avg)
+  // 2. Dollar Strength proxy (inverse of commodity avg)
   const comChanges = (commodities || [])
     .filter((c: any) => c.changePercent != null)
     .map((c: any) => c.changePercent as number);
   const comAvg = comChanges.length > 0 ? comChanges.reduce((s, v) => s + v, 0) / comChanges.length : 0;
-  const dollarProxy = -comAvg; // inverse
+  const dollarProxy = -comAvg;
   const dxyLevel = dollarProxy > 0.5 ? { label: lang === "de" ? "Stark" : "Strong", color: "text-chart-2" }
     : dollarProxy > -0.5 ? { label: "Neutral", color: "text-muted-foreground" }
     : { label: lang === "de" ? "Schwach" : "Weak", color: "text-destructive" };
 
+  // 3. Small Cap vs Large Cap spread (Russell 2000 vs S&P 500)
+  const sp500 = (indices || []).find((i: any) => i.indexSymbol === "SPX" || i.name?.includes("S&P"));
+  const russell = (indices || []).find((i: any) => i.indexSymbol === "RUT" || i.name?.includes("Russell"));
+  const scSpread = (russell?.changePercent ?? 0) - (sp500?.changePercent ?? 0);
+  const scLevel = scSpread > 0.5 ? { label: lang === "de" ? "Risk-On" : "Risk On", color: "text-chart-2" }
+    : scSpread > -0.5 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Risk-Off" : "Risk Off", color: "text-destructive" };
+
+  // 4. Copper/Gold Ratio — economic health barometer
+  const copper = (commodities || []).find((c: any) => c.name === "Copper");
+  const copperPrice = copper?.price || 1;
+  const cuAuRatio = (copperPrice / goldPrice) * 1000;
+  const cuAuLevel = cuAuRatio > 1.5 ? { label: lang === "de" ? "Wachstum" : "Growth", color: "text-chart-2" }
+    : cuAuRatio > 0.8 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Rezession" : "Recession", color: "text-destructive" };
+
+  // 5. Global Dispersion — how correlated are global indices
+  const allPos = indexChanges.every(c => c >= 0);
+  const allNeg = indexChanges.every(c => c <= 0);
+  const dispersion = indexChanges.length >= 3
+    ? Math.sqrt(indexChanges.reduce((s, v) => s + (v - avg) ** 2, 0) / indexChanges.length)
+    : 0;
+  const corrLabel = allPos ? (lang === "de" ? "Einheitlich ↑" : "Uniform ↑")
+    : allNeg ? (lang === "de" ? "Einheitlich ↓" : "Uniform ↓")
+    : (lang === "de" ? "Gemischt" : "Mixed");
+  const corrColor = allPos ? "text-chart-2" : allNeg ? "text-destructive" : "text-muted-foreground";
+
+  // 6. Energy Momentum — oil + nat gas combined
+  const natGas = (commodities || []).find((c: any) => c.name?.includes("Natural Gas"));
+  const energyAvg = ((oil?.changePercent ?? 0) + (natGas?.changePercent ?? 0)) / 2;
+  const energyLevel = energyAvg > 1 ? { label: lang === "de" ? "Bullisch" : "Bullish", color: "text-chart-2" }
+    : energyAvg > -1 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Bärisch" : "Bearish", color: "text-destructive" };
+
+  // 7. Precious Metals Signal — gold + silver + platinum
+  const silver = (commodities || []).find((c: any) => c.name === "Silver");
+  const platinum = (commodities || []).find((c: any) => c.name === "Platinum");
+  const pmAvg = ((gold?.changePercent ?? 0) + (silver?.changePercent ?? 0) + (platinum?.changePercent ?? 0)) / 3;
+  const pmLevel = pmAvg > 0.5 ? { label: lang === "de" ? "Flucht" : "Flight", color: "text-orange-500" }
+    : pmAvg > -0.5 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Ruhig" : "Calm", color: "text-chart-2" };
+
+  // 8. Asia vs US spread
+  const nikkei = (indices || []).find((i: any) => i.indexSymbol === "N225" || i.name?.includes("Nikkei"));
+  const hangSeng = (indices || []).find((i: any) => i.indexSymbol === "HSI" || i.name?.includes("Hang"));
+  const asiaAvg = ((nikkei?.changePercent ?? 0) + (hangSeng?.changePercent ?? 0)) / 2;
+  const usAvg = (sp500?.changePercent ?? 0);
+  const regionSpread = asiaAvg - usAvg;
+  const regionLevel = regionSpread > 0.5 ? { label: lang === "de" ? "Asien führt" : "Asia Leading", color: "text-chart-2" }
+    : regionSpread > -0.5 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "US führt" : "US Leading", color: "text-primary" };
+
   const cards = [
-    {
-      title: lang === "de" ? "Volatilitätsindex (VIX)" : "Volatility Index (VIX)",
-      icon: <Waves className="h-4 w-4 text-primary" />,
-      value: vix.toFixed(1),
-      label: vixLevel.label,
-      color: vixLevel.color,
-      bar: { pct: vixPct, cls: vixLevel.bar },
-      desc: lang === "de"
-        ? "Geschätzt aus der Standardabweichung der Index-Performance. Hohe Werte = Marktunsicherheit."
-        : "Estimated from standard deviation of index performance. High values = market uncertainty."
-    },
-    {
-      title: lang === "de" ? "Put/Call-Verhältnis" : "Put/Call Ratio",
-      icon: <BarChart3 className="h-4 w-4 text-primary" />,
-      value: pcRatio.toFixed(2),
-      label: pcLevel.label,
-      color: pcLevel.color,
-      bar: { pct: Math.min(100, pcRatio * 50), cls: pcRatio > 1 ? "bg-destructive" : "bg-chart-2" },
-      desc: lang === "de"
-        ? "Verhältnis von Verlierer- zu Gewinner-Aktien als Proxy. Über 1.0 = mehr Absicherung (Angst)."
-        : "Ratio of declining to advancing stocks as proxy. Above 1.0 = more hedging (fear)."
-    },
-    {
-      title: lang === "de" ? "Advance/Decline" : "Advance/Decline Ratio",
-      icon: <Activity className="h-4 w-4 text-primary" />,
-      value: `${gainers.length}:${losers.length}`,
-      label: adLevel.label,
-      color: adLevel.color,
-      bar: { pct: adRatio * 100, cls: adRatio > 0.5 ? "bg-chart-2" : "bg-destructive" },
-      desc: lang === "de"
-        ? "Verhältnis steigender zu fallender Aktien. Breite Beteiligung = gesunder Markt."
-        : "Ratio of advancing to declining stocks. Broad participation = healthy market."
-    },
-    {
-      title: lang === "de" ? "Markt-Momentum" : "Market Momentum",
-      icon: <TrendingUp className="h-4 w-4 text-primary" />,
-      value: `${momPct.toFixed(0)}%`,
-      label: momPct >= 70 ? (lang === "de" ? "Bullisch" : "Bullish") : momPct <= 30 ? (lang === "de" ? "Bärisch" : "Bearish") : "Neutral",
-      color: momPct >= 70 ? "text-chart-2" : momPct <= 30 ? "text-destructive" : "text-muted-foreground",
-      bar: { pct: momPct, cls: momPct >= 50 ? "bg-chart-2" : "bg-destructive" },
-      desc: lang === "de"
-        ? "Anteil der Indizes mit positiver Tagesperformance. Über 70% = starker Aufwärtstrend."
-        : "Percentage of indices with positive daily performance. Above 70% = strong uptrend."
-    },
     {
       title: lang === "de" ? "Gold/Öl-Verhältnis" : "Gold/Oil Ratio",
       icon: <Shield className="h-4 w-4 text-primary" />,
@@ -641,8 +621,8 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: gorLevel.color,
       bar: { pct: Math.min(100, (goldOilRatio / 60) * 100), cls: goldOilRatio > 30 ? "bg-orange-500" : "bg-chart-2" },
       desc: lang === "de"
-        ? "Gold geteilt durch Ölpreis. Hohe Werte deuten auf Flucht in sichere Häfen hin."
-        : "Gold price divided by oil price. High values suggest flight to safety."
+        ? "Gold geteilt durch Ölpreis. Hohe Werte = Flucht in sichere Häfen, niedrige = Risikoappetit."
+        : "Gold ÷ oil price. High values = flight to safety, low = risk appetite."
     },
     {
       title: lang === "de" ? "Dollar-Stärke (Proxy)" : "Dollar Strength (Proxy)",
@@ -652,8 +632,74 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: dxyLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (dollarProxy + 3) / 6 * 100)), cls: dollarProxy > 0 ? "bg-chart-2" : "bg-destructive" },
       desc: lang === "de"
-        ? "Inverse der Rohstoff-Performance als USD-Proxy. Starker Dollar = fallende Rohstoffe."
-        : "Inverse of commodity performance as USD proxy. Strong dollar = falling commodities."
+        ? "Inverse der Rohstoff-Performance. Starker Dollar drückt Rohstoffpreise."
+        : "Inverse of commodity performance. Strong dollar depresses commodity prices."
+    },
+    {
+      title: lang === "de" ? "Small vs Large Cap" : "Small vs Large Cap",
+      icon: <BarChart2 className="h-4 w-4 text-primary" />,
+      value: `${scSpread >= 0 ? "+" : ""}${scSpread.toFixed(2)}%`,
+      label: scLevel.label,
+      color: scLevel.color,
+      bar: { pct: Math.min(100, Math.max(0, (scSpread + 3) / 6 * 100)), cls: scSpread > 0 ? "bg-chart-2" : "bg-destructive" },
+      desc: lang === "de"
+        ? "Russell 2000 minus S&P 500. Positiv = Small Caps outperformen = höherer Risikoappetit."
+        : "Russell 2000 minus S&P 500. Positive = small caps outperforming = higher risk appetite."
+    },
+    {
+      title: lang === "de" ? "Kupfer/Gold-Ratio" : "Copper/Gold Ratio",
+      icon: <Flame className="h-4 w-4 text-primary" />,
+      value: cuAuRatio.toFixed(2),
+      label: cuAuLevel.label,
+      color: cuAuLevel.color,
+      bar: { pct: Math.min(100, (cuAuRatio / 3) * 100), cls: cuAuRatio > 1.5 ? "bg-chart-2" : cuAuRatio < 0.8 ? "bg-destructive" : "bg-primary/60" },
+      desc: lang === "de"
+        ? "Dr. Copper vs Gold — Barometer für wirtschaftliche Gesundheit. Hoch = Wachstumserwartung."
+        : "Dr. Copper vs Gold — economic health barometer. High = growth expectations."
+    },
+    {
+      title: lang === "de" ? "Globale Dispersion" : "Global Dispersion",
+      icon: <Activity className="h-4 w-4 text-primary" />,
+      value: dispersion.toFixed(2),
+      label: corrLabel,
+      color: corrColor,
+      bar: { pct: Math.min(100, Math.max(0, allPos ? 80 : allNeg ? 20 : 50)), cls: allPos ? "bg-chart-2" : allNeg ? "bg-destructive" : "bg-primary/60" },
+      desc: lang === "de"
+        ? "Streuung der globalen Indizes. Einheitliche Bewegung = stärkeres Signal."
+        : "Dispersion of global indices. Uniform movement = stronger signal."
+    },
+    {
+      title: lang === "de" ? "Energie-Momentum" : "Energy Momentum",
+      icon: <Zap className="h-4 w-4 text-primary" />,
+      value: `${energyAvg >= 0 ? "+" : ""}${energyAvg.toFixed(2)}%`,
+      label: energyLevel.label,
+      color: energyLevel.color,
+      bar: { pct: Math.min(100, Math.max(0, (energyAvg + 5) / 10 * 100)), cls: energyAvg > 0 ? "bg-chart-2" : "bg-destructive" },
+      desc: lang === "de"
+        ? "Durchschnitt aus Öl- und Gaspreisänderung. Steigende Energiepreise = Inflationsrisiko."
+        : "Average of oil & gas price change. Rising energy prices = inflation risk."
+    },
+    {
+      title: lang === "de" ? "Edelmetall-Signal" : "Precious Metals Signal",
+      icon: <ShieldAlert className="h-4 w-4 text-primary" />,
+      value: `${pmAvg >= 0 ? "+" : ""}${pmAvg.toFixed(2)}%`,
+      label: pmLevel.label,
+      color: pmLevel.color,
+      bar: { pct: Math.min(100, Math.max(0, (pmAvg + 3) / 6 * 100)), cls: pmAvg > 0 ? "bg-orange-500" : "bg-chart-2" },
+      desc: lang === "de"
+        ? "Ø Gold, Silber, Platin. Steigende Edelmetalle = Flucht in Sachwerte."
+        : "Avg of gold, silver, platinum. Rising precious metals = flight to real assets."
+    },
+    {
+      title: lang === "de" ? "Asien vs US" : "Asia vs US",
+      icon: <Globe className="h-4 w-4 text-primary" />,
+      value: `${regionSpread >= 0 ? "+" : ""}${regionSpread.toFixed(2)}%`,
+      label: regionLevel.label,
+      color: regionLevel.color,
+      bar: { pct: Math.min(100, Math.max(0, (regionSpread + 3) / 6 * 100)), cls: regionSpread > 0 ? "bg-chart-2" : "bg-primary" },
+      desc: lang === "de"
+        ? "Nikkei/Hang Seng Ø vs S&P 500. Zeigt regionale Kapitalflüsse und Risikoverschiebungen."
+        : "Nikkei/Hang Seng avg vs S&P 500. Shows regional capital flows and risk shifts."
     },
   ];
 
@@ -664,8 +710,11 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
         <h2 className="font-display text-lg font-bold">
           {lang === "de" ? "Markt-Indikatoren" : "Market Indicators"}
         </h2>
+        <span className="text-[10px] text-muted-foreground ml-auto">
+          {lang === "de" ? "Aktualisiert mit Marktdaten" : "Updated with market data"}
+        </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((card) => (
           <div key={card.title} className="rounded-2xl border border-border/60 bg-card p-5 space-y-3">
             <div className="flex items-center gap-2">
