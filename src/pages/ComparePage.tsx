@@ -99,6 +99,7 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
 export default function ComparePage() {
   const t = useT();
   const { lang } = useLanguage();
+  const [symbols, setSymbols] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: searchResults } = useSearchStocks(searchQuery);
 
