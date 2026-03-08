@@ -713,8 +713,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: pmLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (pmAvg + 3) / 6 * 100)), cls: pmAvg > 0 ? "bg-orange-500" : "bg-chart-2" },
       desc: lang === "de"
-        ? "Ø Gold, Silber, Platin. Steigende Edelmetalle = Flucht in Sachwerte."
-        : "Avg of gold, silver, platinum. Rising precious metals = flight to real assets."
+        ? commoditiesStale ? "Edelmetallmärkte geschlossen — keine aktuellen Daten." : "Ø Gold, Silber, Platin. Steigende Edelmetalle = Flucht in Sachwerte."
+        : commoditiesStale ? "Precious metals markets closed — no current data." : "Avg of gold, silver, platinum. Rising precious metals = flight to real assets.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Asien vs US" : "Asia vs US",
