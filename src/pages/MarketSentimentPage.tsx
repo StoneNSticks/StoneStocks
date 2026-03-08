@@ -161,7 +161,7 @@ function computeCompositeScore(indicators: SubIndicator[]): number {
   return totalWeight > 0 ? weighted / totalWeight : 50;
 }
 
-/* ─── Score label & color helpers ─── */
+/* ── Score label & color helpers ── */
 function getScoreLabel(score: number, lang: string) {
   if (score <= 15) return lang === "de" ? "Extreme Angst" : "Extreme Fear";
   if (score <= 30) return lang === "de" ? "Angst" : "Fear";
