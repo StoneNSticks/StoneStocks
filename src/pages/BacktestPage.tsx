@@ -31,7 +31,8 @@ import {
 type Strategy =
   | "buy_hold" | "sma_crossover" | "rsi" | "macd" | "bollinger"
   | "dual_momentum" | "mean_reversion" | "breakout" | "triple_sma"
-  | "volume_momentum" | "momentum" | "stochastic" | "vwap" | "chandelier" | "keltner";
+  | "volume_momentum" | "momentum" | "stochastic" | "vwap" | "chandelier" | "keltner"
+  | "dca" | "high_strategy" | "envelope";
 
 interface StrategyInfo {
   key: Strategy;
