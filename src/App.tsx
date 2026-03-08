@@ -89,6 +89,7 @@ const App = () => (
               <BottomNav />
               <BackToTop />
               <InstallPrompt />
+              <AlertNotifications />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
