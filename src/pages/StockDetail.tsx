@@ -91,9 +91,10 @@ const StockDetail = () => {
   const t = useT();
   const { lang } = useLanguage();
   const { convert, symbol: cSym } = useCurrency();
+  const profileName = data?.profile?.name;
   usePageTitle(
-    profile?.name ? `${profile.name} (${upperSymbol})` : upperSymbol,
-    profile?.name ? `${profile.name} stock price, charts, financials and analysis` : undefined
+    profileName ? `${profileName} (${upperSymbol})` : upperSymbol,
+    profileName ? `${profileName} stock price, charts, financials and analysis` : undefined
   );
 
   // ── Currency-aware formatter for small values (EPS, dividends) ──

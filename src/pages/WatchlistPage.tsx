@@ -275,6 +275,10 @@ export default function WatchlistPage() {
   const { data: watchlist, isLoading } = useWatchlist();
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Watchlist" : "Watchlist",
+    lang === "de" ? "Deine beobachteten Aktien" : "Your watched stocks"
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
