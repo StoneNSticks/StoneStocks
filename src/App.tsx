@@ -33,6 +33,8 @@ const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
 const ScreenerPage = lazy(() => import("./pages/ScreenerPage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
+const ComparePage = lazy(() => import("./pages/ComparePage"));
+const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 
 const queryClient = new QueryClient();
 
