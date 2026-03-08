@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown } from "lucide-react";
+import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown, Zap } from "lucide-react";
 
 type SortKey = "marketCap" | "change" | "name" | "pe" | "yield";
 
