@@ -2,11 +2,11 @@
  * SectorPerformance — Horizontal bar chart showing daily performance by sector.
  * Aggregates data from top companies, gainers/losers, and most active for broader coverage.
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTopCompanies, useGainersLosers, useMostActive } from "@/hooks/useStockData";
 import { useT } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Layers, List } from "lucide-react";
 
 const INDUSTRY_TO_SECTOR: Record<string, string> = {
   // Technology
@@ -178,19 +178,76 @@ function mapToSector(industry: string | undefined, sector: string | undefined): 
   return INDUSTRY_TO_SECTOR[lower] || (sector && sector !== "Other" ? (SECTOR_ALIASES[sector.toLowerCase()] || sector) : "Other");
 }
 
+// Pretty labels for sub-sectors / industries
+const INDUSTRY_LABELS: Record<string, string> = {
+  "semiconductors": "Semiconductors",
+  "software—infrastructure": "Software Infra",
+  "software—application": "Software Apps",
+  "software": "Software",
+  "consumer electronics": "Consumer Electronics",
+  "internet content & information": "Internet & Media",
+  "internet retail": "Internet Retail",
+  "drug manufacturers—general": "Pharma",
+  "drug manufacturers": "Pharma",
+  "biotechnology": "Biotech",
+  "medical devices": "Medical Devices",
+  "banks—diversified": "Banks",
+  "banks—regional": "Regional Banks",
+  "credit services": "Credit Services",
+  "insurance—diversified": "Insurance",
+  "insurance—property & casualty": "Insurance P&C",
+  "asset management": "Asset Management",
+  "capital markets": "Capital Markets",
+  "oil & gas integrated": "Oil & Gas",
+  "oil & gas e&p": "Oil & Gas E&P",
+  "solar": "Solar Energy",
+  "aerospace & defense": "Aerospace & Defense",
+  "auto manufacturers": "Auto Makers",
+  "specialty retail": "Specialty Retail",
+  "restaurants": "Restaurants",
+  "household & personal products": "Household Products",
+  "beverages—non-alcoholic": "Beverages",
+  "discount stores": "Discount Stores",
+  "packaged foods": "Packaged Foods",
+  "utilities—regulated electric": "Electric Utilities",
+  "reit—industrial": "Industrial REITs",
+  "reit—residential": "Residential REITs",
+  "gold": "Gold",
+  "specialty chemicals": "Specialty Chemicals",
+  "steel": "Steel",
+  "railroads": "Railroads",
+  "airlines": "Airlines",
+  "telecom services": "Telecom",
+  "entertainment": "Entertainment",
+  "advertising agencies": "Advertising",
+  "diagnostics & research": "Diagnostics",
+  "health care plans": "Health Plans",
+  "financial data & stock exchanges": "Exchanges",
+  "information technology services": "IT Services",
+  "waste management": "Waste Mgmt",
+  "farm & heavy construction machinery": "Heavy Machinery",
+  "building materials": "Building Materials",
+  "real estate services": "Real Estate Services",
+};
+
+function getIndustryLabel(industry: string | undefined): string {
+  if (!industry) return "";
+  const lower = industry.toLowerCase();
+  return INDUSTRY_LABELS[lower] || industry.split("—").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
+
 export function SectorPerformance() {
   const { data: companies, isLoading: loadingTop } = useTopCompanies();
   const { data: gl, isLoading: loadingGL } = useGainersLosers();
   const { data: active, isLoading: loadingActive } = useMostActive();
   const t = useT();
+  const [viewMode, setViewMode] = useState<"sectors" | "industries">("industries");
 
   const isLoading = loadingTop && !companies;
 
-  const sectors = useMemo(() => {
-    // Merge all data sources, deduplicate by symbol
+  const allStocks = useMemo(() => {
     const seen = new Set<string>();
     const all: any[] = [];
-    
     const addStocks = (stocks: any[] | undefined) => {
       if (!stocks) return;
       for (const s of stocks) {
@@ -200,18 +257,16 @@ export function SectorPerformance() {
         }
       }
     };
-
     addStocks(companies);
-    if (gl) {
-      addStocks(gl.gainers);
-      addStocks(gl.losers);
-    }
+    if (gl) { addStocks(gl.gainers); addStocks(gl.losers); }
     addStocks(active);
+    return all;
+  }, [companies, gl, active]);
 
-    if (all.length === 0) return [];
-
+  const sectors = useMemo(() => {
+    if (allStocks.length === 0) return [];
     const map: Record<string, { sum: number; count: number }> = {};
-    all.forEach((c: any) => {
+    allStocks.forEach((c: any) => {
       const sector = mapToSector(c.industry, c.sector);
       if (!map[sector]) map[sector] = { sum: 0, count: 0 };
       map[sector].sum += c.changePercent || 0;
@@ -221,26 +276,68 @@ export function SectorPerformance() {
       .filter(([name]) => name !== "Other" && name !== "")
       .map(([name, { sum, count }]) => ({ name, avg: sum / count, count }))
       .sort((a, b) => b.avg - a.avg);
-  }, [companies, gl, active]);
+  }, [allStocks]);
+
+  const industries = useMemo(() => {
+    if (allStocks.length === 0) return [];
+    const map: Record<string, { sum: number; count: number; sector: string }> = {};
+    allStocks.forEach((c: any) => {
+      const key = c.industry ? c.industry.toLowerCase() : c.sector || "other";
+      if (key === "other" || !key) return;
+      const sector = mapToSector(c.industry, c.sector);
+      if (!map[key]) map[key] = { sum: 0, count: 0, sector };
+      map[key].sum += c.changePercent || 0;
+      map[key].count += 1;
+    });
+    return Object.entries(map)
+      .filter(([, v]) => v.count >= 1)
+      .map(([key, { sum, count, sector }]) => ({
+        name: getIndustryLabel(key),
+        avg: sum / count,
+        count,
+        sector,
+      }))
+      .sort((a, b) => b.avg - a.avg);
+  }, [allStocks]);
+
+  const items = viewMode === "sectors" ? sectors : industries;
 
   if (isLoading) return <Skeleton className="h-48 rounded-xl" />;
-  if (sectors.length === 0) return null;
+  if (items.length === 0) return null;
 
-  const max = Math.max(...sectors.map(s => Math.abs(s.avg)), 0.5);
+  const max = Math.max(...items.map(s => Math.abs(s.avg)), 0.5);
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
-      <h3 className="font-display font-semibold text-sm text-muted-foreground mb-4 flex items-center gap-2">
-        <BarChart3 className="h-4 w-4 text-primary" />
-        {t("sector.title")}
-      </h3>
-      <div className="space-y-1.5">
-        {sectors.map(s => {
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display font-semibold text-sm text-muted-foreground flex items-center gap-2">
+          <BarChart3 className="h-4 w-4 text-primary" />
+          {t("sector.title")}
+        </h3>
+        <div className="flex items-center gap-1 bg-muted/40 rounded-lg p-0.5">
+          <button
+            onClick={() => setViewMode("sectors")}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "sectors" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            title="Sectors"
+          >
+            <Layers className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => setViewMode("industries")}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "industries" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            title="Industries"
+          >
+            <List className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+      <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
+        {items.map(s => {
           const isUp = s.avg >= 0;
           const width = Math.min(Math.abs(s.avg) / max * 100, 100);
           return (
             <div key={s.name} className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground w-32 truncate shrink-0" title={s.name}>
+              <span className="text-xs text-muted-foreground w-36 truncate shrink-0" title={s.name}>
                 {s.name}
               </span>
               <div className="flex-1 h-5 bg-muted/30 rounded-md overflow-hidden relative">
