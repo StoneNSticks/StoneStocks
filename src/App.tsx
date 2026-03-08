@@ -96,7 +96,7 @@ const App = () => (
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/compare" element={<ComparePage />} />
-                  <Route path="/macro" element={<MacroDashboard />} />
+                  
                   <Route path="/backtest" element={<BacktestPage />} />
                   <Route path="/ai-chat" element={<StockChatPage />} />
                   
