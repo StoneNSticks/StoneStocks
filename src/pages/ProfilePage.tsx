@@ -158,6 +158,11 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* Achievement Badges */}
+          <div className="mt-6">
+            <AchievementBadges />
+          </div>
         </motion.div>
       </main>
       <Footer />

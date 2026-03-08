@@ -161,6 +161,9 @@ export default function MacroDashboard() {
           </Badge>
         </motion.div>
 
+        {/* AI Sector Rotation */}
+        <AISectorRotation />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {INDICATORS.map((indicator) => (
             <FredChart key={indicator.id} indicator={indicator} />

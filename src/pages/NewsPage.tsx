@@ -127,6 +127,9 @@ const NewsPage = () => {
             </Button>
           </div>
 
+          {/* AI News Digest */}
+          <AINewsDigest headlines={(news as any[])?.slice(0, 15).map((n: any) => n.headline || "")} />
+
           {/* News list */}
           {isLoading ? (
             <div className="space-y-3">{[...Array(8)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}</div>

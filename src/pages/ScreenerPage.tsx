@@ -17,6 +17,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown, RotateCcw, ChevronDown, Zap } from "lucide-react";
+import { NLPScreener } from "@/components/NLPScreener";
+import { MagicFormulaRanking } from "@/components/MagicFormulaRanking";
+import { PiotroskiScore } from "@/components/PiotroskiScore";
+import { MomentumScreener } from "@/components/MomentumScreener";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 type SortKey = "marketCap" | "change" | "name" | "pe" | "yield";
 
