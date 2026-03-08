@@ -25,6 +25,16 @@ import { getEarnings } from "@/lib/stockApi";
 
 function formatDividendValue(num: number, sym = "$"): string { return `${sym}${num.toFixed(2)}`; }
 
+function EarningsCardWrapper({ symbol }: { symbol: string }) {
+  const { data: earnings } = useQuery({
+    queryKey: ["earnings", symbol],
+    queryFn: () => getEarnings(symbol),
+    enabled: !!symbol,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
+  });
+  return <EarningsCard earnings={earnings} />;
+}
+
 const StockDetail = () => {
   const { symbol } = useParams<{ symbol: string }>();
   const upperSymbol = symbol?.toUpperCase() || "";
