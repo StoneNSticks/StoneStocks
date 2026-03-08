@@ -1,332 +1,65 @@
 /**
- * SectorPerformance — Horizontal bar chart showing daily performance by sector.
- * Shows all 11 GICS sectors with fallback to 0% when no data available.
+ * SectorPerformance — Shows real sector ETF performance from Yahoo Finance.
+ * Uses SPDR sector ETFs (XLK, XLV, XLF, etc.) for accurate daily sector returns.
  */
-import { useMemo, useState } from "react";
-import { useTopCompanies, useGainersLosers, useMostActive } from "@/hooks/useStockData";
+import { useYahooSectors } from "@/hooks/useStockData";
 import { useT } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart3, Layers, List } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 
-const ALL_GICS_SECTORS = [
-  "Technology", "Healthcare", "Financials", "Consumer Discretionary",
-  "Consumer Staples", "Industrials", "Energy", "Utilities",
-  "Real Estate", "Materials", "Communication Services",
-] as const;
-
-const INDUSTRY_TO_SECTOR: Record<string, string> = {
-  "semiconductors": "Technology", "software": "Technology",
-  "software—infrastructure": "Technology", "software—application": "Technology",
-  "consumer electronics": "Technology", "electronic components": "Technology",
-  "information technology services": "Technology",
-  "semiconductor equipment & materials": "Technology",
-  "scientific & technical instruments": "Technology",
-  "computer hardware": "Technology", "electronic gaming & multimedia": "Technology",
-  "data processing & outsourced services": "Technology",
-  "internet content & information": "Communication Services",
-  "telecom services": "Communication Services", "entertainment": "Communication Services",
-  "advertising agencies": "Communication Services", "broadcasting": "Communication Services",
-  "electronic media": "Communication Services", "publishing": "Communication Services",
-  "media": "Communication Services",
-  "internet retail": "Consumer Discretionary", "specialty retail": "Consumer Discretionary",
-  "auto manufacturers": "Consumer Discretionary", "restaurants": "Consumer Discretionary",
-  "apparel retail": "Consumer Discretionary", "home improvement retail": "Consumer Discretionary",
-  "travel services": "Consumer Discretionary", "resorts & casinos": "Consumer Discretionary",
-  "leisure": "Consumer Discretionary", "lodging": "Consumer Discretionary",
-  "footwear & accessories": "Consumer Discretionary",
-  "apparel manufacturing": "Consumer Discretionary", "auto parts": "Consumer Discretionary",
-  "residential construction": "Consumer Discretionary",
-  "furnishings, fixtures & appliances": "Consumer Discretionary",
-  "luxury goods": "Consumer Discretionary",
-  "textiles, apparel & luxury goods": "Consumer Discretionary",
-  "retail": "Consumer Discretionary", "automobiles": "Consumer Discretionary",
-  "drug manufacturers—general": "Healthcare", "drug manufacturers": "Healthcare",
-  "medical devices": "Healthcare", "health care plans": "Healthcare",
-  "biotechnology": "Healthcare", "diagnostics & research": "Healthcare",
-  "medical instruments & supplies": "Healthcare",
-  "health care equipment & services": "Healthcare",
-  "pharmaceutical retailers": "Healthcare", "medical distribution": "Healthcare",
-  "health information services": "Healthcare", "medical care facilities": "Healthcare",
-  "banks—diversified": "Financials", "banks—regional": "Financials",
-  "financial data & stock exchanges": "Financials", "credit services": "Financials",
-  "insurance—diversified": "Financials", "insurance—property & casualty": "Financials",
-  "insurance—life": "Financials", "insurance brokers": "Financials",
-  "asset management": "Financials", "capital markets": "Financials",
-  "financial conglomerates": "Financials", "mortgage finance": "Financials",
-  "specialty finance": "Financials", "insurance": "Financials",
-  "oil & gas integrated": "Energy", "oil & gas e&p": "Energy",
-  "oil & gas midstream": "Energy", "oil & gas refining & marketing": "Energy",
-  "oil & gas equipment & services": "Energy", "solar": "Energy",
-  "uranium": "Energy", "thermal coal": "Energy",
-  "utilities—regulated electric": "Utilities", "utilities—diversified": "Utilities",
-  "utilities—renewable": "Utilities", "utilities—regulated gas": "Utilities",
-  "utilities—regulated water": "Utilities", "independent power producers": "Utilities",
-  "aerospace & defense": "Industrials", "industrial conglomerates": "Industrials",
-  "railroads": "Industrials", "farm & heavy construction machinery": "Industrials",
-  "waste management": "Industrials", "trucking": "Industrials",
-  "marine shipping": "Industrials", "airlines": "Industrials",
-  "specialty industrial machinery": "Industrials",
-  "integrated freight & logistics": "Industrials",
-  "building products & equipment": "Industrials",
-  "engineering & construction": "Industrials",
-  "electrical equipment & parts": "Industrials",
-  "staffing & employment services": "Industrials",
-  "rental & leasing services": "Industrials",
-  "security & protection services": "Industrials", "conglomerates": "Industrials",
-  "household & personal products": "Consumer Staples",
-  "beverages—non-alcoholic": "Consumer Staples",
-  "beverages—brewers": "Consumer Staples",
-  "beverages—wineries & distilleries": "Consumer Staples",
-  "discount stores": "Consumer Staples", "packaged foods": "Consumer Staples",
-  "tobacco": "Consumer Staples", "farm products": "Consumer Staples",
-  "food distribution": "Consumer Staples", "grocery stores": "Consumer Staples",
-  "confectioners": "Consumer Staples",
-  "education & training services": "Consumer Staples",
-  "reit—industrial": "Real Estate", "reit—residential": "Real Estate",
-  "reit—retail": "Real Estate", "reit—office": "Real Estate",
-  "reit—healthcare facilities": "Real Estate", "reit—diversified": "Real Estate",
-  "reit—specialty": "Real Estate", "reit—mortgage": "Real Estate",
-  "real estate services": "Real Estate", "real estate—development": "Real Estate",
-  "real estate—diversified": "Real Estate",
-  "gold": "Materials", "silver": "Materials", "steel": "Materials",
-  "specialty chemicals": "Materials", "chemicals": "Materials",
-  "building materials": "Materials", "aluminum": "Materials", "copper": "Materials",
-  "paper & paper products": "Materials", "lumber & wood production": "Materials",
-  "other industrial metals & mining": "Materials", "agricultural inputs": "Materials",
-  "coking coal": "Materials",
+const SECTOR_DE: Record<string, string> = {
+  "Technology": "Technologie",
+  "Healthcare": "Gesundheit",
+  "Financials": "Finanzen",
+  "Consumer Discretionary": "Zyklischer Konsum",
+  "Consumer Staples": "Basiskonsumgüter",
+  "Energy": "Energie",
+  "Industrials": "Industrie",
+  "Materials": "Grundstoffe",
+  "Real Estate": "Immobilien",
+  "Utilities": "Versorger",
+  "Communication Services": "Kommunikation",
 };
-
-const SECTOR_ALIASES: Record<string, string> = {
-  "consumer cyclical": "Consumer Discretionary",
-  "consumer defensive": "Consumer Staples",
-  "communication services": "Communication Services",
-  "communications": "Communication Services",
-  "basic materials": "Materials",
-  "financial services": "Financials",
-  "media": "Communication Services",
-  "technology": "Technology",
-  "healthcare": "Healthcare",
-  "financials": "Financials",
-  "energy": "Energy",
-  "utilities": "Utilities",
-  "industrials": "Industrials",
-  "real estate": "Real Estate",
-  "materials": "Materials",
-  "consumer discretionary": "Consumer Discretionary",
-  "consumer staples": "Consumer Staples",
-};
-
-function mapToSector(industry: string | undefined, sector: string | undefined): string {
-  // Try industry mapping first (most specific)
-  if (industry) {
-    const lower = industry.toLowerCase().trim();
-    if (INDUSTRY_TO_SECTOR[lower]) return INDUSTRY_TO_SECTOR[lower];
-  }
-  // Then normalize raw sector field
-  if (sector) {
-    const lower = sector.toLowerCase().trim();
-    if (SECTOR_ALIASES[lower]) return SECTOR_ALIASES[lower];
-    // Check if it's already a canonical name
-    if (ALL_GICS_SECTORS.includes(sector as any)) return sector;
-  }
-  return "Other";
-}
-
-const INDUSTRY_LABELS: Record<string, string> = {
-  "semiconductors": "Semiconductors",
-  "software—infrastructure": "Software Infra",
-  "software—application": "Software Apps",
-  "software": "Software",
-  "consumer electronics": "Consumer Electronics",
-  "internet content & information": "Internet & Media",
-  "internet retail": "Internet Retail",
-  "drug manufacturers—general": "Pharma",
-  "drug manufacturers": "Pharma",
-  "biotechnology": "Biotech",
-  "medical devices": "Medical Devices",
-  "banks—diversified": "Banks",
-  "banks—regional": "Regional Banks",
-  "credit services": "Credit Services",
-  "insurance—diversified": "Insurance",
-  "insurance—property & casualty": "Insurance P&C",
-  "asset management": "Asset Management",
-  "capital markets": "Capital Markets",
-  "oil & gas integrated": "Oil & Gas",
-  "oil & gas e&p": "Oil & Gas E&P",
-  "solar": "Solar Energy",
-  "aerospace & defense": "Aerospace & Defense",
-  "auto manufacturers": "Auto Makers",
-  "specialty retail": "Specialty Retail",
-  "restaurants": "Restaurants",
-  "household & personal products": "Household Products",
-  "beverages—non-alcoholic": "Beverages",
-  "discount stores": "Discount Stores",
-  "packaged foods": "Packaged Foods",
-  "utilities—regulated electric": "Electric Utilities",
-  "reit—industrial": "Industrial REITs",
-  "reit—residential": "Residential REITs",
-  "gold": "Gold",
-  "specialty chemicals": "Specialty Chemicals",
-  "steel": "Steel",
-  "railroads": "Railroads",
-  "airlines": "Airlines",
-  "telecom services": "Telecom",
-  "entertainment": "Entertainment",
-  "advertising agencies": "Advertising",
-  "diagnostics & research": "Diagnostics",
-  "health care plans": "Health Plans",
-  "financial data & stock exchanges": "Exchanges",
-  "information technology services": "IT Services",
-  "waste management": "Waste Mgmt",
-  "farm & heavy construction machinery": "Heavy Machinery",
-  "building materials": "Building Materials",
-  "real estate services": "Real Estate Services",
-};
-
-function getIndustryLabel(industry: string): string {
-  const lower = industry.toLowerCase();
-  return INDUSTRY_LABELS[lower] || industry.split("—").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
 
 export function SectorPerformance() {
-  const { data: companies, isLoading: loadingTop } = useTopCompanies();
-  const { data: gl } = useGainersLosers();
-  const { data: active } = useMostActive();
+  const { data: sectors, isLoading } = useYahooSectors();
   const t = useT();
-  const [viewMode, setViewMode] = useState<"sectors" | "industries">("industries");
-
-  const isLoading = loadingTop && !companies;
-
-  // Deduplicate stocks across all sources
-  const allStocks = useMemo(() => {
-    const seen = new Set<string>();
-    const all: any[] = [];
-    const addStocks = (stocks: any[] | undefined) => {
-      if (!stocks) return;
-      for (const s of stocks) {
-        if (s.symbol && !seen.has(s.symbol) && (s.changePercent || s.changePercent === 0)) {
-          seen.add(s.symbol);
-          all.push(s);
-        }
-      }
-    };
-    addStocks(companies);
-    if (gl) { addStocks(gl.gainers); addStocks(gl.losers); }
-    addStocks(active);
-    return all;
-  }, [companies, gl, active]);
-
-  // Always show all 11 GICS sectors
-  const sectors = useMemo(() => {
-    const map: Record<string, { sum: number; count: number }> = {};
-    // Initialize all GICS sectors
-    for (const s of ALL_GICS_SECTORS) {
-      map[s] = { sum: 0, count: 0 };
-    }
-    allStocks.forEach((c: any) => {
-      const sector = mapToSector(c.industry, c.sector);
-      if (map[sector]) {
-        map[sector].sum += c.changePercent || 0;
-        map[sector].count += 1;
-      }
-    });
-    return ALL_GICS_SECTORS.map(name => ({
-      name,
-      avg: map[name].count > 0 ? map[name].sum / map[name].count : 0,
-      count: map[name].count,
-      hasData: map[name].count > 0,
-    })).sort((a, b) => b.avg - a.avg);
-  }, [allStocks]);
-
-  // Industries view with minimum 10 entries
-  const industries = useMemo(() => {
-    if (allStocks.length === 0) return [];
-    const map: Record<string, { sum: number; count: number; sector: string }> = {};
-    allStocks.forEach((c: any) => {
-      const rawIndustry = c.industry ? c.industry.toLowerCase().trim() : "";
-      const sectorName = mapToSector(c.industry, c.sector);
-      if (rawIndustry && rawIndustry !== "other") {
-        if (!map[rawIndustry]) map[rawIndustry] = { sum: 0, count: 0, sector: sectorName };
-        map[rawIndustry].sum += c.changePercent || 0;
-        map[rawIndustry].count += 1;
-      }
-    });
-    const result = Object.entries(map)
-      .map(([key, { sum, count, sector }]) => ({
-        name: getIndustryLabel(key),
-        avg: sum / count,
-        count,
-        sector,
-        hasData: true,
-      }))
-      .sort((a, b) => b.avg - a.avg);
-
-    // Pad with GICS sectors if fewer than 10
-    if (result.length < 10) {
-      const existingNames = new Set(result.map(r => r.name));
-      for (const s of ALL_GICS_SECTORS) {
-        if (result.length >= 10) break;
-        if (!existingNames.has(s)) {
-          result.push({ name: s, avg: 0, count: 0, sector: s, hasData: false });
-        }
-      }
-    }
-    return result;
-  }, [allStocks]);
-
-  const items = viewMode === "sectors" ? sectors : industries;
 
   if (isLoading) return <Skeleton className="h-48 rounded-xl" />;
+
+  const items = (sectors || [])
+    .filter((s: any) => s.changePercent != null)
+    .sort((a: any, b: any) => (b.changePercent || 0) - (a.changePercent || 0));
+
   if (items.length === 0) return null;
 
-  const max = Math.max(...items.map(s => Math.abs(s.avg)), 0.5);
+  const max = Math.max(...items.map((s: any) => Math.abs(s.changePercent || 0)), 0.5);
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display font-semibold text-sm text-muted-foreground flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-primary" />
-          {t("sector.title")}
-        </h3>
-        <div className="flex items-center gap-1 bg-muted/40 rounded-lg p-0.5">
-          <button
-            onClick={() => setViewMode("sectors")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "sectors" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            title="Sectors"
-          >
-            <Layers className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => setViewMode("industries")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "industries" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            title="Industries"
-          >
-            <List className="h-3.5 w-3.5" />
-          </button>
-        </div>
+      <div className="flex items-center gap-2 mb-4">
+        <BarChart3 className="h-4 w-4 text-primary" />
+        <h3 className="font-display font-semibold text-sm">{t("sector.title")}</h3>
+        <span className="text-[10px] text-muted-foreground ml-auto">SPDR ETFs</span>
       </div>
       <div className="space-y-1.5">
-        {items.map(s => {
-          const isUp = s.avg >= 0;
-          const width = Math.min(Math.abs(s.avg) / max * 100, 100);
-          const noData = !s.hasData;
+        {items.map((s: any) => {
+          const isUp = (s.changePercent || 0) >= 0;
+          const width = Math.min(Math.abs(s.changePercent || 0) / max * 100, 100);
+          const deName = SECTOR_DE[s.name] || s.name;
           return (
-            <div key={s.name} className="flex items-center gap-2">
-              <span className={`text-xs w-24 sm:w-36 truncate shrink-0 ${noData ? "text-muted-foreground/50" : "text-muted-foreground"}`} title={s.name}>
-                {s.name}
+            <div key={s.symbol} className="flex items-center gap-2">
+              <span className="text-xs w-28 sm:w-36 truncate shrink-0 text-muted-foreground" title={s.name}>
+                {t("lang") === "de" ? deName : s.name}
               </span>
-              <div className="flex-1 h-5 bg-muted/30 rounded-md overflow-hidden relative">
-                {noData ? (
-                  <div className="h-full w-full bg-muted/10 rounded-md" />
-                ) : (
-                  <div
-                    className={`h-full rounded-md transition-all duration-500 ${isUp ? "bg-chart-2/60" : "bg-destructive/60"}`}
-                    style={{ width: `${width}%` }}
-                  />
-                )}
+              <div className="flex-1 h-5 bg-muted/30 rounded-md overflow-hidden">
+                <div
+                  className={`h-full rounded-md transition-all duration-500 ${isUp ? "bg-chart-2/60" : "bg-destructive/60"}`}
+                  style={{ width: `${width}%` }}
+                />
               </div>
-              <span className={`text-xs font-mono font-semibold w-12 sm:w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
-                {noData ? "—" : `${isUp ? "+" : ""}${s.avg.toFixed(2)}%`}
+              <span className={`text-xs font-mono font-semibold w-14 text-right ${isUp ? "text-chart-2" : "text-destructive"}`}>
+                {isUp ? "+" : ""}{(s.changePercent || 0).toFixed(2)}%
               </span>
             </div>
           );
