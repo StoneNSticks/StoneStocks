@@ -165,30 +165,35 @@ export default function LearnPage() {
         </motion.div>
 
 
-        {/* Compact TOC */}
-        <motion.nav initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-4 md:p-5">
-          <h2 className="font-display font-bold text-base text-foreground mb-3">{t("learn.toc")}</h2>
-          <div className="space-y-3">
+        {/* Professional TOC */}
+        <motion.nav initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-border/40 bg-muted/30">
+            <h2 className="font-display font-bold text-sm text-foreground tracking-wide uppercase">{t("learn.toc")}</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/30">
             {tocGroups.map((group, gi) => {
               const globalOffset = tocGroups.slice(0, gi).reduce((a, g) => a + g.items.length, 0);
               return (
-                <div key={group.title}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-display font-bold text-xs text-primary">{group.title}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{group.level}</span>
+                <div key={group.title} className="px-5 py-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display font-bold text-xs text-foreground tracking-wide">{group.title}</span>
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{group.level}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1">
+                  <ul className="space-y-0.5">
                     {group.items.map((item, ii) => (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-muted-foreground hover:text-primary hover:bg-primary/[0.06] transition-colors"
-                      >
-                        <span className="font-mono text-[10px] text-muted-foreground/60">{globalOffset + ii + 1}.</span>
-                        {item.label}
-                      </a>
+                      <li key={item.href}>
+                        <a
+                          href={item.href}
+                          className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                        >
+                          <span className="font-mono text-[10px] w-5 text-center text-muted-foreground/50 group-hover:text-primary transition-colors">
+                            {String(globalOffset + ii + 1).padStart(2, "0")}
+                          </span>
+                          <span className="truncate">{item.label}</span>
+                        </a>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               );
             })}
