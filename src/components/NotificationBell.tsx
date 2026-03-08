@@ -21,7 +21,7 @@ export function NotificationBell() {
     ? t("notif.blocked")
     : t("notif.enable");
 
-  const Icon = isSubscribed ? BellRing : status === "denied" ? BellOff : Bell;
+  const Icon = status === "denied" ? BellOff : isSubscribed ? Bell : BellOff;
 
   return (
     <Tooltip>
@@ -34,9 +34,6 @@ export function NotificationBell() {
           disabled={status === "denied"}
         >
           <Icon className={`h-4 w-4 ${isSubscribed ? "text-primary" : "text-muted-foreground"}`} />
-          {isSubscribed && (
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary animate-pulse" />
-          )}
         </Button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
