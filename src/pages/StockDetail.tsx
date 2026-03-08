@@ -293,6 +293,9 @@ const StockDetail = () => {
               currentSymbol={upperSymbol}
             />
 
+            {/* Analyst Consensus — directly under Company Intelligence */}
+            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
+
             {/* ══════════════════════════════════════════════════════════
                 SECTION 9: Peer Comparison Table
                 Side-by-side metrics comparison with top 3 peer companies
