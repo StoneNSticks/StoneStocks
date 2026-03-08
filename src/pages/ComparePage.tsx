@@ -239,6 +239,9 @@ export default function ComparePage() {
               {symbols.length >= 2 && (
                 <TabsTrigger value="financials">{t("compare.financials")}</TabsTrigger>
               )}
+              {symbols.length >= 2 && (
+                <TabsTrigger value="correlation">{lang === "de" ? "Korrelation" : "Correlation"}</TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="overview">
