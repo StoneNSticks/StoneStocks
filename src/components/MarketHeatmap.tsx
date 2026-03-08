@@ -125,7 +125,7 @@ export function MarketHeatmap() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={360}>
+      <ResponsiveContainer width="100%" height={440}>
         <Treemap
           data={treemapData}
           dataKey="size"
