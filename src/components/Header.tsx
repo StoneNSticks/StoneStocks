@@ -35,21 +35,7 @@ const navItems: NavItem[] = [
   { to: "/screener", key: "nav.screener", fallback: "Screener", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/calculators", key: "nav.tools", group: "tools" },
-  { to: "/compare", key: "nav.compare", fallback: "Compare", group: "tools" },
-  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "tools" },
-  { to: "/ai-chat", key: "nav.aiChat", fallback: "AI Chat", group: "tools" },
-  { to: "/dashboard", key: "nav.dashboard", fallback: "Dashboard", group: "tools" },
-  { to: "/crypto", key: "nav.crypto", fallback: "Crypto", group: "tools" },
-  { to: "/forex", key: "nav.forex", fallback: "Forex", group: "tools" },
-  { to: "/bonds", key: "nav.bonds", fallback: "Bonds", group: "tools" },
-  { to: "/ipo", key: "nav.ipo", fallback: "IPOs", group: "tools" },
-  { to: "/economic-calendar", key: "nav.econ", fallback: "Economy", group: "tools" },
-  { to: "/paper-trading", key: "nav.paper", fallback: "Paper Trading", group: "tools" },
-  { to: "/leaderboard", key: "nav.leaderboard", fallback: "Leaderboard", group: "tools" },
-  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "tools" },
-  { to: "/glossary", key: "nav.glossary", fallback: "Glossary", group: "tools" },
-  { to: "/learn", key: "nav.learn", group: "tools" },
+  { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 export function Header() {
@@ -70,8 +56,7 @@ export function Header() {
     return translated !== item.key ? translated : (item.fallback || item.key);
   };
 
-  const mainItems = navItems.filter(n => n.group === "main");
-  const toolItems = navItems.filter(n => n.group === "tools");
+  const mainItems = navItems;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl">
@@ -129,6 +114,19 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center gap-2 cursor-pointer">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/compare" className="flex items-center gap-2 cursor-pointer">Compare</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/macro" className="flex items-center gap-2 cursor-pointer">Macro</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/calculators" className="flex items-center gap-2 cursor-pointer">{t("nav.tools")}</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()} className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="h-4 w-4" />{t("nav.logout")}
                   </DropdownMenuItem>
@@ -173,18 +171,6 @@ export function Header() {
                 </Link>
               );
             })}
-
-            <span className="w-px h-4 bg-border/60 mx-1.5 flex-shrink-0" />
-
-            {toolItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
-                <Link key={item.to} to={item.to} className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-                  {label(item)}
-                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
-                </Link>
-              );
-            })}
           </nav>
         </div>
       </div>
@@ -202,13 +188,10 @@ export function Header() {
 function MobileNav({ items, location, label, user, username, t, signOut }: {
   items: NavItem[]; location: any; label: (item: NavItem) => string; user: any; username: string; t: (key: string) => string; signOut: () => void;
 }) {
-  const mainItems = items.filter(n => n.group === "main");
-  const toolItems = items.filter(n => n.group === "tools");
-
   return (
     <div className="mt-6 flex flex-col h-full">
       <nav className="flex flex-col gap-0.5">
-        {mainItems.map((item) => {
+        {items.map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
@@ -219,11 +202,19 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
         <div className="mt-4 mb-2 px-3">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Tools</p>
         </div>
-        {toolItems.map((item) => {
+        {[
+          { to: "/compare", label: "Compare" },
+          { to: "/calculators", label: t("nav.tools") },
+          { to: "/macro", label: "Macro" },
+          { to: "/dashboard", label: "Dashboard" },
+          { to: "/crypto", label: "Crypto" },
+          { to: "/forex", label: "Forex" },
+          { to: "/bonds", label: "Bonds" },
+        ].map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
-              {label(item)}
+              {item.label}
             </Link>
           );
         })}
