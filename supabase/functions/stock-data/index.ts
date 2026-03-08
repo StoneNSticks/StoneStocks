@@ -96,6 +96,40 @@ async function fetchMassive(endpoint: string, params: Record<string, string> = {
   return res.json();
 }
 
+// Yahoo Finance RSS (free, no API key needed)
+async function fetchYahooRSS(path = ""): Promise<any[]> {
+  const url = path
+    ? `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${path}&region=US&lang=en-US`
+    : "https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US";
+  const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+  if (!res.ok) return [];
+  const xml = await res.text();
+  // Simple XML parser for RSS items
+  const items: any[] = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const block = match[1];
+    const get = (tag: string) => {
+      const m = block.match(new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/${tag}>`));
+      return m ? m[1].trim() : "";
+    };
+    const pubDate = get("pubDate");
+    items.push({
+      headline: get("title"),
+      summary: get("description").replace(/<[^>]+>/g, "").slice(0, 300),
+      url: get("link"),
+      image: "",
+      source: "Yahoo Finance",
+      datetime: pubDate ? Math.floor(new Date(pubDate).getTime() / 1000) : Math.floor(Date.now() / 1000),
+      related: path || "",
+      origin: "yahoo",
+      category: "",
+    });
+  }
+  return items;
+}
+
 async function fetchEulerpool(endpoint: string) {
   const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
   const res = await fetch(url);
