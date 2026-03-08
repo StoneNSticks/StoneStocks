@@ -15,17 +15,17 @@ import { MetricsGrid } from "@/components/MetricsGrid";
 import { FinancialChart, extractFinancialSeries } from "@/components/FinancialChart";
 import { NewsList } from "@/components/NewsList";
 import { PeersList } from "@/components/PeersList";
-import { RecommendationChart } from "@/components/RecommendationChart";
+import { AnalystConsensus } from "@/components/AnalystConsensus";
 import { StockPerformance } from "@/components/StockPerformance";
-import { CompanyInfoCard } from "@/components/CompanyInfoCard";
+import { CompanyIntelligence } from "@/components/CompanyIntelligence";
 import { WeekRangeBar } from "@/components/WeekRangeBar";
-import { AnalystTargets } from "@/components/AnalystTargets";
 import { TechnicalIndicators } from "@/components/TechnicalIndicators";
 import { EarningsCard } from "@/components/EarningsCard";
 import { SentimentVote } from "@/components/SentimentVote";
 import { StockComments } from "@/components/StockComments";
 import { InsiderTrades } from "@/components/InsiderTrades";
 import { MetricBars } from "@/components/MetricBars";
+import { PeerComparison } from "@/components/PeerComparison";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,6 +69,7 @@ const StockDetail = () => {
   const massiveTicker = data?.massiveTicker;
   const massiveDividends = data?.massiveDividends;
   const massiveSnapshot = data?.massiveSnapshot;
+  const massiveRelated = data?.massiveRelated;
 
   // ── Financial data series extraction from Polygon financials ──
   const revenueData = useMemo(() => extractFinancialSeries(massiveFinancials || [], "revenues", "income_statement"), [massiveFinancials]);
@@ -166,10 +167,10 @@ const StockDetail = () => {
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
             </div>
 
-            {/* Community Sentiment */}
+            {/* Analyst Consensus (unified) + Community Sentiment */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
               <SentimentVote symbol={upperSymbol} />
-              <AnalystTargets overview={overview} quote={quote} />
             </div>
 
             {/* Financial charts */}
@@ -186,17 +187,27 @@ const StockDetail = () => {
               <FinancialChart title={t("sd.assetsLiabilities")} data={assetsData} dataKey="assets" secondaryKey="liabilities" secondaryLabel={t("sd.liabilities")} color="hsl(210, 80%, 55%)" secondaryColor="hsl(0, 72%, 51%)" />
             </div>
 
-            <CompanyInfoCard profile={profile} overview={overview} massiveTicker={massiveTicker} symbol={upperSymbol} />
+            {/* Company Intelligence (replaces CompanyInfoCard) */}
+            <CompanyIntelligence
+              profile={profile}
+              overview={overview}
+              massiveTicker={massiveTicker}
+              peers={peers}
+              massiveRelated={massiveRelated}
+              currentSymbol={upperSymbol}
+            />
+
+            {/* Peer Comparison Table */}
+            {peers && peers.length > 0 && (
+              <PeerComparison currentSymbol={upperSymbol} peers={peers} />
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <TechnicalIndicators symbol={upperSymbol} />
               <EarningsCardWrapper symbol={upperSymbol} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <RecommendationChart data={recommendation} />
-              <InsiderTrades symbol={upperSymbol} />
-            </div>
+            <InsiderTrades symbol={upperSymbol} />
 
             <StockComments symbol={upperSymbol} />
 
