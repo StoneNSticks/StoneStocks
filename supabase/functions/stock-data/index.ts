@@ -88,7 +88,7 @@ async function fetchFinnhub(endpoint: string, params: Record<string, string> = {
   const url = new URL(`https://finnhub.io/api/v1/${endpoint}`);
   url.searchParams.set("token", FINNHUB_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`Finnhub error: ${res.status}`);
   return res.json();
 }
@@ -98,7 +98,7 @@ async function fetchAlphaVantage(fn: string, params: Record<string, string> = {}
   url.searchParams.set("function", fn);
   url.searchParams.set("apikey", ALPHA_VANTAGE_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`AlphaVantage error: ${res.status}`);
   return res.json();
 }
@@ -107,7 +107,7 @@ async function fetchTwelveData(endpoint: string, params: Record<string, string> 
   const url = new URL(`https://api.twelvedata.com/${endpoint}`);
   url.searchParams.set("apikey", TWELVE_DATA_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`TwelveData error: ${res.status}`);
   return res.json();
 }
@@ -116,7 +116,7 @@ async function fetchMassive(endpoint: string, params: Record<string, string> = {
   const url = new URL(`https://api.polygon.io${endpoint}`);
   url.searchParams.set("apiKey", getMassiveKey());
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`Massive error: ${res.status}`);
   return res.json();
 }
