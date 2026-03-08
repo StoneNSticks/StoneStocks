@@ -139,14 +139,15 @@ const IndexDetail = () => {
               <h3 className="font-display font-semibold text-sm text-muted-foreground mb-3">
                 {lang === "de" ? "Performance-Übersicht" : "Performance Overview"}
               </h3>
+              <p className="text-[10px] text-muted-foreground italic mb-2">{lang === "de" ? "* Längere Zeiträume sind Schätzungen basierend auf der heutigen Veränderung" : "* Longer periods are estimates based on today's change"}</p>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                 {[
-                  { label: "1D", value: index.changePercent },
-                  { label: "1W", value: index.changePercent * 2.3 },
-                  { label: "1M", value: index.changePercent * 5.1 },
-                  { label: "3M", value: index.changePercent * 8.7 },
-                  { label: "YTD", value: index.changePercent * 14.2 },
-                  { label: "1Y", value: index.changePercent * 22.5 },
+                  { label: "1D", value: index.changePercent, est: false },
+                  { label: "1W", value: index.changePercent * 2.3, est: true },
+                  { label: "1M", value: index.changePercent * 5.1, est: true },
+                  { label: "3M", value: index.changePercent * 8.7, est: true },
+                  { label: "YTD", value: index.changePercent * 14.2, est: true },
+                  { label: "1Y", value: index.changePercent * 22.5, est: true },
                 ].map(p => {
                   const isPos = p.value >= 0;
                   return (
