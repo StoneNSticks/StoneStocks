@@ -200,8 +200,6 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
         {[
           { to: "/compare", label: "Compare" },
           { to: "/calculators", label: t("nav.tools") },
-          { to: "/macro", label: "Macro" },
-          { to: "/dashboard", label: "Dashboard" },
           { to: "/crypto", label: "Crypto" },
           { to: "/forex", label: "Forex" },
           { to: "/bonds", label: "Bonds" },

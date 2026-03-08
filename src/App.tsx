@@ -99,7 +99,7 @@ const App = () => (
                   <Route path="/macro" element={<MacroDashboard />} />
                   <Route path="/backtest" element={<BacktestPage />} />
                   <Route path="/ai-chat" element={<StockChatPage />} />
-                  <Route path="/dashboard" element={<CustomDashboard />} />
+                  
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="/crypto" element={<CryptoPage />} />
                   <Route path="/forex" element={<ForexPage />} />
