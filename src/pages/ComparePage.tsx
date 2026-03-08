@@ -133,7 +133,7 @@ export default function ComparePage() {
         <div className="relative max-w-md mx-auto mb-8">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={lang === "de" ? "Aktie suchen (z.B. AAPL)" : "Search stock (e.g. AAPL)"}
+            placeholder={t("compare.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl"
