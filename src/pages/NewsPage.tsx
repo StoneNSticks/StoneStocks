@@ -97,9 +97,13 @@ const NewsPage = () => {
               <div className="space-y-3">
                 {shown.map((article: any, i: number) => (
                   <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="flex gap-4 rounded-xl border border-border/60 bg-card p-4 hover:border-primary/30 hover:shadow-md transition-all group">
-                    {article.image && (
-                      <img src={article.image} alt="" className="h-20 w-28 rounded-lg object-cover shrink-0 hidden sm:block" loading="lazy" />
-                    )}
+                     <img
+                       src={article.image || "/placeholder.svg"}
+                       alt=""
+                       className="h-20 w-28 rounded-lg object-cover shrink-0 hidden sm:block bg-muted"
+                       loading="lazy"
+                       onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="font-display font-semibold text-sm leading-snug group-hover:text-primary transition-colors line-clamp-2">{article.headline}</h3>
@@ -126,6 +130,9 @@ const NewsPage = () => {
           )}
         </div>
       </main>
+      <footer className="border-t border-border/50 py-6">
+        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
+      </footer>
     </div>
   );
 };

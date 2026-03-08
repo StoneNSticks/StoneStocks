@@ -280,11 +280,17 @@ export default function WatchlistPage() {
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const handleQuoteLoaded = useMemo(() => {
-    return (symbol: string) => (dp: number) => {
-      setQuoteMap(prev => {
-        if (prev[symbol] === dp) return prev;
-        return { ...prev, [symbol]: dp };
-      });
+    const cache: Record<string, (dp: number) => void> = {};
+    return (symbol: string) => {
+      if (!cache[symbol]) {
+        cache[symbol] = (dp: number) => {
+          setQuoteMap(prev => {
+            if (prev[symbol] === dp) return prev;
+            return { ...prev, [symbol]: dp };
+          });
+        };
+      }
+      return cache[symbol];
     };
   }, []);
 
@@ -549,6 +555,9 @@ export default function WatchlistPage() {
           </motion.div>
         )}
       </main>
+      <footer className="border-t border-border/50 py-6">
+        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
+      </footer>
     </div>
   );
 }

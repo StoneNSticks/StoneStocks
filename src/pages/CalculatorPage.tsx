@@ -669,7 +669,7 @@ const CalculatorPage = () => {
           </div>
         </div>
         <Tabs defaultValue="portfolio" className="space-y-4">
-          <TabsList className="bg-card border border-border/60 p-1 rounded-xl flex-wrap h-auto gap-1">
+          <TabsList className="bg-card border border-border/60 p-1 rounded-xl flex-wrap h-auto gap-1 overflow-x-auto max-w-full">
             <TabsTrigger value="portfolio" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><TrendingUp className="h-3.5 w-3.5" />{t("calc.portfolioGrowth")}</TabsTrigger>
             <TabsTrigger value="compound" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Percent className="h-3.5 w-3.5" />{t("calc.compoundInterest")}</TabsTrigger>
             <TabsTrigger value="dividend" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><DollarSign className="h-3.5 w-3.5" />{t("calc.dividendGrowth")}</TabsTrigger>
@@ -697,6 +697,9 @@ const CalculatorPage = () => {
           <TabsContent value="divproject"><DividendProjector /></TabsContent>
         </Tabs>
       </main>
+      <footer className="border-t border-border/50 py-6">
+        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
+      </footer>
     </div>
   );
 };

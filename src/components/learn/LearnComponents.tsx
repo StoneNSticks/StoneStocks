@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Link as LinkIcon } from "lucide-react";
+import { toast } from "sonner";
 
 export const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 export const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
@@ -89,11 +90,22 @@ export function ProConGrid({ pros, cons, prosTitle, consTitle }: { pros: string[
 }
 
 export function SectionHeader({ num, title, level }: { num: number; title: string; level?: string }) {
+  const sectionId = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  
+  const copyLink = () => {
+    const url = `${window.location.origin}${window.location.pathname}#${sectionId}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied!");
+  };
+
   return (
-    <motion.div variants={fadeIn} className="flex items-center gap-3 flex-wrap">
+    <motion.div variants={fadeIn} className="flex items-center gap-3 flex-wrap" id={sectionId}>
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">{num}</div>
       <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">{title}</h2>
       {level && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{level}</span>}
+      <button onClick={copyLink} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground/40 hover:text-primary transition-colors" title="Copy link">
+        <LinkIcon className="h-3.5 w-3.5" />
+      </button>
     </motion.div>
   );
 }
