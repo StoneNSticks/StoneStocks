@@ -252,7 +252,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
           })()}
 
           <div className="text-[10px] text-muted-foreground text-center">
-            {t("at.current")}: <span className="font-mono font-medium text-foreground">{cSym}{convert(price)?.toFixed(2)}</span>
+            {t("at.current")}: <span className="font-mono font-medium text-foreground">{cSym}{(convert(price) ?? price).toFixed(2)}</span>
           </div>
         </div>
       )}

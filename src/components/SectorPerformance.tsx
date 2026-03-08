@@ -325,7 +325,7 @@ export function SectorPerformance() {
                   />
                 )}
               </div>
-              <span className={`text-xs font-mono font-semibold w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
+              <span className={`text-xs font-mono font-semibold w-12 sm:w-14 text-right ${noData ? "text-muted-foreground/40" : isUp ? "text-chart-2" : "text-destructive"}`}>
                 {noData ? "—" : `${isUp ? "+" : ""}${s.avg.toFixed(2)}%`}
               </span>
             </div>

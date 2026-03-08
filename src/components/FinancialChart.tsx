@@ -34,6 +34,7 @@ export function FinancialChart({
   const { convert, symbol: currSymbol } = useCurrency();
   const t = useT();
   const effectiveFormat = (v: number) => {
+    if (v == null || isNaN(v)) return "—";
     const converted = convert(v) ?? v;
     if (formatValue !== formatLargeNumber) return `${currSymbol}${converted.toFixed(2)}`;
     return formatLargeNumber(converted, currSymbol);

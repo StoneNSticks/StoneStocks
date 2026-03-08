@@ -14,7 +14,7 @@ export function WeekRangeBar({ low52, high52, current }: WeekRangeBarProps) {
   if (!low52 || !high52 || !current || high52 <= low52) return null;
 
   const pct = Math.min(100, Math.max(0, ((current - low52) / (high52 - low52)) * 100));
-  const fmt = (v: number) => `${cSym}${convert(v)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmt = (v: number) => `${cSym}${(convert(v) ?? v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-4">
