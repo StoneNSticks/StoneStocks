@@ -24,7 +24,7 @@ const SECTOR_LABELS: Record<string, Record<string, string>> = {
   Utilities: { de: "Versorger", en: "Utilities" },
 };
 
-const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Energy", "Industrials"];
+const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities"];
 
 function getColor(change: number): string {
   if (change >= 3) return "hsl(145, 63%, 35%)";
