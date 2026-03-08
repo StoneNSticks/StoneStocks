@@ -45,6 +45,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/sentiment" element={<MarketSentimentPage />} />
                   <Route path="/stock/:symbol" element={<StockDetail />} />
                   <Route path="/index/:symbol" element={<IndexDetail />} />
                   <Route path="/news" element={<NewsPage />} />
