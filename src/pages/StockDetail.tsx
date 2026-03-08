@@ -300,6 +300,12 @@ const StockDetail = () => {
             </div>
 
             {/* ══════════════════════════════════════════════════════════
+                SECTION 7b: AI-Powered Stock Analysis
+                On-demand AI analysis of the stock's fundamentals
+                ══════════════════════════════════════════════════════════ */}
+            <AIStockSummary symbol={upperSymbol} profile={profile} quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
+
+            {/* ══════════════════════════════════════════════════════════
                 SECTION 8: Company Intelligence
                 Deep analysis: products/services, risk score, market position,
                 key business relationships, geographic presence
