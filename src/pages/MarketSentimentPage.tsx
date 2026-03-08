@@ -14,7 +14,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/useStockData";
+import { useMarketIndices, useGainersLosers, useTopCompanies, useFredSeries } from "@/hooks/useStockData";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -22,13 +22,14 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Gauge, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Shield, Flame, Globe,
-  ArrowRight, Info, ChevronDown, ChevronUp, Target, Waves, ShieldAlert, BarChart2
+  ArrowRight, Info, ChevronDown, ChevronUp, Target, Waves, ShieldAlert, BarChart2, LineChart
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketHeatmap } from "@/components/MarketHeatmap";
 import { SectorPerformance } from "@/components/SectorPerformance";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
