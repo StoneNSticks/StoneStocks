@@ -65,6 +65,9 @@ export default function LearnPage() {
     lang === "de" ? "Umfassender Leitfaden für Einsteiger und Fortgeschrittene" : "Comprehensive guide for beginners and advanced investors"
   );
   const { read, markRead } = useReadProgress();
+  const { user } = useAuth();
+  const { completedCount, markComplete, isCompleted } = useLearnProgress();
+  const totalSections = 12; // approximate number of main learn sections
 
   // Track which sections are in view
   useEffect(() => {
