@@ -137,7 +137,7 @@ export default function ComparePage() {
 
   const addSymbol = (sym: string) => {
     const upper = sym.toUpperCase();
-    if (!symbols.includes(upper) && symbols.length < 4) {
+    if (!symbols.includes(upper) && symbols.length < 5) {
       setSymbols([...symbols, upper]);
     }
     setSearchQuery("");
