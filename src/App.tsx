@@ -43,7 +43,6 @@ const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 const StockChatPage = lazy(() => import("./pages/StockChatPage"));
-const CustomDashboard = lazy(() => import("./pages/CustomDashboard"));
 const CryptoPage = lazy(() => import("./pages/CryptoPage"));
 const ForexPage = lazy(() => import("./pages/ForexPage"));
 const BondsPage = lazy(() => import("./pages/BondsPage"));
