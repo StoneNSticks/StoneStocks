@@ -1,85 +1,92 @@
 
 
-# Next Phases: Backtesting, Stock Comparison Pro, Social Sharing
+# Vier Aenderungen umsetzen
 
-## Phase 1: Social Sharing
+## 1. Auth-Seite auf Englisch umstellen
 
-**What:** Add share buttons and Open Graph meta tags so users can share stock pages, watchlists, and portfolios on social media.
+Alle deutschen Texte in `src/pages/AuthPage.tsx` werden ins Englische uebersetzt:
+- "Einloggen" -> "Sign In"
+- "Registrieren" -> "Sign Up"
+- "Passwort zuruecksetzen" -> "Reset Password"
+- "Benutzername" -> "Username"
+- "Anzeigename" -> "Display Name"
+- "Laden..." -> "Loading..."
+- Toast-Meldungen, Platzhalter, Labels, Links
 
-**Changes:**
-- **`src/components/ShareButton.tsx`** (new): Reusable share component using Web Share API with clipboard fallback. Supports sharing stock pages, watchlist snapshots, and compare links. Buttons for Twitter/X, WhatsApp, copy link.
-- **`src/pages/StockDetail.tsx`**: Add ShareButton next to the WatchlistStar in the header area.
-- **`src/pages/WatchlistPage.tsx`**: Add ShareButton that generates a shareable link with selected symbols as query params.
-- **`src/pages/ComparePage.tsx`**: Add ShareButton that encodes compared symbols into a shareable URL.
-- **`index.html`**: Add Open Graph meta tags (og:title, og:description, og:image) with defaults for the app.
+## 2. ETFs/Leveraged Products aus Listen filtern
+
+Das Problem: Produkte wie NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL sind Leveraged/Inverse ETFs, die den `isCommonStock`-Filter passieren, weil sie kurze Ticker haben und nicht in der Blacklist stehen.
+
+Loesung in `supabase/functions/stock-data/index.ts`:
+- Blacklist erweitern um bekannte Ticker: NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL, NVD, NVDL, NVDS, CONL, MSTZ, MSTU
+- Zusaetzlichen **Name-basierten Filter** nach dem Enrichment einbauen: Eintraege deren Name Begriffe wie "ETF", "2x", "2X", "3x", "3X", "Leveraged", "Short", "Long Daily", "Direxion", "Defiance", "GraniteShares", "Tradr", "ProShares", "Trust" + "ETF" enthaelt, werden entfernt
+- Diesen Filter auf `handleGainersLosers` und `handleMostActive` anwenden (nach `enrichWithProfileData`)
+
+## 3. User-Datenbank leeren
+
+Per SQL alle bestehenden Eintraege aus der `profiles`-Tabelle loeschen. Da `profiles.id` per `ON DELETE CASCADE` an `auth.users` haengt, muss zuerst der Eintrag in `auth.users` (ueber Lovable Cloud) oder die `profiles`-Tabelle direkt geleert werden.
+
+Konkret: `DELETE FROM profiles;` und `DELETE FROM watchlist;` ausfuehren.
+
+## 4. Waehrungsumrechnung auf Stock-Detail-Seiten
+
+Folgende Komponenten zeigen Preise aktuell immer in USD (`$`) an und muessen die Waehrungsumrechnung nutzen:
+
+### StockChart.tsx
+- `useCurrency` importieren
+- Y-Achse: `$` durch `symbol` ersetzen und Werte konvertieren
+- Tooltip: Konvertierte Werte mit korrektem Waehrungssymbol anzeigen
+- Chartdaten: `close`-Werte bei der Anzeige konvertieren
+
+### FinancialChart.tsx
+- `useCurrency` importieren
+- `formatLargeNumber` dynamisch mit Waehrungssymbol versehen
+- Y-Achse und Tooltip nutzen konvertierte Werte
+
+### MetricsGrid.tsx
+- `useFormattedCurrency` und `useCurrency` importieren
+- Alle `formatCurrency`-Aufrufe durch die Hook-basierte Version ersetzen
+
+### KeyMetrics.tsx
+- `useFormattedCurrency` importieren
+- Alle Waehrungswerte (Market Cap, EPS, 52W High/Low, Revenue, Gross Profit) konvertieren
+
+### StockDetail.tsx
+- `formatDividendValue` mit dem Waehrungssymbol versehen
+- Preis-Header-Anzeige mit Konvertierung
 
 ---
 
-## Phase 2: Stock Comparison Pro
+## Technische Details
 
-**What:** Enhance the existing ComparePage with overlay chart, side-by-side financial charts, and exportable comparison table.
+### Betroffene Dateien
+- `src/pages/AuthPage.tsx` (Texte uebersetzen)
+- `supabase/functions/stock-data/index.ts` (ETF-Filter erweitern)
+- `src/components/StockChart.tsx` (Waehrung)
+- `src/components/FinancialChart.tsx` (Waehrung)
+- `src/components/MetricsGrid.tsx` (Waehrung)
+- `src/components/KeyMetrics.tsx` (Waehrung)
+- `src/pages/StockDetail.tsx` (Waehrung)
 
-**Changes:**
-- **`src/components/NormalizedChart.tsx`**: Already exists. Verify it supports 3+ stocks with distinct colors and a legend.
-- **`src/pages/ComparePage.tsx`**: 
-  - Add tabbed view: "Overview" (existing metrics table), "Charts" (overlay price chart + financial bars), "Financials" (side-by-side revenue/income/margins)
-  - Add "Export as CSV" button that exports the comparison metrics table
-  - Allow up to 5 stocks (currently appears to support multiple already)
-- **`src/components/CompareFinancials.tsx`** (new): Side-by-side financial chart comparison (revenue, net income, margins) using grouped bar charts from recharts. Fetches data via `useFullStock` for each symbol.
-
----
-
-## Phase 3: Backtesting / Strategy Simulator
-
-**What:** A page where users define a simple buy/sell strategy and run it against historical data to see hypothetical returns.
-
-**Changes:**
-- **`src/pages/BacktestPage.tsx`** (new): 
-  - Strategy builder form: select stock, date range, initial investment, strategy type (SMA crossover, RSI threshold, buy-and-hold)
-  - Uses existing `getTimeSeries` from stockApi to fetch historical data
-  - Client-side backtesting engine computes: total return, annualized return, max drawdown, Sharpe ratio, win rate
-  - Results displayed as equity curve chart (recharts AreaChart) + performance summary cards
-  - Compare strategy vs buy-and-hold baseline
-- **`src/lib/backtestEngine.ts`** (new): Pure functions for strategy simulation:
-  - `runSMACrossover(data, shortPeriod, longPeriod)` - buy when short SMA crosses above long SMA
-  - `runRSIStrategy(data, oversold, overbought)` - buy when RSI < oversold, sell when > overbought
-  - `runBuyAndHold(data)` - baseline comparison
-  - `calculateMetrics(trades, equity)` - compute return, drawdown, Sharpe, etc.
-- **`src/App.tsx`**: Add route `/backtest` with lazy import
-- **`src/components/BottomNav.tsx`** or **`src/components/Header.tsx`**: Add navigation link to Backtest page
-
-### Backtesting Flow
+### Name-basierter ETF-Filter (Pseudocode)
 ```text
-User Input                  Processing                 Output
-+-----------+     +------------------------+     +------------------+
-| Symbol    | --> | Fetch historical data   | --> | Equity curve     |
-| Strategy  |     | Run strategy logic      |     | Performance stats|
-| Dates     |     | Calculate trades        |     | Trade log        |
-| Capital   |     | Compute metrics         |     | vs Buy & Hold    |
-+-----------+     +------------------------+     +------------------+
+function isETFByName(name: string): boolean {
+  const lower = name.toLowerCase();
+  return lower.includes(" etf") ||
+    /\b[23]x\b/.test(lower) ||
+    lower.includes("leveraged") ||
+    lower.includes("direxion") ||
+    lower.includes("proshares") ||
+    lower.includes("graniteshares") ||
+    lower.includes("defiance") ||
+    lower.includes("tradr") ||
+    (lower.includes("daily") && (lower.includes("short") || lower.includes("long")));
+}
 ```
 
----
-
-## Implementation Order
-
-1. Social Sharing (simplest, touches existing pages lightly)
-2. Stock Comparison Pro (extends existing Compare page)
-3. Backtesting (new page + engine, most complex)
-
-## Files Summary
-
-| Action | File |
-|--------|------|
-| Create | `src/components/ShareButton.tsx` |
-| Create | `src/components/CompareFinancials.tsx` |
-| Create | `src/pages/BacktestPage.tsx` |
-| Create | `src/lib/backtestEngine.ts` |
-| Edit | `src/pages/StockDetail.tsx` |
-| Edit | `src/pages/WatchlistPage.tsx` |
-| Edit | `src/pages/ComparePage.tsx` |
-| Edit | `src/App.tsx` |
-| Edit | `index.html` |
-
-No database changes required -- all features are client-side.
+### Reihenfolge
+1. Auth-Seite uebersetzen
+2. ETF-Filter in Edge Function erweitern + deployen
+3. User-Daten loeschen
+4. Waehrungsumrechnung in alle Stock-Detail-Komponenten einbauen
 

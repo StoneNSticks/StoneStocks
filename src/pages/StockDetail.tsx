@@ -61,6 +61,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { DividendGrowth } from "@/components/DividendGrowth";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
+import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -219,6 +220,7 @@ const StockDetail = () => {
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
                     <WatchlistStar symbol={upperSymbol} />
                     <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
+                    <ShareButton title={`${companyName} (${upperSymbol}) — StoneStocks`} text={`Check out ${companyName} on StoneStocks`} />
                   </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
                 </div>

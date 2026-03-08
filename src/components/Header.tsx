@@ -37,6 +37,7 @@ const navItems: NavItem[] = [
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
   { to: "/calculators", key: "nav.tools", group: "tools" },
   { to: "/compare", key: "nav.compare", fallback: "Compare", group: "tools" },
+  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "tools" },
   { to: "/macro", key: "nav.macro", fallback: "Macro", group: "tools" },
   { to: "/glossary", key: "nav.glossary", fallback: "Glossary", group: "tools" },
   { to: "/learn", key: "nav.learn", group: "tools" },

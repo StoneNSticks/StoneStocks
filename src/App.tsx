@@ -39,6 +39,7 @@ const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ComparePage = lazy(() => import("./pages/ComparePage"));
 const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
+const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,6 +85,7 @@ const App = () => (
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/compare" element={<ComparePage />} />
                   <Route path="/macro" element={<MacroDashboard />} />
+                  <Route path="/backtest" element={<BacktestPage />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
