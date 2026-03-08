@@ -70,6 +70,8 @@ const App = () => (
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/admin" element={<AdminPage />} />
+                  <Route path="/compare" element={<ComparePage />} />
+                  <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

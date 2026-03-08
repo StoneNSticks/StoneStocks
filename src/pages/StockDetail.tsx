@@ -194,7 +194,10 @@ const StockDetail = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <RecommendationChart data={recommendation} />
-              <StockComments symbol={upperSymbol} />
+              <InsiderTrades symbol={upperSymbol} />
+            </div>
+
+            <StockComments symbol={upperSymbol} />
             </div>
 
             <PeersList peers={peers} currentSymbol={upperSymbol} />
