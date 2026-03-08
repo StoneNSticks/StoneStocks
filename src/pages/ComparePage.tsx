@@ -192,9 +192,9 @@ export default function ComparePage() {
                 <button onClick={() => removeSymbol(s)} className="ml-1 hover:text-destructive"><X className="h-3 w-3" /></button>
               </Badge>
             ))}
-            {symbols.length < 4 && (
+            {symbols.length < 5 && (
               <Badge variant="outline" className="text-xs text-muted-foreground gap-1">
-                <Plus className="h-3 w-3" />{4 - symbols.length} {t("compare.remaining")}
+                <Plus className="h-3 w-3" />{5 - symbols.length} {t("compare.remaining")}
               </Badge>
             )}
           </div>
