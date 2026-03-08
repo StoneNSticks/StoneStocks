@@ -55,17 +55,17 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
   const pctColor = (v: number) => v > 0 ? "text-chart-2" : v < 0 ? "text-destructive" : "";
 
   const metrics = [
-    { label: lang === "de" ? "Kurs" : "Price", value: fmtCur(price || 0), color: "" },
-    { label: lang === "de" ? "Veränderung" : "Change", value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change) },
-    { label: lang === "de" ? "Marktkapitalisierung" : "Market Cap", value: fmtMcap(mcap), color: "" },
+    { label: t("compare.price"), value: fmtCur(price || 0), color: "" },
+    { label: t("compare.change"), value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change) },
+    { label: t("compare.marketCap"), value: fmtMcap(mcap), color: "" },
     { label: "P/E", value: fmtNum(pe), color: "" },
     { label: "P/B", value: fmtNum(pb), color: "" },
     { label: "EPS", value: fmtCur(eps), color: "" },
     { label: "Beta", value: fmtNum(beta), color: "" },
-    { label: lang === "de" ? "Dividendenrendite" : "Div Yield", value: fmtPct(divYield), color: pctColor(divYield) },
-    { label: lang === "de" ? "Gewinnmarge" : "Profit Margin", value: fmtPct(profitMargin), color: pctColor(profitMargin) },
+    { label: t("compare.divYield"), value: fmtPct(divYield), color: pctColor(divYield) },
+    { label: t("compare.profitMargin"), value: fmtPct(profitMargin), color: pctColor(profitMargin) },
     { label: "ROE", value: fmtPct(roe), color: pctColor(roe) },
-    { label: lang === "de" ? "Umsatzwachstum" : "Rev Growth", value: fmtPct(revGrowth), color: pctColor(revGrowth) },
+    { label: t("compare.revGrowth"), value: fmtPct(revGrowth), color: pctColor(revGrowth) },
   ];
 
   return (
