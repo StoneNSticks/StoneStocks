@@ -747,6 +747,23 @@ export default function LearnPage() {
           </motion.section>
         </SuperSection>
 
+        {/* Glossary CTA */}
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="rounded-xl border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-6 text-center space-y-3">
+          <BookOpen className="h-8 w-8 text-primary mx-auto" />
+          <h3 className="font-display font-bold text-lg text-foreground">
+            {lang === "de" ? "Finanz-Glossar" : "Financial Glossary"}
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            {lang === "de"
+              ? "Über 500 Finanzbegriffe und Abkürzungen verständlich erklärt. Perfekt zum Nachschlagen."
+              : "Over 500 financial terms and abbreviations explained clearly. Perfect for reference."}
+          </p>
+          <a href="/glossary" className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+            {lang === "de" ? "Zum Glossar" : "Open Glossary"}
+            <ArrowRight className="h-4 w-4" />
+          </a>
+        </motion.div>
+
         {/* Disclaimer */}
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center text-xs text-muted-foreground pb-8 border-t border-border/40 pt-8">
           <p>{t("learn.disclaimer")}</p>
