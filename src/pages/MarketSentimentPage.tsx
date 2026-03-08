@@ -446,6 +446,10 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
 /* ─── Page Component ─── */
 export default function MarketSentimentPage() {
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Marktstimmung & Fear/Greed Index" : "Market Sentiment & Fear/Greed Index",
+    lang === "de" ? "Echtzeit-Marktstimmung mit Fear & Greed Index" : "Real-time market sentiment with Fear & Greed Index"
+  );
   const { data: indices, isLoading: indicesLoading } = useMarketIndices();
   const { data: glData, isLoading: glLoading } = useGainersLosers();
   const { data: commodities, isLoading: comLoading } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });

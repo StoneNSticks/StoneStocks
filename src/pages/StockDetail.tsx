@@ -88,8 +88,13 @@ const StockDetail = () => {
   // useFullStock combines: profile, quote, overview, news, peers,
   // recommendation, financials, ticker details, dividends, snapshot
   const { data, isLoading, error } = useFullStock(upperSymbol);
-  const t = useT(); // Translation function
-  const { convert, symbol: cSym } = useCurrency(); // Currency conversion
+  const t = useT();
+  const { lang } = useLanguage();
+  const { convert, symbol: cSym } = useCurrency();
+  usePageTitle(
+    profile?.name ? `${profile.name} (${upperSymbol})` : upperSymbol,
+    profile?.name ? `${profile.name} stock price, charts, financials and analysis` : undefined
+  );
 
   // ── Currency-aware formatter for small values (EPS, dividends) ──
   const formatDividendValue = (num: number): string => {

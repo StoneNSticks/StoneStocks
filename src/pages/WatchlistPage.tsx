@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useQuery } from "@tanstack/react-query";
 import { getQuote, getProfile } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";

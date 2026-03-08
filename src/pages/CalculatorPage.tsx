@@ -918,6 +918,11 @@ interface CalcTab {
 
 const CalculatorPage = () => {
   const t = useT();
+  const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Finanzrechner" : "Financial Calculators",
+    lang === "de" ? "Zinseszins, Dividenden, FIRE und mehr berechnen" : "Compound interest, dividends, FIRE and more"
+  );
   const [activeCategory, setActiveCategory] = useState<CalcCategory>("all");
 
   const tabs: CalcTab[] = [

@@ -21,6 +21,10 @@ export default function ProfilePage() {
   const { data: watchlist } = useWatchlist();
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Mein Profil" : "My Profile",
+    lang === "de" ? "Profildaten und Kontoübersicht" : "Profile data and account overview"
+  );
   const navigate = useNavigate();
   const { toast } = useToast();
 
