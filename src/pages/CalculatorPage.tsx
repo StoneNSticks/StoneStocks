@@ -965,7 +965,7 @@ const CalculatorPage = () => {
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="flex gap-2 mb-4 scroll-x-touch pb-1">
           {categories.map(cat => (
             <button
               key={cat.key}
