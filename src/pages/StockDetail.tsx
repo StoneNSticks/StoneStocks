@@ -55,6 +55,7 @@ import { SecFilings } from "@/components/SecFilings";
 import { FairValue } from "@/components/FairValue";
 import { DCFCalculator } from "@/components/DCFCalculator";
 import { AIStockSummary } from "@/components/AIStockSummary";
+import { AdvancedAlertBuilder } from "@/components/AdvancedAlertBuilder";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -271,6 +272,9 @@ const StockDetail = () => {
                 Right: Community bullish/bearish vote
                 ══════════════════════════════════════════════════════════ */}
             <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
+
+            {/* Advanced Alerts */}
+            <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 6b: Fair Value Estimate + DCF Calculator

@@ -38,6 +38,8 @@ const navItems: NavItem[] = [
   { to: "/calculators", key: "nav.tools", group: "tools" },
   { to: "/compare", key: "nav.compare", fallback: "Compare", group: "tools" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "tools" },
+  { to: "/ai-chat", key: "nav.aiChat", fallback: "AI Chat", group: "tools" },
+  { to: "/dashboard", key: "nav.dashboard", fallback: "Dashboard", group: "tools" },
   { to: "/macro", key: "nav.macro", fallback: "Macro", group: "tools" },
   { to: "/glossary", key: "nav.glossary", fallback: "Glossary", group: "tools" },
   { to: "/learn", key: "nav.learn", group: "tools" },

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
+import { PortfolioPerformance } from "@/components/PortfolioPerformance";
 import { AIRecommendations } from "@/components/AIRecommendations";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -415,6 +416,13 @@ export default function PortfolioPage() {
                   ))}
                 </AnimatePresence>
               </div>
+            )}
+
+            {/* Portfolio Performance Chart */}
+            {count > 0 && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-4">
+                <PortfolioPerformance positions={positions!} />
+              </motion.div>
             )}
 
             {/* Allocation pie chart */}

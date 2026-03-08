@@ -698,4 +698,10 @@ const translations: Record<string, Record<Language, string>> = {
 
   // ── Backtest ──
   "nav.backtest": { de: "Backtest", en: "Backtest" },
+
+  // ── AI Chat ──
+  "nav.aiChat": { de: "AI Chat", en: "AI Chat" },
+
+  // ── Dashboard ──
+  "nav.dashboard": { de: "Dashboard", en: "Dashboard" },
 };

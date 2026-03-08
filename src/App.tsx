@@ -40,6 +40,8 @@ const ComparePage = lazy(() => import("./pages/ComparePage"));
 const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
+const StockChatPage = lazy(() => import("./pages/StockChatPage"));
+const CustomDashboard = lazy(() => import("./pages/CustomDashboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +88,8 @@ const App = () => (
                   <Route path="/compare" element={<ComparePage />} />
                   <Route path="/macro" element={<MacroDashboard />} />
                   <Route path="/backtest" element={<BacktestPage />} />
+                  <Route path="/ai-chat" element={<StockChatPage />} />
+                  <Route path="/dashboard" element={<CustomDashboard />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
