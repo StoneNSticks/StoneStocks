@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
+import { PortfolioPerformance } from "@/components/PortfolioPerformance";
 import { AIRecommendations } from "@/components/AIRecommendations";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
