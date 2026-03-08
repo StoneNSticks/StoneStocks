@@ -7,6 +7,7 @@ import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
 import { HiddenGems } from "@/components/HiddenGems";
 import { CommoditiesSection } from "@/components/CommoditiesSection";
+import { SentimentGauge } from "@/components/SentimentGauge";
 import { useT } from "@/contexts/LanguageContext";
 
 const Index = () => {
