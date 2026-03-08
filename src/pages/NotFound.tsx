@@ -1,6 +1,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useT } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
