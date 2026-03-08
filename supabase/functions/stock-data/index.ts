@@ -58,13 +58,37 @@ async function setCache(key: string, value: unknown, source: string, ttlMinutes:
   );
 }
 
-// === API Fetch Helpers ===
+// === Cache Cleanup (probabilistic — runs ~1% of requests) ===
+async function maybeCleanupCache() {
+  if (Math.random() > 0.01) return;
+  try {
+    await supabase.from("api_cache").delete().lt("expires_at", new Date().toISOString());
+    console.log("Cache cleanup executed");
+  } catch (e) { console.warn("Cache cleanup failed:", e); }
+}
+
+// === Exponential backoff fetch wrapper ===
+async function fetchWithBackoff(url: string, options?: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, options);
+    if (res.status === 429 && attempt < maxRetries) {
+      const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+      console.warn(`Rate limited on ${url}, retrying in ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+      continue;
+    }
+    return res;
+  }
+  throw new Error("Max retries exceeded");
+}
+
+// === API Fetch Helpers (with backoff) ===
 
 async function fetchFinnhub(endpoint: string, params: Record<string, string> = {}) {
   const url = new URL(`https://finnhub.io/api/v1/${endpoint}`);
   url.searchParams.set("token", FINNHUB_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`Finnhub error: ${res.status}`);
   return res.json();
 }
@@ -74,7 +98,7 @@ async function fetchAlphaVantage(fn: string, params: Record<string, string> = {}
   url.searchParams.set("function", fn);
   url.searchParams.set("apikey", ALPHA_VANTAGE_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`AlphaVantage error: ${res.status}`);
   return res.json();
 }
@@ -83,7 +107,7 @@ async function fetchTwelveData(endpoint: string, params: Record<string, string> 
   const url = new URL(`https://api.twelvedata.com/${endpoint}`);
   url.searchParams.set("apikey", TWELVE_DATA_KEY);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`TwelveData error: ${res.status}`);
   return res.json();
 }
@@ -92,7 +116,7 @@ async function fetchMassive(endpoint: string, params: Record<string, string> = {
   const url = new URL(`https://api.polygon.io${endpoint}`);
   url.searchParams.set("apiKey", getMassiveKey());
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
+  const res = await fetchWithBackoff(url.toString());
   if (!res.ok) throw new Error(`Massive error: ${res.status}`);
   return res.json();
 }
@@ -1714,6 +1738,9 @@ Deno.serve(async (req) => {
     const timespan = url.searchParams.get("timespan") || "day";
     const from = url.searchParams.get("from") || "";
     const to = url.searchParams.get("to") || "";
+
+    // Probabilistic cache cleanup
+    maybeCleanupCache().catch(() => {});
 
     let result: unknown = null;
     switch (action) {

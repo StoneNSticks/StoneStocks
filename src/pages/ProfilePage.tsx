@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,10 @@ export default function ProfilePage() {
   const { data: watchlist } = useWatchlist();
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Mein Profil" : "My Profile",
+    lang === "de" ? "Profildaten und Kontoübersicht" : "Profile data and account overview"
+  );
   const navigate = useNavigate();
   const { toast } = useToast();
 

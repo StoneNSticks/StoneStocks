@@ -11,11 +11,17 @@ import { MostActive } from "@/components/MostActive";
 import { MarketOverview } from "@/components/MarketOverview";
 import { SectorPerformance } from "@/components/SectorPerformance";
 import { Button } from "@/components/ui/button";
-import { useT } from "@/contexts/LanguageContext";
+import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Filter } from "lucide-react";
 
 const RankingsPage = () => {
   const t = useT();
+  const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Rankings & Bestenlisten" : "Rankings & Leaderboards",
+    lang === "de" ? "Top-Unternehmen, Gewinner, Verlierer und Sektorperformance" : "Top companies, gainers, losers, and sector performance"
+  );
   return (
     <div className="min-h-screen bg-background">
       <Header />

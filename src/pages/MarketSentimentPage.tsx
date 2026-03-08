@@ -18,6 +18,7 @@ import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/use
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Gauge, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Shield, Flame, Globe,
@@ -445,6 +446,10 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
 /* ─── Page Component ─── */
 export default function MarketSentimentPage() {
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Marktstimmung & Fear/Greed Index" : "Market Sentiment & Fear/Greed Index",
+    lang === "de" ? "Echtzeit-Marktstimmung mit Fear & Greed Index" : "Real-time market sentiment with Fear & Greed Index"
+  );
   const { data: indices, isLoading: indicesLoading } = useMarketIndices();
   const { data: glData, isLoading: glLoading } = useGainersLosers();
   const { data: commodities, isLoading: comLoading } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });

@@ -8,10 +8,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
-import { useT } from "@/contexts/LanguageContext";
+import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function AuthPage() {
   const t = useT();
+  const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Anmelden" : "Sign In",
+    lang === "de" ? "Anmelden oder Konto erstellen" : "Sign in or create an account"
+  );
   const [isLogin, setIsLogin] = useState(true);
   const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");

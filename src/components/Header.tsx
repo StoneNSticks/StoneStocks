@@ -74,12 +74,13 @@ export function Header() {
           </Link>
 
           {/* Show compact search: always on non-home pages, on home only when main search scrolled away */}
-          {(!isHome || !mainSearchVisible) && (
-            <div className="flex-1 max-w-xl mx-auto animate-fade-in">
+          {(!isHome || !mainSearchVisible) ? (
+            <div className="flex-1 max-w-xl mx-auto animate-slide-down" key="header-search">
               <SearchBar compact />
             </div>
+          ) : (
+            <div className="flex-1" />
           )}
-          {isHome && mainSearchVisible && <div className="flex-1" />}
 
           <div className="flex items-center gap-1.5">
             <div className="hidden lg:block"><MarketClock /></div>
@@ -175,7 +176,11 @@ export function Header() {
         </div>
       </div>
       {/* Row 3: Ticker tape — on home, only show when main indices scrolled away */}
-      {(!isHome || !mainIndicesVisible) && <TickerTape />}
+      {(!isHome || !mainIndicesVisible) && (
+        <div className="animate-slide-down">
+          <TickerTape />
+        </div>
+      )}
     </header>
   );
 }

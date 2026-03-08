@@ -8,6 +8,7 @@ import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, 
 import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 // Progress tracker using localStorage
 function useReadProgress() {
@@ -56,6 +57,10 @@ function CalcLink({ to, label }: { to: string; label: string }) {
 export default function LearnPage() {
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Börse lernen" : "Learn Investing",
+    lang === "de" ? "Umfassender Leitfaden für Einsteiger und Fortgeschrittene" : "Comprehensive guide for beginners and advanced investors"
+  );
   const { read, markRead } = useReadProgress();
 
   // Track which sections are in view

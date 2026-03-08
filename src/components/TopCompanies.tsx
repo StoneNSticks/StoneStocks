@@ -2,15 +2,25 @@ import { Link } from "react-router-dom";
 import { useTopCompanies } from "@/hooks/useStockData";
 import { formatNumber, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import { Crown } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useT } from "@/contexts/LanguageContext";
 
 export function TopCompanies() {
-  const { data: companies, isLoading } = useTopCompanies();
+  const { data: companies, isLoading, error, refetch } = useTopCompanies();
   const fc = useFormattedCurrency();
   const { convert, symbol: cs } = useCurrency();
   const t = useT();
+
+  if (error && !companies) {
+    return (
+      <div className="rounded-xl border border-border/60 bg-card p-5">
+        <h2 className="font-display text-lg font-semibold mb-4">{t("top.title")}</h2>
+        <ErrorState onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

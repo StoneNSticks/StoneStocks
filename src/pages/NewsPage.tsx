@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { MarketOverview } from "@/components/MarketOverview";
 import { useMarketNews } from "@/hooks/useStockData";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,10 @@ const NewsPage = () => {
   const { data: news, isLoading } = useMarketNews();
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Marktnachrichten" : "Market News",
+    lang === "de" ? "Aktuelle Finanznachrichten und Marktberichte" : "Latest financial news and market reports"
+  );
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [limit, setLimit] = useState(20);

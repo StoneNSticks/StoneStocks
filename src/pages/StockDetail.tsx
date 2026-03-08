@@ -58,7 +58,8 @@ import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { DividendGrowth } from "@/components/DividendGrowth";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
-import { useT } from "@/contexts/LanguageContext";
+import { useT, useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery } from "@tanstack/react-query";
 import { getEarnings } from "@/lib/stockApi";
@@ -87,8 +88,14 @@ const StockDetail = () => {
   // useFullStock combines: profile, quote, overview, news, peers,
   // recommendation, financials, ticker details, dividends, snapshot
   const { data, isLoading, error } = useFullStock(upperSymbol);
-  const t = useT(); // Translation function
-  const { convert, symbol: cSym } = useCurrency(); // Currency conversion
+  const t = useT();
+  const { lang } = useLanguage();
+  const { convert, symbol: cSym } = useCurrency();
+  const profileName = data?.profile?.name;
+  usePageTitle(
+    profileName ? `${profileName} (${upperSymbol})` : upperSymbol,
+    profileName ? `${profileName} stock price, charts, financials and analysis` : undefined
+  );
 
   // ── Currency-aware formatter for small values (EPS, dividends) ──
   const formatDividendValue = (num: number): string => {
