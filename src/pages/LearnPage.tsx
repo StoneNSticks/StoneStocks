@@ -1,8 +1,11 @@
 import { Header } from "@/components/Header";
-import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network } from "lucide-react";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, fadeIn, stagger } from "@/components/learn/LearnComponents";
+import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
+import { ReadingProgress } from "@/components/learn/ReadingProgress";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LearnPage() {
   const t = useT();
