@@ -130,24 +130,30 @@ export type Database = {
       }
       profiles: {
         Row: {
+          comment_reply_alerts: boolean
           created_at: string
           display_name: string | null
           email: string | null
           id: string
+          show_username: boolean
           username: string | null
         }
         Insert: {
+          comment_reply_alerts?: boolean
           created_at?: string
           display_name?: string | null
           email?: string | null
           id: string
+          show_username?: boolean
           username?: string | null
         }
         Update: {
+          comment_reply_alerts?: boolean
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
+          show_username?: boolean
           username?: string | null
         }
         Relationships: []
@@ -184,6 +190,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          parent_id: string | null
           symbol: string
           user_id: string
         }
@@ -191,6 +198,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           symbol: string
           user_id: string
         }
@@ -198,10 +206,19 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           symbol?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "stock_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "stock_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stock_votes: {
         Row: {
