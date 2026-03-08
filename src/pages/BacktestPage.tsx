@@ -170,6 +170,9 @@ export default function BacktestPage() {
       case "vwap": return runVWAPStrategy(ohlcData, capital, vwapDeviation);
       case "chandelier": return runChandelierStrategy(ohlcData, capital, chandAtrPeriod, chandMultiplier);
       case "keltner": return runKeltnerStrategy(ohlcData, capital, keltnerEma, 10, keltnerMultiplier);
+      case "dca": return runDCAStrategy(ohlcData, capital, 20);
+      case "high_strategy": return runHighStrategy(ohlcData, capital, 252, 0.10);
+      case "envelope": return runEnvelopeStrategy(ohlcData, capital, 20, 0.03);
       default: return null;
     }
   }, [ohlcData, strategy, capital, smaShort, smaLong, rsiOversold, rsiOverbought, macdFast, macdSlow, macdSignal, bbPeriod, bbStdDev, breakoutPeriod, tripleFast, tripleMid, tripleSlow, mrPeriod, mrDeviation, momLookback, stochPeriod, vwapDeviation, chandAtrPeriod, chandMultiplier, keltnerEma, keltnerMultiplier]);
