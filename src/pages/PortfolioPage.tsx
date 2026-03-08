@@ -1,8 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
 import { PortfolioPerformance } from "@/components/PortfolioPerformance";
-import { AIRecommendations } from "@/components/AIRecommendations";
-import { AIPortfolioReview } from "@/components/AIPortfolioReview";
 import { DividendIncomeTracker } from "@/components/DividendIncomeTracker";
 import { TaxLossHarvesting } from "@/components/TaxLossHarvesting";
 import { PortfolioRebalancing } from "@/components/PortfolioRebalancing";
