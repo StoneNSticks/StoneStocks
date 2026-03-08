@@ -1,12 +1,12 @@
 /**
- * MarketSentimentPage — Comprehensive market sentiment dashboard.
+ * MarketSentimentPage: Comprehensive market sentiment dashboard.
  * 
  * The Fear & Greed Index is computed from 5 sub-indicators:
- * 1. Market Momentum — Average performance of major indices
- * 2. Market Breadth — Ratio of advancing vs declining stocks
- * 3. Volatility Signal — Derived from index spread (proxy for VIX)
- * 4. Safe Haven Demand — Gold performance vs stock market (flight to safety)
- * 5. Junk Bond Proxy — Energy/commodity momentum as risk appetite signal
+ * 1. Market Momentum: Average performance of major indices
+ * 2. Market Breadth: Ratio of advancing vs declining stocks
+ * 3. Volatility Signal: Derived from index spread (proxy for VIX)
+ * 4. Safe Haven Demand: Gold performance vs stock market (flight to safety)
+ * 5. Junk Bond Proxy: Energy/commodity momentum as risk appetite signal
  * 
  * Each indicator produces a 0-100 sub-score. The final score is a weighted average.
  * A methodology section explains each indicator transparently.
