@@ -419,4 +419,40 @@ const translations: Record<string, Record<Language, string>> = {
   "ec.estimated": { de: "Geschätzt", en: "Estimated" },
   "ec.beat": { de: "Übertroffen", en: "Beat" },
   "ec.miss": { de: "Verfehlt", en: "Missed" },
+
+  // ── Screener ──
+  "screener.title": { de: "Aktien-Screener", en: "Stock Screener" },
+  "screener.subtitle": { de: "Aktien nach Kennzahlen filtern", en: "Filter stocks by metrics" },
+  "screener.search": { de: "Suche", en: "Search" },
+  "screener.minMcap": { de: "Min. Marktkapitalisierung (Mrd.)", en: "Min Market Cap (B)" },
+  "screener.maxPe": { de: "Max. KGV", en: "Max P/E" },
+  "screener.minYield": { de: "Min. Dividendenrendite (%)", en: "Min Yield (%)" },
+  "screener.results": { de: "Ergebnisse", en: "results" },
+  "screener.company": { de: "Unternehmen", en: "Company" },
+  "screener.mcap": { de: "Marktkapitalisierung", en: "Market Cap" },
+  "screener.change": { de: "Änderung", en: "Change" },
+  "screener.yield": { de: "Rendite", en: "Yield" },
+  "screener.noResults": { de: "Keine Aktien gefunden, die den Kriterien entsprechen.", en: "No stocks match your criteria." },
+
+  // ── Sector Performance ──
+  "sector.title": { de: "Sektorperformance", en: "Sector Performance" },
+
+  // ── Social / Comments ──
+  "comments.title": { de: "Diskussion", en: "Discussion" },
+  "comments.placeholder": { de: "Deine Meinung teilen...", en: "Share your take..." },
+  "comments.empty": { de: "Noch keine Kommentare. Sei der Erste!", en: "No comments yet. Be the first!" },
+  "sentiment.community": { de: "Community-Stimmung", en: "Community Sentiment" },
+  "sentiment.bullish": { de: "Bullisch", en: "Bullish" },
+  "sentiment.bearish": { de: "Bärisch", en: "Bearish" },
+  "sentiment.loginToVote": { de: "Anmelden um abzustimmen", en: "Log in to vote" },
+
+  // ── Calculator extras ──
+  "calc.optionsCalc": { de: "Optionsrechner", en: "Options Calc" },
+  "calc.dcaSimulator": { de: "DCA-Simulator", en: "DCA Simulator" },
+  "calc.strikePrice": { de: "Ausübungspreis", en: "Strike Price" },
+  "calc.premium": { de: "Prämie", en: "Premium" },
+  "calc.contracts": { de: "Kontrakte", en: "Contracts" },
+  "calc.optionType": { de: "Typ", en: "Type" },
+  "calc.dcaMonths": { de: "Monate", en: "Months" },
+  "calc.dcaVolatility": { de: "Volatilität (%)", en: "Volatility (%)" },
 };
