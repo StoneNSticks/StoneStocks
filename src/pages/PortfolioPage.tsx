@@ -340,34 +340,36 @@ export default function PortfolioPage() {
                     {lang === "de" ? "Position hinzufügen" : "Add Position"}
                   </Button>
                   {count > 0 && (
-                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
-                      const header = "Symbol,Shares,Avg Cost,Date";
-                      const rows = positions!.map((p: any) => `${p.symbol},${p.shares},${p.avg_cost},${new Date(p.created_at).toISOString().slice(0, 10)}`);
-                      const csv = [header, ...rows].join("\n");
-                      const blob = new Blob([csv], { type: "text/csv" });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `portfolio-${new Date().toISOString().slice(0, 10)}.csv`;
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    }}>
-                      <Download className="h-3.5 w-3.5" />
-                      CSV
-                    </Button>
-                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
-                      const symbols = positions!.map((p: any) => p.symbol).join(",");
-                      const url = `${window.location.origin}/shared-watchlist?symbols=${symbols}`;
-                      if (navigator.share) {
-                        navigator.share({ title: "My Portfolio", url });
-                      } else {
-                        navigator.clipboard.writeText(url);
-                        toast.success(lang === "de" ? "Link kopiert!" : "Link copied!");
-                      }
-                    }}>
-                      <Share2 className="h-3.5 w-3.5" />
-                      {lang === "de" ? "Teilen" : "Share"}
-                    </Button>
+                    <>
+                      <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
+                        const header = "Symbol,Shares,Avg Cost,Date";
+                        const rows = positions!.map((p: any) => `${p.symbol},${p.shares},${p.avg_cost},${new Date(p.created_at).toISOString().slice(0, 10)}`);
+                        const csv = [header, ...rows].join("\n");
+                        const blob = new Blob([csv], { type: "text/csv" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `portfolio-${new Date().toISOString().slice(0, 10)}.csv`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }}>
+                        <Download className="h-3.5 w-3.5" />
+                        CSV
+                      </Button>
+                      <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
+                        const symbols = positions!.map((p: any) => p.symbol).join(",");
+                        const url = `${window.location.origin}/shared-watchlist?symbols=${symbols}`;
+                        if (navigator.share) {
+                          navigator.share({ title: "My Portfolio", url });
+                        } else {
+                          navigator.clipboard.writeText(url);
+                          toast.success(lang === "de" ? "Link kopiert!" : "Link copied!");
+                        }
+                      }}>
+                        <Share2 className="h-3.5 w-3.5" />
+                        {lang === "de" ? "Teilen" : "Share"}
+                      </Button>
+                    </>
                   )}
                 </>
               ) : (
