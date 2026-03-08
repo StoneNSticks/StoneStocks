@@ -1,4 +1,4 @@
-/**
+/** StockDetail — The main stock analysis page. */
  * StockDetail — The main stock analysis page.
  * 
  * HOW IT WORKS:
