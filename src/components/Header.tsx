@@ -74,12 +74,13 @@ export function Header() {
           </Link>
 
           {/* Show compact search: always on non-home pages, on home only when main search scrolled away */}
-          {(!isHome || !mainSearchVisible) && (
-            <div className="flex-1 max-w-xl mx-auto animate-fade-in">
+          {(!isHome || !mainSearchVisible) ? (
+            <div className="flex-1 max-w-xl mx-auto animate-slide-down" key="header-search">
               <SearchBar compact />
             </div>
+          ) : (
+            <div className="flex-1" />
           )}
-          {isHome && mainSearchVisible && <div className="flex-1" />}
 
           <div className="flex items-center gap-1.5">
             <div className="hidden lg:block"><MarketClock /></div>
