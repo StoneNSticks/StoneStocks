@@ -1236,7 +1236,7 @@ async function handleTopCompanies() {
             fetchFinnhub("quote", { symbol: c.symbol }),
             fetchFinnhub("stock/profile2", { symbol: c.symbol }),
           ]);
-          const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8 };
+          const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8, LI: 2, XPEV: 2, ZTO: 1, VNET: 6, BILI: 1, IQ: 7, TME: 2, WB: 1, YUMC: 1, HTHT: 0.25, TAL: 3, EDU: 1, FUTU: 1, TIGR: 1, DIDI: 4, SE: 1, GRAB: 1, MELI: 1, NU: 1, STNE: 1, PAGS: 1 };
           const MAX_REASONABLE_MCAP = 5e12;
           const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
           const shareOutstanding = profile?.shareOutstanding || 0;
