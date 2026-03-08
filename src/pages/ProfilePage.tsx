@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
