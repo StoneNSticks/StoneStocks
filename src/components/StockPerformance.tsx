@@ -8,7 +8,7 @@ interface StockPerformanceProps {
   massiveSnapshot: Record<string, unknown> | null;
 }
 
-export function StockPerformance({ quote, overview, massiveSnapshot }: StockPerformanceProps) {
+export const StockPerformance = memo(function StockPerformance({ quote, overview, massiveSnapshot }: StockPerformanceProps) {
   const fc = useFormattedCurrency();
   const t = useT();
 
