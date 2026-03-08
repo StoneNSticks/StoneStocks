@@ -1739,6 +1739,9 @@ Deno.serve(async (req) => {
     const from = url.searchParams.get("from") || "";
     const to = url.searchParams.get("to") || "";
 
+    // Probabilistic cache cleanup
+    maybeCleanupCache().catch(() => {});
+
     let result: unknown = null;
     switch (action) {
       case "profile": result = await handleProfile(symbol!); break;
