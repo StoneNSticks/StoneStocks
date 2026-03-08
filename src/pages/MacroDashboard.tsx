@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { LineChart, BarChart3, TrendingUp, Activity } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { motion } from "framer-motion";
+import { AISectorRotation } from "@/components/AISectorRotation";
 
 interface FredIndicator {
   id: string;
