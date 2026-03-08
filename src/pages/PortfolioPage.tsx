@@ -381,7 +381,7 @@ export default function PortfolioPage() {
             {count > 0 && !isLoading && <PortfolioSummary positions={positions!} />}
 
             {/* Add position button / form */}
-            <div className="mb-5 flex items-center gap-2">
+            <div className="mb-5 flex flex-wrap items-center gap-2">
               {!showAdd ? (
                 <>
                   <Button onClick={() => setShowAdd(true)} variant="outline" className="rounded-xl gap-2">
@@ -422,8 +422,8 @@ export default function PortfolioPage() {
                   )}
                 </>
               ) : (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border border-border/60 bg-card p-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="w-full rounded-xl border border-border/60 bg-card p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
                       <Label className="text-xs text-muted-foreground">Symbol</Label>
                       <Input placeholder="AAPL" value={newSymbol} onChange={e => setNewSymbol(e.target.value)} className="mt-1" />
