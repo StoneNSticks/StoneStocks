@@ -926,6 +926,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.bondValuationP1") }} />
               <FormulaBox title="Bond Price" formula="P = Σ C/(1+r)^t + FV/(1+r)^n" explanation={lang === "de" ? "C = Kupon, r = Marktzins, FV = Nennwert, n = Restlaufzeit." : "C = coupon, r = market rate, FV = face value, n = remaining term."} />
             </SectionCard>
+            {interactive && <BondPriceCalc lang={lang} />}
             <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.yieldMeasuresTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.yieldMeasuresP1") }} />
             </SectionCard>
