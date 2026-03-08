@@ -42,6 +42,15 @@ const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
 const StockChatPage = lazy(() => import("./pages/StockChatPage"));
 const CustomDashboard = lazy(() => import("./pages/CustomDashboard"));
+const CryptoPage = lazy(() => import("./pages/CryptoPage"));
+const ForexPage = lazy(() => import("./pages/ForexPage"));
+const BondsPage = lazy(() => import("./pages/BondsPage"));
+const IPOCalendarPage = lazy(() => import("./pages/IPOCalendarPage"));
+const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
+const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
+const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
+const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
+const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
