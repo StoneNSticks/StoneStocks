@@ -222,7 +222,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             {high > 0 && (
               <div className="rounded-lg bg-background p-2 border border-border/30">
                 <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Hoch" : "High"}</div>
-                <div className="font-mono font-bold text-sm text-chart-2">{cSym}{convert(high)?.toFixed(0)}</div>
+                <div className="font-mono font-bold text-sm text-chart-2">{cSym}{(convert(high) ?? high).toFixed(0)}</div>
               </div>
             )}
           </div>
