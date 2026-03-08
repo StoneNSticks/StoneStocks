@@ -40,10 +40,11 @@ const RankingsPage = () => {
           <TopCompanies />
           <GainersLosers />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <MostActive />
           <SectorPerformance />
         </div>
+        <ScreenerHeatmap />
       </main>
       <Footer />
     </div>
