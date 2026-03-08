@@ -24,6 +24,15 @@ const Index = () => {
           <SearchBar />
         </section>
         <section className="mb-4 sm:mb-6"><MarketOverview /></section>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+              <div className="lg:col-span-3"><MarketNewsSection limit={8} /></div>
+              <div className="lg:col-span-2"><TopCompanies /></div>
+            </div>
+          </div>
+          <div className="lg:col-span-1"><SentimentGauge /></div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <div className="lg:col-span-3"><MarketNewsSection limit={8} /></div>
           <div className="lg:col-span-2"><TopCompanies /></div>
