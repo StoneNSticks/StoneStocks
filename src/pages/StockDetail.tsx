@@ -61,6 +61,16 @@ import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency }
 import { Skeleton } from "@/components/ui/skeleton";
 import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { DividendGrowth } from "@/components/DividendGrowth";
+import { OptionsChainViewer } from "@/components/OptionsChainViewer";
+import { ShortInterestCard } from "@/components/ShortInterestCard";
+import { VolumeProfile } from "@/components/VolumeProfile";
+import { EarningsWhisper } from "@/components/EarningsWhisper";
+import { SeasonalityChart } from "@/components/SeasonalityChart";
+import { MonteCarloFairValue } from "@/components/MonteCarloFairValue";
+import { AIRiskAssessment } from "@/components/AIRiskAssessment";
+import { AITechnicalAnalysis } from "@/components/AITechnicalAnalysis";
+import { AICompetitorAnalysis } from "@/components/AICompetitorAnalysis";
+import { AIEarningsPreview } from "@/components/AIEarningsPreview";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
