@@ -1,12 +1,12 @@
 /**
- * MarketSentimentPage — Comprehensive market sentiment dashboard.
+ * MarketSentimentPage: Comprehensive market sentiment dashboard.
  * 
  * The Fear & Greed Index is computed from 5 sub-indicators:
- * 1. Market Momentum — Average performance of major indices
- * 2. Market Breadth — Ratio of advancing vs declining stocks
- * 3. Volatility Signal — Derived from index spread (proxy for VIX)
- * 4. Safe Haven Demand — Gold performance vs stock market (flight to safety)
- * 5. Junk Bond Proxy — Energy/commodity momentum as risk appetite signal
+ * 1. Market Momentum: Average performance of major indices
+ * 2. Market Breadth: Ratio of advancing vs declining stocks
+ * 3. Volatility Signal: Derived from index spread (proxy for VIX)
+ * 4. Safe Haven Demand: Gold performance vs stock market (flight to safety)
+ * 5. Junk Bond Proxy: Energy/commodity momentum as risk appetite signal
  * 
  * Each indicator produces a 0-100 sub-score. The final score is a weighted average.
  * A methodology section explains each indicator transparently.
@@ -30,7 +30,7 @@ import { MarketHeatmap } from "@/components/MarketHeatmap";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
-/* ─── Sub-indicator computation ─── */
+/* ── Sub-indicator computation ── */
 
 interface SubIndicator {
   key: string;
@@ -79,8 +79,8 @@ function computeSubIndicators(
     key: "breadth",
     label: { de: "Marktbreite", en: "Market Breadth" },
     description: {
-      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt — ein Zeichen von Gier. Fallen die meisten, herrscht Angst.",
-      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support — a sign of greed. When most fall, fear dominates."
+      de: "Verhältnis von steigenden zu fallenden Aktien. Wenn die meisten Aktien steigen, ist der Markt breit unterstützt, also ein Zeichen von Gier. Fallen die meisten, herrscht Angst.",
+      en: "Ratio of advancing to declining stocks. When most stocks rise, the market has broad support, a sign of greed. When most fall, fear dominates."
     },
     score: breadthScore,
     icon: <Activity className="h-4 w-4" />,
@@ -153,7 +153,7 @@ function computeSubIndicators(
   return indicators;
 }
 
-/* ─── Composite score from weighted indicators ─── */
+/* ── Composite score from weighted indicators ── */
 function computeCompositeScore(indicators: SubIndicator[]): number {
   if (indicators.length === 0) return 50;
   const totalWeight = indicators.reduce((s, i) => s + i.weight, 0);
@@ -161,7 +161,7 @@ function computeCompositeScore(indicators: SubIndicator[]): number {
   return totalWeight > 0 ? weighted / totalWeight : 50;
 }
 
-/* ─── Score label & color helpers ─── */
+/* ── Score label & color helpers ── */
 function getScoreLabel(score: number, lang: string) {
   if (score <= 15) return lang === "de" ? "Extreme Angst" : "Extreme Fear";
   if (score <= 30) return lang === "de" ? "Angst" : "Fear";
@@ -187,7 +187,7 @@ function getBarColor(score: number) {
   return "bg-chart-2";
 }
 
-/* ─── Main Fear & Greed Card with sub-indicators ─── */
+/* ── Main Fear & Greed Card with sub-indicators ── */
 function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicator[]; compositeScore: number }) {
   const { lang } = useLanguage();
   const [showDetails, setShowDetails] = useState(false);
@@ -296,7 +296,7 @@ function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicato
                     <div className="text-xs font-semibold text-foreground">
                       {lang === "de" ? ind.label.de : ind.label.en}
                       <span className="font-normal text-muted-foreground ml-1">
-                        — {lang === "de" ? "Gewichtung" : "Weight"}: {(ind.weight * 100).toFixed(0)}%
+                        ({lang === "de" ? "Gewichtung" : "Weight"}: {(ind.weight * 100).toFixed(0)}%)
                       </span>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">

@@ -1,18 +1,17 @@
 /**
- * Header — Global navigation bar with responsive design.
+ * Header: Global navigation bar with responsive design.
  * 
- * Features:
- * - Desktop: horizontal nav links with icons + compact search (appears on scroll)
- * - Mobile (<768px): hamburger menu (Sheet) with full nav + settings
- * - Market clock, currency/language/theme toggles
- * - User dropdown (profile, watchlist, settings, logout) when authenticated
- * - Learn page link (HelpCircle icon)
- * 
- * Nav items are defined in `navKeys` array for easy extension.
+ * Desktop: 5 primary nav items + "More" dropdown for secondary pages + compact search
+ * Mobile (<768px): hamburger menu (Sheet) with full nav + settings
+ * Includes market clock, currency/language/theme toggles, user dropdown
  */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase, Wifi, WifiOff } from "lucide-react";
+import {
+  TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut,
+  User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase, Wifi, WifiOff,
+  MoreHorizontal, GitCompare, Filter, BookOpen, Search as SearchIcon
+} from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
@@ -28,15 +27,23 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navKeys = [
+const primaryNav = [
   { to: "/", key: "nav.markets", icon: TrendingUp },
   { to: "/sentiment", key: "nav.sentiment", icon: Gauge },
-  { to: "/news", key: "nav.news", icon: Newspaper },
   { to: "/rankings", key: "nav.rankings", icon: BarChart3 },
   { to: "/portfolio", key: "nav.portfolio", icon: Briefcase },
-  { to: "/calculators", key: "nav.tools", icon: Calculator },
   { to: "/watchlist", key: "nav.watchlist", icon: Star },
 ];
+
+const secondaryNav = [
+  { to: "/news", key: "nav.news", icon: Newspaper },
+  { to: "/screener", key: "nav.screener", icon: Filter, fallbackLabel: { de: "Screener", en: "Screener" } },
+  { to: "/calculators", key: "nav.tools", icon: Calculator },
+  { to: "/compare", key: "nav.compare", icon: GitCompare, fallbackLabel: { de: "Vergleichen", en: "Compare" } },
+  { to: "/glossary", key: "nav.glossary", icon: BookOpen, fallbackLabel: { de: "Glossar", en: "Glossary" } },
+];
+
+const allNav = [...primaryNav, ...secondaryNav];
 
 export function Header() {
   const location = useLocation();
@@ -66,9 +73,21 @@ export function Header() {
 
   useEffect(() => { setSheetOpen(false); }, [location.pathname]);
 
+  const isSecondaryActive = secondaryNav.some(item => location.pathname === item.to);
+
+  const getLabel = (item: typeof secondaryNav[0]) => {
+    const translated = t(item.key);
+    if (translated !== item.key) return translated;
+    if (item.fallbackLabel) {
+      const lang = document.documentElement.lang || "en";
+      return lang === "de" ? item.fallbackLabel.de : item.fallbackLabel.en;
+    }
+    return item.key;
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <div className="container flex h-14 items-center gap-4 md:gap-6">
+      <div className="container flex h-14 items-center gap-3 md:gap-4">
         <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-display font-bold text-sm">S</div>
           <span className="font-display text-lg font-semibold tracking-tight hidden sm:inline">
@@ -76,24 +95,51 @@ export function Header() {
           </span>
         </Link>
 
+        {/* Desktop primary nav */}
         <nav className="hidden md:flex items-center gap-0.5">
-          {navKeys.map((item) => {
+          {primaryNav.map((item) => {
             const isActive = location.pathname === item.to;
             const Icon = item.icon;
             return (
-              <Link key={item.to} to={item.to} className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+              <Link key={item.to} to={item.to} className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
                 <Icon className="h-3.5 w-3.5" />
                 {t(item.key)}
               </Link>
             );
           })}
+
+          {/* More dropdown for secondary pages */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors ${isSecondaryActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+                <MoreHorizontal className="h-3.5 w-3.5" />
+                <span className="hidden lg:inline">{t("nav.more") !== "nav.more" ? t("nav.more") : "Mehr"}</span>
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-44">
+              {secondaryNav.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.to;
+                return (
+                  <DropdownMenuItem key={item.to} asChild>
+                    <Link to={item.to} className={`flex items-center gap-2 cursor-pointer ${isActive ? "text-primary font-medium" : ""}`}>
+                      <Icon className="h-4 w-4" />
+                      {getLabel(item)}
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
+        {/* Search + controls */}
         <div className="flex-1 flex items-center gap-2 justify-end">
-          <div className={`max-w-sm flex-1 transition-all duration-300 ${showSearch ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
+          <div className={`max-w-xs flex-1 transition-all duration-300 ${showSearch ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
             <SearchBar compact />
           </div>
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1.5">
             <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>
               {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
               {isOnline ? "Online" : "Offline"}
@@ -132,6 +178,7 @@ export function Header() {
             </Link>
           )}
 
+          {/* Mobile menu */}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <button className="flex md:hidden items-center justify-center rounded-lg p-1.5 transition-colors hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60">
@@ -143,16 +190,20 @@ export function Header() {
                 <SheetTitle className="font-display">Stone<span className="text-primary">Stocks</span></SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 mt-6">
-                {navKeys.map((item) => {
+                {allNav.map((item) => {
                   const isActive = location.pathname === item.to;
                   const Icon = item.icon;
                   return (
                     <Link key={item.to} to={item.to} className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
                       <Icon className="h-4 w-4" />
-                      {t(item.key)}
+                      {t(item.key) !== item.key ? t(item.key) : ('fallbackLabel' in item && item.fallbackLabel ? (document.documentElement.lang === "de" ? (item.fallbackLabel as {de:string;en:string}).de : (item.fallbackLabel as {de:string;en:string}).en) : item.key)}
                     </Link>
                   );
                 })}
+                <Link to="/learn" className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${location.pathname === "/learn" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+                  <HelpCircle className="h-4 w-4" />
+                  {t("nav.learn")}
+                </Link>
               </nav>
               <div className="mt-6 pt-6 border-t border-border/60 flex flex-col gap-3">
                 <div className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>

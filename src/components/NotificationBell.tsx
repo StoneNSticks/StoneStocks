@@ -1,5 +1,5 @@
 /**
- * NotificationBell — Toggle push notification subscription for earnings reminders.
+ * NotificationBell: Toggle push notification subscription for earnings reminders.
  */
 import { Bell, BellOff, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";

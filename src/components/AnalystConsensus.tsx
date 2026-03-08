@@ -1,5 +1,5 @@
 /**
- * AnalystConsensus — Premium analyst overview card.
+ * AnalystConsensus: Premium analyst overview card.
  * 
  * Combines:
  * - Consensus gauge (1-5 scale, visual arc)

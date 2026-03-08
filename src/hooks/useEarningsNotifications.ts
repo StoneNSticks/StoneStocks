@@ -1,5 +1,5 @@
 /**
- * useEarningsNotifications — Manages push subscription and in-app earnings reminders.
+ * useEarningsNotifications: Manages push subscription and in-app earnings reminders.
  * Checks on load if watchlist stocks have earnings tomorrow and shows browser notification.
  */
 import { useEffect, useState, useCallback, useRef } from "react";

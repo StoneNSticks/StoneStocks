@@ -1,5 +1,5 @@
 /**
- * ScreenerPage — Stock screener with filters for market cap, P/E, dividend yield, sector.
+ * ScreenerPage: Stock screener with filters for market cap, P/E, dividend yield, sector.
  * Fetches top companies from the edge function and filters client-side.
  * Uses useTopCompanies hook for data, useCurrency for price display.
  */

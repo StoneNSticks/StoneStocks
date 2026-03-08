@@ -1,6 +1,6 @@
 /**
  * ╔════════════════════════════════════════════════════════════════════════╗
- * ║                    STONESTOCKS — CODE GUIDE                          ║
+ * ║                    STONESTOCKS: CODE GUIDE                           ║
  * ║            A Complete Map of Every Component & File                  ║
  * ╚════════════════════════════════════════════════════════════════════════╝
  * 
@@ -11,14 +11,14 @@
  * TABLE OF CONTENTS
  * ═══════════════════════════════════════════════════════════════════════
  * 
- * 1. PROJECT STRUCTURE — How folders are organized
- * 2. PAGES — Each screen/view the user sees
- * 3. COMPONENTS — Reusable building blocks
- * 4. HOOKS — Shared logic (data fetching, state management)
- * 5. CONTEXTS — Global state shared across the entire app
- * 6. BACKEND — Server-side functions and database
- * 7. STYLING — How colors, fonts, and themes work
- * 8. DATA FLOW — How data moves from API → Screen
+ * 1. PROJECT STRUCTURE: How folders are organized
+ * 2. PAGES: Each screen/view the user sees
+ * 3. COMPONENTS: Reusable building blocks
+ * 4. HOOKS: Shared logic (data fetching, state management)
+ * 5. CONTEXTS: Global state shared across the entire app
+ * 6. BACKEND: Server-side functions and database
+ * 7. STYLING: How colors, fonts, and themes work
+ * 8. DATA FLOW: How data moves from API to screen
  * 
  * ═══════════════════════════════════════════════════════════════════════
  * 1. PROJECT STRUCTURE
@@ -135,8 +135,8 @@
  * 3. COMPONENTS — Building blocks used by pages
  * ═══════════════════════════════════════════════════════════════════════
  * 
- * ── NAVIGATION & LAYOUT ──
- * 
+ * -- NAVIGATION & LAYOUT --
+ *
  * Header.tsx          → Top navigation bar (logo, menu, search, toggles, user dropdown)
  * BottomNav.tsx       → Mobile bottom tab bar for quick navigation
  * Footer.tsx          → Page footer with links and credits
