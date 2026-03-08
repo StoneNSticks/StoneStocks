@@ -5,6 +5,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { TrendingUp, BarChart3, Briefcase, Star, Gauge } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const items = [
   { to: "/", icon: TrendingUp, key: "nav.markets" },
