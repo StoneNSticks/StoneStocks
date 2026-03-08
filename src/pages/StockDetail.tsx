@@ -123,7 +123,7 @@ const StockDetail = () => {
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-20 rounded-xl" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>
+           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>
             <Skeleton className="h-72 rounded-xl" />
           </div>
         ) : error ? (
