@@ -91,8 +91,8 @@ export default function ProfilePage() {
             <div className="h-24 bg-gradient-to-br from-primary/30 via-primary/10 to-accent/30" />
             <div className="px-6 pb-6">
               <div className="flex items-end gap-4 -mt-10">
-                <div className="h-20 w-20 rounded-2xl bg-primary/20 border-4 border-card flex items-center justify-center shadow-lg">
-                  <span className="font-display text-2xl font-bold text-primary">
+                <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-accent border-4 border-card flex items-center justify-center shadow-xl">
+                  <span className="font-display text-3xl font-bold text-primary-foreground drop-shadow-md">
                     {(displayName || username || "U").charAt(0).toUpperCase()}
                   </span>
                 </div>
