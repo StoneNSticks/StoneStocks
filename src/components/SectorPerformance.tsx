@@ -1,13 +1,71 @@
 /**
  * SectorPerformance — Horizontal bar chart showing daily performance by sector.
- * Derives sector data from the topCompanies API response, grouping by sector
- * and averaging the daily change percentage.
+ * Maps granular industry names to standard GICS sectors for cleaner grouping.
  */
 import { useMemo } from "react";
 import { useTopCompanies } from "@/hooks/useStockData";
 import { useT } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart3 } from "lucide-react";
+
+const INDUSTRY_TO_SECTOR: Record<string, string> = {
+  "semiconductors": "Technology",
+  "software": "Technology",
+  "software—infrastructure": "Technology",
+  "software—application": "Technology",
+  "consumer electronics": "Technology",
+  "electronic components": "Technology",
+  "information technology services": "Technology",
+  "semiconductor equipment & materials": "Technology",
+  "internet content & information": "Communication Services",
+  "internet retail": "Consumer Cyclical",
+  "specialty retail": "Consumer Cyclical",
+  "auto manufacturers": "Consumer Cyclical",
+  "restaurants": "Consumer Cyclical",
+  "apparel retail": "Consumer Cyclical",
+  "drug manufacturers—general": "Healthcare",
+  "drug manufacturers": "Healthcare",
+  "medical devices": "Healthcare",
+  "health care plans": "Healthcare",
+  "biotechnology": "Healthcare",
+  "diagnostics & research": "Healthcare",
+  "banks—diversified": "Financials",
+  "financial data & stock exchanges": "Financials",
+  "credit services": "Financials",
+  "insurance—diversified": "Financials",
+  "asset management": "Financials",
+  "capital markets": "Financials",
+  "oil & gas integrated": "Energy",
+  "oil & gas e&p": "Energy",
+  "oil & gas midstream": "Energy",
+  "utilities—regulated electric": "Utilities",
+  "utilities—diversified": "Utilities",
+  "aerospace & defense": "Industrials",
+  "industrial conglomerates": "Industrials",
+  "railroads": "Industrials",
+  "farm & heavy construction machinery": "Industrials",
+  "waste management": "Industrials",
+  "household & personal products": "Consumer Defensive",
+  "beverages—non-alcoholic": "Consumer Defensive",
+  "discount stores": "Consumer Defensive",
+  "packaged foods": "Consumer Defensive",
+  "tobacco": "Consumer Defensive",
+  "telecom services": "Communication Services",
+  "entertainment": "Communication Services",
+  "reit—industrial": "Real Estate",
+  "reit—residential": "Real Estate",
+  "reit—retail": "Real Estate",
+  "gold": "Materials",
+  "steel": "Materials",
+  "specialty chemicals": "Materials",
+};
+
+function mapToSector(industry: string | undefined, sector: string | undefined): string {
+  if (sector && sector !== "Other" && sector.length > 1) return sector;
+  if (!industry) return "Other";
+  const lower = industry.toLowerCase();
+  return INDUSTRY_TO_SECTOR[lower] || sector || "Other";
+}
 
 export function SectorPerformance() {
   const { data: companies, isLoading } = useTopCompanies();
@@ -17,12 +75,13 @@ export function SectorPerformance() {
     if (!companies) return [];
     const map: Record<string, { sum: number; count: number }> = {};
     companies.forEach((c: any) => {
-      const sector = c.sector || "Other";
+      const sector = mapToSector(c.industry, c.sector);
       if (!map[sector]) map[sector] = { sum: 0, count: 0 };
       map[sector].sum += c.changePercent || 0;
       map[sector].count += 1;
     });
     return Object.entries(map)
+      .filter(([name]) => name !== "Other")
       .map(([name, { sum, count }]) => ({ name, avg: sum / count }))
       .sort((a, b) => b.avg - a.avg);
   }, [companies]);

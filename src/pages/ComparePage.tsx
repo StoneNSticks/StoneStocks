@@ -173,7 +173,7 @@ export default function ComparePage() {
           <div className="text-center py-20">
             <GitCompare className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
             <p className="text-muted-foreground text-sm">
-              {lang === "de" ? "Suche nach Aktien, um den Vergleich zu starten" : "Search for stocks to start comparing"}
+              {t("compare.emptyHint")}
             </p>
           </div>
         ) : (

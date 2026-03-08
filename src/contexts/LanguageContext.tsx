@@ -490,4 +490,10 @@ const translations: Record<string, Record<Language, string>> = {
   "calc.optionType": { de: "Typ", en: "Type" },
   "calc.dcaMonths": { de: "Monate", en: "Months" },
   "calc.dcaVolatility": { de: "Volatilität (%)", en: "Volatility (%)" },
+  "compare.title": { de: "Aktien", en: "Stock" },
+  "compare.titleHighlight": { de: "Vergleich", en: "Compare" },
+  "compare.subtitle": { de: "Bis zu 4 Aktien nebeneinander vergleichen", en: "Compare up to 4 stocks side by side" },
+  "compare.searchPlaceholder": { de: "Aktie suchen (z.B. AAPL)", en: "Search stock (e.g. AAPL)" },
+  "compare.remaining": { de: "übrig", en: "remaining" },
+  "compare.emptyHint": { de: "Suche nach Aktien, um den Vergleich zu starten", en: "Search for stocks to start comparing" },
 };
