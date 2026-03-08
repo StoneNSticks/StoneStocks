@@ -29,7 +29,7 @@ export function StockPerformance({ quote, overview, massiveSnapshot }: StockPerf
         <div>
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>{t("perf.dayRange")}</span>
-            <span>{fc(dayLow)} — {fc(dayHigh)}</span>
+            <span>{fc(dayLow)} – {fc(dayHigh)}</span>
           </div>
           <div className="relative h-2 bg-muted rounded-full">
             <div className="absolute top-0 h-2 bg-primary rounded-full" style={{ width: `${Math.min(100, Math.max(0, dayRangePercent))}%` }} />
