@@ -11,6 +11,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
 import { OnboardingModal } from "@/components/OnboardingModal";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { AlertNotifications } from "@/components/AlertNotifications";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -88,6 +89,7 @@ const App = () => (
               <BottomNav />
               <BackToTop />
               <InstallPrompt />
+              <AlertNotifications />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
