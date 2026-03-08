@@ -1454,7 +1454,9 @@ async function handleHiddenGems() {
 }
 
 
-function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null) {
+function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null, symbol?: string) {
+  const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8, LI: 2, XPEV: 2, ZTO: 1, VNET: 6, BILI: 1, IQ: 7, TME: 2, WB: 1, YUMC: 1, HTHT: 0.25, TAL: 3, EDU: 1, FUTU: 1, TIGR: 1, DIDI: 4, SE: 1, GRAB: 1, MELI: 1, NU: 1, STNE: 1, PAGS: 1 };
+  const MAX_REASONABLE_MCAP = 5e12;
   const price = parseFloat(quote?.c?.toString() || overview?.Price || "0");
   const eps = parseFloat(overview?.EPS || "0");
   const bookValue = parseFloat(overview?.BookValue || "0");
@@ -1466,7 +1468,12 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
   const cash = parseFloat(overview?.CashAndCashEquivalentsAtCarryingValue || "0");
   const operatingCashflow = parseFloat(overview?.OperatingCashflowTTM || "0");
   const capex = parseFloat(overview?.CapitalExpenditures || "0");
-  const marketCap = price * shares;
+  const adrRatio = symbol ? (ADR_RATIOS[symbol] || 1) : 1;
+  let marketCap = price * shares;
+  // ADR correction: if marketCap is unreasonably high, apply ADR ratio
+  if (adrRatio !== 1 && marketCap > MAX_REASONABLE_MCAP) {
+    marketCap = marketCap / adrRatio;
+  }
   return {
     calculatedPE: eps !== 0 ? price / eps : null,
     calculatedPB: bookValue !== 0 ? price / bookValue : null,
