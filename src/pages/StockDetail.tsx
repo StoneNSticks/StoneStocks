@@ -7,6 +7,7 @@
  */
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { WatchlistStar } from "@/components/WatchlistStar";
 import { SearchBar } from "@/components/SearchBar";
 import { StockChart } from "@/components/StockChart";
