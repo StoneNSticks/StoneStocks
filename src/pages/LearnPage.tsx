@@ -135,6 +135,38 @@ export default function LearnPage() {
     { question: "RSI above 70 means:", options: ["Oversold", "Overbought", "Neutral", "No signal"], correct: 1 },
   ];
 
+  const quizCorporateFinance: QuizQuestion[] = lang === "de" ? [
+    { question: "Was besagt das Modigliani-Miller-Theorem?", options: ["Dividenden sind immer besser als Rückkäufe", "Kapitalstruktur ist in perfekten Märkten irrelevant", "Schulden sind immer besser als Eigenkapital", "IPOs sind profitabler als Direktlistings"], correct: 1 },
+    { question: "Was ist ein SPAC?", options: ["Ein Aktien-Index", "Eine Kryptowährung", "Eine Blankocheck-Gesellschaft für Börsengang", "Ein Hedgefonds-Typ"], correct: 2 },
+  ] : [
+    { question: "What does the Modigliani-Miller theorem state?", options: ["Dividends are always better than buybacks", "Capital structure is irrelevant in perfect markets", "Debt is always better than equity", "IPOs are more profitable than direct listings"], correct: 1 },
+    { question: "What is a SPAC?", options: ["A stock index", "A cryptocurrency", "A blank check company for IPO", "A hedge fund type"], correct: 2 },
+  ];
+
+  const quizAccounting: QuizQuestion[] = lang === "de" ? [
+    { question: "Was ist Free Cash Flow?", options: ["Nettogewinn minus Dividenden", "Operativer Cashflow minus CapEx", "Umsatz minus Kosten", "EBITDA minus Steuern"], correct: 1 },
+    { question: "Die DuPont-Analyse zerlegt ROE in:", options: ["Zwei Komponenten", "Drei Komponenten", "Vier Komponenten", "Fünf Komponenten"], correct: 1 },
+  ] : [
+    { question: "What is Free Cash Flow?", options: ["Net income minus dividends", "Operating cash flow minus CapEx", "Revenue minus costs", "EBITDA minus taxes"], correct: 1 },
+    { question: "DuPont Analysis breaks ROE into:", options: ["Two components", "Three components", "Four components", "Five components"], correct: 1 },
+  ];
+
+  const quizValuation: QuizQuestion[] = lang === "de" ? [
+    { question: "Was liefert die Precedent Transactions Analyse typischerweise?", options: ["Niedrigere Bewertungen als Comps", "Höhere Bewertungen als Comps", "Gleiche Bewertungen wie DCF", "Keine verwertbaren Ergebnisse"], correct: 1 },
+    { question: "Was ist der Terminal Value in einem DCF?", options: ["Der Anfangsinvestment", "Der Wert aller Cashflows nach der Prognoseperiode", "Die jährliche Dividende", "Die Aktienanzahl"], correct: 1 },
+  ] : [
+    { question: "What does Precedent Transactions analysis typically yield?", options: ["Lower valuations than comps", "Higher valuations than comps", "Same valuations as DCF", "No usable results"], correct: 1 },
+    { question: "What is Terminal Value in a DCF?", options: ["The initial investment", "The value of all cash flows after the forecast period", "The annual dividend", "The share count"], correct: 1 },
+  ];
+
+  const quizMarketHistory: QuizQuestion[] = lang === "de" ? [
+    { question: "Wie lange brauchte der Dow Jones nach 1929 zur Erholung?", options: ["5 Jahre", "10 Jahre", "25 Jahre", "50 Jahre"], correct: 2 },
+    { question: "Was löste die Finanzkrise 2008 aus?", options: ["Dotcom-Aktien", "Subprime-Hypotheken", "COVID-19", "Tulpenzwiebeln"], correct: 1 },
+  ] : [
+    { question: "How long did the Dow Jones take to recover after 1929?", options: ["5 years", "10 years", "25 years", "50 years"], correct: 2 },
+    { question: "What triggered the 2008 financial crisis?", options: ["Dotcom stocks", "Subprime mortgages", "COVID-19", "Tulip bulbs"], correct: 1 },
+  ];
+
   const terms = [
     { term: t("learn.term.marketCap"), desc: t("learn.term.marketCapDesc") },
     { term: t("learn.term.dividend"), desc: t("learn.term.dividendDesc") },
