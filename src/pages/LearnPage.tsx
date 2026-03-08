@@ -70,6 +70,21 @@ export default function LearnPage() {
   const { user } = useAuth();
   const { completedCount, markComplete, isCompleted } = useLearnProgress();
   const totalSections = 28; // total main learn sections
+  const [interactive, setInteractive] = useState(() => {
+    try { return localStorage.getItem("learn_interactive") !== "false"; } catch { return true; }
+  });
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const toggleInteractive = (v: boolean) => {
+    setInteractive(v);
+    localStorage.setItem("learn_interactive", String(v));
+  };
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Track which sections are in view
   useEffect(() => {
