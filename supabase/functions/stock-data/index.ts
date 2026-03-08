@@ -42,6 +42,10 @@ const TTL: Record<string, number> = {
   commodities: 10,
   insider_transactions: 30,
   earnings_calendar: 60 * 12,
+  yahoo_sector_performance: 60,
+  fred_series: 60 * 24,
+  sec_filings: 60 * 4,
+  openfigi: 60 * 24 * 30,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
