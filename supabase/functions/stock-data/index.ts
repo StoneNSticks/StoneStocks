@@ -972,18 +972,25 @@ async function handleMarketIndices() {
   return valid.length > 0 ? valid : results;
 }
 
-// Combined market news from Finnhub + Polygon + Alpha Vantage + Twelve Data + Yahoo RSS
+// Combined market news from Finnhub + Polygon + Alpha Vantage + Twelve Data + Yahoo RSS + World News API
 async function handleMarketNews() {
-  const cacheKey = "market:news:combined:v4";
+  const cacheKey = "market:news:combined:v5";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  const [finnhubNews, polygonNews, avNews, tdNews, yahooNews] = await Promise.all([
+  const WORLD_NEWS_KEY = Deno.env.get("WORLD_NEWS_API_KEY");
+
+  const [finnhubNews, polygonNews, avNews, tdNews, yahooNews, worldNews] = await Promise.all([
     fetchFinnhub("news", { category: "general" }).catch(() => []),
     fetchMassive("/v2/reference/news", { limit: "30", order: "desc" }).catch(() => ({ results: [] })),
     fetchAlphaVantage("NEWS_SENTIMENT", { topics: "financial_markets", sort: "LATEST", limit: "30" }).catch(() => ({ feed: [] })),
     fetchTwelveData("news", { outputsize: "25" }).catch(() => ({ data: [] })),
     fetchYahooRSS().catch(() => []),
+    WORLD_NEWS_KEY
+      ? fetchWithBackoff(`https://api.worldnewsapi.com/search-news?text=stock+market+finance&language=en&number=30&sort=publish-time&sort-direction=DESC&api-key=${WORLD_NEWS_KEY}`)
+          .then(r => r.ok ? r.json() : { news: [] })
+          .catch(() => ({ news: [] }))
+      : Promise.resolve({ news: [] }),
   ]);
 
   const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
@@ -1019,10 +1026,18 @@ async function handleMarketNews() {
     category: "",
   }));
 
+  const worldItems = ((worldNews as any)?.news || []).map((n: any) => ({
+    headline: n.title || "", summary: n.text?.slice(0, 300) || "", url: n.url || "",
+    image: n.image || "", source: n.source || "World News",
+    datetime: n.publish_date ? Math.floor(new Date(n.publish_date).getTime() / 1000) : Math.floor(Date.now() / 1000),
+    related: "", origin: "worldnews",
+    category: (n.category || ""),
+  }));
+
   const yahooItems = Array.isArray(yahooNews) ? yahooNews : [];
 
   const seen = new Set<string>();
-  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems]
+  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems, ...worldItems]
     .filter((n: any) => {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
