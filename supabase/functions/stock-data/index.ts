@@ -1026,10 +1026,18 @@ async function handleMarketNews() {
     category: "",
   }));
 
+  const worldItems = ((worldNews as any)?.news || []).map((n: any) => ({
+    headline: n.title || "", summary: n.text?.slice(0, 300) || "", url: n.url || "",
+    image: n.image || "", source: n.source || "World News",
+    datetime: n.publish_date ? Math.floor(new Date(n.publish_date).getTime() / 1000) : Math.floor(Date.now() / 1000),
+    related: "", origin: "worldnews",
+    category: (n.category || ""),
+  }));
+
   const yahooItems = Array.isArray(yahooNews) ? yahooNews : [];
 
   const seen = new Set<string>();
-  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems]
+  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems, ...worldItems]
     .filter((n: any) => {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
