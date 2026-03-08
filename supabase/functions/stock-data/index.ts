@@ -1666,6 +1666,7 @@ Deno.serve(async (req) => {
       case "commodities": result = await handleCommodities(); break;
       case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
       case "insider_transactions": result = await handleInsiderTransactions(symbol!); break;
+      case "earnings_calendar": result = await handleEarningsCalendar(url.searchParams.get("symbols") || symbol || ""); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
