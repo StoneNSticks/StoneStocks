@@ -5,13 +5,10 @@ import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, Doll
 import { motion, AnimatePresence } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, StepList, fadeIn, stagger } from "@/components/learn/LearnComponents";
-import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
+
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { useLearnProgress } from "@/hooks/useLearnProgress";
-import { useAuth } from "@/contexts/AuthContext";
-import { Progress } from "@/components/ui/progress";
 
 // Progress tracker using localStorage
 function useReadProgress() {
@@ -61,9 +58,8 @@ export default function LearnPage() {
     lang === "de" ? "Umfassender Leitfaden für Einsteiger und Fortgeschrittene" : "Comprehensive guide for beginners and advanced investors"
   );
   const { read, markRead } = useReadProgress();
-  const { user } = useAuth();
-  const { completedCount, markComplete, isCompleted } = useLearnProgress();
-  const totalSections = 28; // total main learn sections
+
+
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -83,92 +79,6 @@ export default function LearnPage() {
     return () => observer.disconnect();
   }, []);
 
-  // ── Quizzes ──
-  const quizBasics: QuizQuestion[] = lang === "de" ? [
-    { question: "Was beschreibt die Marktkapitalisierung?", options: ["Tägliches Handelsvolumen", "Gesamtwert aller Aktien eines Unternehmens", "Jahresgewinn", "Dividendenrendite"], correct: 1 },
-    { question: "Was bedeutet ein Beta von 1,5?", options: ["50% weniger volatil als der Markt", "Gleich wie der Markt", "50% volatiler als der Markt", "Keine Korrelation"], correct: 2 },
-    { question: "Was ist der Hauptvorteil von Diversifikation?", options: ["Höhere Renditen garantiert", "Risikominimierung durch Streuung", "Steuerersparnis", "Schnellere Gewinne"], correct: 1 },
-  ] : [
-    { question: "What does market capitalization describe?", options: ["Daily trading volume", "Total value of all company shares", "Annual profit", "Dividend yield"], correct: 1 },
-    { question: "What does a Beta of 1.5 mean?", options: ["50% less volatile than market", "Same as market", "50% more volatile than market", "No correlation"], correct: 2 },
-    { question: "What is the main benefit of diversification?", options: ["Guaranteed higher returns", "Risk reduction through spreading", "Tax savings", "Faster profits"], correct: 1 },
-  ];
-
-  const quizStocksETFs: QuizQuestion[] = lang === "de" ? [
-    { question: "Was unterscheidet einen ETF von einem aktiven Fonds?", options: ["ETFs haben höhere Gebühren", "ETFs bilden einen Index passiv ab", "Aktive Fonds sind immer besser", "ETFs zahlen keine Dividenden"], correct: 1 },
-    { question: "Was sind Blue-Chip Aktien?", options: ["Billige Penny Stocks", "Große, etablierte Unternehmen", "Nur Tech-Aktien", "Aktien unter 10€"], correct: 1 },
-  ] : [
-    { question: "What distinguishes an ETF from an active fund?", options: ["ETFs have higher fees", "ETFs passively track an index", "Active funds are always better", "ETFs don't pay dividends"], correct: 1 },
-    { question: "What are Blue-Chip stocks?", options: ["Cheap penny stocks", "Large, established companies", "Only tech stocks", "Stocks under $10"], correct: 1 },
-  ];
-
-  const quizStrategies: QuizQuestion[] = lang === "de" ? [
-    { question: "Was ist DCA?", options: ["Einmaliges Investment zum Tiefstpreis", "Regelmäßiges Investieren eines festen Betrags", "Tageshandel mit Derivaten", "Nur Blue-Chips kaufen"], correct: 1 },
-    { question: "Was sucht ein Value-Investor?", options: ["Aktien mit hohem Kurs", "Aktien unter ihrem inneren Wert", "Nur Tech-Aktien", "Penny Stocks"], correct: 1 },
-    { question: "Welche Aussage über Buy & Hold ist richtig?", options: ["Man muss täglich handeln", "Kurzfristiges Trading ist immer besser", "Langfristiges Halten hat historisch gut funktioniert", "Nur für Experten geeignet"], correct: 2 },
-  ] : [
-    { question: "What is DCA?", options: ["One-time investment at lowest price", "Regularly investing a fixed amount", "Day trading with derivatives", "Only buying blue chips"], correct: 1 },
-    { question: "What does a value investor seek?", options: ["Stocks with high prices", "Stocks below intrinsic value", "Only tech stocks", "Penny stocks"], correct: 1 },
-    { question: "Which statement about Buy & Hold is true?", options: ["You must trade daily", "Short-term trading is always better", "Long-term holding has historically worked well", "Only suitable for experts"], correct: 2 },
-  ];
-
-  const quizDerivatives: QuizQuestion[] = lang === "de" ? [
-    { question: "Was gibt dir eine Call-Option?", options: ["Pflicht zum Kauf", "Recht zum Kauf", "Pflicht zum Verkauf", "Recht zum Verkauf"], correct: 1 },
-    { question: "Was misst Theta bei Optionen?", options: ["Preisänderung pro $1", "Zeitwertverfall pro Tag", "Volatilitätssensitivität", "Zinssensitivität"], correct: 1 },
-    { question: "Was ist das Hauptrisiko bei CFDs?", options: ["Geringe Liquidität", "Hebelwirkung vervielfacht Verluste", "Zu niedrige Renditen", "Nur in EUR handelbar"], correct: 1 },
-  ] : [
-    { question: "What does a Call option give you?", options: ["Obligation to buy", "Right to buy", "Obligation to sell", "Right to sell"], correct: 1 },
-    { question: "What does Theta measure in options?", options: ["Price change per $1", "Time decay per day", "Volatility sensitivity", "Interest rate sensitivity"], correct: 1 },
-    { question: "What is the main risk with CFDs?", options: ["Low liquidity", "Leverage multiplies losses", "Returns too low", "Only tradeable in EUR"], correct: 1 },
-  ];
-
-  const quizPortfolio: QuizQuestion[] = lang === "de" ? [
-    { question: "Was bestimmt laut Studien bis zu 90% der Portfolio-Rendite?", options: ["Aktienauswahl", "Market Timing", "Asset Allocation", "Ordertyp"], correct: 2 },
-    { question: "Was ist Rebalancing?", options: ["Mehr Aktien kaufen", "Portfolio auf Zielgewichtung zurücksetzen", "Alle Aktien verkaufen", "Nur in ETFs investieren"], correct: 1 },
-  ] : [
-    { question: "What determines up to 90% of portfolio returns according to studies?", options: ["Stock selection", "Market timing", "Asset allocation", "Order type"], correct: 2 },
-    { question: "What is rebalancing?", options: ["Buying more stocks", "Resetting portfolio to target allocation", "Selling all stocks", "Only investing in ETFs"], correct: 1 },
-  ];
-
-  const quizTA: QuizQuestion[] = lang === "de" ? [
-    { question: "Was signalisiert ein Golden Cross?", options: ["Bärischer Trend", "Bullischer Trend", "Seitwärtsmarkt", "Crash"], correct: 1 },
-    { question: "RSI über 70 bedeutet:", options: ["Überverkauft", "Überkauft", "Neutral", "Kein Signal"], correct: 1 },
-  ] : [
-    { question: "What does a Golden Cross signal?", options: ["Bearish trend", "Bullish trend", "Sideways market", "Crash"], correct: 1 },
-    { question: "RSI above 70 means:", options: ["Oversold", "Overbought", "Neutral", "No signal"], correct: 1 },
-  ];
-
-  const quizCorporateFinance: QuizQuestion[] = lang === "de" ? [
-    { question: "Was besagt das Modigliani-Miller-Theorem?", options: ["Dividenden sind immer besser als Rückkäufe", "Kapitalstruktur ist in perfekten Märkten irrelevant", "Schulden sind immer besser als Eigenkapital", "IPOs sind profitabler als Direktlistings"], correct: 1 },
-    { question: "Was ist ein SPAC?", options: ["Ein Aktien-Index", "Eine Kryptowährung", "Eine Blankocheck-Gesellschaft für Börsengang", "Ein Hedgefonds-Typ"], correct: 2 },
-  ] : [
-    { question: "What does the Modigliani-Miller theorem state?", options: ["Dividends are always better than buybacks", "Capital structure is irrelevant in perfect markets", "Debt is always better than equity", "IPOs are more profitable than direct listings"], correct: 1 },
-    { question: "What is a SPAC?", options: ["A stock index", "A cryptocurrency", "A blank check company for IPO", "A hedge fund type"], correct: 2 },
-  ];
-
-  const quizAccounting: QuizQuestion[] = lang === "de" ? [
-    { question: "Was ist Free Cash Flow?", options: ["Nettogewinn minus Dividenden", "Operativer Cashflow minus CapEx", "Umsatz minus Kosten", "EBITDA minus Steuern"], correct: 1 },
-    { question: "Die DuPont-Analyse zerlegt ROE in:", options: ["Zwei Komponenten", "Drei Komponenten", "Vier Komponenten", "Fünf Komponenten"], correct: 1 },
-  ] : [
-    { question: "What is Free Cash Flow?", options: ["Net income minus dividends", "Operating cash flow minus CapEx", "Revenue minus costs", "EBITDA minus taxes"], correct: 1 },
-    { question: "DuPont Analysis breaks ROE into:", options: ["Two components", "Three components", "Four components", "Five components"], correct: 1 },
-  ];
-
-  const quizValuation: QuizQuestion[] = lang === "de" ? [
-    { question: "Was liefert die Precedent Transactions Analyse typischerweise?", options: ["Niedrigere Bewertungen als Comps", "Höhere Bewertungen als Comps", "Gleiche Bewertungen wie DCF", "Keine verwertbaren Ergebnisse"], correct: 1 },
-    { question: "Was ist der Terminal Value in einem DCF?", options: ["Der Anfangsinvestment", "Der Wert aller Cashflows nach der Prognoseperiode", "Die jährliche Dividende", "Die Aktienanzahl"], correct: 1 },
-  ] : [
-    { question: "What does Precedent Transactions analysis typically yield?", options: ["Lower valuations than comps", "Higher valuations than comps", "Same valuations as DCF", "No usable results"], correct: 1 },
-    { question: "What is Terminal Value in a DCF?", options: ["The initial investment", "The value of all cash flows after the forecast period", "The annual dividend", "The share count"], correct: 1 },
-  ];
-
-  const quizMarketHistory: QuizQuestion[] = lang === "de" ? [
-    { question: "Wie lange brauchte der Dow Jones nach 1929 zur Erholung?", options: ["5 Jahre", "10 Jahre", "25 Jahre", "50 Jahre"], correct: 2 },
-    { question: "Was löste die Finanzkrise 2008 aus?", options: ["Dotcom-Aktien", "Subprime-Hypotheken", "COVID-19", "Tulpenzwiebeln"], correct: 1 },
-  ] : [
-    { question: "How long did the Dow Jones take to recover after 1929?", options: ["5 years", "10 years", "25 years", "50 years"], correct: 2 },
-    { question: "What triggered the 2008 financial crisis?", options: ["Dotcom stocks", "Subprime mortgages", "COVID-19", "Tulip bulbs"], correct: 1 },
-  ];
 
   const terms = [
     { term: t("learn.term.marketCap"), desc: t("learn.term.marketCapDesc") },
@@ -252,15 +162,6 @@ export default function LearnPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">{t("learn.levelAcademic")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-foreground/10 text-foreground">{t("learn.levelMaster")}</span>
           </div>
-          {user && (
-            <div className="max-w-xs mx-auto pt-3 space-y-1">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{lang === "de" ? "Fortschritt" : "Progress"}</span>
-                <span className="font-mono font-bold text-primary">{completedCount}/{totalSections}</span>
-              </div>
-              <Progress value={(completedCount / totalSections) * 100} className="h-2" />
-            </div>
-          )}
         </motion.div>
 
 
@@ -325,7 +226,7 @@ export default function LearnPage() {
                 <TermCard term={t("learn.orderTrailingStop")} desc={t("learn.orderTrailingStopDesc")} />
               </div>
             </SectionCard>
-            <QuizSection sectionId="basics" title={lang === "de" ? "Quiz: Grundlagen" : "Quiz: Basics"} questions={quizBasics} />
+            
           </motion.section>
 
           {/* Section 2: Stocks & ETFs */}
@@ -363,7 +264,7 @@ export default function LearnPage() {
                 <TermCard term={t("learn.technicalTitle")} desc={t("learn.technicalDesc")} />
               </div>
             </SectionCard>
-            <QuizSection sectionId="stocks-etfs" title={lang === "de" ? "Quiz: Aktien & ETFs" : "Quiz: Stocks & ETFs"} questions={quizStocksETFs} />
+            
           </motion.section>
 
           {/* Section 3: Strategies (was 6, now Beginner) */}
@@ -408,7 +309,7 @@ export default function LearnPage() {
               </div>
               <InfoBox title={t("learn.goodToKnow")}>{t("learn.psychInfo")}</InfoBox>
             </SectionCard>
-            <QuizSection sectionId="strategies" title={t("learn.quizStrategies")} questions={quizStrategies} />
+            
           </motion.section>
 
           {/* Section 4: Taxes & Costs (was 9) */}
@@ -463,9 +364,6 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/calculator" label={lang === "de" ? "Portfolio-Wachstum" : "Portfolio Growth"} />
           </motion.section>
-          <a href="#quiz-basics" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
-          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -545,7 +443,7 @@ export default function LearnPage() {
             <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.emergencyFundTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.emergencyFundP1") }} />
             </SectionCard>
-            <QuizSection sectionId="portfolio" title={t("learn.quizPortfolio")} questions={quizPortfolio} />
+            
           </motion.section>
 
           {/* Section 9: Stock Analysis in Practice (NEW) */}
@@ -566,9 +464,6 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/compare" label={lang === "de" ? "Aktienvergleich" : "Stock Compare"} />
           </motion.section>
-          <a href="#quiz-portfolio" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zum Quiz" : "Go to quiz"}
-          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -602,7 +497,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.supportResistanceP1") }} />
             </SectionCard>
             <motion.div variants={fadeIn}><WarningBox title={t("learn.warning")}>{t("learn.taWarning")}</WarningBox></motion.div>
-            <QuizSection sectionId="technical-analysis" title={t("learn.quizTA")} questions={quizTA} />
+            
           </motion.section>
 
           {/* Section 11: Derivatives */}
@@ -670,7 +565,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.certificatesP2") }} />
             </SectionCard>
             <motion.div variants={fadeIn}><InfoBox title={t("learn.goodToKnow")}>{t("learn.derivativesSummary")}</InfoBox></motion.div>
-            <QuizSection sectionId="derivatives" title={lang === "de" ? "Quiz: Derivate" : "Quiz: Derivatives"} questions={quizDerivatives} />
+            
           </motion.section>
 
           {/* Section 12: Formulas */}
@@ -715,9 +610,6 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.monteCarloP1") }} />
             </SectionCard>
           </motion.section>
-          <a href="#quiz-technical-analysis" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
-          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -847,7 +739,7 @@ export default function LearnPage() {
             <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.shareRepurchaseTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.shareRepurchaseP1") }} />
             </SectionCard>
-            <QuizSection sectionId="corporate-finance" title={t("learn.quizCorporateFinance")} questions={quizCorporateFinance} />
+            
           </motion.section>
 
           {/* Section 18: Accounting & Financial Statements */}
@@ -876,7 +768,7 @@ export default function LearnPage() {
             <SectionCard icon={<Gem className="h-5 w-5" />} title={t("learn.goodwillTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.goodwillP1") }} />
             </SectionCard>
-            <QuizSection sectionId="accounting" title={t("learn.quizAccounting")} questions={quizAccounting} />
+            
           </motion.section>
 
           {/* Section 19: International Finance */}
@@ -963,9 +855,6 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.baselP1") }} />
             </SectionCard>
           </motion.section>
-          <a href="#quiz-corporate-finance" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
-          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -991,7 +880,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.lboP1") }} />
             </SectionCard>
             <CalcLink to="/calculators" label="DCF Calculator" />
-            <QuizSection sectionId="valuation" title={t("learn.quizValuation")} questions={quizValuation} />
+            
           </motion.section>
 
           {/* Section 24: Alternative Investments Advanced */}
@@ -1029,7 +918,7 @@ export default function LearnPage() {
             <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.covidCrashTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.covidCrashP1") }} />
             </SectionCard>
-            <QuizSection sectionId="market-history" title={t("learn.quizMarketHistory")} questions={quizMarketHistory} />
+            
           </motion.section>
 
           {/* Section 26: Personal Finance & Retirement */}
@@ -1094,9 +983,6 @@ export default function LearnPage() {
               <WarningBox title={t("learn.warning")}>{lang === "de" ? "MMT ist hochkontrovers und wird von der Mehrheit der Ökonomen kritisch gesehen." : "MMT is highly controversial and viewed critically by most economists."}</WarningBox>
             </SectionCard>
           </motion.section>
-          <a href="#quiz-valuation" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
-          </a>
         </SuperSection>
 
         {/* Glossary CTA */}
