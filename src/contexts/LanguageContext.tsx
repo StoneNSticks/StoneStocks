@@ -440,6 +440,38 @@ const translations: Record<string, Record<Language, string>> = {
   // ── Sector Performance ──
   "sector.title": { de: "Sektorperformance", en: "Sector Performance" },
 
+  // ── Index Quick Actions ──
+  "index.quickActions": { de: "Schnellzugriff", en: "Quick Actions" },
+  "index.marketPulse": { de: "Marktstimmung", en: "Market Pulse" },
+  "index.stockCompare": { de: "Aktienvergleich", en: "Stock Compare" },
+
+  // ── KeyMetrics ──
+  "km.title": { de: "Kennzahlen", en: "Key Metrics" },
+  "km.marketCap": { de: "Marktkapitalisierung", en: "Market Cap" },
+  "km.peRatio": { de: "KGV", en: "P/E Ratio" },
+  "km.pbRatio": { de: "KBV", en: "P/B Ratio" },
+  "km.psRatio": { de: "KUV", en: "P/S Ratio" },
+  "km.evEbitda": { de: "EV/EBITDA", en: "EV/EBITDA" },
+  "km.eps": { de: "EPS", en: "EPS" },
+  "km.dividendYield": { de: "Dividendenrendite", en: "Dividend Yield" },
+  "km.fcfYield": { de: "FCF-Rendite", en: "FCF Yield" },
+  "km.beta": { de: "Beta", en: "Beta" },
+  "km.52wHigh": { de: "52W-Hoch", en: "52W High" },
+  "km.52wLow": { de: "52W-Tief", en: "52W Low" },
+  "km.profitMargin": { de: "Gewinnmarge", en: "Profit Margin" },
+  "km.revenueTTM": { de: "Umsatz TTM", en: "Revenue TTM" },
+  "km.grossProfitTTM": { de: "Bruttogewinn TTM", en: "Gross Profit TTM" },
+  "km.roe": { de: "EKR", en: "ROE" },
+  "km.roa": { de: "GKR", en: "ROA" },
+
+  // ── ComparePage ──
+  "compare.price": { de: "Kurs", en: "Price" },
+  "compare.change": { de: "Veränderung", en: "Change" },
+  "compare.marketCap": { de: "Marktkapitalisierung", en: "Market Cap" },
+  "compare.divYield": { de: "Dividendenrendite", en: "Div Yield" },
+  "compare.profitMargin": { de: "Gewinnmarge", en: "Profit Margin" },
+  "compare.revGrowth": { de: "Umsatzwachstum", en: "Rev Growth" },
+
   // ── Social / Comments ──
   "comments.title": { de: "Diskussion", en: "Discussion" },
   "comments.placeholder": { de: "Deine Meinung teilen...", en: "Share your take..." },
