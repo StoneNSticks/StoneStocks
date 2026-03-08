@@ -37,7 +37,7 @@ export function TopCompanies() {
         <span className="text-xs text-muted-foreground">{t("top.byMarketCap")}</span>
       </div>
       <div className="space-y-1">
-        {companies.map((c: any, i: number) => (
+        {companies.slice(0, 10).map((c: any, i: number) => (
           <Link key={c.symbol} to={`/stock/${c.symbol}`} className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               {c.logo ? (

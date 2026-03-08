@@ -12,7 +12,6 @@ import { SentimentGauge } from "@/components/SentimentGauge";
 import { SectorPerformance } from "@/components/SectorPerformance";
 import { useT } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
-import { GitCompare, ArrowRight, Gauge } from "lucide-react";
 
 const Index = () => {
   const t = useT();

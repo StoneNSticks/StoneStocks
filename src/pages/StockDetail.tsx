@@ -324,10 +324,9 @@ const StockDetail = () => {
             <InsiderTrades symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
-                SECTION 13: Community Comments
-                Users can post and read comments about this stock
+                SECTION 13: Community: Sentiment Vote + Threaded Comments
                 ══════════════════════════════════════════════════════════ */}
-            <StockComments symbol={upperSymbol} />
+            <CommunitySection symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 14: Similar Stocks List

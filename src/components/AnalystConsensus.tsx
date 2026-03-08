@@ -283,7 +283,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                   <ResponsiveContainer width="100%" height={140}>
                     <BarChart data={chartData} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
+                      <XAxis dataKey="period" axisLine={false} tickLine={false} interval={0} angle={-45} textAnchor="end" height={40} tick={{ fontSize: 7, fill: "hsl(var(--muted-foreground))" }} />
                       <YAxis hide />
                       <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 10, color: "hsl(var(--foreground))" }} />
                       <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} />
