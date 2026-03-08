@@ -20,7 +20,7 @@ function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) 
 function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => void }) {
   const { data, isLoading } = useFullStock(symbol);
   const { convert, symbol: cSym } = useCurrency();
-  const { lang } = useLanguage();
+  const t = useT();
 
   if (isLoading) return <Skeleton className="h-96 rounded-xl" />;
   if (!data) return null;
