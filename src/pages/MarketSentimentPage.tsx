@@ -531,6 +531,167 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
   );
 }
 
+/* ─── Additional Market Indicators Panel ─── */
+function AdditionalIndicators({ indices, gainers, losers, commodities }: { indices: any[]; gainers: any[]; losers: any[]; commodities: any[] }) {
+  const { lang } = useLanguage();
+
+  const indexChanges = (indices || [])
+    .filter((i: any) => i.changePercent != null && !isNaN(i.changePercent))
+    .map((i: any) => i.changePercent as number);
+  const avg = indexChanges.length > 0 ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length : 0;
+
+  // VIX proxy
+  const variance = indexChanges.length >= 3
+    ? indexChanges.reduce((s, v) => s + (v - avg) ** 2, 0) / indexChanges.length : 0;
+  const stdDev = Math.sqrt(variance);
+  const vix = Math.min(50, 12 + stdDev * 15);
+  const vixLevel = vix <= 15 ? { label: lang === "de" ? "Niedrig" : "Low", color: "text-chart-2", bar: "bg-chart-2" }
+    : vix <= 20 ? { label: "Normal", color: "text-muted-foreground", bar: "bg-primary/60" }
+    : vix <= 30 ? { label: lang === "de" ? "Erhöht" : "Elevated", color: "text-orange-500", bar: "bg-orange-500" }
+    : { label: lang === "de" ? "Hoch" : "High", color: "text-destructive", bar: "bg-destructive" };
+  const vixPct = Math.min(100, Math.max(0, ((vix - 10) / 40) * 100));
+
+  // Put/Call Ratio proxy
+  const totalStocks = gainers.length + losers.length;
+  const pcRatio = totalStocks > 0 ? losers.length / Math.max(1, gainers.length) : 1;
+  const pcLevel = pcRatio < 0.7 ? { label: lang === "de" ? "Bullisch" : "Bullish", color: "text-chart-2" }
+    : pcRatio <= 1.0 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Bärisch" : "Bearish", color: "text-destructive" };
+
+  // Advance/Decline ratio
+  const adRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
+  const adLevel = adRatio > 0.6 ? { label: lang === "de" ? "Stark" : "Strong", color: "text-chart-2" }
+    : adRatio >= 0.4 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Schwach" : "Weak", color: "text-destructive" };
+
+  // Gold/Oil ratio (risk indicator)
+  const gold = (commodities || []).find((c: any) => c.name === "Gold");
+  const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI"));
+  const goldPrice = gold?.price || 1;
+  const oilPrice = oil?.price || 1;
+  const goldOilRatio = goldPrice / oilPrice;
+  const gorLevel = goldOilRatio > 30 ? { label: lang === "de" ? "Risikoavers" : "Risk Averse", color: "text-orange-500" }
+    : goldOilRatio > 20 ? { label: "Normal", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Risikofreudig" : "Risk On", color: "text-chart-2" };
+
+  // Market momentum (% of indices positive)
+  const posCount = indexChanges.filter(c => c >= 0).length;
+  const momPct = indexChanges.length > 0 ? (posCount / indexChanges.length) * 100 : 50;
+
+  // Dollar strength proxy (inverse of commodity avg)
+  const comChanges = (commodities || [])
+    .filter((c: any) => c.changePercent != null)
+    .map((c: any) => c.changePercent as number);
+  const comAvg = comChanges.length > 0 ? comChanges.reduce((s, v) => s + v, 0) / comChanges.length : 0;
+  const dollarProxy = -comAvg; // inverse
+  const dxyLevel = dollarProxy > 0.5 ? { label: lang === "de" ? "Stark" : "Strong", color: "text-chart-2" }
+    : dollarProxy > -0.5 ? { label: "Neutral", color: "text-muted-foreground" }
+    : { label: lang === "de" ? "Schwach" : "Weak", color: "text-destructive" };
+
+  const cards = [
+    {
+      title: lang === "de" ? "Volatilitätsindex (VIX)" : "Volatility Index (VIX)",
+      icon: <Waves className="h-4 w-4 text-primary" />,
+      value: vix.toFixed(1),
+      label: vixLevel.label,
+      color: vixLevel.color,
+      bar: { pct: vixPct, cls: vixLevel.bar },
+      desc: lang === "de"
+        ? "Geschätzt aus der Standardabweichung der Index-Performance. Hohe Werte = Marktunsicherheit."
+        : "Estimated from standard deviation of index performance. High values = market uncertainty."
+    },
+    {
+      title: lang === "de" ? "Put/Call-Verhältnis" : "Put/Call Ratio",
+      icon: <BarChart3 className="h-4 w-4 text-primary" />,
+      value: pcRatio.toFixed(2),
+      label: pcLevel.label,
+      color: pcLevel.color,
+      bar: { pct: Math.min(100, pcRatio * 50), cls: pcRatio > 1 ? "bg-destructive" : "bg-chart-2" },
+      desc: lang === "de"
+        ? "Verhältnis von Verlierer- zu Gewinner-Aktien als Proxy. Über 1.0 = mehr Absicherung (Angst)."
+        : "Ratio of declining to advancing stocks as proxy. Above 1.0 = more hedging (fear)."
+    },
+    {
+      title: lang === "de" ? "Advance/Decline" : "Advance/Decline Ratio",
+      icon: <Activity className="h-4 w-4 text-primary" />,
+      value: `${gainers.length}:${losers.length}`,
+      label: adLevel.label,
+      color: adLevel.color,
+      bar: { pct: adRatio * 100, cls: adRatio > 0.5 ? "bg-chart-2" : "bg-destructive" },
+      desc: lang === "de"
+        ? "Verhältnis steigender zu fallender Aktien. Breite Beteiligung = gesunder Markt."
+        : "Ratio of advancing to declining stocks. Broad participation = healthy market."
+    },
+    {
+      title: lang === "de" ? "Markt-Momentum" : "Market Momentum",
+      icon: <TrendingUp className="h-4 w-4 text-primary" />,
+      value: `${momPct.toFixed(0)}%`,
+      label: momPct >= 70 ? (lang === "de" ? "Bullisch" : "Bullish") : momPct <= 30 ? (lang === "de" ? "Bärisch" : "Bearish") : "Neutral",
+      color: momPct >= 70 ? "text-chart-2" : momPct <= 30 ? "text-destructive" : "text-muted-foreground",
+      bar: { pct: momPct, cls: momPct >= 50 ? "bg-chart-2" : "bg-destructive" },
+      desc: lang === "de"
+        ? "Anteil der Indizes mit positiver Tagesperformance. Über 70% = starker Aufwärtstrend."
+        : "Percentage of indices with positive daily performance. Above 70% = strong uptrend."
+    },
+    {
+      title: lang === "de" ? "Gold/Öl-Verhältnis" : "Gold/Oil Ratio",
+      icon: <Shield className="h-4 w-4 text-primary" />,
+      value: goldOilRatio.toFixed(1),
+      label: gorLevel.label,
+      color: gorLevel.color,
+      bar: { pct: Math.min(100, (goldOilRatio / 60) * 100), cls: goldOilRatio > 30 ? "bg-orange-500" : "bg-chart-2" },
+      desc: lang === "de"
+        ? "Gold geteilt durch Ölpreis. Hohe Werte deuten auf Flucht in sichere Häfen hin."
+        : "Gold price divided by oil price. High values suggest flight to safety."
+    },
+    {
+      title: lang === "de" ? "Dollar-Stärke (Proxy)" : "Dollar Strength (Proxy)",
+      icon: <Globe className="h-4 w-4 text-primary" />,
+      value: `${dollarProxy >= 0 ? "+" : ""}${dollarProxy.toFixed(2)}%`,
+      label: dxyLevel.label,
+      color: dxyLevel.color,
+      bar: { pct: Math.min(100, Math.max(0, (dollarProxy + 3) / 6 * 100)), cls: dollarProxy > 0 ? "bg-chart-2" : "bg-destructive" },
+      desc: lang === "de"
+        ? "Inverse der Rohstoff-Performance als USD-Proxy. Starker Dollar = fallende Rohstoffe."
+        : "Inverse of commodity performance as USD proxy. Strong dollar = falling commodities."
+    },
+  ];
+
+  return (
+    <motion.div initial="hidden" animate="visible" variants={fadeIn}>
+      <div className="flex items-center gap-2 mb-4">
+        <Gauge className="h-5 w-5 text-primary" />
+        <h2 className="font-display text-lg font-bold">
+          {lang === "de" ? "Markt-Indikatoren" : "Market Indicators"}
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {cards.map((card) => (
+          <div key={card.title} className="rounded-2xl border border-border/60 bg-card p-5 space-y-3">
+            <div className="flex items-center gap-2">
+              {card.icon}
+              <h3 className="font-display font-semibold text-sm">{card.title}</h3>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className={`font-mono text-2xl font-bold ${card.color}`}>{card.value}</span>
+              <span className={`text-xs font-medium ${card.color}`}>{card.label}</span>
+            </div>
+            <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${card.bar.pct}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className={`h-full rounded-full ${card.bar.cls}`}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">{card.desc}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Page Component ─── */
 export default function MarketSentimentPage() {
   const { lang } = useLanguage();
