@@ -309,23 +309,9 @@ const StockDetail = () => {
             </div>
 
             {/* ══════════════════════════════════════════════════════════
-                SECTION 7b: AI-Powered Stock Analysis
+                SECTION 7b: AI-Powered Stock Summary
                 ══════════════════════════════════════════════════════════ */}
             <AIStockSummary symbol={upperSymbol} profile={profile} quote={quote} overview={overview} derived={derived} recommendation={recommendation} />
-
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 7c: AI Risk Assessment + AI Technical Analysis
-                ══════════════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <AIRiskAssessment symbol={upperSymbol} overview={overview} derived={derived} />
-              <AITechnicalAnalysis symbol={upperSymbol} />
-            </div>
-
-            {/* AI Earnings Preview */}
-            <AIEarningsPreview symbol={upperSymbol} />
-
-            {/* AI Competitor Analysis */}
-            <AICompetitorAnalysis symbol={upperSymbol} peers={peers} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 8: Company Intelligence
