@@ -183,7 +183,11 @@ export default function LearnPage() {
       <Header />
       <main className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
         {/* Hero */}
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center space-y-3">
+        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center space-y-3 relative">
+          <a href="/glossary" className="absolute top-0 right-0 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            <BookOpen className="h-3.5 w-3.5" />
+            {lang === "de" ? "Glossar" : "Glossary"}
+          </a>
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
             <BookOpen className="h-4 w-4" />{t("learn.badge")}
           </div>
