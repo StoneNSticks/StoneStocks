@@ -246,6 +246,8 @@ export default function LearnPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground">{t("learn.levelIntermediate")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-destructive/10 text-destructive">{t("learn.levelAdvanced")}</span>
             <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">{t("learn.levelExpert")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">{t("learn.levelAcademic")}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-foreground/10 text-foreground">{t("learn.levelMaster")}</span>
           </div>
           {user && (
             <div className="max-w-xs mx-auto pt-3 space-y-1">
