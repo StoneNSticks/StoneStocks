@@ -2,11 +2,11 @@
  * SectorPerformance — Horizontal bar chart showing daily performance by sector.
  * Aggregates data from top companies, gainers/losers, and most active for broader coverage.
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTopCompanies, useGainersLosers, useMostActive } from "@/hooks/useStockData";
 import { useT } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Layers, List } from "lucide-react";
 
 const INDUSTRY_TO_SECTOR: Record<string, string> = {
   // Technology
