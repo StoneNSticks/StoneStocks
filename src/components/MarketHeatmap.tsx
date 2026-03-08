@@ -24,7 +24,19 @@ const SECTOR_LABELS: Record<string, Record<string, string>> = {
   Utilities: { de: "Versorger", en: "Utilities" },
 };
 
-const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities"];
+const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Consumer Defensive", "Energy", "Industrials", "Communication Services", "Basic Materials", "Utilities", "Real Estate"];
+
+// Finnhub uses different sector names than our filters — normalize them
+const SECTOR_MAP: Record<string, string> = {
+  "Financial Services": "Financials",
+  "Consumer Discretionary": "Consumer Cyclical",
+  "Consumer Staples": "Consumer Defensive",
+  "Materials": "Basic Materials",
+  "Information Technology": "Technology",
+  "Communication": "Communication Services",
+  "Telecommunication Services": "Communication Services",
+  "Health Care": "Healthcare",
+};
 
 function getColor(change: number): string {
   if (change >= 3) return "hsl(145, 63%, 35%)";
