@@ -288,8 +288,7 @@ function PortfolioRebalancingWrapper({ positions }: { positions: any[] }) {
 function AIPortfolioReviewWrapper({ positions }: { positions: any[] }) {
   return <EnrichedPositionsWrapper positions={positions}>{(posData) => <AIPortfolioReview positions={posData} />}</EnrichedPositionsWrapper>;
 }
-
-
+export default function PortfolioPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: positions, isLoading } = usePortfolio();
   const { convert, symbol: cSym } = useCurrency();
