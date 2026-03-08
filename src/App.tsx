@@ -15,7 +15,7 @@ import { AlertNotifications } from "@/components/AlertNotifications";
 import { EarningsNotificationProvider } from "@/components/EarningsNotificationProvider";
 import { lazy, Suspense } from "react";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
-import { FloatingChat } from "@/components/FloatingChat";
+// FloatingChat removed
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Lazy-loaded page components for code splitting ──
@@ -117,7 +117,7 @@ const App = () => (
               <InstallPrompt />
               <AlertNotifications />
               <KeyboardShortcutsModal />
-              <FloatingChat />
+              
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
