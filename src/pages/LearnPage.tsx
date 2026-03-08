@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical } from "lucide-react";
 import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
@@ -710,9 +711,7 @@ export default function LearnPage() {
           <p>{t("learn.disclaimer")}</p>
         </motion.div>
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

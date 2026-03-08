@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { SearchBar } from "@/components/SearchBar";
 import { MarketOverview } from "@/components/MarketOverview";
 import { MarketNewsSection } from "@/components/MarketNewsSection";
@@ -36,15 +37,15 @@ const Index = () => {
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
               <Gauge className="h-4 w-4 text-primary" />{t("index.quickActions")}
             </h3>
-            <Link to="/sentiment" className="flex items-center gap-2 rounded-lg px-3 py-2.5 bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
+            <Link to="/sentiment" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
               <Gauge className="h-4 w-4 text-primary" />{t("index.marketPulse")}
               <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
             </Link>
-            <Link to="/compare" className="flex items-center gap-2 rounded-lg px-3 py-2.5 bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
+            <Link to="/compare" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
               <GitCompare className="h-4 w-4 text-primary" />{t("index.stockCompare")}
               <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
             </Link>
-            <Link to="/rankings" className="flex items-center gap-2 rounded-lg px-3 py-2.5 bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
+            <Link to="/rankings" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
               <ArrowRight className="h-4 w-4 text-primary" />{t("nav.rankings")}
               <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
             </Link>
@@ -64,11 +65,7 @@ const Index = () => {
         </div>
         <HiddenGems />
       </main>
-      <footer className="border-t border-border/50 py-6 mt-8">
-        <div className="container text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} StoneStocks · {t("index.footer")}
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

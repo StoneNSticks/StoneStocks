@@ -5,6 +5,7 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { getQuote, getProfile } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -94,9 +95,7 @@ export default function SharedWatchlistPage() {
           </div>
         )}
       </main>
-      <footer className="border-t border-border/50 py-6 mt-8">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

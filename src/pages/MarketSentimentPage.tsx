@@ -16,6 +16,7 @@
  */
 
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/useStockData";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
@@ -292,11 +293,7 @@ export default function MarketSentimentPage() {
           </>
         )}
       </main>
-      <footer className="border-t border-border/50 py-6 mt-8">
-        <div className="container text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} StoneStocks
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
@@ -84,7 +85,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 max-w-xl px-3 sm:px-4">
+      <main className="container py-8 max-w-xl px-3 sm:px-4 w-full">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           {/* Avatar & Name Header */}
           <div className="relative rounded-2xl border border-border/60 bg-card overflow-hidden">
@@ -153,9 +154,7 @@ export default function ProfilePage() {
           </div>
         </motion.div>
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

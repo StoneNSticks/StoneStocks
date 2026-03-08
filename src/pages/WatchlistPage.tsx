@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWatchlist, useUpdateWatchlistItem } from "@/hooks/useWatchlist";
 import { WatchlistStar } from "@/components/WatchlistStar";
@@ -563,9 +564,7 @@ export default function WatchlistPage() {
           </motion.div>
         )}
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

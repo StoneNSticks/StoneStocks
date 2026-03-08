@@ -64,8 +64,8 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container flex items-center justify-center py-16">
-        <Card className="w-full max-w-md">
+      <main className="container flex items-center justify-center py-10 sm:py-16 px-3 sm:px-4">
+        <Card className="w-full max-w-sm sm:max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">
               {showForgot ? t("auth.resetPassword") : isLogin ? t("auth.signIn") : t("auth.signUp")}
@@ -124,7 +124,7 @@ export default function AuthPage() {
                   </div>
                 </div>
               )}
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
                 {loading ? t("auth.loading") : showForgot ? t("auth.sendLink") : isLogin ? t("auth.signIn") : t("auth.signUp")}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>

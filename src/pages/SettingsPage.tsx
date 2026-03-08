@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
@@ -125,7 +126,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 max-w-xl px-3 sm:px-4">
+      <main className="container py-8 max-w-xl px-3 sm:px-4 w-full">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 rounded-xl bg-accent"><Settings className="h-5 w-5 text-accent-foreground" /></div>
           <div>
@@ -242,9 +243,7 @@ export default function SettingsPage() {
           </Button>
         </div>
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

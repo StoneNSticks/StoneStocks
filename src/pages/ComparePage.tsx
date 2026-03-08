@@ -3,6 +3,7 @@
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useFullStock } from "@/hooks/useStockData";
 import { useSearchStocks } from "@/hooks/useStockData";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -180,7 +181,7 @@ export default function ComparePage() {
         ) : (
           <>
             <NormalizedChart symbols={symbols} />
-            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 md:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
               {symbols.map(s => (
                 <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
               ))}
@@ -188,9 +189,7 @@ export default function ComparePage() {
           </>
         )}
       </main>
-      <footer className="border-t border-border/50 py-6 mt-8">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

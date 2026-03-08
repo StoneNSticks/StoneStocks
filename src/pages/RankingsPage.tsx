@@ -4,6 +4,7 @@
  */
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { TopCompanies } from "@/components/TopCompanies";
 import { GainersLosers } from "@/components/GainersLosers";
 import { MostActive } from "@/components/MostActive";
@@ -37,9 +38,7 @@ const RankingsPage = () => {
           <SectorPerformance />
         </div>
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 };

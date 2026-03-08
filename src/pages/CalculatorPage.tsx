@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -964,7 +965,7 @@ const CalculatorPage = () => {
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="flex gap-2 mb-4 scroll-x-touch pb-1">
           {categories.map(cat => (
             <button
               key={cat.key}
@@ -981,9 +982,9 @@ const CalculatorPage = () => {
         </div>
 
         <Tabs defaultValue="portfolio" className="space-y-4">
-          <TabsList className="bg-card border border-border/60 p-1 rounded-xl flex-wrap h-auto gap-1 overflow-x-auto max-w-full">
+          <TabsList className="bg-card border border-border/60 p-1 rounded-xl h-auto gap-1 scroll-x-touch max-w-full flex flex-nowrap">
             {filteredTabs.map(tab => (
-              <TabsTrigger key={tab.value} value={tab.value} className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger key={tab.value} value={tab.value} className="rounded-lg gap-1.5 text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 {tab.icon}{tab.label}
               </TabsTrigger>
             ))}
@@ -993,9 +994,7 @@ const CalculatorPage = () => {
           ))}
         </Tabs>
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 };

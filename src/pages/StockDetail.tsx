@@ -7,6 +7,7 @@
  */
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { WatchlistStar } from "@/components/WatchlistStar";
 import { SearchBar } from "@/components/SearchBar";
 import { StockChart } from "@/components/StockChart";
@@ -122,7 +123,7 @@ const StockDetail = () => {
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-20 rounded-xl" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>
+           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>
             <Skeleton className="h-72 rounded-xl" />
           </div>
         ) : error ? (
@@ -172,7 +173,7 @@ const StockDetail = () => {
             </div>
 
             {/* Financial charts */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 overflow-hidden">
               <FinancialChart title={t("sd.revenue")} data={revenueData} dataKey="value" color="hsl(210, 80%, 55%)" />
               <FinancialChart title={t("sd.grossProfit")} data={grossProfitData} dataKey="value" color="hsl(280, 65%, 55%)" />
               <FinancialChart title={t("sd.netIncome")} data={netIncomeData} dataKey="value" color="hsl(38, 92%, 50%)" />
@@ -209,9 +210,7 @@ const StockDetail = () => {
           </div>
         )}
       </main>
-      <footer className="border-t border-border/50 py-6">
-        <div className="container text-center text-xs text-muted-foreground">© {new Date().getFullYear()} StoneStocks</div>
-      </footer>
+      <Footer />
     </div>
   );
 };
