@@ -17,16 +17,6 @@ import { TickerTape } from "@/components/TickerTape";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT } from "@/contexts/LanguageContext";
 import { useElementVisible } from "@/hooks/useScrollVisibility";
-import { Menu, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
-import { SearchBar } from "@/components/SearchBar";
-import { CurrencyToggle } from "@/components/CurrencyToggle";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { MarketClock } from "@/components/MarketClock";
-import { TickerTape } from "@/components/TickerTape";
-import { useAuth } from "@/contexts/AuthContext";
-import { useT } from "@/contexts/LanguageContext";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
