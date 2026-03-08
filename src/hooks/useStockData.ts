@@ -43,3 +43,4 @@ export const useSimFinStatements = (symbol: string) => useQuery({ queryKey: ["si
 export const useEulerpoolProfile = (symbol: string) => useQuery({ queryKey: ["eulerpoolProfile", symbol], queryFn: () => getEulerpoolProfile(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 60 * 24 * 7 });
 export const useHiddenGems = () => useQuery({ queryKey: ["hiddenGems"], queryFn: getHiddenGems, staleTime: 1000 * 60 * 15, refetchInterval: 1000 * 60 * 30 });
 export const useInsiderTransactions = (symbol: string) => useQuery({ queryKey: ["insiderTx", symbol], queryFn: () => getInsiderTransactions(symbol), enabled: !!symbol, staleTime: 1000 * 60 * 30 });
+export const useEarningsCalendar = (symbols: string) => useQuery({ queryKey: ["earningsCalendar", symbols], queryFn: () => getEarningsCalendar(symbols), enabled: !!symbols, staleTime: 1000 * 60 * 60 });
