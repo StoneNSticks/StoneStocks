@@ -6,9 +6,11 @@
  */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Menu, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
+import { Menu, LogIn, LogOut, User, Settings, ChevronDown, BookOpen } from "lucide-react";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { NotificationBell } from "@/components/NotificationBell";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
