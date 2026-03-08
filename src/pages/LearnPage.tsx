@@ -456,7 +456,7 @@ export default function LearnPage() {
             <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.emergencyFundTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.emergencyFundP1") }} />
             </SectionCard>
-            <QuizSection sectionId="portfolio" title={t("learn.quizPortfolio")} questions={quizPortfolio} />
+            
           </motion.section>
 
           {/* Section 9: Stock Analysis in Practice (NEW) */}
