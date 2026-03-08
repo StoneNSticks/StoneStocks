@@ -982,7 +982,7 @@ const CalculatorPage = () => {
         </div>
 
         <Tabs defaultValue="portfolio" className="space-y-4">
-          <TabsList className="bg-card border border-border/60 p-1 rounded-xl flex-wrap h-auto gap-1 overflow-x-auto max-w-full">
+          <TabsList className="bg-card border border-border/60 p-1 rounded-xl h-auto gap-1 scroll-x-touch max-w-full flex flex-nowrap">
             {filteredTabs.map(tab => (
               <TabsTrigger key={tab.value} value={tab.value} className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 {tab.icon}{tab.label}
