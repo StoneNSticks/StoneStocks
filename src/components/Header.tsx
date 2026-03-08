@@ -13,6 +13,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase, Wifi, WifiOff } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -102,6 +103,7 @@ export function Header() {
             <LanguageToggle />
           </div>
           <ThemeToggle />
+          <NotificationBell />
           <Link to="/learn" className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/60" title={t("nav.learn")}>
             <HelpCircle className="h-4 w-4" />
           </Link>
