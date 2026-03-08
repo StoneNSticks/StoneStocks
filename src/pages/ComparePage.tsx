@@ -169,7 +169,7 @@ export default function ComparePage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl"
-            disabled={symbols.length >= 4}
+            disabled={symbols.length >= 5}
           />
           {searchResults && searchQuery.length >= 1 && (
             <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border/60 bg-card shadow-xl z-50 overflow-hidden max-h-48 overflow-y-auto">
