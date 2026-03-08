@@ -34,16 +34,13 @@ const navItems: NavItem[] = [
   { to: "/news", key: "nav.news", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
+  { to: "/calculators", key: "nav.tools", fallback: "Calculators", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
   { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 const toolItems = [
-  { to: "/calculators", label: "Calculators" },
   { to: "/compare", label: "Compare" },
-  { to: "/crypto", label: "Crypto" },
-  { to: "/forex", label: "Forex" },
-  { to: "/bonds", label: "Bonds" },
 ];
 
 export function Header() {
