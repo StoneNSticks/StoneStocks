@@ -13,6 +13,7 @@ import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { MarketClock } from "@/components/MarketClock";
+import { TickerTape } from "@/components/TickerTape";
 import { useAuth } from "@/contexts/AuthContext";
 import { useT } from "@/contexts/LanguageContext";
 import {
