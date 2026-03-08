@@ -718,6 +718,7 @@ function isCommonStock(ticker: string): boolean {
     "NVD","NVDL","NVDS","CRCG","MSTX","TSLS","COHX","IONZ","LUNL","CONL","MSTZ","MSTU",
     "TSLL","AAPD","AAPU","AMZU","AMZD","GOOX","GOOGL","MSFU","MSFD","METD","NFLX",
     "BITX","BITU","SBIT","ETHD",
+    "SPDN","PLTD","TSLG","TSLR","SMCX","FNGG","FNGS","BERZ","HIBS","WEBS","LABU","LABD","SOXL","SOXS","TQQQ","SQQQ","UPRO","SPXU","UDOW","SDOW",
   ]);
 
   if (ETF_BLACKLIST.has(ticker)) return false;
