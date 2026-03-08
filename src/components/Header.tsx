@@ -43,6 +43,15 @@ export function Header() {
   const t = useT();
   const [showSearch, setShowSearch] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, []);
 
   const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "User";
 
