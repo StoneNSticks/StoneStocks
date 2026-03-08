@@ -122,8 +122,18 @@ export function NormalizedChart({ symbols }: NormalizedChartProps) {
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }}
-              minTickGap={40}
+              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+              minTickGap={50}
+              tickFormatter={(d: string) => {
+                if (!d) return "";
+                const date = new Date(d);
+                const span = chartData.length > 0
+                  ? (new Date(chartData[chartData.length - 1].date as string).getTime() - new Date(chartData[0].date as string).getTime()) / (1000 * 60 * 60 * 24)
+                  : 0;
+                if (span > 365) return date.toLocaleDateString(undefined, { year: "numeric" });
+                if (span > 90) return date.toLocaleDateString(undefined, { month: "short" });
+                return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+              }}
             />
             <YAxis
               axisLine={false}
