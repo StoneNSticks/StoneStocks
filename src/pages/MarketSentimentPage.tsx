@@ -182,7 +182,7 @@ function getScoreColor(score: number) {
 function getBarColor(score: number) {
   if (score <= 25) return "bg-destructive";
   if (score <= 45) return "bg-orange-500";
-  if (score <= 55) return "bg-muted-foreground";
+  if (score <= 55) return "bg-primary/60";
   if (score <= 75) return "bg-chart-2/80";
   return "bg-chart-2";
 }

@@ -1,13 +1,20 @@
 /**
- * AnalystConsensus — Unified analyst view with gauge, price targets,
- * 12-month trend, and segmented rating breakdown.
- * Replaces separate AnalystTargets + RecommendationChart in the stock detail layout.
+ * AnalystConsensus — Premium analyst overview card.
+ * 
+ * Combines:
+ * - Consensus gauge (1-5 scale, visual arc)
+ * - Rating breakdown (segmented bar + counts)
+ * - Bullish vs Bearish split
+ * - Price target range with visual bar
+ * - 12-month recommendation history chart
+ * - 3-month trend indicator
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { Target, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { useT } from "@/contexts/LanguageContext";
+import { Target, TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Info, Users, DollarSign } from "lucide-react";
+import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 const COLORS = {
   strongBuy: "hsl(145, 80%, 35%)",
@@ -25,7 +32,9 @@ interface Props {
 
 export function AnalystConsensus({ recommendation, overview, quote }: Props) {
   const t = useT();
+  const { lang } = useLanguage();
   const { convert, symbol: cSym } = useCurrency();
+  const [showHistory, setShowHistory] = useState(false);
 
   const chartData = useMemo(() => {
     if (!recommendation?.length) return [];
@@ -41,7 +50,6 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
 
   const latest = chartData[chartData.length - 1];
   const prev = chartData.length > 3 ? chartData[chartData.length - 4] : null;
-
   const total = latest ? latest.strongBuy + latest.buy + latest.hold + latest.sell + latest.strongSell : 0;
 
   const consensus = total > 0
@@ -53,13 +61,12 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
       (prev.strongBuy + prev.buy + prev.hold + prev.sell + prev.strongSell || 1))
     : consensus;
 
-  const trendImproved = consensus < prevConsensus;
-  const trendWorsened = consensus > prevConsensus;
+  const trendImproved = consensus < prevConsensus - 0.1;
+  const trendWorsened = consensus > prevConsensus + 0.1;
 
   const consensusLabel = consensus <= 1.5 ? t("rec.strongBuy") : consensus <= 2.5 ? t("rec.buy") : consensus <= 3.5 ? t("rec.hold") : consensus <= 4.5 ? t("rec.sell") : t("rec.strongSell");
   const consensusColor = consensus <= 2.0 ? COLORS.strongBuy : consensus <= 2.5 ? COLORS.buy : consensus <= 3.5 ? COLORS.hold : consensus <= 4.5 ? COLORS.sell : COLORS.strongSell;
 
-  // Price target data
   const target = parseFloat(overview?.AnalystTargetPrice || "0");
   const high = parseFloat(overview?.AnalystHighTarget || "0");
   const low = parseFloat(overview?.AnalystLowTarget || "0");
@@ -76,86 +83,151 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
 
   const bullish = (latest?.strongBuy || 0) + (latest?.buy || 0);
   const bearish = (latest?.sell || 0) + (latest?.strongSell || 0);
+  const neutral = latest?.hold || 0;
 
   if (!total && !target) return null;
 
-  // Gauge angle: consensus 1-5 mapped to 180° arc
   const gaugeAngle = total > 0 ? ((consensus - 1) / 4) * 180 : 90;
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-6">
-      <div className="flex items-center gap-2">
-        <Target className="h-4 w-4 text-primary" />
-        <h3 className="font-display font-semibold text-sm text-muted-foreground">{t("rec.title")}</h3>
-        {trendImproved && <TrendingUp className="h-3.5 w-3.5 text-chart-2 ml-auto" />}
-        {trendWorsened && <TrendingDown className="h-3.5 w-3.5 text-destructive ml-auto" />}
-        {!trendImproved && !trendWorsened && <Minus className="h-3.5 w-3.5 text-muted-foreground ml-auto" />}
+    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+      {/* ── Header ── */}
+      <div className="px-5 pt-5 pb-4 flex items-center gap-3">
+        <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Target className="h-4.5 w-4.5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display font-bold text-sm text-foreground">{t("rec.title")}</h3>
+          <p className="text-[10px] text-muted-foreground">
+            {total > 0 && (
+              <span className="flex items-center gap-1">
+                <Users className="h-3 w-3 inline" />
+                {total} {t("rec.analysts")}
+                {trendImproved && <span className="text-chart-2 font-medium ml-1">↑ {lang === "de" ? "verbessert" : "improving"}</span>}
+                {trendWorsened && <span className="text-destructive font-medium ml-1">↓ {lang === "de" ? "verschlechtert" : "declining"}</span>}
+              </span>
+            )}
+          </p>
+        </div>
+        {trendImproved && <TrendingUp className="h-4 w-4 text-chart-2 shrink-0" />}
+        {trendWorsened && <TrendingDown className="h-4 w-4 text-destructive shrink-0" />}
+        {!trendImproved && !trendWorsened && total > 0 && <Minus className="h-4 w-4 text-muted-foreground shrink-0" />}
       </div>
 
-      {/* Gauge */}
+      {/* ── Consensus Gauge ── */}
       {total > 0 && (
-        <div className="flex flex-col items-center">
-          <svg viewBox="0 0 200 110" className="w-48 h-auto">
-            {/* Arc background */}
-            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="hsl(var(--muted))" strokeWidth="14" strokeLinecap="round" />
-            {/* Colored segments */}
-            <path d="M 20 100 A 80 80 0 0 1 52 42" fill="none" stroke={COLORS.strongBuy} strokeWidth="14" strokeLinecap="round" />
-            <path d="M 52 42 A 80 80 0 0 1 100 20" fill="none" stroke={COLORS.buy} strokeWidth="14" />
-            <path d="M 100 20 A 80 80 0 0 1 148 42" fill="none" stroke={COLORS.hold} strokeWidth="14" />
-            <path d="M 148 42 A 80 80 0 0 1 180 100" fill="none" stroke={COLORS.sell} strokeWidth="14" strokeLinecap="round" />
-            {/* Needle */}
-            <line
-              x1="100" y1="100"
-              x2={100 + 60 * Math.cos((Math.PI * (180 - gaugeAngle)) / 180)}
-              y2={100 - 60 * Math.sin((Math.PI * (180 - gaugeAngle)) / 180)}
-              stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round"
-            />
-            <circle cx="100" cy="100" r="4" fill="hsl(var(--foreground))" />
-          </svg>
-          <div className="text-center -mt-2">
-            <div className="text-2xl font-display font-bold" style={{ color: consensusColor }}>{consensusLabel}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">
-              {consensus.toFixed(2)} / 5.00 · {total} {t("rec.analysts")}
-              {trendImproved && <span className="text-chart-2 ml-1.5">↑ vs 3M</span>}
-              {trendWorsened && <span className="text-destructive ml-1.5">↓ vs 3M</span>}
+        <div className="px-5 pb-4">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            {/* SVG Gauge */}
+            <div className="relative w-40 h-24 shrink-0">
+              <svg viewBox="0 0 200 110" className="w-full h-full">
+                <defs>
+                  <linearGradient id="analystArc" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={COLORS.strongBuy} />
+                    <stop offset="25%" stopColor={COLORS.buy} />
+                    <stop offset="50%" stopColor={COLORS.hold} />
+                    <stop offset="75%" stopColor={COLORS.sell} />
+                    <stop offset="100%" stopColor={COLORS.strongSell} />
+                  </linearGradient>
+                </defs>
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="hsl(var(--muted))" strokeWidth="12" strokeLinecap="round" />
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#analystArc)" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
+                <line
+                  x1="100" y1="100"
+                  x2={100 + 58 * Math.cos((Math.PI * (180 - gaugeAngle)) / 180)}
+                  y2={100 - 58 * Math.sin((Math.PI * (180 - gaugeAngle)) / 180)}
+                  stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round"
+                />
+                <circle cx="100" cy="100" r="4" fill="hsl(var(--foreground))" />
+                {/* Labels */}
+                <text x="18" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="start">{lang === "de" ? "Kauf" : "Buy"}</text>
+                <text x="182" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="end">{lang === "de" ? "Verkauf" : "Sell"}</text>
+              </svg>
+            </div>
+            {/* Score */}
+            <div className="text-center sm:text-left flex-1">
+              <div className="text-2xl font-display font-bold" style={{ color: consensusColor }}>{consensusLabel}</div>
+              <div className="font-mono text-lg font-bold text-foreground">{consensus.toFixed(2)}<span className="text-muted-foreground text-sm"> / 5.00</span></div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Segmented bar */}
+      {/* ── Rating Breakdown ── */}
       {total > 0 && (
-        <>
-          <div className="flex h-3 rounded-full overflow-hidden gap-0.5">
+        <div className="px-5 pb-4 space-y-3">
+          {/* Segmented bar */}
+          <div className="flex h-3.5 rounded-full overflow-hidden gap-0.5">
             {segments.map((s) => (
-              <div key={s.label} className="transition-all" style={{ width: `${(s.count / total) * 100}%`, backgroundColor: s.color, minWidth: s.count > 0 ? "6px" : "0" }} />
+              <motion.div
+                key={s.label}
+                initial={{ width: 0 }}
+                animate={{ width: `${(s.count / total) * 100}%` }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                style={{ backgroundColor: s.color, minWidth: s.count > 0 ? "6px" : "0" }}
+                className="rounded-sm"
+              />
             ))}
           </div>
-          <div className="flex gap-1.5 flex-wrap justify-center">
-            {segments.map((s) => (
-              <div key={s.label} className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: `${s.color}15`, color: s.color }}>
+
+          {/* Rating chips */}
+          <div className="flex gap-1 flex-wrap justify-center">
+            {segments.map((s) => s.count > 0 && (
+              <div key={s.label} className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium"
+                style={{ backgroundColor: `${s.color}18`, color: s.color }}>
                 <span className="font-bold">{s.count}</span>
                 <span className="opacity-80 text-[10px]">{s.label}</span>
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs px-1">
-            <span className="font-medium" style={{ color: COLORS.buy }}>{bullish} {t("rec.bullish")} ({total > 0 ? ((bullish / total) * 100).toFixed(0) : 0}%)</span>
-            <span className="font-medium" style={{ color: COLORS.sell }}>{bearish} {t("rec.bearish")} ({total > 0 ? ((bearish / total) * 100).toFixed(0) : 0}%)</span>
-          </div>
-        </>
-      )}
 
-      {/* Price target range */}
-      {target > 0 && price > 0 && (
-        <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground font-medium">{t("at.title")}</span>
-            <span className={`font-bold ${upside >= 0 ? "text-chart-2" : "text-destructive"}`}>
-              {upside >= 0 ? "+" : ""}{upside.toFixed(1)}% {t("at.upside")}
+          {/* Bullish / Neutral / Bearish summary */}
+          <div className="flex items-center justify-between text-xs px-1">
+            <span className="font-semibold flex items-center gap-1" style={{ color: COLORS.buy }}>
+              <TrendingUp className="h-3 w-3" />
+              {bullish} {t("rec.bullish")} ({((bullish / total) * 100).toFixed(0)}%)
+            </span>
+            <span className="text-muted-foreground font-medium">{neutral} {lang === "de" ? "Halten" : "Hold"}</span>
+            <span className="font-semibold flex items-center gap-1" style={{ color: COLORS.sell }}>
+              {bearish} {t("rec.bearish")} ({((bearish / total) * 100).toFixed(0)}%)
+              <TrendingDown className="h-3 w-3" />
             </span>
           </div>
-          {/* Price range bar */}
+        </div>
+      )}
+
+      {/* ── Price Target ── */}
+      {target > 0 && price > 0 && (
+        <div className="mx-5 mb-4 rounded-xl bg-muted/40 border border-border/40 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <DollarSign className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-foreground">{t("at.title")}</span>
+            <span className={`ml-auto font-bold font-mono ${upside >= 0 ? "text-chart-2" : "text-destructive"}`}>
+              {upside >= 0 ? "+" : ""}{upside.toFixed(1)}%
+            </span>
+          </div>
+
+          {/* Three price boxes */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {low > 0 && (
+              <div className="rounded-lg bg-background p-2 border border-border/30">
+                <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Tief" : "Low"}</div>
+                <div className="font-mono font-bold text-sm text-destructive">{cSym}{convert(low)?.toFixed(0)}</div>
+              </div>
+            )}
+            <div className="rounded-lg bg-background p-2 border border-primary/30 shadow-sm">
+              <div className="text-[9px] text-primary font-semibold uppercase tracking-wider">Target</div>
+              <div className="font-mono font-bold text-sm text-foreground">{cSym}{convert(target)?.toFixed(2)}</div>
+            </div>
+            {high > 0 && (
+              <div className="rounded-lg bg-background p-2 border border-border/30">
+                <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{lang === "de" ? "Hoch" : "High"}</div>
+                <div className="font-mono font-bold text-sm text-chart-2">{cSym}{convert(high)?.toFixed(0)}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Range bar */}
           {(() => {
             const lo = low || price * 0.7;
             const hi = high || price * 1.3;
@@ -168,49 +240,82 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
             const highPct = hi ? ((hi - rangeMin) / span) * 100 : 100;
 
             return (
-              <>
-                <div className="relative h-2.5 rounded-full bg-muted overflow-hidden">
-                  {/* Low-high range fill */}
-                  <div className="absolute top-0 h-full rounded-full bg-primary/20" style={{ left: `${lowPct}%`, width: `${highPct - lowPct}%` }} />
-                  {/* Current price marker */}
-                  <div className="absolute top-0 h-full w-0.5 bg-foreground z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} />
-                  {/* Target marker */}
-                  <div className="absolute top-0 h-full w-1.5 rounded-full z-10" style={{
-                    left: `${Math.min(100, Math.max(0, targetPct))}%`,
-                    backgroundColor: upside >= 0 ? "hsl(145, 63%, 42%)" : "hsl(0, 72%, 51%)",
-                  }} />
-                </div>
-                <div className="flex justify-between text-[10px] text-muted-foreground">
-                  {lo > 0 && <span>{cSym}{convert(lo)?.toFixed(0)} Low</span>}
-                  <span className="font-medium text-foreground">{cSym}{convert(target)?.toFixed(2)} Target</span>
-                  {hi > 0 && <span>{cSym}{convert(hi)?.toFixed(0)} High</span>}
-                </div>
-              </>
+              <div className="relative h-2 rounded-full bg-muted overflow-hidden">
+                <div className="absolute top-0 h-full rounded-full bg-primary/15" style={{ left: `${lowPct}%`, width: `${highPct - lowPct}%` }} />
+                <div className="absolute top-0 h-full w-0.5 bg-foreground/70 z-10" style={{ left: `${Math.min(100, Math.max(0, pricePct))}%` }} title={`Current: ${cSym}${convert(price)?.toFixed(2)}`} />
+                <div className="absolute -top-0.5 h-3 w-1.5 rounded-full z-10" style={{
+                  left: `${Math.min(100, Math.max(0, targetPct))}%`,
+                  backgroundColor: upside >= 0 ? COLORS.buy : COLORS.sell,
+                }} title={`Target: ${cSym}${convert(target)?.toFixed(2)}`} />
+              </div>
             );
           })()}
-          <div className="text-[11px] text-muted-foreground text-center">
-            {t("at.current")}: {cSym}{convert(price)?.toFixed(2)}
+
+          <div className="text-[10px] text-muted-foreground text-center">
+            {t("at.current")}: <span className="font-mono font-medium text-foreground">{cSym}{convert(price)?.toFixed(2)}</span>
           </div>
         </div>
       )}
 
-      {/* 12-month history chart */}
+      {/* ── History Toggle ── */}
       {chartData.length > 0 && (
-        <div>
-          <div className="text-[11px] text-muted-foreground mb-2 font-medium">{t("rec.history")}</div>
-          <ResponsiveContainer width="100%" height={130}>
-            <BarChart data={chartData} barCategoryGap="20%">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis hide />
-              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 10, color: "hsl(var(--foreground))" }} />
-              <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} />
-              <Bar dataKey="buy" stackId="a" fill={COLORS.buy} name={t("rec.buy")} />
-              <Bar dataKey="hold" stackId="a" fill={COLORS.hold} name={t("rec.hold")} />
-              <Bar dataKey="sell" stackId="a" fill={COLORS.sell} name={t("rec.sell")} />
-              <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[3, 3, 0, 0]} name={t("rec.strongSell")} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="border-t border-border/40">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-full flex items-center justify-center gap-1.5 px-5 py-3 text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
+          >
+            {showHistory
+              ? (lang === "de" ? "Verlauf ausblenden" : "Hide history")
+              : (lang === "de" ? "12-Monats-Verlauf anzeigen" : "Show 12-month history")}
+            {showHistory ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          </button>
+
+          <AnimatePresence>
+            {showHistory && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="px-5 pb-5">
+                  <ResponsiveContainer width="100%" height={140}>
+                    <BarChart data={chartData} barCategoryGap="20%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
+                      <YAxis hide />
+                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 10, color: "hsl(var(--foreground))" }} />
+                      <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} />
+                      <Bar dataKey="buy" stackId="a" fill={COLORS.buy} name={t("rec.buy")} />
+                      <Bar dataKey="hold" stackId="a" fill={COLORS.hold} name={t("rec.hold")} />
+                      <Bar dataKey="sell" stackId="a" fill={COLORS.sell} name={t("rec.sell")} />
+                      <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[3, 3, 0, 0]} name={t("rec.strongSell")} />
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  {/* Per-month mini breakdown */}
+                  <div className="mt-3 space-y-1 max-h-[200px] overflow-y-auto">
+                    {chartData.map((row) => {
+                      const rowTotal = row.strongBuy + row.buy + row.hold + row.sell + row.strongSell;
+                      return (
+                        <div key={row.period} className="flex items-center gap-2 text-[10px] px-1 py-1 rounded-md hover:bg-muted/30">
+                          <span className="w-14 text-muted-foreground font-mono">{row.period}</span>
+                          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden gap-px">
+                            {segments.map((s) => {
+                              const val = row[s.key] as number;
+                              return <div key={s.label} style={{ width: rowTotal > 0 ? `${(val / rowTotal) * 100}%` : "0", backgroundColor: s.color, minWidth: val > 0 ? "2px" : "0" }} />;
+                            })}
+                          </div>
+                          <span className="w-6 text-right text-muted-foreground font-mono">{rowTotal}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </div>
