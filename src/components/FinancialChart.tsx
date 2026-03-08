@@ -26,7 +26,7 @@ function formatLargeNumber(num: number, sym = "$"): string {
   return `${sym}${num.toFixed(0)}`;
 }
 
-export function FinancialChart({
+export const FinancialChart = memo(function FinancialChart({
   title, data, dataKey, secondaryKey, secondaryLabel,
   color = "hsl(210, 80%, 55%)", secondaryColor = "hsl(145, 63%, 42%)",
   type = "bar", formatValue = formatLargeNumber, badge, badgeColor = "hsl(210, 80%, 55%)",
