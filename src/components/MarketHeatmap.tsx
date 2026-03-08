@@ -142,23 +142,29 @@ export function MarketHeatmap() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={440}>
-        <Treemap
-          data={treemapData}
-          dataKey="size"
-          aspectRatio={16 / 9}
-          content={<CustomContent />}
-          onClick={handleClick}
-        >
-          <Tooltip
-            contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12 }}
-            formatter={(_: unknown, __: string, entry: any) => [
-              `${(entry.payload.changePercent || 0) >= 0 ? "+" : ""}${(entry.payload.changePercent || 0).toFixed(2)}% · ${formatCompact(entry.payload.marketCap)}`,
-              entry.payload.fullName,
-            ]}
-          />
-        </Treemap>
-      </ResponsiveContainer>
+      {hasFilteredData ? (
+        <ResponsiveContainer width="100%" height={440}>
+          <Treemap
+            data={treemapData}
+            dataKey="size"
+            aspectRatio={16 / 9}
+            content={<CustomContent />}
+            onClick={handleClick}
+          >
+            <Tooltip
+              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12 }}
+              formatter={(_: unknown, __: string, entry: any) => [
+                `${(entry.payload.changePercent || 0) >= 0 ? "+" : ""}${(entry.payload.changePercent || 0).toFixed(2)}% · ${formatCompact(entry.payload.marketCap)}`,
+                entry.payload.fullName,
+              ]}
+            />
+          </Treemap>
+        </ResponsiveContainer>
+      ) : (
+        <div className="h-[440px] flex items-center justify-center text-sm text-muted-foreground">
+          {lang === "de" ? "Keine Aktien in diesem Sektor gefunden" : "No stocks found in this sector"}
+        </div>
+      )}
 
       <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
         {[
