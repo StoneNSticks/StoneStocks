@@ -164,8 +164,8 @@ export function Header() {
           </nav>
         </div>
       </div>
-      {/* Row 3: Ticker tape — on home, only show when main indices scrolled away */}
-      {(!isHome || !mainIndicesVisible) && (
+      {/* Row 3: Ticker tape — only on homepage, when main indices scrolled away */}
+      {isHome && !mainIndicesVisible && (
         <div className="animate-slide-down">
           <TickerTape />
         </div>
