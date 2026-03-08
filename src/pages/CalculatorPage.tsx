@@ -679,6 +679,8 @@ const CalculatorPage = () => {
             <TabsTrigger value="loan" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Landmark className="h-3.5 w-3.5" />{t("calc.loanCalc")}</TabsTrigger>
             <TabsTrigger value="riskreward" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Scale className="h-3.5 w-3.5" />{t("calc.riskReward")}</TabsTrigger>
             <TabsTrigger value="currency" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><ArrowLeftRight className="h-3.5 w-3.5" />{t("calc.currencyConverter") || "Currency"}</TabsTrigger>
+            <TabsTrigger value="taxloss" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Scissors className="h-3.5 w-3.5" />Tax-Loss</TabsTrigger>
+            <TabsTrigger value="divproject" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Coins className="h-3.5 w-3.5" />{lang === "de" ? "Dividenden-Projektion" : "Div. Projector"}</TabsTrigger>
           </TabsList>
           <TabsContent value="portfolio"><PortfolioGrowth /></TabsContent>
           <TabsContent value="compound"><CompoundInterest /></TabsContent>
@@ -690,6 +692,8 @@ const CalculatorPage = () => {
           <TabsContent value="loan"><LoanCalc /></TabsContent>
           <TabsContent value="riskreward"><RiskRewardCalc /></TabsContent>
           <TabsContent value="currency"><CurrencyConverter /></TabsContent>
+          <TabsContent value="taxloss"><TaxLossHarvesting /></TabsContent>
+          <TabsContent value="divproject"><DividendProjector /></TabsContent>
         </Tabs>
       </main>
     </div>
