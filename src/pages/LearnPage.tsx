@@ -578,7 +578,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.certificatesP2") }} />
             </SectionCard>
             <motion.div variants={fadeIn}><InfoBox title={t("learn.goodToKnow")}>{t("learn.derivativesSummary")}</InfoBox></motion.div>
-            <QuizSection sectionId="derivatives" title={lang === "de" ? "Quiz: Derivate" : "Quiz: Derivatives"} questions={quizDerivatives} />
+            
           </motion.section>
 
           {/* Section 12: Formulas */}
