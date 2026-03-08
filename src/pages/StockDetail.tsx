@@ -332,6 +332,12 @@ const StockDetail = () => {
             <InsiderTrades symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
+                SECTION 12b: SEC Filings
+                Recent 10-K, 10-Q, 8-K filings from SEC EDGAR
+                ══════════════════════════════════════════════════════════ */}
+            <SecFilings symbol={upperSymbol} />
+
+            {/* ══════════════════════════════════════════════════════════
                 SECTION 13: Community: Sentiment Vote + Threaded Comments
                 ══════════════════════════════════════════════════════════ */}
             <CommunitySection symbol={upperSymbol} />

@@ -211,7 +211,7 @@ export default function ComparePage() {
         ) : (
           <>
             <NormalizedChart symbols={symbols} />
-            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : symbols.length === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"}`}>
               {symbols.map(s => (
                 <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
               ))}
