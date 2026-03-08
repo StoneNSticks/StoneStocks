@@ -1058,7 +1058,7 @@ const TOP_COMPANIES = [
 ];
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v2";
+  const cacheKey = "market:top_companies:v3";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
   const quotes = await Promise.all(
@@ -1100,6 +1100,7 @@ async function handleTopCompanies() {
           change: q.d || 0, changePercent: q.dp || 0,
           marketCap,
           logo: profile?.logo || "",
+          sector: profile?.finnhubIndustry || polygonTicker?.results?.sic_description || "",
         };
       } catch {
         return { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "" };
