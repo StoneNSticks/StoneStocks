@@ -207,6 +207,22 @@ export default function LearnPage() {
       { label: t("learn.toc15"), href: "#macro" },
       { label: t("learn.toc16"), href: "#quantitative" },
     ]},
+    { title: `E: ${t("learn.superE")}`, level: t("learn.levelAcademic"), items: [
+      { label: t("learn.toc17"), href: "#corporate-finance" },
+      { label: t("learn.toc18"), href: "#rechnungswesen" },
+      { label: t("learn.toc19"), href: "#international-finance" },
+      { label: t("learn.toc20"), href: "#fixed-income-advanced" },
+      { label: t("learn.toc21"), href: "#esg" },
+      { label: t("learn.toc22"), href: "#regulierung" },
+    ]},
+    { title: `F: ${t("learn.superF")}`, level: t("learn.levelMaster"), items: [
+      { label: t("learn.toc23"), href: "#bewertungsmethoden" },
+      { label: t("learn.toc24"), href: "#alternative-advanced" },
+      { label: t("learn.toc25"), href: "#marktgeschichte" },
+      { label: t("learn.toc26"), href: "#personal-finance" },
+      { label: t("learn.toc27"), href: "#okonometrie" },
+      { label: t("learn.toc28"), href: "#geldpolitik" },
+    ]},
   ];
 
   return (
