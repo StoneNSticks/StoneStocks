@@ -57,6 +57,10 @@ function CalcLink({ to, label }: { to: string; label: string }) {
 export default function LearnPage() {
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Börse lernen" : "Learn Investing",
+    lang === "de" ? "Umfassender Leitfaden für Einsteiger und Fortgeschrittene" : "Comprehensive guide for beginners and advanced investors"
+  );
   const { read, markRead } = useReadProgress();
 
   // Track which sections are in view

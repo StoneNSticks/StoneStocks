@@ -488,6 +488,10 @@ function getGlossary(lang: string): Term[] {
 export default function GlossaryPage() {
   const t = useT();
   const { lang } = useLanguage();
+  usePageTitle(
+    lang === "de" ? "Finanzglossar" : "Financial Glossary",
+    lang === "de" ? "200+ Finanzbegriffe einfach erklärt" : "200+ financial terms explained simply"
+  );
   const [search, setSearch] = useState("");
   const [letter, setLetter] = useState<string | null>(null);
 
