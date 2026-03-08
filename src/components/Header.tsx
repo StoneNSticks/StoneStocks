@@ -35,21 +35,7 @@ const navItems: NavItem[] = [
   { to: "/screener", key: "nav.screener", fallback: "Screener", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/calculators", key: "nav.tools", group: "tools" },
-  { to: "/compare", key: "nav.compare", fallback: "Compare", group: "tools" },
-  { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "tools" },
-  { to: "/ai-chat", key: "nav.aiChat", fallback: "AI Chat", group: "tools" },
-  { to: "/dashboard", key: "nav.dashboard", fallback: "Dashboard", group: "tools" },
-  { to: "/crypto", key: "nav.crypto", fallback: "Crypto", group: "tools" },
-  { to: "/forex", key: "nav.forex", fallback: "Forex", group: "tools" },
-  { to: "/bonds", key: "nav.bonds", fallback: "Bonds", group: "tools" },
-  { to: "/ipo", key: "nav.ipo", fallback: "IPOs", group: "tools" },
-  { to: "/economic-calendar", key: "nav.econ", fallback: "Economy", group: "tools" },
-  { to: "/paper-trading", key: "nav.paper", fallback: "Paper Trading", group: "tools" },
-  { to: "/leaderboard", key: "nav.leaderboard", fallback: "Leaderboard", group: "tools" },
-  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "tools" },
-  { to: "/glossary", key: "nav.glossary", fallback: "Glossary", group: "tools" },
-  { to: "/learn", key: "nav.learn", group: "tools" },
+  { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 export function Header() {
