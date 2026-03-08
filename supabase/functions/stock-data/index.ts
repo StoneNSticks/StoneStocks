@@ -1814,10 +1814,9 @@ async function handleFredSeries(seriesId: string): Promise<unknown> {
   // Also fetch series info
   const infoParams = new URLSearchParams({
     series_id: seriesId,
+    api_key: fredKey,
     file_type: "json",
   });
-  if (fredKey) infoParams.set("api_key", fredKey);
-  else infoParams.set("api_key", "DEMO_KEY");
 
   let seriesInfo: any = {};
   try {
