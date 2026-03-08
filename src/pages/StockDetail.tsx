@@ -198,7 +198,6 @@ const StockDetail = () => {
             </div>
 
             <StockComments symbol={upperSymbol} />
-            </div>
 
             <PeersList peers={peers} currentSymbol={upperSymbol} />
 
