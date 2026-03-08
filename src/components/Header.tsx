@@ -189,19 +189,6 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
             </Link>
           );
         })}
-        <div className="mt-4 mb-2 px-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Tools</p>
-        </div>
-        {[
-          { to: "/compare", label: "Compare" },
-        ].map((item) => {
-          const isActive = location.pathname === item.to;
-          return (
-            <Link key={item.to} to={item.to} className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
-              {item.label}
-            </Link>
-          );
-        })}
       </nav>
       <div className="mt-auto pt-6 border-t border-border/60 space-y-3 pb-6">
         <MarketClock />
