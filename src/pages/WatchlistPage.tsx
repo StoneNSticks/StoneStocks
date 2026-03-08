@@ -2,13 +2,14 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
-import { useWatchlist } from "@/hooks/useWatchlist";
+import { useWatchlist, useUpdateWatchlistItem } from "@/hooks/useWatchlist";
 import { WatchlistStar } from "@/components/WatchlistStar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
@@ -55,7 +56,6 @@ function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoad
     staleTime: 5 * 60_000,
   });
 
-  // Report dp for sorting
   useMemo(() => {
     if (quote?.dp != null && onQuoteLoaded) onQuoteLoaded(quote.dp);
   }, [quote?.dp, onQuoteLoaded]);
@@ -106,7 +106,6 @@ function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoad
   );
 }
 
-// Daily P&L Summary
 function DailyPLSummary({ quoteMap, count, lang }: { quoteMap: Record<string, number>; count: number; lang: string }) {
   const entries = Object.values(quoteMap);
   if (entries.length === 0) return null;
@@ -182,8 +181,8 @@ function PortfolioSummary({ watchlist, lang }: { watchlist: any[]; lang: string 
 }
 
 function exportWatchlistCSV(watchlist: any[], lang: string) {
-  const header = lang === "de" ? "Symbol,Hinzugefügt" : "Symbol,Added";
-  const rows = watchlist.map(w => `${w.symbol},${new Date(w.created_at).toISOString().slice(0, 10)}`);
+  const header = lang === "de" ? "Symbol,Gruppe,Notiz,Hinzugefügt" : "Symbol,Group,Note,Added";
+  const rows = watchlist.map(w => `${w.symbol},${w.group_name || ""},${(w.note || "").replace(/,/g, ";")},${new Date(w.created_at).toISOString().slice(0, 10)}`);
   const csv = [header, ...rows].join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -192,6 +191,80 @@ function exportWatchlistCSV(watchlist: any[], lang: string) {
   a.download = `watchlist-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+/** Inline note editor popover */
+function NoteEditor({ item: wItem, lang }: { item: any; lang: string }) {
+  const updateMutation = useUpdateWatchlistItem();
+  const [note, setNote] = useState(wItem.note || "");
+  const [open, setOpen] = useState(false);
+
+  const save = () => {
+    updateMutation.mutate({ id: wItem.id, note: note || null });
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.note ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Notiz" : "Note"}>
+          <StickyNote className="h-3.5 w-3.5" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-3" align="end">
+        <p className="text-xs font-medium mb-2">{lang === "de" ? "Notiz zu" : "Note for"} {wItem.symbol}</p>
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="w-full h-20 rounded-lg border border-border bg-background px-3 py-2 text-xs resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+          placeholder={lang === "de" ? "Deine Notiz..." : "Your note..."}
+        />
+        <div className="flex justify-end gap-1.5 mt-2">
+          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setOpen(false)}>{lang === "de" ? "Abbrechen" : "Cancel"}</Button>
+          <Button size="sm" className="h-7 text-xs" onClick={save}>{lang === "de" ? "Speichern" : "Save"}</Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/** Group assignment popover */
+function GroupEditor({ item: wItem, groups, lang }: { item: any; groups: string[]; lang: string }) {
+  const updateMutation = useUpdateWatchlistItem();
+  const [open, setOpen] = useState(false);
+  const [newGroup, setNewGroup] = useState("");
+
+  const assign = (g: string | null) => {
+    updateMutation.mutate({ id: wItem.id, group_name: g });
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.group_name ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Gruppe" : "Group"}>
+          <Tag className="h-3.5 w-3.5" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-52 p-3" align="end">
+        <p className="text-xs font-medium mb-2">{lang === "de" ? "Gruppe zuweisen" : "Assign Group"}</p>
+        {wItem.group_name && (
+          <button onClick={() => assign(null)} className="w-full text-left text-xs px-2 py-1.5 rounded-md hover:bg-muted text-destructive flex items-center gap-1.5 mb-1">
+            <X className="h-3 w-3" />{lang === "de" ? "Gruppe entfernen" : "Remove group"}
+          </button>
+        )}
+        {groups.map(g => (
+          <button key={g} onClick={() => assign(g)} className={`w-full text-left text-xs px-2 py-1.5 rounded-md hover:bg-muted transition-colors ${wItem.group_name === g ? "bg-primary/10 text-primary font-medium" : ""}`}>
+            {g}
+          </button>
+        ))}
+        <div className="flex gap-1 mt-2">
+          <Input value={newGroup} onChange={(e) => setNewGroup(e.target.value)} placeholder={lang === "de" ? "Neue Gruppe" : "New group"} className="h-7 text-xs" />
+          <Button size="sm" className="h-7 text-xs shrink-0" disabled={!newGroup.trim()} onClick={() => { assign(newGroup.trim()); setNewGroup(""); }}>+</Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 export default function WatchlistPage() {
@@ -204,6 +277,7 @@ export default function WatchlistPage() {
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [quoteMap, setQuoteMap] = useState<Record<string, number>>({});
+  const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const handleQuoteLoaded = useMemo(() => {
     return (symbol: string) => (dp: number) => {
@@ -214,9 +288,16 @@ export default function WatchlistPage() {
     };
   }, []);
 
+  const groups = useMemo(() => {
+    if (!watchlist) return [];
+    const set = new Set(watchlist.map(w => w.group_name).filter(Boolean) as string[]);
+    return [...set].sort();
+  }, [watchlist]);
+
   const filtered = useMemo(() => {
     if (!watchlist) return [];
     let items = [...watchlist];
+    if (groupFilter) items = items.filter(w => w.group_name === groupFilter);
     if (searchQuery) {
       items = items.filter((w) => w.symbol.toLowerCase().includes(searchQuery.toLowerCase()));
     }
@@ -226,7 +307,7 @@ export default function WatchlistPage() {
       items.sort((a, b) => (quoteMap[b.symbol] || 0) - (quoteMap[a.symbol] || 0));
     }
     return items;
-  }, [watchlist, searchQuery, sortMode, quoteMap]);
+  }, [watchlist, searchQuery, sortMode, quoteMap, groupFilter]);
 
   const count = watchlist?.length ?? 0;
 
@@ -290,30 +371,48 @@ export default function WatchlistPage() {
               {user && count > 0 && <DailyPLSummary quoteMap={quoteMap} count={count} lang={lang} />}
 
               {user && count > 0 && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex items-center gap-2 mt-5">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder={t("watchlist.search")}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-10 rounded-xl bg-background/80 border-border/50 font-mono text-sm"
-                    />
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-3 mt-5">
+                  {/* Group filter chips */}
+                  {groups.length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
+                      <button onClick={() => setGroupFilter(null)} className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${!groupFilter ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
+                        {lang === "de" ? "Alle" : "All"}
+                      </button>
+                      {groups.map(g => (
+                        <button key={g} onClick={() => setGroupFilter(groupFilter === g ? null : g)} className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${groupFilter === g ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder={t("watchlist.search")}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 h-10 rounded-xl bg-background/80 border-border/50 font-mono text-sm"
+                      />
+                    </div>
+                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={cycleSortMode} title={sortLabel}>
+                      {sortMode === "oldest" ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
+                      {viewMode === "list" ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => exportWatchlistCSV(watchlist || [], lang)} title={lang === "de" ? "CSV exportieren" : "Export CSV"}>
+                      <Download className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={cycleSortMode} title={sortLabel}>
-                    {sortMode === "oldest" ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
-                  </Button>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
-                    {viewMode === "list" ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
-                  </Button>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => exportWatchlistCSV(watchlist || [], lang)} title={lang === "de" ? "CSV exportieren" : "Export CSV"}>
-                    <Download className="h-4 w-4" />
-                  </Button>
                 </motion.div>
               )}
               {user && count > 0 && (
                 <div className="mt-2 text-[10px] font-mono text-muted-foreground/50">
                   {lang === "de" ? "Sortierung" : "Sort"}: <span className="text-muted-foreground">{sortLabel}</span>
+                  {groupFilter && <> · {lang === "de" ? "Gruppe" : "Group"}: <span className="text-primary">{groupFilter}</span></>}
                 </div>
               )}
             </div>
@@ -364,18 +463,24 @@ export default function WatchlistPage() {
                 <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}>
                   <div className="rounded-xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute top-2.5 right-2.5 z-10"><WatchlistStar symbol={w.symbol} /></div>
+                    <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-0.5">
+                      <NoteEditor item={w} lang={lang} />
+                      <GroupEditor item={w} groups={groups} lang={lang} />
+                      <WatchlistStar symbol={w.symbol} />
+                    </div>
                     <Link to={`/stock/${w.symbol}`} className="block p-4 text-center relative">
                       <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-2 flex items-center justify-center shadow-md shadow-primary/5">
                         <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
                       </div>
                       <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
+                      {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium mt-1 inline-block">{w.group_name}</span>}
                       <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
                       <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
                         <Clock className="h-2.5 w-2.5" />
                         {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
                       </div>
                     </Link>
+                    {w.note && <div className="px-3 pb-2 text-[10px] text-muted-foreground truncate" title={w.note}>📝 {w.note}</div>}
                   </div>
                 </motion.div>
               ))}
@@ -383,12 +488,13 @@ export default function WatchlistPage() {
           </motion.div>
         ) : (
           <div className="rounded-xl border border-border/60 overflow-hidden bg-card shadow-lg">
-            <div className="grid grid-cols-[2rem_2.5rem_1fr_7rem_8rem_2.5rem] sm:grid-cols-[2rem_2.5rem_1fr_5rem_7rem_8rem_2.5rem] items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+            <div className="grid grid-cols-[2rem_2.5rem_1fr_4rem_7rem_8rem_4rem] sm:grid-cols-[2rem_2.5rem_1fr_4rem_5rem_7rem_8rem_4rem] items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
               <span>#</span>
               <span></span>
-              <span>{lang === "de" ? "Symbol" : "Symbol"}</span>
+              <span>Symbol</span>
+              <span className="text-center">{lang === "de" ? "Aktionen" : "Actions"}</span>
               <span className="hidden sm:block text-right">{lang === "de" ? "Hinzugefügt" : "Added"}</span>
-              <span className="text-right">{lang === "de" ? "Chart" : "Chart"}</span>
+              <span className="text-right">Chart</span>
               <span className="text-right">{lang === "de" ? "Kurs" : "Price"}</span>
               <span></span>
             </div>
@@ -396,15 +502,23 @@ export default function WatchlistPage() {
               <AnimatePresence>
                 {filtered.map((w, i) => (
                   <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, x: -50, transition: { duration: 0.2 } }} className="group">
-                    <div className="grid grid-cols-[2rem_2.5rem_1fr_7rem_8rem_2.5rem] sm:grid-cols-[2rem_2.5rem_1fr_5rem_7rem_8rem_2.5rem] items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors relative">
+                    <div className="grid grid-cols-[2rem_2.5rem_1fr_4rem_7rem_8rem_4rem] sm:grid-cols-[2rem_2.5rem_1fr_4rem_5rem_7rem_8rem_4rem] items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors relative">
                       <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none">{i + 1}</span>
                       <div><WatchlistStar symbol={w.symbol} /></div>
                       <Link to={`/stock/${w.symbol}`} className="flex items-center gap-2.5 min-w-0">
                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center shrink-0 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
                           <span className="font-mono font-bold text-primary text-xs">{w.symbol.slice(0, 2)}</span>
                         </div>
-                        <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors truncate">{w.symbol}</span>
+                        <div className="min-w-0">
+                          <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors truncate block">{w.symbol}</span>
+                          {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{w.group_name}</span>}
+                          {w.note && <span className="text-[9px] text-muted-foreground/60 truncate block max-w-[120px]" title={w.note}>📝 {w.note}</span>}
+                        </div>
                       </Link>
+                      <div className="flex items-center justify-center gap-0.5">
+                        <NoteEditor item={w} lang={lang} />
+                        <GroupEditor item={w} groups={groups} lang={lang} />
+                      </div>
                       <div className="hidden sm:block text-right">
                         <span className="text-[10px] font-mono text-muted-foreground/50">
                           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
