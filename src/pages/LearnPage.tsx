@@ -12,8 +12,6 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useLearnProgress } from "@/hooks/useLearnProgress";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
-import { Switch } from "@/components/ui/switch";
-import { CompoundInterestCalc, DuPontCalc, BondPriceCalc, FireCalc, DcfCalc, LeverageCalc } from "@/components/learn/MiniCalculators";
 
 // Progress tracker using localStorage
 function useReadProgress() {
