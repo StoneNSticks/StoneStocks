@@ -512,6 +512,98 @@ function calculateMetrics(equity: EquityPoint[], trades: Trade[], capital: numbe
   return { totalReturn, annualizedReturn, maxDrawdown, sharpeRatio, winRate, totalTrades: trades.length, finalEquity, benchmarkReturn };
 }
 
+// === 16. Dollar Cost Averaging ===
+// Buy fixed amount every N days regardless of price
+export function runDCAStrategy(data: OHLC[], capital: number, intervalDays = 20): BacktestResult {
+  if (data.length < 10) return emptyResult(capital);
+  let cash = capital;
+  let shares = 0;
+  const trades: Trade[] = [];
+  const buyAmount = capital / Math.max(1, Math.floor(data.length / intervalDays));
+
+  const benchStart = data[0].close;
+  const benchShares = capital / benchStart;
+
+  const equity: EquityPoint[] = data.map((d, i) => {
+    if (i > 0 && i % intervalDays === 0 && cash >= buyAmount) {
+      const s = Math.floor(buyAmount / d.close);
+      if (s > 0) {
+        shares += s;
+        cash -= s * d.close;
+        trades.push({ type: "buy", date: d.date, price: d.close, shares: s });
+      }
+    }
+    return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
+  });
+
+  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+}
+
+// === 17. 52-Week High Strategy ===
+// Buy when price makes new 52-week high, sell when drops 10% from peak
+export function runHighStrategy(data: OHLC[], capital: number, lookback = 252, trailStop = 0.10): BacktestResult {
+  if (data.length < lookback) return emptyResult(capital);
+  let cash = capital;
+  let shares = 0;
+  let peakPrice = 0;
+  const trades: Trade[] = [];
+  const benchStart = data[0].close;
+  const benchShares = capital / benchStart;
+
+  const equity: EquityPoint[] = data.map((d, i) => {
+    const windowStart = Math.max(0, i - lookback);
+    const windowHigh = Math.max(...data.slice(windowStart, i + 1).map(x => x.high));
+
+    if (shares === 0 && d.close >= windowHigh && cash > d.close) {
+      shares = Math.floor(cash / d.close);
+      cash -= shares * d.close;
+      peakPrice = d.close;
+      trades.push({ type: "buy", date: d.date, price: d.close, shares });
+    } else if (shares > 0) {
+      peakPrice = Math.max(peakPrice, d.close);
+      if (d.close < peakPrice * (1 - trailStop)) {
+        cash += shares * d.close;
+        trades.push({ type: "sell", date: d.date, price: d.close, shares });
+        shares = 0;
+      }
+    }
+    return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
+  });
+
+  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+}
+
+// === 18. Moving Average Envelope ===
+// Buy when price drops below SMA*(1-envelope%), sell above SMA*(1+envelope%)
+export function runEnvelopeStrategy(data: OHLC[], capital: number, smaPeriod = 20, envelope = 0.03): BacktestResult {
+  if (data.length < smaPeriod) return emptyResult(capital);
+  let cash = capital;
+  let shares = 0;
+  const trades: Trade[] = [];
+  const benchStart = data[0].close;
+  const benchShares = capital / benchStart;
+
+  const equity: EquityPoint[] = data.map((d, i) => {
+    if (i < smaPeriod - 1) return { date: d.date, equity: cash, benchmark: benchShares * d.close };
+    const sma = data.slice(i - smaPeriod + 1, i + 1).reduce((s, x) => s + x.close, 0) / smaPeriod;
+    const lower = sma * (1 - envelope);
+    const upper = sma * (1 + envelope);
+
+    if (shares === 0 && d.close <= lower && cash > d.close) {
+      shares = Math.floor(cash / d.close);
+      cash -= shares * d.close;
+      trades.push({ type: "buy", date: d.date, price: d.close, shares });
+    } else if (shares > 0 && d.close >= upper) {
+      cash += shares * d.close;
+      trades.push({ type: "sell", date: d.date, price: d.close, shares });
+      shares = 0;
+    }
+    return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
+  });
+
+  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+}
+
 function emptyMetrics(capital: number): BacktestMetrics {
   return { totalReturn: 0, annualizedReturn: 0, maxDrawdown: 0, sharpeRatio: 0, winRate: 0, totalTrades: 0, finalEquity: capital, benchmarkReturn: 0 };
 }
