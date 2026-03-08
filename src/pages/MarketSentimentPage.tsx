@@ -444,6 +444,57 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
   );
 }
 
+/* ─── Macro Economic Indicators (FRED) ─── */
+const MACRO_INDICATORS = [
+  { id: "GDP", labelDe: "BIP (Real)", labelEn: "Real GDP", color: "hsl(210, 80%, 55%)" },
+  { id: "CPIAUCSL", labelDe: "CPI", labelEn: "CPI", color: "hsl(0, 72%, 51%)" },
+  { id: "UNRATE", labelDe: "Arbeitslosenquote", labelEn: "Unemployment", color: "hsl(38, 92%, 50%)" },
+  { id: "FEDFUNDS", labelDe: "Fed Funds Rate", labelEn: "Fed Funds Rate", color: "hsl(145, 63%, 42%)" },
+];
+
+function MacroMiniChart({ id, label, color }: { id: string; label: string; color: string }) {
+  const { data, isLoading } = useFredSeries(id);
+  if (isLoading) return <Skeleton className="h-32 rounded-xl" />;
+  const observations = ((data as any)?.observations || [])
+    .filter((o: any) => o.value !== null).slice(0, 60).reverse();
+  if (observations.length === 0) return null;
+  const latest = observations[observations.length - 1];
+  return (
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="flex items-center justify-between px-3 pt-3">
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <span className="font-mono font-bold text-sm">{latest?.value?.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
+      </div>
+      <div className="h-20 px-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={observations} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+            <defs><linearGradient id={`mg-${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.3} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
+            <Area type="monotone" dataKey="value" stroke={color} fill={`url(#mg-${id})`} strokeWidth={1.5} dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function MacroSection() {
+  const { lang } = useLanguage();
+  return (
+    <motion.div initial="hidden" animate="visible" variants={fadeIn}>
+      <div className="flex items-center gap-2 mb-3">
+        <LineChart className="h-5 w-5 text-primary" />
+        <h3 className="font-display font-semibold">{lang === "de" ? "Makro-Indikatoren" : "Macro Indicators"}</h3>
+        <span className="text-[10px] text-muted-foreground ml-auto">FRED</span>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {MACRO_INDICATORS.map((ind) => (
+          <MacroMiniChart key={ind.id} id={ind.id} label={lang === "de" ? ind.labelDe : ind.labelEn} color={ind.color} />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Page Component ─── */
 export default function MarketSentimentPage() {
   const { lang } = useLanguage();
