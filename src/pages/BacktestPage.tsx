@@ -24,6 +24,7 @@ import {
   runBreakoutStrategy, runTripleSMAStrategy, runVolumeWeightedMomentum,
   runMomentumStrategy, runStochasticStrategy, runVWAPStrategy,
   runChandelierStrategy, runKeltnerStrategy,
+  runDCAStrategy, runHighStrategy, runEnvelopeStrategy,
   type OHLC, type BacktestResult,
 } from "@/lib/backtestEngine";
 
