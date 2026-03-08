@@ -171,7 +171,7 @@ export default function GlossaryPage() {
           <Input placeholder={lang === "de" ? "Begriffe suchen..." : "Search terms..."} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
 
-        <div className="flex flex-wrap gap-1 mb-6">
+        <div className="flex gap-1 mb-6 scroll-x-touch pb-1">
           <button onClick={() => setLetter(null)} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${!letter ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
             {lang === "de" ? "Alle" : "All"}
           </button>
