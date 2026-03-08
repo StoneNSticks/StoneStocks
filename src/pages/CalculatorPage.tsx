@@ -416,6 +416,126 @@ function CurrencyConverter() {
   );
 }
 
+/** Options Profit Calculator — Shows P&L at various stock prices for calls/puts */
+function OptionsCalc() {
+  const t = useT();
+  const [stockPrice, setStockPrice] = useState(100);
+  const [strike, setStrike] = useState(105);
+  const [premium, setPremium] = useState(3);
+  const [contracts, setContracts] = useState(1);
+  const [optionType, setOptionType] = useState<"call" | "put">("call");
+
+  const data = useMemo(() => {
+    const points: { price: number; pnl: number }[] = [];
+    const low = stockPrice * 0.7;
+    const high = stockPrice * 1.3;
+    const step = (high - low) / 40;
+    for (let p = low; p <= high; p += step) {
+      let intrinsic = optionType === "call" ? Math.max(0, p - strike) : Math.max(0, strike - p);
+      const pnl = (intrinsic - premium) * contracts * 100;
+      points.push({ price: Math.round(p * 100) / 100, pnl: Math.round(pnl) });
+    }
+    return points;
+  }, [stockPrice, strike, premium, contracts, optionType]);
+
+  const breakeven = optionType === "call" ? strike + premium : strike - premium;
+  const maxLoss = premium * contracts * 100;
+  const maxGainCall = "∞";
+  const maxGainPut = formatMoney((strike - premium) * contracts * 100);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div><Label className="text-xs text-muted-foreground">{t("calc.sharePrice")}</Label><Input type="number" value={stockPrice} onChange={(e) => setStockPrice(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.strikePrice") || "Strike"}</Label><Input type="number" value={strike} onChange={(e) => setStrike(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.premium") || "Premium"}</Label><Input type="number" value={premium} onChange={(e) => setPremium(Number(e.target.value))} className="mt-1" step="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.contracts") || "Contracts"}</Label><Input type="number" value={contracts} onChange={(e) => setContracts(Number(e.target.value))} className="mt-1" /></div>
+        <div>
+          <Label className="text-xs text-muted-foreground">{t("calc.optionType") || "Type"}</Label>
+          <div className="flex gap-1 mt-1">
+            <button onClick={() => setOptionType("call")} className={`flex-1 rounded-lg py-2 text-xs font-medium ${optionType === "call" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>Call</button>
+            <button onClick={() => setOptionType("put")} className={`flex-1 rounded-lg py-2 text-xs font-medium ${optionType === "put" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>Put</button>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <ResultCard label={t("calc.breakEven")} value={`$${breakeven.toFixed(2)}`} color="text-primary" />
+        <ResultCard label={t("calc.potentialLoss")} value={formatMoney(maxLoss)} color="text-destructive" />
+        <ResultCard label={t("calc.potentialProfit")} value={optionType === "call" ? maxGainCall : maxGainPut} color="text-gain" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4">
+        <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="price" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+            <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => formatMoney(v)} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }} formatter={(v: number) => [formatMoney(v), "P&L"]} />
+            <Area type="monotone" dataKey="pnl" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" strokeWidth={2} fillOpacity={0.15} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+/** DCA Simulator — Simulates dollar-cost averaging into an investment */
+function DCASimulator() {
+  const t = useT();
+  const [monthlyAmount, setMonthlyAmount] = useState(500);
+  const [months, setMonths] = useState(36);
+  const [avgReturn, setAvgReturn] = useState(10);
+  const [volatility, setVolatility] = useState(15);
+
+  const data = useMemo(() => {
+    const points: { month: number; invested: number; value: number }[] = [];
+    let value = 0;
+    const monthlyReturn = avgReturn / 100 / 12;
+    const monthlyVol = volatility / 100 / Math.sqrt(12);
+    // Deterministic simulation with slight variation pattern
+    for (let m = 0; m <= months; m++) {
+      const invested = m * monthlyAmount;
+      if (m > 0) {
+        const variation = Math.sin(m * 0.5) * monthlyVol;
+        value = value * (1 + monthlyReturn + variation) + monthlyAmount;
+      }
+      points.push({ month: m, invested, value: Math.round(value) });
+    }
+    return points;
+  }, [monthlyAmount, months, avgReturn, volatility]);
+
+  const final = data[data.length - 1];
+  const totalInvested = final?.invested || 0;
+  const totalValue = final?.value || 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyContribution")}</Label><Input type="number" value={monthlyAmount} onChange={(e) => setMonthlyAmount(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaMonths") || "Months"}</Label><Input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.annualReturn")}</Label><Input type="number" value={avgReturn} onChange={(e) => setAvgReturn(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaVolatility") || "Volatility (%)"}</Label><Input type="number" value={volatility} onChange={(e) => setVolatility(Number(e.target.value))} className="mt-1" step="1" /></div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <ResultCard label={t("calc.totalInvested")} value={formatMoney(totalInvested)} />
+        <ResultCard label={t("calc.portfolioValue")} value={formatMoney(totalValue)} color="text-primary" />
+        <ResultCard label={t("calc.totalReturns")} value={formatMoney(totalValue - totalInvested)} color={totalValue >= totalInvested ? "text-gain" : "text-destructive"} />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4">
+        <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(m) => `${m}m`} />
+            <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => formatMoney(v)} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }} formatter={(v: number, name: string) => [formatMoney(v), name === "value" ? t("calc.portfolioValue") : t("calc.totalInvested")]} />
+            <Area type="monotone" dataKey="invested" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted))" strokeWidth={2} fillOpacity={0.3} />
+            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" strokeWidth={2} fillOpacity={0.15} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 const CalculatorPage = () => {
   const t = useT();
   return (
@@ -438,6 +558,8 @@ const CalculatorPage = () => {
             <TabsTrigger value="dividend" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><DollarSign className="h-3.5 w-3.5" />{t("calc.dividendGrowth")}</TabsTrigger>
             <TabsTrigger value="fire" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><PiggyBank className="h-3.5 w-3.5" />{t("calc.fireCalc")}</TabsTrigger>
             <TabsTrigger value="position" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><BarChart3 className="h-3.5 w-3.5" />{t("calc.positionSize")}</TabsTrigger>
+            <TabsTrigger value="options" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Crosshair className="h-3.5 w-3.5" />{t("calc.optionsCalc") || "Options"}</TabsTrigger>
+            <TabsTrigger value="dca" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Target className="h-3.5 w-3.5" />{t("calc.dcaSimulator") || "DCA"}</TabsTrigger>
             <TabsTrigger value="loan" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Landmark className="h-3.5 w-3.5" />{t("calc.loanCalc")}</TabsTrigger>
             <TabsTrigger value="riskreward" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Scale className="h-3.5 w-3.5" />{t("calc.riskReward")}</TabsTrigger>
             <TabsTrigger value="currency" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><ArrowLeftRight className="h-3.5 w-3.5" />{t("calc.currencyConverter") || "Currency"}</TabsTrigger>
@@ -447,6 +569,8 @@ const CalculatorPage = () => {
           <TabsContent value="dividend"><DividendCalc /></TabsContent>
           <TabsContent value="fire"><FireCalc /></TabsContent>
           <TabsContent value="position"><PositionSize /></TabsContent>
+          <TabsContent value="options"><OptionsCalc /></TabsContent>
+          <TabsContent value="dca"><DCASimulator /></TabsContent>
           <TabsContent value="loan"><LoanCalc /></TabsContent>
           <TabsContent value="riskreward"><RiskRewardCalc /></TabsContent>
           <TabsContent value="currency"><CurrencyConverter /></TabsContent>
