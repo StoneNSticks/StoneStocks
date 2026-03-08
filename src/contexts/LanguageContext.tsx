@@ -625,4 +625,32 @@ const translations: Record<string, Record<Language, string>> = {
 
   // ── SEC Filings ──
   "sec.title": { de: "SEC Filings", en: "SEC Filings" },
+
+  // ── Navigation ──
+  "nav.macro": { de: "Makro", en: "Macro" },
+
+  // ── Fair Value ──
+  "fv.title": { de: "Fair Value Schätzung", en: "Fair Value Estimate" },
+  "fv.undervalued": { de: "Unterbewertet", en: "Undervalued" },
+  "fv.overvalued": { de: "Überbewertet", en: "Overvalued" },
+  "fv.fairlyValued": { de: "Fair bewertet", en: "Fairly Valued" },
+  "fv.currentPrice": { de: "Aktueller Kurs", en: "Current Price" },
+  "fv.fairValue": { de: "Fair Value", en: "Fair Value" },
+  "fv.upside": { de: "Potenzial", en: "Upside" },
+  "fv.method": { de: "Methode", en: "Method" },
+  "fv.estimate": { de: "Schätzung", en: "Estimate" },
+  "fv.peBased": { de: "KGV-basiert", en: "P/E Based" },
+  "fv.pbBased": { de: "KBV-basiert", en: "P/B Based" },
+  "fv.analystTarget": { de: "Analysten-Ziel", en: "Analyst Target" },
+  "fv.dcf": { de: "DCF-Modell", en: "DCF Model" },
+
+  // ── DCF Calculator ──
+  "dcf.title": { de: "DCF-Rechner", en: "DCF Calculator" },
+  "dcf.growthRate": { de: "Wachstumsrate (%)", en: "Growth Rate (%)" },
+  "dcf.discountRate": { de: "Diskontierungssatz (%)", en: "Discount Rate (%)" },
+  "dcf.terminalGrowth": { de: "Terminales Wachstum (%)", en: "Terminal Growth (%)" },
+  "dcf.years": { de: "Projektionsjahre", en: "Projection Years" },
+  "dcf.intrinsicValue": { de: "Innerer Wert", en: "Intrinsic Value" },
+  "dcf.perShare": { de: "pro Aktie", en: "per Share" },
+  "dcf.sensitivity": { de: "Sensitivitätsanalyse", en: "Sensitivity Analysis" },
 };
