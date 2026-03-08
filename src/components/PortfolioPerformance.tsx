@@ -158,7 +158,7 @@ export function PortfolioPerformance({ positions }: PortfolioPerformanceProps) {
               contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
               formatter={(value: number, name: string) => [
                 `${cSym}${convert(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
-                name === "portfolio" ? "Portfolio" : "S&P 500"
+                name === "benchmark" ? "S&P 500" : "Portfolio"
               ]}
             />
             <ReferenceLine y={totalCost} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" strokeOpacity={0.4} />
