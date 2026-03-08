@@ -195,6 +195,10 @@ const StockDetail = () => {
 
             <PeersList peers={peers} currentSymbol={upperSymbol} />
 
+            {massiveDividends && massiveDividends.length > 0 && (
+              <DividendGrowth dividends={massiveDividends} dividendYield={derived?.dividendYield || 0} />
+            )}
+
             <NewsList news={news} />
           </div>
         )}

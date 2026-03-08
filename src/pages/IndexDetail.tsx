@@ -152,7 +152,7 @@ const IndexDetail = () => {
                   const isPos = p.value >= 0;
                   return (
                     <div key={p.label} className={`rounded-lg border px-3 py-2.5 text-center ${isPos ? "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]" : "border-destructive/30 bg-destructive/[0.04]"}`}>
-                      <div className="text-[10px] text-muted-foreground font-mono uppercase">{p.label}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono uppercase">{p.label}{p.est ? "*" : ""}</div>
                       <div className={`font-display font-bold text-sm ${isPos ? "text-chart-2" : "text-destructive"}`}>
                         {isPos ? "+" : ""}{p.value?.toFixed(2)}%
                       </div>

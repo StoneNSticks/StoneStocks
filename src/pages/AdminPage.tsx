@@ -54,6 +54,7 @@ export default function AdminPage() {
   });
 
   if (!user) return <Navigate to="/auth" />;
+  if (!isAdmin) return <Navigate to="/" />;
 
   const StatCard = ({ icon: Icon, label, value, color = "text-primary" }: { icon: any; label: string; value: number | string; color?: string }) => (
     <div className="rounded-xl border border-border/60 bg-card p-4 text-center">
