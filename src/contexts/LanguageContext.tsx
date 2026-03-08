@@ -622,4 +622,7 @@ const translations: Record<string, Record<Language, string>> = {
   "notif.disable": { de: "Push-Benachrichtigungen deaktivieren", en: "Disable push notifications" },
   "notif.blocked": { de: "Benachrichtigungen blockiert", en: "Notifications blocked" },
   "notif.enable": { de: "Earnings-Erinnerungen aktivieren", en: "Enable earnings reminders" },
+
+  // ── SEC Filings ──
+  "sec.title": { de: "SEC Filings", en: "SEC Filings" },
 };
