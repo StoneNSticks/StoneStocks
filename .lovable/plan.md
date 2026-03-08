@@ -1,92 +1,110 @@
 
 
-# Vier Aenderungen umsetzen
+# Plan: Mobile/Tablet Zoom-Sperre, Layout-Optimierung & Seiten-Überarbeitung
 
-## 1. Auth-Seite auf Englisch umstellen
+## 1. Zoom & Wischen deaktivieren
 
-Alle deutschen Texte in `src/pages/AuthPage.tsx` werden ins Englische uebersetzt:
-- "Einloggen" -> "Sign In"
-- "Registrieren" -> "Sign Up"
-- "Passwort zuruecksetzen" -> "Reset Password"
-- "Benutzername" -> "Username"
-- "Anzeigename" -> "Display Name"
-- "Laden..." -> "Loading..."
-- Toast-Meldungen, Platzhalter, Labels, Links
+**`index.html`**: Viewport-Meta erweitern um `maximum-scale=1, user-scalable=no` und iOS-spezifische Touch-Action-Meta-Tags.
 
-## 2. ETFs/Leveraged Products aus Listen filtern
+**`src/index.css`**: Globale CSS-Regeln hinzufügen:
+- `touch-action: manipulation` auf `html` (verhindert Doppeltipp-Zoom)
+- `-webkit-text-size-adjust: 100%` (verhindert Auto-Zoom bei Inputs)
+- `overscroll-behavior: none` auf `body` (verhindert Pull-to-Refresh/Bounce)
+- Input-Felder: `font-size: 16px` minimum (verhindert iOS Auto-Zoom bei Fokus)
 
-Das Problem: Produkte wie NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL sind Leveraged/Inverse ETFs, die den `isCommonStock`-Filter passieren, weil sie kurze Ticker haben und nicht in der Blacklist stehen.
+## 2. Globale mobile Layout-Verbesserungen
 
-Loesung in `supabase/functions/stock-data/index.ts`:
-- Blacklist erweitern um bekannte Ticker: NVD, CRCG, MSTX, TSLS, COHX, IONZ, LUNL, NVD, NVDL, NVDS, CONL, MSTZ, MSTU
-- Zusaetzlichen **Name-basierten Filter** nach dem Enrichment einbauen: Eintraege deren Name Begriffe wie "ETF", "2x", "2X", "3x", "3X", "Leveraged", "Short", "Long Daily", "Direxion", "Defiance", "GraniteShares", "Tradr", "ProShares", "Trust" + "ETF" enthaelt, werden entfernt
-- Diesen Filter auf `handleGainersLosers` und `handleMostActive` anwenden (nach `enrichWithProfileData`)
+**`src/index.css`**:
+- Alle Tabellen/Karten: `overflow-x: auto` mit `-webkit-overflow-scrolling: touch`
+- Kleinere Schriftgrößen auf `<640px` für dichte Datenanzeigen
+- Konsistente `safe-area-inset` Padding für Notch-Geräte
 
-## 3. User-Datenbank leeren
+**`src/components/Header.tsx`**:
+- Kompaktere mobile Ansicht: Logo-Text immer verbergen unter `sm`, weniger Padding
 
-Per SQL alle bestehenden Eintraege aus der `profiles`-Tabelle loeschen. Da `profiles.id` per `ON DELETE CASCADE` an `auth.users` haengt, muss zuerst der Eintrag in `auth.users` (ueber Lovable Cloud) oder die `profiles`-Tabelle direkt geleert werden.
+**`src/components/BottomNav.tsx`**:
+- Safe-Area-Inset für iPhone-Homebar (`pb-safe`)
 
-Konkret: `DELETE FROM profiles;` und `DELETE FROM watchlist;` ausfuehren.
+## 3. Seiten-Überarbeitungen
 
-## 4. Waehrungsumrechnung auf Stock-Detail-Seiten
+### Index (Homepage)
+- Responsivere Grid-Abstände, Touch-Targets mindestens 44px
 
-Folgende Komponenten zeigen Preise aktuell immer in USD (`$`) an und muessen die Waehrungsumrechnung nutzen:
+### StockDetail
+- Metriken-Grid: 2 Spalten auf Mobile statt 3-4
+- Charts volle Breite, kein Overflow
 
-### StockChart.tsx
-- `useCurrency` importieren
-- Y-Achse: `$` durch `symbol` ersetzen und Werte konvertieren
-- Tooltip: Konvertierte Werte mit korrektem Waehrungssymbol anzeigen
-- Chartdaten: `close`-Werte bei der Anzeige konvertieren
+### ScreenerPage
+- Filter-Inputs als kompaktes Grid auf Mobile (2 Spalten)
+- Tabellen-Rows mit größerem Tap-Target
 
-### FinancialChart.tsx
-- `useCurrency` importieren
-- `formatLargeNumber` dynamisch mit Waehrungssymbol versehen
-- Y-Achse und Tooltip nutzen konvertierte Werte
+### PortfolioPage
+- Pie-Chart volle Breite auf Mobile
+- Position-Cards statt Tabelle auf kleinen Screens
 
-### MetricsGrid.tsx
-- `useFormattedCurrency` und `useCurrency` importieren
-- Alle `formatCurrency`-Aufrufe durch die Hook-basierte Version ersetzen
+### WatchlistPage
+- Grid/List-Toggle: Default = List auf Mobile
+- Kompaktere Karten
 
-### KeyMetrics.tsx
-- `useFormattedCurrency` importieren
-- Alle Waehrungswerte (Market Cap, EPS, 52W High/Low, Revenue, Gross Profit) konvertieren
+### ComparePage
+- Normalisierter Chart: volle Breite, kein horizontales Scrollen
+- Stock-Cards: Stack vertikal auf Mobile
 
-### StockDetail.tsx
-- `formatDividendValue` mit dem Waehrungssymbol versehen
-- Preis-Header-Anzeige mit Konvertierung
+### NewsPage
+- News-Karten: Bild links (klein) + Text rechts auf Mobile
+- Kompaktere Kategorie-Badges
 
----
+### MarketSentimentPage
+- Gauge und Kacheln: 1 Spalte auf Mobile
+- Heatmap: horizontaler Scroll mit Indikator
 
-## Technische Details
+### GlossaryPage
+- Letter-Filter: horizontaler Scroll-Strip statt Umbruch
+- Kompaktere Einträge
 
-### Betroffene Dateien
-- `src/pages/AuthPage.tsx` (Texte uebersetzen)
-- `supabase/functions/stock-data/index.ts` (ETF-Filter erweitern)
-- `src/components/StockChart.tsx` (Waehrung)
-- `src/components/FinancialChart.tsx` (Waehrung)
-- `src/components/MetricsGrid.tsx` (Waehrung)
-- `src/components/KeyMetrics.tsx` (Waehrung)
-- `src/pages/StockDetail.tsx` (Waehrung)
+### SettingsPage / ProfilePage
+- Volle Breite Inputs auf Mobile, kein max-w Beschränkung
 
-### Name-basierter ETF-Filter (Pseudocode)
-```text
-function isETFByName(name: string): boolean {
-  const lower = name.toLowerCase();
-  return lower.includes(" etf") ||
-    /\b[23]x\b/.test(lower) ||
-    lower.includes("leveraged") ||
-    lower.includes("direxion") ||
-    lower.includes("proshares") ||
-    lower.includes("graniteshares") ||
-    lower.includes("defiance") ||
-    lower.includes("tradr") ||
-    (lower.includes("daily") && (lower.includes("short") || lower.includes("long")));
-}
-```
+### AuthPage
+- Card zentriert, max-w-sm, Touch-optimierte Buttons
 
-### Reihenfolge
-1. Auth-Seite uebersetzen
-2. ETF-Filter in Edge Function erweitern + deployen
-3. User-Daten loeschen
-4. Waehrungsumrechnung in alle Stock-Detail-Komponenten einbauen
+### CalculatorPage
+- Kategorie-Pills: horizontaler Scroll auf Mobile
+- Input-Labels neben Feldern auf Desktop, darüber auf Mobile
+
+### LearnPage
+- TOC: Collapsible sidebar auf Desktop, Dropdown auf Mobile
+- Sections: Volle Breite, größere Schrift für Fließtext
+
+## 4. Eigene Ergänzungen (nach Ermessen)
+
+- **Pull-to-Refresh Indikator**: Visueller Hinweis bei manuellem Seiten-Reload
+- **Smooth Scroll Behavior**: `scroll-behavior: smooth` global
+- **Focus-Visible Styling**: Bessere Keyboard-Navigation-Indikatoren
+- **Skeleton Shimmer Animation**: Verbesserte Loading-States mit Shimmer-Effekt
+- **Footer auf allen Seiten**: Einheitlicher Footer-Komponent der auf jeder Seite erscheint (aktuell fehlt er auf vielen Unterseiten)
+- **Breadcrumbs auf Unterseiten**: Konsistente Navigation-Breadcrumbs auf Stock Detail, Commodity Detail etc.
+
+## Technischer Ansatz
+
+Dateien die geändert werden:
+- `index.html` — Viewport Meta
+- `src/index.css` — Globale mobile Styles, Touch-Action, Safe-Area
+- `src/components/Header.tsx` — Mobile Kompakt-Modus
+- `src/components/BottomNav.tsx` — Safe-Area Padding
+- `src/pages/Index.tsx` — Grid-Abstände
+- `src/pages/StockDetail.tsx` — Responsive Metriken
+- `src/pages/ScreenerPage.tsx` — Mobile Filter-Layout
+- `src/pages/PortfolioPage.tsx` — Mobile Cards
+- `src/pages/WatchlistPage.tsx` — Kompakte Ansicht
+- `src/pages/ComparePage.tsx` — Stack Layout
+- `src/pages/NewsPage.tsx` — Mobile News-Cards
+- `src/pages/MarketSentimentPage.tsx` — Mobile Grids
+- `src/pages/GlossaryPage.tsx` — Scroll-Filter
+- `src/pages/SettingsPage.tsx` — Volle Breite
+- `src/pages/ProfilePage.tsx` — Mobile Form
+- `src/pages/AuthPage.tsx` — Touch-optimiert
+- `src/pages/CalculatorPage.tsx` — Mobile Tabs
+- `src/pages/LearnPage.tsx` — Mobile TOC
+- Neuer `src/components/Footer.tsx` — Wiederverwendbarer Footer
 
