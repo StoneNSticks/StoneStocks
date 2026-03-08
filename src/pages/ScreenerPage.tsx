@@ -6,6 +6,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useTopCompanies } from "@/hooks/useStockData";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useT } from "@/contexts/LanguageContext";
