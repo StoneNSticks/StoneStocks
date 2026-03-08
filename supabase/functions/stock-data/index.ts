@@ -888,19 +888,18 @@ async function handleMarketIndices() {
   return valid.length > 0 ? valid : results;
 }
 
-// Combined market news from Finnhub + Polygon + Alpha Vantage + Twelve Data
+// Combined market news from Finnhub + Polygon + Alpha Vantage + Twelve Data + Yahoo RSS
 async function handleMarketNews() {
-  const cacheKey = "market:news:combined:v3";
+  const cacheKey = "market:news:combined:v4";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  const [finnhubNews, polygonNews, avNews, tdNews] = await Promise.all([
+  const [finnhubNews, polygonNews, avNews, tdNews, yahooNews] = await Promise.all([
     fetchFinnhub("news", { category: "general" }).catch(() => []),
-    fetchMassive("/v2/reference/news", { limit: "25", order: "desc" }).catch(() => ({ results: [] })),
-    // Alpha Vantage NEWS_SENTIMENT (free tier: 25 results)
-    fetchAlphaVantage("NEWS_SENTIMENT", { topics: "financial_markets", sort: "LATEST", limit: "25" }).catch(() => ({ feed: [] })),
-    // Twelve Data news
-    fetchTwelveData("news", { outputsize: "20" }).catch(() => ({ data: [] })),
+    fetchMassive("/v2/reference/news", { limit: "30", order: "desc" }).catch(() => ({ results: [] })),
+    fetchAlphaVantage("NEWS_SENTIMENT", { topics: "financial_markets", sort: "LATEST", limit: "30" }).catch(() => ({ feed: [] })),
+    fetchTwelveData("news", { outputsize: "25" }).catch(() => ({ data: [] })),
+    fetchYahooRSS().catch(() => []),
   ]);
 
   const fhItems = (Array.isArray(finnhubNews) ? finnhubNews : []).map((n: any) => ({
@@ -917,7 +916,6 @@ async function handleMarketNews() {
     category: "",
   }));
 
-  // Alpha Vantage NEWS_SENTIMENT feed
   const avItems = ((avNews as any)?.feed || []).map((n: any) => ({
     headline: n.title || "", summary: n.summary || "", url: n.url || "",
     image: n.banner_image || "", source: n.source || "Alpha Vantage",
@@ -929,7 +927,6 @@ async function handleMarketNews() {
     category: (n.topics || []).map((t: any) => t.topic).join(", "),
   }));
 
-  // Twelve Data news
   const tdItems = ((tdNews as any)?.data || []).map((n: any) => ({
     headline: n.title || "", summary: n.description || n.snippet || "", url: n.url || "",
     image: n.image?.thumbnail || n.image?.original || "", source: n.source || "Twelve Data",
@@ -938,8 +935,10 @@ async function handleMarketNews() {
     category: "",
   }));
 
+  const yahooItems = Array.isArray(yahooNews) ? yahooNews : [];
+
   const seen = new Set<string>();
-  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems]
+  const combined = [...fhItems, ...pgItems, ...avItems, ...tdItems, ...yahooItems]
     .filter((n: any) => {
       const key = n.headline?.toLowerCase().slice(0, 50);
       if (!key || seen.has(key)) return false;
@@ -947,7 +946,7 @@ async function handleMarketNews() {
       return true;
     })
     .sort((a: any, b: any) => b.datetime - a.datetime)
-    .slice(0, 50);
+    .slice(0, 80);
 
   await setCache(cacheKey, combined, "combined", TTL.market_news);
   return combined;
