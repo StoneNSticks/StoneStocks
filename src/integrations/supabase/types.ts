@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      price_alerts: {
+        Row: {
+          created_at: string
+          direction: string
+          id: string
+          symbol: string
+          target_price: number
+          triggered: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          id?: string
+          symbol: string
+          target_price: number
+          triggered?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          id?: string
+          symbol?: string
+          target_price?: number
+          triggered?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -95,6 +125,54 @@ export type Database = {
           email?: string | null
           id?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      stock_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stock_votes: {
+        Row: {
+          created_at: string
+          id: string
+          symbol: string
+          user_id: string
+          vote: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          symbol: string
+          user_id: string
+          vote: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          symbol?: string
+          user_id?: string
+          vote?: string
         }
         Relationships: []
       }
