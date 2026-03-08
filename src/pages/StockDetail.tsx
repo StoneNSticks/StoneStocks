@@ -10,6 +10,7 @@ import { PeersList } from "@/components/PeersList";
 import { RecommendationChart } from "@/components/RecommendationChart";
 import { StockPerformance } from "@/components/StockPerformance";
 import { CompanyInfoCard } from "@/components/CompanyInfoCard";
+import { WeekRangeBar } from "@/components/WeekRangeBar";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
