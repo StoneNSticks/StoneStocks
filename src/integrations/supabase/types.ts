@@ -68,6 +68,36 @@ export type Database = {
         }
         Relationships: []
       }
+      learn_progress: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          quiz_score: number | null
+          section_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          quiz_score?: number | null
+          section_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          quiz_score?: number | null
+          section_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_positions: {
         Row: {
           avg_cost: number
