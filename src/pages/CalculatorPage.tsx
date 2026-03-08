@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from "recharts";
-import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale } from "lucide-react";
+import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale, ArrowLeftRight } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrencyRates } from "@/lib/stockApi";
 
 function formatMoney(n: number): string {
   if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M";
