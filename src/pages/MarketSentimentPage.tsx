@@ -296,7 +296,7 @@ function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicato
                     <div className="text-xs font-semibold text-foreground">
                       {lang === "de" ? ind.label.de : ind.label.en}
                       <span className="font-normal text-muted-foreground ml-1">
-                        — {lang === "de" ? "Gewichtung" : "Weight"}: {(ind.weight * 100).toFixed(0)}%
+                        ({lang === "de" ? "Gewichtung" : "Weight"}: {(ind.weight * 100).toFixed(0)}%)
                       </span>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
