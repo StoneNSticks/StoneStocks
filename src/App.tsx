@@ -120,6 +120,7 @@ const App = () => (
               <BackToTop />
               <InstallPrompt />
               <AlertNotifications />
+              <KeyboardShortcutsModal />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
