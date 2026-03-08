@@ -79,7 +79,7 @@ const NewsPage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder={lang === "de" ? "Nachrichten durchsuchen..." : "Search news..."} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex gap-1.5 scroll-x-touch pb-1">
               {CATEGORIES.map(cat => (
                 <button key={cat} onClick={() => { setCategory(cat); setLimit(20); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${category === cat ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
                   {cat === "All" ? (lang === "de" ? "Alle" : "All") : cat}
