@@ -26,6 +26,7 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const CommodityDetail = lazy(() => import("./pages/CommodityDetail"));
 const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
+const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
 
 const queryClient = new QueryClient();
 
