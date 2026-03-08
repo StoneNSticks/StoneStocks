@@ -52,20 +52,21 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
   const prev = chartData.length > 3 ? chartData[chartData.length - 4] : null;
   const total = latest ? latest.strongBuy + latest.buy + latest.hold + latest.sell + latest.strongSell : 0;
 
+  // Invert: 5 = strong buy, 0 = strong sell
   const consensus = total > 0
-    ? (latest.strongBuy * 1 + latest.buy * 2 + latest.hold * 3 + latest.sell * 4 + latest.strongSell * 5) / total
+    ? 5 - ((latest.strongBuy * 1 + latest.buy * 2 + latest.hold * 3 + latest.sell * 4 + latest.strongSell * 5) / total) + 1
     : 0;
 
+  const prevTotal = prev ? (prev.strongBuy + prev.buy + prev.hold + prev.sell + prev.strongSell || 1) : 1;
   const prevConsensus = prev
-    ? ((prev.strongBuy * 1 + prev.buy * 2 + prev.hold * 3 + prev.sell * 4 + prev.strongSell * 5) /
-      (prev.strongBuy + prev.buy + prev.hold + prev.sell + prev.strongSell || 1))
+    ? 5 - ((prev.strongBuy * 1 + prev.buy * 2 + prev.hold * 3 + prev.sell * 4 + prev.strongSell * 5) / prevTotal) + 1
     : consensus;
 
-  const trendImproved = consensus < prevConsensus - 0.1;
-  const trendWorsened = consensus > prevConsensus + 0.1;
+  const trendImproved = consensus > prevConsensus + 0.1;
+  const trendWorsened = consensus < prevConsensus - 0.1;
 
-  const consensusLabel = consensus <= 1.5 ? t("rec.strongBuy") : consensus <= 2.5 ? t("rec.buy") : consensus <= 3.5 ? t("rec.hold") : consensus <= 4.5 ? t("rec.sell") : t("rec.strongSell");
-  const consensusColor = consensus <= 2.0 ? COLORS.strongBuy : consensus <= 2.5 ? COLORS.buy : consensus <= 3.5 ? COLORS.hold : consensus <= 4.5 ? COLORS.sell : COLORS.strongSell;
+  const consensusLabel = consensus >= 4.0 ? t("rec.strongBuy") : consensus >= 3.0 ? t("rec.buy") : consensus >= 2.0 ? t("rec.hold") : consensus >= 1.0 ? t("rec.sell") : t("rec.strongSell");
+  const consensusColor = consensus >= 4.0 ? COLORS.strongBuy : consensus >= 3.0 ? COLORS.buy : consensus >= 2.0 ? COLORS.hold : consensus >= 1.0 ? COLORS.sell : COLORS.strongSell;
 
   const target = parseFloat(overview?.AnalystTargetPrice || "0");
   const high = parseFloat(overview?.AnalystHighTarget || "0");
@@ -87,7 +88,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
 
   if (!total && !target) return null;
 
-  const gaugeAngle = total > 0 ? ((consensus - 1) / 4) * 180 : 90;
+  const gaugeAngle = total > 0 ? (consensus / 5) * 180 : 90;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
@@ -123,11 +124,11 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
               <svg viewBox="0 0 200 110" className="w-full h-full">
                 <defs>
                   <linearGradient id="analystArc" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor={COLORS.strongBuy} />
-                    <stop offset="25%" stopColor={COLORS.buy} />
+                    <stop offset="0%" stopColor={COLORS.strongSell} />
+                    <stop offset="25%" stopColor={COLORS.sell} />
                     <stop offset="50%" stopColor={COLORS.hold} />
-                    <stop offset="75%" stopColor={COLORS.sell} />
-                    <stop offset="100%" stopColor={COLORS.strongSell} />
+                    <stop offset="75%" stopColor={COLORS.buy} />
+                    <stop offset="100%" stopColor={COLORS.strongBuy} />
                   </linearGradient>
                 </defs>
                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="hsl(var(--muted))" strokeWidth="12" strokeLinecap="round" />
@@ -139,15 +140,14 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                   stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round"
                 />
                 <circle cx="100" cy="100" r="4" fill="hsl(var(--foreground))" />
-                {/* Labels */}
-                <text x="18" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="start">{lang === "de" ? "Kauf" : "Buy"}</text>
-                <text x="182" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="end">{lang === "de" ? "Verkauf" : "Sell"}</text>
+                <text x="18" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="start">{lang === "de" ? "Verkauf" : "Sell"}</text>
+                <text x="182" y="108" fontSize="8" fill="hsl(var(--muted-foreground))" textAnchor="end">{lang === "de" ? "Kauf" : "Buy"}</text>
               </svg>
             </div>
             {/* Score */}
             <div className="text-center sm:text-left flex-1">
               <div className="text-2xl font-display font-bold" style={{ color: consensusColor }}>{consensusLabel}</div>
-              <div className="font-mono text-lg font-bold text-foreground">{consensus.toFixed(2)}<span className="text-muted-foreground text-sm"> / 5.00</span></div>
+              <div className="font-mono text-lg font-bold text-foreground">{consensus.toFixed(1)}<span className="text-muted-foreground text-sm"> / 5.0</span></div>
             </div>
           </div>
         </div>
@@ -279,35 +279,55 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="px-5 pb-5">
-                  <ResponsiveContainer width="100%" height={140}>
-                    <BarChart data={chartData} barCategoryGap="20%">
+                <div className="px-5 pb-5 space-y-4">
+                  <ResponsiveContainer width="100%" height={160}>
+                    <BarChart data={chartData} barCategoryGap="15%" barGap={0}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="period" axisLine={false} tickLine={false} interval={0} angle={-45} textAnchor="end" height={40} tick={{ fontSize: 7, fill: "hsl(var(--muted-foreground))" }} />
+                      <XAxis dataKey="period" axisLine={false} tickLine={false} interval={0} angle={-45} textAnchor="end" height={40} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
                       <YAxis hide />
-                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 10, color: "hsl(var(--foreground))" }} />
-                      <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} />
+                      <Tooltip
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "10px", fontSize: 11, color: "hsl(var(--foreground))", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                        cursor={{ fill: "hsl(var(--muted))", opacity: 0.3, radius: 4 }}
+                      />
+                      <Bar dataKey="strongBuy" stackId="a" fill={COLORS.strongBuy} name={t("rec.strongBuy")} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="buy" stackId="a" fill={COLORS.buy} name={t("rec.buy")} />
                       <Bar dataKey="hold" stackId="a" fill={COLORS.hold} name={t("rec.hold")} />
                       <Bar dataKey="sell" stackId="a" fill={COLORS.sell} name={t("rec.sell")} />
-                      <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[3, 3, 0, 0]} name={t("rec.strongSell")} />
+                      <Bar dataKey="strongSell" stackId="a" fill={COLORS.strongSell} radius={[4, 4, 0, 0]} name={t("rec.strongSell")} />
                     </BarChart>
                   </ResponsiveContainer>
 
-                  {/* Per-month mini breakdown */}
-                  <div className="mt-3 space-y-1 max-h-[200px] overflow-y-auto">
-                    {chartData.map((row) => {
+                  {/* Legend */}
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    {segments.map((s) => (
+                      <div key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                        {s.label}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Timeline rows */}
+                  <div className="space-y-1">
+                    {chartData.map((row, i) => {
                       const rowTotal = row.strongBuy + row.buy + row.hold + row.sell + row.strongSell;
+                      const rowScore = rowTotal > 0
+                        ? 5 - ((row.strongBuy * 1 + row.buy * 2 + row.hold * 3 + row.sell * 4 + row.strongSell * 5) / rowTotal) + 1
+                        : 0;
+                      const isLatest = i === chartData.length - 1;
                       return (
-                        <div key={row.period} className="flex items-center gap-2 text-[10px] px-1 py-1 rounded-md hover:bg-muted/30">
-                          <span className="w-14 text-muted-foreground font-mono">{row.period}</span>
-                          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden gap-px">
+                        <div key={row.period} className={`flex items-center gap-2.5 text-[11px] px-2 py-1.5 rounded-lg transition-colors ${isLatest ? "bg-primary/[0.06] border border-primary/20" : "hover:bg-muted/40"}`}>
+                          <span className={`w-14 font-mono ${isLatest ? "text-primary font-semibold" : "text-muted-foreground"}`}>{row.period}</span>
+                          <div className="flex-1 flex h-2 rounded-full overflow-hidden gap-px bg-muted/30">
                             {segments.map((s) => {
                               const val = row[s.key] as number;
-                              return <div key={s.label} style={{ width: rowTotal > 0 ? `${(val / rowTotal) * 100}%` : "0", backgroundColor: s.color, minWidth: val > 0 ? "2px" : "0" }} />;
+                              return <div key={s.label} className="transition-all duration-500" style={{ width: rowTotal > 0 ? `${(val / rowTotal) * 100}%` : "0", backgroundColor: s.color, minWidth: val > 0 ? "3px" : "0" }} />;
                             })}
                           </div>
-                          <span className="w-6 text-right text-muted-foreground font-mono">{rowTotal}</span>
+                          <span className={`w-8 text-right font-mono font-semibold ${rowScore >= 3.5 ? "text-chart-2" : rowScore >= 2.0 ? "text-muted-foreground" : "text-destructive"}`}>
+                            {rowScore.toFixed(1)}
+                          </span>
+                          <span className="w-5 text-right text-muted-foreground/60 font-mono text-[10px]">{rowTotal}</span>
                         </div>
                       );
                     })}
