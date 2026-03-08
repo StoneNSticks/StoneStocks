@@ -162,47 +162,65 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Strength Signal (3%) — Top movers magnitude */
-  const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
-  const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
-  const strengthRatio = (topGainerAvg + topLoserAvg) > 0 ? topGainerAvg / (topGainerAvg + topLoserAvg) : 0.5;
-  const strengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
+  /* 5. Stock Price Strength (5%) — CNN: 52-week highs vs lows proxy */
+  // Proxy: stocks with gains > 3% approximate "near 52-week highs", losses > 3% approximate "near 52-week lows"
+  const allMovers = [...gainers, ...losers];
+  const nearHighs = allMovers.filter((s: any) => (s.changePercent || 0) > 3).length;
+  const nearLows = allMovers.filter((s: any) => (s.changePercent || 0) < -3).length;
+  const totalHL = nearHighs + nearLows;
+  const highLowRatio = totalHL > 0 ? nearHighs / totalHL : 0.5;
+  const priceStrengthScore = Math.min(100, Math.max(0, highLowRatio * 100));
   indicators.push({
-    key: "strength", weight: 0.03,
-    label: { de: "Stärke-Signal", en: "Strength Signal" },
+    key: "price_strength", weight: 0.05,
+    label: { de: "Kursstärke (Proxy)", en: "Stock Price Strength (Proxy)" },
     description: {
-      de: "Vergleicht die durchschnittliche Stärke der Top-5-Tagesgewinner mit den Top-5-Verlierern. Misst, ob Aufwärtsbewegungen kräftiger sind als Abwärtsbewegungen.",
-      en: "Compares the average magnitude of today's top 5 gainers vs top 5 losers. Measures whether upward moves are stronger than downward moves."
+      de: "Approximiert die Anzahl der Aktien nahe 52-Wochen-Hochs vs. -Tiefs. Aktien mit >3% Tagesgewinn gelten als 'nahe Hoch', mit >3% Verlust als 'nahe Tief'. Mehr Hochs = Gier, mehr Tiefs = Angst.",
+      en: "Approximates net new 52-week highs vs lows. Stocks with >3% daily gain count as 'near high', >3% loss as 'near low'. More highs than lows is a bullish sign and signals Greed."
     },
     formula: {
-      de: `Score = Gewinner-Ø / (Gewinner-Ø + |Verlierer-Ø|) × 100. Gewinner-Ø: +${topGainerAvg.toFixed(2)}%, Verlierer-Ø: -${topLoserAvg.toFixed(2)}%.`,
-      en: `Score = gainer avg / (gainer avg + |loser avg|) × 100. Gainer avg: +${topGainerAvg.toFixed(2)}%, Loser avg: -${topLoserAvg.toFixed(2)}%.`
+      de: `Score = Nahe-Hochs / (Nahe-Hochs + Nahe-Tiefs) × 100. Hochs: ${nearHighs}, Tiefs: ${nearLows}.`,
+      en: `Score = near highs / (near highs + near lows) × 100. Highs: ${nearHighs}, Lows: ${nearLows}.`
     },
-    score: strengthScore,
-    rawValue: `${(strengthRatio * 100).toFixed(0)}%`,
-    icon: <Target className="h-4 w-4" />,
+    score: priceStrengthScore,
+    rawValue: `${nearHighs}↑ / ${nearLows}↓`,
+    icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 5b. Put/Call Proxy (7%) — CNN-style: loser-to-gainer volume ratio */
-  const loserMagnitude = losers.slice(0, 10).reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
-  const gainerMagnitude = gainers.slice(0, 10).reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
-  const putCallRatio = gainerMagnitude > 0 ? loserMagnitude / gainerMagnitude : 1;
-  // Ratio > 1 = more bearish pressure (fear), < 1 = bullish (greed). CNN: high put/call = fear.
-  const putCallScore = Math.min(100, Math.max(0, ((2 - putCallRatio) / 2) * 100));
+  /* 5b. Junk Bond Demand (5%) — CNN: yield spread proxy */
+  // Proxy: spread between risky assets (oil, copper) and safe havens (gold).
+  // Tight spread (risky outperforms safe) = greed; wide spread (safe outperforms risky) = fear.
+  const goldProxy = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
+  const goldChg = goldProxy?.changePercent ?? 0;
+  const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
+  const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
+  // "Junk" = volatile high-beta movers; "Investment grade" = gold (safe haven)
+  const riskyReturn = (topGainerAvg - topLoserAvg) / 2;
+  const yieldSpread = goldChg - riskyReturn; // Positive = flight to safety (fear)
+  const junkBondScore = commoditiesStale
+    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
+    : Math.min(100, Math.max(0, ((3 - yieldSpread) / 6) * 100));
   indicators.push({
-    key: "put_call_proxy", weight: 0.07,
-    label: { de: "Put/Call-Verhältnis (Proxy)", en: "Put/Call Ratio (Proxy)" },
+    key: "junk_bond_demand", weight: 0.05,
+    label: { de: "Junk-Bond-Nachfrage (Proxy)", en: "Junk Bond Demand (Proxy)" },
     description: {
-      de: "Approximation des Put/Call-Verhältnisses: misst das Verhältnis der Kursrückgänge (Verlierer) zu Kursanstiegen (Gewinner) nach Magnitude. Mehr Abwärtsdruck = Angst, mehr Aufwärtsdruck = Gier. Ähnlich dem CNN-Indikator.",
-      en: "Approximation of the put/call ratio: measures the ratio of decline magnitude (losers) to advance magnitude (gainers). More downward pressure = fear, more upward pressure = greed. Similar to the CNN indicator."
+      de: commoditiesStale
+        ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
+        : "Approximiert den Rendite-Spread zwischen riskanten und sicheren Anlagen. Wenn riskante Assets (High-Beta-Aktien) besser laufen als sichere Häfen (Gold), schrumpft der Spread — ein Zeichen für Gier. Wächst der Spread, steigt die Angst.",
+      en: commoditiesStale
+        ? "Commodity data unavailable. Falling back to stock momentum."
+        : "Approximates the yield spread between risky and safe assets. When risky assets (high-beta stocks) outperform safe havens (gold), the spread narrows — a sign of Greed. A wider spread shows more caution and signals Fear."
     },
     formula: {
-      de: `Ratio = Verlierer-Magnitude / Gewinner-Magnitude = ${loserMagnitude.toFixed(2)} / ${gainerMagnitude.toFixed(2)} = ${putCallRatio.toFixed(2)}. Score = ((2 − Ratio) / 2) × 100.`,
-      en: `Ratio = loser magnitude / gainer magnitude = ${loserMagnitude.toFixed(2)} / ${gainerMagnitude.toFixed(2)} = ${putCallRatio.toFixed(2)}. Score = ((2 − ratio) / 2) × 100.`
+      de: commoditiesStale
+        ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
+        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky-Ø (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
+      en: commoditiesStale
+        ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
+        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky avg (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
     },
-    score: putCallScore,
-    rawValue: putCallRatio.toFixed(2),
-    icon: <BarChart2 className="h-4 w-4" />,
+    score: junkBondScore,
+    rawValue: commoditiesStale ? "closed" : `${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%`,
+    icon: <ShieldAlert className="h-4 w-4" />,
   });
 
   /* 6. Commodity Risk Appetite (10%) — Oil + Copper */
