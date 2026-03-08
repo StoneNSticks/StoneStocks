@@ -55,6 +55,7 @@ import { SecFilings } from "@/components/SecFilings";
 import { FairValue } from "@/components/FairValue";
 import { DCFCalculator } from "@/components/DCFCalculator";
 import { AIStockSummary } from "@/components/AIStockSummary";
+import { AdvancedAlertBuilder } from "@/components/AdvancedAlertBuilder";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
