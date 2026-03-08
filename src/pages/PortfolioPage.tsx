@@ -1,8 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
 import { PortfolioPerformance } from "@/components/PortfolioPerformance";
-import { AIRecommendations } from "@/components/AIRecommendations";
-import { AIPortfolioReview } from "@/components/AIPortfolioReview";
 import { DividendIncomeTracker } from "@/components/DividendIncomeTracker";
 import { TaxLossHarvesting } from "@/components/TaxLossHarvesting";
 import { PortfolioRebalancing } from "@/components/PortfolioRebalancing";
@@ -285,9 +283,6 @@ function RiskAnalyticsWrapper({ positions }: { positions: any[] }) {
 function PortfolioRebalancingWrapper({ positions }: { positions: any[] }) {
   return <EnrichedPositionsWrapper positions={positions}>{(posData) => <PortfolioRebalancing positions={posData} />}</EnrichedPositionsWrapper>;
 }
-function AIPortfolioReviewWrapper({ positions }: { positions: any[] }) {
-  return <EnrichedPositionsWrapper positions={positions}>{(posData) => <AIPortfolioReview positions={posData} />}</EnrichedPositionsWrapper>;
-}
 export default function PortfolioPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: positions, isLoading } = usePortfolio();
@@ -348,16 +343,21 @@ export default function PortfolioPage() {
       <Header />
       <main className="container py-6 sm:py-10 max-w-4xl px-3 sm:px-4">
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
-              <Briefcase className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+                <Briefcase className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="font-display text-2xl sm:text-3xl font-bold">{lang === "de" ? "Mein Portfolio" : "My Portfolio"}</h1>
+                <p className="text-sm text-muted-foreground">
+                  {count > 0 ? `${count} ${lang === "de" ? "Positionen" : "positions"}` : (lang === "de" ? "Starte mit dem Aufbau deines Portfolios" : "Start building your portfolio")}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">{lang === "de" ? "Mein Portfolio" : "My Portfolio"}</h1>
-              <p className="text-sm text-muted-foreground">
-                {count > 0 ? `${count} ${lang === "de" ? "Positionen" : "positions"}` : (lang === "de" ? "Starte mit dem Aufbau deines Portfolios" : "Start building your portfolio")}
-              </p>
-            </div>
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <Link to="/backtest"><BarChart3 className="h-3.5 w-3.5" />{lang === "de" ? "Backtest" : "Backtest"}</Link>
+            </Button>
           </div>
         </motion.div>
 
@@ -376,7 +376,7 @@ export default function PortfolioPage() {
             {count > 0 && !isLoading && <PortfolioSummary positions={positions!} />}
 
             {/* Add position button / form */}
-            <div className="mb-5 flex items-center gap-2">
+            <div className="mb-5 flex flex-wrap items-center gap-2">
               {!showAdd ? (
                 <>
                   <Button onClick={() => setShowAdd(true)} variant="outline" className="rounded-xl gap-2">
@@ -417,8 +417,8 @@ export default function PortfolioPage() {
                   )}
                 </>
               ) : (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border border-border/60 bg-card p-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="w-full rounded-xl border border-border/60 bg-card p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
                       <Label className="text-xs text-muted-foreground">Symbol</Label>
                       <Input placeholder="AAPL" value={newSymbol} onChange={e => setNewSymbol(e.target.value)} className="mt-1" />
@@ -521,16 +521,6 @@ export default function PortfolioPage() {
             {/* Portfolio Rebalancing */}
             {count > 1 && (
               <PortfolioRebalancingWrapper positions={positions!} />
-            )}
-
-            {/* AI Portfolio Review */}
-            {count > 0 && (
-              <AIPortfolioReviewWrapper positions={positions!} />
-            )}
-
-            {/* AI Recommendations */}
-            {count > 0 && (
-              <AIRecommendations portfolio={positions!} watchlist={[]} />
             )}
           </>
         )}
