@@ -87,6 +87,7 @@ const App = () => (
               <OnboardingModal />
               <BottomNav />
               <BackToTop />
+              <InstallPrompt />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
