@@ -6,20 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePushSubscription, PushStatus } from "@/hooks/useEarningsNotifications";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useT } from "@/contexts/LanguageContext";
 
 export function NotificationBell() {
   const { user } = useAuth();
-  const { lang } = useLanguage();
+  const t = useT();
   const { status, isSubscribed, subscribe, unsubscribe } = usePushSubscription();
 
   if (!user || status === "unsupported") return null;
 
   const label = isSubscribed
-    ? lang === "de" ? "Push-Benachrichtigungen deaktivieren" : "Disable push notifications"
+    ? t("notif.disable")
     : status === "denied"
-    ? lang === "de" ? "Benachrichtigungen blockiert" : "Notifications blocked"
-    : lang === "de" ? "Earnings-Erinnerungen aktivieren" : "Enable earnings reminders";
+    ? t("notif.blocked")
+    : t("notif.enable");
 
   const Icon = isSubscribed ? BellRing : status === "denied" ? BellOff : Bell;
 
