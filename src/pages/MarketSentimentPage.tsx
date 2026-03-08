@@ -183,25 +183,26 @@ function computeSubIndicators(
     icon: <Target className="h-4 w-4" />,
   });
 
-  /* 5b. Breadth Divergence (7%) — gap between top movers and market average */
-  const topMoverAvg = (topGainerAvg - topLoserAvg) / 2;
-  const divergence = topMoverAvg - avgChange;
-  // Positive divergence = top movers outperform average = greed; negative = fear
-  const divergenceScore = Math.min(100, Math.max(0, ((divergence + 2) / 4) * 100));
+  /* 5b. Put/Call Proxy (7%) — CNN-style: loser-to-gainer volume ratio */
+  const loserMagnitude = losers.slice(0, 10).reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
+  const gainerMagnitude = gainers.slice(0, 10).reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
+  const putCallRatio = gainerMagnitude > 0 ? loserMagnitude / gainerMagnitude : 1;
+  // Ratio > 1 = more bearish pressure (fear), < 1 = bullish (greed). CNN: high put/call = fear.
+  const putCallScore = Math.min(100, Math.max(0, ((2 - putCallRatio) / 2) * 100));
   indicators.push({
-    key: "breadth_divergence", weight: 0.07,
-    label: { de: "Breiten-Divergenz", en: "Breadth Divergence" },
+    key: "put_call_proxy", weight: 0.07,
+    label: { de: "Put/Call-Verhältnis (Proxy)", en: "Put/Call Ratio (Proxy)" },
     description: {
-      de: "Misst die Abweichung zwischen Top-Movers und dem allgemeinen Markt-Durchschnitt. Wenn Top-Mover deutlich besser laufen als der Markt, signalisiert das Gier – umgekehrt Angst.",
-      en: "Measures the gap between top movers and the overall market average. When top movers significantly outperform the market, it signals greed – the reverse signals fear."
+      de: "Approximation des Put/Call-Verhältnisses: misst das Verhältnis der Kursrückgänge (Verlierer) zu Kursanstiegen (Gewinner) nach Magnitude. Mehr Abwärtsdruck = Angst, mehr Aufwärtsdruck = Gier. Ähnlich dem CNN-Indikator.",
+      en: "Approximation of the put/call ratio: measures the ratio of decline magnitude (losers) to advance magnitude (gainers). More downward pressure = fear, more upward pressure = greed. Similar to the CNN indicator."
     },
     formula: {
-      de: `Score = ((Ø Top-Mover − Markt-Ø + 2%) / 4%) × 100. Ø Top-Mover: ${topMoverAvg >= 0 ? "+" : ""}${topMoverAvg.toFixed(2)}%, Markt-Ø: ${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%.`,
-      en: `Score = ((top mover avg − market avg + 2%) / 4%) × 100. Top mover avg: ${topMoverAvg >= 0 ? "+" : ""}${topMoverAvg.toFixed(2)}%, Market avg: ${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%.`
+      de: `Ratio = Verlierer-Magnitude / Gewinner-Magnitude = ${loserMagnitude.toFixed(2)} / ${gainerMagnitude.toFixed(2)} = ${putCallRatio.toFixed(2)}. Score = ((2 − Ratio) / 2) × 100.`,
+      en: `Ratio = loser magnitude / gainer magnitude = ${loserMagnitude.toFixed(2)} / ${gainerMagnitude.toFixed(2)} = ${putCallRatio.toFixed(2)}. Score = ((2 − ratio) / 2) × 100.`
     },
-    score: divergenceScore,
-    rawValue: `${divergence >= 0 ? "+" : ""}${divergence.toFixed(2)}%`,
-    icon: <TrendingUp className="h-4 w-4" />,
+    score: putCallScore,
+    rawValue: putCallRatio.toFixed(2),
+    icon: <BarChart2 className="h-4 w-4" />,
   });
 
   /* 6. Commodity Risk Appetite (10%) — Oil + Copper */
