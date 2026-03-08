@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Calculator, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical, Leaf, Gavel, CircleDollarSign, History, PiggyBank, Binary, BanknoteIcon, ArrowUp } from "lucide-react";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical, Leaf, Gavel, CircleDollarSign, History, PiggyBank, Binary, BanknoteIcon, ArrowUp, Calculator } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, StepList, fadeIn, stagger } from "@/components/learn/LearnComponents";
@@ -12,8 +12,6 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useLearnProgress } from "@/hooks/useLearnProgress";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
-import { Switch } from "@/components/ui/switch";
-import { CompoundInterestCalc, DuPontCalc, BondPriceCalc, FireCalc, DcfCalc, LeverageCalc } from "@/components/learn/MiniCalculators";
 
 // Progress tracker using localStorage
 function useReadProgress() {
@@ -70,15 +68,7 @@ export default function LearnPage() {
   const { user } = useAuth();
   const { completedCount, markComplete, isCompleted } = useLearnProgress();
   const totalSections = 28; // total main learn sections
-  const [interactive, setInteractive] = useState(() => {
-    try { return localStorage.getItem("learn_interactive") !== "false"; } catch { return true; }
-  });
   const [showScrollTop, setShowScrollTop] = useState(false);
-
-  const toggleInteractive = (v: boolean) => {
-    setInteractive(v);
-    localStorage.setItem("learn_interactive", String(v));
-  };
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 600);
@@ -277,13 +267,6 @@ export default function LearnPage() {
           )}
         </motion.div>
 
-        {/* Interactive Mode Toggle */}
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="flex items-center justify-center gap-3 rounded-xl border border-border/60 bg-card px-5 py-3">
-          <Calculator className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">{lang === "de" ? "Interaktive Rechner" : "Interactive Calculators"}</span>
-          <Switch checked={interactive} onCheckedChange={toggleInteractive} />
-          <span className="text-xs text-muted-foreground">{interactive ? (lang === "de" ? "An" : "On") : (lang === "de" ? "Aus" : "Off")}</span>
-        </motion.div>
 
         {/* TOC with grouped super-sections */}
         <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-3">
@@ -508,7 +491,7 @@ export default function LearnPage() {
               <InfoBox title={t("learn.tipTitle")}>{t("learn.compoundInfo")}</InfoBox>
             </SectionCard>
             <CalcLink to="/calculator" label={lang === "de" ? "Zinseszins" : "Compound Interest"} />
-            {interactive && <CompoundInterestCalc lang={lang} />}
+            
             <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.brokerTitle")}>
               <p>{t("learn.brokerP1")}</p>
               <p>{t("learn.brokerP2")}</p>
@@ -692,7 +675,7 @@ export default function LearnPage() {
                 <p className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: t("learn.optionsGreeksDesc") }} />
               </div>
             </SectionCard>
-            {interactive && <FireCalc lang={lang} />}
+            
             {/* American vs European Options */}
             <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.optionStylesTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.optionStylesIntro") }} />
@@ -709,7 +692,7 @@ export default function LearnPage() {
               </div>
               <InfoBox title={t("learn.goodToKnow")}>{t("learn.optionStyleComparison")}</InfoBox>
             </SectionCard>
-            {interactive && <DcfCalc lang={lang} />}
+            
             {/* Options Strategies */}
             <SectionCard icon={<Layers className="h-5 w-5" />} title={lang === "de" ? "Optionsstrategien" : "Option Strategies"}>
               <p className="font-medium text-foreground text-sm">{t("learn.optionsStrategies")}</p>
@@ -896,7 +879,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP2") }} />
             </SectionCard>
-            {interactive && <LeverageCalc lang={lang} />}
+            
             <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.maTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.maP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.maP2") }} />
@@ -936,7 +919,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.duPontP1") }} />
               <FormulaBox title="DuPont" formula="ROE = Net Margin × Asset Turnover × Equity Multiplier" explanation={t("learn.duPontP1").replace(/<[^>]*>/g, '').slice(0, 120) + '...'} />
             </SectionCard>
-            {interactive && <DuPontCalc lang={lang} />}
+            
             <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.accrualVsCashTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.accrualVsCashP1") }} />
             </SectionCard>
@@ -984,7 +967,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.bondValuationP1") }} />
               <FormulaBox title="Bond Price" formula="P = Σ C/(1+r)^t + FV/(1+r)^n" explanation={lang === "de" ? "C = Kupon, r = Marktzins, FV = Nennwert, n = Restlaufzeit." : "C = coupon, r = market rate, FV = face value, n = remaining term."} />
             </SectionCard>
-            {interactive && <BondPriceCalc lang={lang} />}
+            
             <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.yieldMeasuresTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.yieldMeasuresP1") }} />
             </SectionCard>
