@@ -752,7 +752,7 @@ export default function LearnPage() {
             <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.shareRepurchaseTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.shareRepurchaseP1") }} />
             </SectionCard>
-            <QuizSection sectionId="corporate-finance" title={t("learn.quizCorporateFinance")} questions={quizCorporateFinance} />
+            
           </motion.section>
 
           {/* Section 18: Accounting & Financial Statements */}
