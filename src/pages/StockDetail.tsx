@@ -51,6 +51,7 @@ import { InsiderTrades } from "@/components/InsiderTrades";
 import { MetricBars } from "@/components/MetricBars";
 import { PeerComparison } from "@/components/PeerComparison";
 import { EarningsCalendar } from "@/components/EarningsCalendar";
+import { SecFilings } from "@/components/SecFilings";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -329,6 +330,12 @@ const StockDetail = () => {
                 Recent buy/sell transactions by company executives
                 ══════════════════════════════════════════════════════════ */}
             <InsiderTrades symbol={upperSymbol} />
+
+            {/* ══════════════════════════════════════════════════════════
+                SECTION 12b: SEC Filings
+                Recent 10-K, 10-Q, 8-K filings from SEC EDGAR
+                ══════════════════════════════════════════════════════════ */}
+            <SecFilings symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 13: Community: Sentiment Vote + Threaded Comments

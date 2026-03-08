@@ -128,7 +128,7 @@ export default function ComparePage() {
 
   usePageTitle(
     lang === "de" ? "Aktienvergleich" : "Stock Compare",
-    lang === "de" ? "Bis zu 4 Aktien nebeneinander vergleichen" : "Compare up to 4 stocks side by side"
+    lang === "de" ? "Bis zu 5 Aktien nebeneinander vergleichen" : "Compare up to 5 stocks side by side"
   );
 
   const [symbols, setSymbols] = useState<string[]>([]);
@@ -137,7 +137,7 @@ export default function ComparePage() {
 
   const addSymbol = (sym: string) => {
     const upper = sym.toUpperCase();
-    if (!symbols.includes(upper) && symbols.length < 4) {
+    if (!symbols.includes(upper) && symbols.length < 5) {
       setSymbols([...symbols, upper]);
     }
     setSearchQuery("");
@@ -169,7 +169,7 @@ export default function ComparePage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl"
-            disabled={symbols.length >= 4}
+            disabled={symbols.length >= 5}
           />
           {searchResults && searchQuery.length >= 1 && (
             <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border/60 bg-card shadow-xl z-50 overflow-hidden max-h-48 overflow-y-auto">
@@ -192,9 +192,9 @@ export default function ComparePage() {
                 <button onClick={() => removeSymbol(s)} className="ml-1 hover:text-destructive"><X className="h-3 w-3" /></button>
               </Badge>
             ))}
-            {symbols.length < 4 && (
+            {symbols.length < 5 && (
               <Badge variant="outline" className="text-xs text-muted-foreground gap-1">
-                <Plus className="h-3 w-3" />{4 - symbols.length} {t("compare.remaining")}
+                <Plus className="h-3 w-3" />{5 - symbols.length} {t("compare.remaining")}
               </Badge>
             )}
           </div>
@@ -211,7 +211,7 @@ export default function ComparePage() {
         ) : (
           <>
             <NormalizedChart symbols={symbols} />
-            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+            <div className={`grid gap-4 mt-4 ${symbols.length === 1 ? "grid-cols-1 max-w-md mx-auto" : symbols.length === 2 ? "grid-cols-1 sm:grid-cols-2" : symbols.length === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : symbols.length === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"}`}>
               {symbols.map(s => (
                 <CompareStock key={s} symbol={s} onRemove={() => removeSymbol(s)} />
               ))}
