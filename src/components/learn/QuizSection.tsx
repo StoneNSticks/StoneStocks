@@ -46,7 +46,7 @@ export function QuizSection({ sectionId, title, questions }: QuizSectionProps) {
   const handleReset = () => { setAnswers({}); setShowResults(false); };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-xl border border-primary/20 bg-primary/[0.03] p-5">
+    <motion.div id={`quiz-${sectionId}`} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-xl border border-primary/20 bg-primary/[0.03] p-5">
       <div className="flex items-center justify-between mb-4">
         <h4 className="font-display font-semibold text-sm flex items-center gap-2">
           📝 {title}

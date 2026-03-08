@@ -29,19 +29,15 @@ function useReadProgress() {
   return { read, markRead };
 }
 
-// Collapsible super-section wrapper
-function SuperSection({ id, title, level, children, defaultOpen = true }: { id: string; title: string; level: string; children: React.ReactNode; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+// Simple section divider (no collapse)
+function SuperSection({ id, title, level, children }: { id: string; title: string; level: string; children: React.ReactNode; defaultOpen?: boolean }) {
   return (
-    <div className="space-y-8">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-3 rounded-xl border-2 border-primary/20 bg-primary/[0.03] px-5 py-4 hover:bg-primary/[0.06] transition-colors text-left">
-        {open ? <ChevronDown className="h-5 w-5 text-primary shrink-0" /> : <ChevronRight className="h-5 w-5 text-primary shrink-0" />}
-        <div>
-          <h2 className="font-display font-bold text-lg text-foreground">{title}</h2>
-          <p className="text-xs text-muted-foreground">{level}</p>
-        </div>
-      </button>
-      {open && <div className="space-y-12 pl-0 md:pl-2">{children}</div>}
+    <div className="space-y-10" id={id}>
+      <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+        <h2 className="font-display font-bold text-lg text-foreground">{title}</h2>
+        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{level}</span>
+      </div>
+      <div className="space-y-12">{children}</div>
     </div>
   );
 }
@@ -268,90 +264,35 @@ export default function LearnPage() {
         </motion.div>
 
 
-        {/* TOC with grouped super-sections */}
-        <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-3">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-display font-bold text-xl text-foreground">{t("learn.toc")}</h2>
-            <span className="text-xs text-muted-foreground font-mono">
-              {read.length}/{tocGroups.reduce((a, g) => a + g.items.length, 0)} {lang === "de" ? "gelesen" : "read"}
-            </span>
-          </div>
-          {tocGroups.map((group, gi) => {
-            const groupColors = [
-              "border-chart-2/30 bg-chart-2/[0.04]",
-              "border-primary/30 bg-primary/[0.04]",
-              "border-destructive/30 bg-destructive/[0.04]",
-              "border-accent-foreground/20 bg-accent/[0.06]",
-              "border-blue-500/30 bg-blue-500/[0.04]",
-              "border-foreground/20 bg-foreground/[0.03]",
-            ];
-            const groupIcons = [
-              <Rocket className="h-4 w-4" />,
-              <TrendingUp className="h-4 w-4" />,
-              <CandlestickChart className="h-4 w-4" />,
-              <Brain className="h-4 w-4" />,
-              <GraduationCap className="h-4 w-4" />,
-              <Gem className="h-4 w-4" />,
-            ];
-            const groupReadCount = group.items.filter(i => read.includes(i.href.replace("#", ""))).length;
-            const allRead = groupReadCount === group.items.length;
-            return (
-              <motion.details
-                key={group.title}
-                variants={fadeIn}
-                open={gi === 0}
-                className={`group rounded-xl border ${groupColors[gi]} overflow-hidden transition-colors`}
-              >
-                <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:bg-primary/[0.03] transition-colors">
-                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-90" />
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    {groupIcons[gi]}
+        {/* Compact TOC */}
+        <motion.nav initial="hidden" animate="visible" variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-4 md:p-5">
+          <h2 className="font-display font-bold text-base text-foreground mb-3">{t("learn.toc")}</h2>
+          <div className="space-y-3">
+            {tocGroups.map((group, gi) => {
+              const globalOffset = tocGroups.slice(0, gi).reduce((a, g) => a + g.items.length, 0);
+              return (
+                <div key={group.title}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-display font-bold text-xs text-primary">{group.title}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{group.level}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-display font-bold text-sm text-foreground">{group.title}</span>
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{group.level}</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{group.items.length} {lang === "de" ? "Kapitel" : "chapters"}</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {allRead ? (
-                      <span className="flex items-center gap-1 text-[10px] font-medium text-chart-2 bg-chart-2/10 px-2 py-0.5 rounded-full">
-                        <CheckCircle className="h-3 w-3" /> {lang === "de" ? "Fertig" : "Done"}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-mono text-muted-foreground">{groupReadCount}/{group.items.length}</span>
-                    )}
-                  </div>
-                </summary>
-                <nav className="grid sm:grid-cols-2 gap-1 px-4 pb-3 pt-1">
-                  {group.items.map((item, ii) => {
-                    const sectionId = item.href.replace("#", "");
-                    const isRead = read.includes(sectionId);
-                    const globalNum = tocGroups.slice(0, gi).reduce((a, g) => a + g.items.length, 0) + ii + 1;
-                    return (
+                  <div className="flex flex-wrap gap-1">
+                    {group.items.map((item, ii) => (
                       <a
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all ${
-                          isRead
-                            ? "text-foreground bg-chart-2/[0.06] font-medium"
-                            : "text-muted-foreground hover:text-primary hover:bg-primary/[0.06]"
-                        }`}
+                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-muted-foreground hover:text-primary hover:bg-primary/[0.06] transition-colors"
                       >
-                        <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold ${
-                          isRead ? "bg-chart-2/20 text-chart-2" : "bg-muted text-muted-foreground"
-                        }`}>{globalNum}</span>
-                        <span className="truncate">{item.label}</span>
-                        {isRead && <CheckCircle className="h-3 w-3 text-chart-2 shrink-0 ml-auto" />}
+                        <span className="font-mono text-[10px] text-muted-foreground/60">{globalOffset + ii + 1}.</span>
+                        {item.label}
                       </a>
-                    );
-                  })}
-                </nav>
-              </motion.details>
-            );
-          })}
-        </motion.div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.nav>
 
         {/* ═══════════════════════════════════════════════
             OBERSEKTION A: EINSTIEG (Beginner)
@@ -522,6 +463,9 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/calculator" label={lang === "de" ? "Portfolio-Wachstum" : "Portfolio Growth"} />
           </motion.section>
+          <a href="#quiz-basics" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -622,6 +566,9 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/compare" label={lang === "de" ? "Aktienvergleich" : "Stock Compare"} />
           </motion.section>
+          <a href="#quiz-portfolio" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zum Quiz" : "Go to quiz"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -768,6 +715,9 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.monteCarloP1") }} />
             </SectionCard>
           </motion.section>
+          <a href="#quiz-technical-analysis" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -1013,6 +963,9 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.baselP1") }} />
             </SectionCard>
           </motion.section>
+          <a href="#quiz-corporate-finance" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
@@ -1141,6 +1094,9 @@ export default function LearnPage() {
               <WarningBox title={t("learn.warning")}>{lang === "de" ? "MMT ist hochkontrovers und wird von der Mehrheit der Ökonomen kritisch gesehen." : "MMT is highly controversial and viewed critically by most economists."}</WarningBox>
             </SectionCard>
           </motion.section>
+          <a href="#quiz-valuation" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* Glossary CTA */}
