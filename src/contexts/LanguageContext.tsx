@@ -394,4 +394,28 @@ const translations: Record<string, Record<Language, string>> = {
   // ── 404 ──
   "notfound.title": { de: "Seite nicht gefunden", en: "Page not found" },
   "notfound.back": { de: "Zurück zur Startseite", en: "Return to Home" },
+
+  // ── Portfolio ──
+  "nav.portfolio": { de: "Portfolio", en: "Portfolio" },
+
+  // ── Analyst Targets ──
+  "at.title": { de: "Kursziel der Analysten", en: "Analyst Price Target" },
+  "at.consensus": { de: "Konsens-Kursziel", en: "Consensus Target" },
+  "at.current": { de: "Aktuell", en: "Current" },
+  "at.upside": { de: "Potenzial", en: "upside" },
+
+  // ── Technical Indicators ──
+  "ti.title": { de: "Technische Indikatoren", en: "Technical Indicators" },
+  "ti.bullish": { de: "Bullisch", en: "Bullish" },
+  "ti.bearish": { de: "Bärisch", en: "Bearish" },
+  "ti.overbought": { de: "Überkauft", en: "Overbought" },
+  "ti.oversold": { de: "Überverkauft", en: "Oversold" },
+  "ti.neutral": { de: "Neutral", en: "Neutral" },
+
+  // ── Earnings Card ──
+  "ec.title": { de: "Gewinnentwicklung (EPS)", en: "Earnings History (EPS)" },
+  "ec.reported": { de: "Gemeldet", en: "Reported" },
+  "ec.estimated": { de: "Geschätzt", en: "Estimated" },
+  "ec.beat": { de: "Übertroffen", en: "Beat" },
+  "ec.miss": { de: "Verfehlt", en: "Missed" },
 };
