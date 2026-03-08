@@ -7,7 +7,7 @@ import {
   getMassiveSplits, getMassiveAggregates, getMassiveSnapshot,
   getMassiveRelated, getMassiveNews,
   getMarketNews, getGainersLosers, getMostActive, getTopCompanies,
-  getCurrencyRates, getSimFinStatements, getEulerpoolProfile, getHiddenGems, getInsiderTransactions,
+  getCurrencyRates, getSimFinStatements, getEulerpoolProfile, getHiddenGems, getInsiderTransactions, getEarningsCalendar,
 } from "@/lib/stockApi";
 
 export const useSearchStocks = (query: string) => useQuery({ queryKey: ["search", query], queryFn: () => searchStocks(query), enabled: query.length >= 1, staleTime: 1000 * 60 * 30 });
