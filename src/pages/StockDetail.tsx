@@ -158,6 +158,8 @@ const StockDetail = () => {
               <WeekRangeBar low52={Number(overview["52WeekLow"])} high52={Number(overview["52WeekHigh"])} current={quote.c} />
             )}
 
+            <MetricBars overview={overview} quote={quote} derived={derived} />
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="lg:col-span-2"><StockChart symbol={upperSymbol} /></div>
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
