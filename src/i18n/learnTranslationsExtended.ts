@@ -258,7 +258,7 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   // ══════════════════════════════════════════════════════════════
   "learn.section23Title": t("Bewertungsmethoden", "Valuation Methods"),
 
-  "learn.multiples Title": t("Multiplikatorenbewertung", "Multiples Valuation"),
+  "learn.multiplesTitle": t("Multiplikatorenbewertung", "Multiples Valuation"),
   "learn.multiplesP1": t(
     "<strong>Multiplikatoren</strong> vergleichen den Preis mit einer Finanzkennzahl: <strong>P/E</strong> (Kurs/Gewinn): Bewertung relativ zum Gewinn. <strong>EV/EBITDA</strong>: Enterprise Value relativ zum operativen Ergebnis, kapitalstruktur-neutral. <strong>P/S</strong> (Kurs/Umsatz): Für verlustbringende Wachstumsunternehmen. <strong>P/B</strong> (Kurs/Buchwert): Für kapitalintensive Branchen (Banken, Versicherungen). <strong>PEG Ratio</strong> (P/E ÷ Wachstumsrate): Berücksichtigt Wachstum.",
     "<strong>Multiples</strong> compare price with a financial metric: <strong>P/E</strong> (Price/Earnings): Valuation relative to earnings. <strong>EV/EBITDA</strong>: Enterprise value relative to operating result, capital structure neutral. <strong>P/S</strong> (Price/Sales): For unprofitable growth companies. <strong>P/B</strong> (Price/Book): For capital-intensive industries (banks, insurance). <strong>PEG Ratio</strong> (P/E ÷ Growth Rate): Accounts for growth."
