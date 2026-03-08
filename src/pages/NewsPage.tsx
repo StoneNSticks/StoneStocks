@@ -123,9 +123,8 @@ const NewsPage = () => {
               className="gap-1.5 shrink-0"
             >
               <Brain className="h-3.5 w-3.5" />
-              {sentimentLoading ? "..." : (lang === "de" ? "Sentiment AI" : "Sentiment AI")}
+              {sentimentLoading ? "..." : "Sentiment AI"}
             </Button>
-            </div>
           </div>
 
           {/* News list */}
