@@ -463,6 +463,9 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/calculator" label={lang === "de" ? "Portfolio-Wachstum" : "Portfolio Growth"} />
           </motion.section>
+          <a href="#quiz-basics" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
