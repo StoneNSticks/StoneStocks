@@ -46,8 +46,7 @@ import { CompanyIntelligence } from "@/components/CompanyIntelligence";
 import { WeekRangeBar } from "@/components/WeekRangeBar";
 import { TechnicalIndicators } from "@/components/TechnicalIndicators";
 import { EarningsCard } from "@/components/EarningsCard";
-import { SentimentVote } from "@/components/SentimentVote";
-import { StockComments } from "@/components/StockComments";
+import { CommunitySection } from "@/components/CommunitySection";
 import { InsiderTrades } from "@/components/InsiderTrades";
 import { MetricBars } from "@/components/MetricBars";
 import { PeerComparison } from "@/components/PeerComparison";
@@ -258,10 +257,7 @@ const StockDetail = () => {
                 Left: Gauge showing Strong Buy → Strong Sell + price targets
                 Right: Community bullish/bearish vote
                 ══════════════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
-              <SentimentVote symbol={upperSymbol} />
-            </div>
+            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 7: Financial Charts (10 charts)
@@ -328,10 +324,9 @@ const StockDetail = () => {
             <InsiderTrades symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
-                SECTION 13: Community Comments
-                Users can post and read comments about this stock
+                SECTION 13: Community: Sentiment Vote + Threaded Comments
                 ══════════════════════════════════════════════════════════ */}
-            <StockComments symbol={upperSymbol} />
+            <CommunitySection symbol={upperSymbol} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 14: Similar Stocks List

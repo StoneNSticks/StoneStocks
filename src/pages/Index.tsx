@@ -12,7 +12,6 @@ import { SentimentGauge } from "@/components/SentimentGauge";
 import { SectorPerformance } from "@/components/SectorPerformance";
 import { useT } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
-import { GitCompare, ArrowRight, Gauge } from "lucide-react";
 
 const Index = () => {
   const t = useT();
@@ -29,27 +28,10 @@ const Index = () => {
         </section>
         <section className="mb-4 sm:mb-6"><MarketOverview /></section>
 
-        {/* Market Pulse Row: Sentiment + Sectors + Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <SentimentGauge />
-          <SectorPerformance />
-          <div className="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-              <Gauge className="h-4 w-4 text-primary" />{t("index.quickActions")}
-            </h3>
-            <Link to="/sentiment" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
-              <Gauge className="h-4 w-4 text-primary" />{t("index.marketPulse")}
-              <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
-            </Link>
-            <Link to="/compare" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
-              <GitCompare className="h-4 w-4 text-primary" />{t("index.stockCompare")}
-              <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
-            </Link>
-            <Link to="/rankings" className="flex items-center gap-2 rounded-lg px-3 py-2.5 min-h-[44px] bg-muted/30 hover:bg-muted/60 transition-colors text-sm font-medium">
-              <ArrowRight className="h-4 w-4 text-primary" />{t("nav.rankings")}
-              <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
-            </Link>
-          </div>
+        {/* Sentiment + Market Overview Row */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div className="md:col-span-3"><SentimentGauge /></div>
+          <div className="md:col-span-2"><SectorPerformance /></div>
         </div>
 
         {/* News + Top Companies */}

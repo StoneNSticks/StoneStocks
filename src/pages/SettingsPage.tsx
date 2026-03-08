@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, Moon, Sun, Shield, BellRing, TrendingUp, TrendingDown, X } from "lucide-react";
+import { Settings, Lock, Globe, Palette, Bell, Trash2, LogOut, Moon, Sun, Shield, BellRing, TrendingUp, TrendingDown, X, Eye, EyeOff, MessageSquare } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -28,6 +28,8 @@ export default function SettingsPage() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [priceAlerts, setPriceAlerts] = useState(() => localStorage.getItem("pref_price_alerts") !== "false");
   const [newsAlerts, setNewsAlerts] = useState(() => localStorage.getItem("pref_news_alerts") !== "false");
+  const [commentReplyAlerts, setCommentReplyAlerts] = useState(false);
+  const [showUsername, setShowUsername] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
 
   // Fetch active price alerts
@@ -49,6 +51,17 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
   }, [authLoading, user, navigate]);
+
+  // Fetch profile settings
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("show_username, comment_reply_alerts").eq("id", user.id).single().then(({ data }) => {
+      if (data) {
+        setShowUsername((data as any).show_username !== false);
+        setCommentReplyAlerts((data as any).comment_reply_alerts === true);
+      }
+    });
+  }, [user]);
 
   const handlePasswordChange = async () => {
     if (newPassword.length < 6) {
@@ -157,6 +170,19 @@ export default function SettingsPage() {
             </SettingRow>
           </Section>
 
+          {/* Privacy */}
+          <Section icon={Eye} title={lang === "de" ? "Privatsphare" : "Privacy"}>
+            <SettingRow
+              label={lang === "de" ? "Benutzername in Kommentaren anzeigen" : "Show username in comments"}
+              desc={lang === "de" ? "Wenn deaktiviert, erscheinst du als 'Anonym'" : "If disabled, you appear as 'Anonymous'"}
+            >
+              <Switch checked={showUsername} onCheckedChange={async (v) => {
+                setShowUsername(v);
+                if (user) await (supabase as any).from("profiles").update({ show_username: v }).eq("id", user.id);
+              }} />
+            </SettingRow>
+          </Section>
+
           {/* Notifications */}
           <Section icon={Bell} title={t("settings.notifications")}>
             <SettingRow label={t("settings.priceAlerts")} desc={t("settings.priceAlertsDesc")}>
@@ -164,6 +190,15 @@ export default function SettingsPage() {
             </SettingRow>
             <SettingRow label={t("settings.newsAlerts")} desc={t("settings.newsAlertsDesc")}>
               <Switch checked={newsAlerts} onCheckedChange={handleNewsAlerts} />
+            </SettingRow>
+            <SettingRow
+              label={lang === "de" ? "Antworten auf Kommentare" : "Comment reply alerts"}
+              desc={lang === "de" ? "Benachrichtigung wenn jemand auf deinen Kommentar antwortet" : "Get notified when someone replies to your comment"}
+            >
+              <Switch checked={commentReplyAlerts} onCheckedChange={async (v) => {
+                setCommentReplyAlerts(v);
+                if (user) await (supabase as any).from("profiles").update({ comment_reply_alerts: v }).eq("id", user.id);
+              }} />
             </SettingRow>
           </Section>
 
