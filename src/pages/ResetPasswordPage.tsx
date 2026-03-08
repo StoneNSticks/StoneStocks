@@ -18,7 +18,17 @@ export default function ResetPasswordPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (window.location.hash.includes("type=recovery")) setReady(true);
+    // Check both hash and search params for recovery token
+    const hash = window.location.hash || "";
+    const search = window.location.search || "";
+    if (hash.includes("type=recovery") || search.includes("type=recovery")) {
+      setReady(true);
+    }
+    // Also listen for PASSWORD_RECOVERY event from Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setReady(true);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
