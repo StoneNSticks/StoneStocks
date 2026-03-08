@@ -43,11 +43,14 @@ interface SubIndicator {
 }
 
 /**
- * Professional Fear & Greed Index modeled after CNN's methodology.
- * 7 sub-indicators with sigmoid normalization for smoother scoring.
+ * Professional Fear & Greed Index — 7 sub-indicators.
+ * Uses linear clamped normalization with market-calibrated ranges.
+ * Each indicator maps a real-world metric to 0 (extreme fear) – 100 (extreme greed).
  */
-function sigmoid(x: number, center: number, steepness: number): number {
-  return 100 / (1 + Math.exp(-steepness * (x - center)));
+
+/** Clamp a value into 0–100 by linearly mapping [low, high] → [0, 100] */
+function linearScore(value: number, fearEnd: number, greedEnd: number): number {
+  return Math.min(100, Math.max(0, ((value - fearEnd) / (greedEnd - fearEnd)) * 100));
 }
 
 function computeSubIndicators(
@@ -65,135 +68,133 @@ function computeSubIndicators(
     ? indexChanges.reduce((s, v) => s + v, 0) / indexChanges.length
     : 0;
 
-  /* 1. Market Momentum (25%) — Average index performance with sigmoid curve
-     CNN equivalent: S&P 500 vs 125-day MA. We use daily change as proxy. */
-  const momentumScore = sigmoid(avgChange, 0, 2.5);
+  /* 1. Market Momentum (25%)
+     Average daily % change of major indices.
+     Range: -2% (extreme fear) to +2% (extreme greed). 0% = neutral (50). */
   indicators.push({
     key: "momentum",
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
-      de: "Durchschnittliche Tagesperformance der großen Indizes. Sigmoid-Normalisierung sorgt für realistische Bewertung: starke Bewegungen >2% haben überproportionalen Einfluss.",
-      en: "Average daily performance of major indices. Sigmoid normalization ensures realistic scoring: strong moves >2% have outsized impact."
+      de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). -2% = extreme Angst, 0% = neutral, +2% = extreme Gier.",
+      en: "Average daily performance of major indices. -2% maps to extreme fear, 0% to neutral, +2% to extreme greed."
     },
-    score: momentumScore,
+    score: linearScore(avgChange, -2, 2),
     icon: <TrendingUp className="h-4 w-4" />,
     weight: 0.25,
   });
 
-  /* 2. Market Breadth (20%) — Advance/Decline ratio
-     CNN equivalent: McClellan Volume Summation Index */
+  /* 2. Market Breadth (20%)
+     Advance/Decline ratio. 
+     Range: 30% advancers (fear) to 70% advancers (greed). 50% = neutral. */
   const totalStocks = gainers.length + losers.length;
-  const breadthRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
-  const breadthScore = sigmoid(breadthRatio, 0.5, 10);
+  const advancePct = totalStocks > 0 ? (gainers.length / totalStocks) * 100 : 50;
   indicators.push({
     key: "breadth",
     label: { de: "Marktbreite (A/D)", en: "Market Breadth (A/D)" },
     description: {
-      de: "Advance/Decline-Ratio: Verhältnis steigender zu fallender Aktien. Ähnlich dem McClellan Summation Index. Breite Marktbeteiligung = Gier, schmale = Angst.",
-      en: "Advance/Decline ratio of all tracked stocks. Similar to McClellan Summation Index. Broad participation = greed, narrow = fear."
+      de: "Verhältnis steigender zu fallender Aktien. 30% Gewinner = Angst, 50% = neutral, 70% = Gier. Basiert auf dem Advance/Decline-Prinzip.",
+      en: "Ratio of advancing stocks. 30% advancers = fear, 50% = neutral, 70% = greed. Based on Advance/Decline breadth."
     },
-    score: breadthScore,
+    score: linearScore(advancePct, 30, 70),
     icon: <Activity className="h-4 w-4" />,
     weight: 0.20,
   });
 
-  /* 3. Volatility (15%) — Index dispersion as VIX proxy
-     CNN equivalent: VIX (CBOE Volatility Index) */
-  let volScore = 50;
+  /* 3. Volatility (15%)
+     Standard deviation of index returns as VIX proxy.
+     Range: 2.5% stddev (fear, high vol) to 0.3% stddev (greed, calm). Inverted. */
+  let stdDev = 0.8; // default moderate
   if (indexChanges.length >= 2) {
     const variance = indexChanges.reduce((s, v) => s + Math.pow(v - avgChange, 2), 0) / indexChanges.length;
-    const stdDev = Math.sqrt(variance);
-    // Lower volatility = more greed, higher = more fear
-    volScore = sigmoid(-stdDev, -1.5, 3);
+    stdDev = Math.sqrt(variance);
   }
   indicators.push({
     key: "volatility",
     label: { de: "Volatilität (VIX-Proxy)", en: "Volatility (VIX Proxy)" },
     description: {
-      de: "Standardabweichung der Index-Renditen als Proxy für den VIX. Geringe Schwankung = Ruhe/Gier, hohe Schwankung = Unsicherheit/Angst.",
-      en: "Standard deviation of index returns as a VIX proxy. Low volatility = calm/greed, high volatility = uncertainty/fear."
+      de: "Standardabweichung der Index-Renditen. Hohe Schwankung (>2%) = Angst, geringe (<0.5%) = Ruhe/Gier. Invertierte Skala.",
+      en: "Std deviation of index returns. High volatility (>2%) = fear, low (<0.5%) = calm/greed. Inverted scale."
     },
-    score: volScore,
+    score: linearScore(stdDev, 2.5, 0.3), // inverted: high vol = low score
     icon: <Waves className="h-4 w-4" />,
     weight: 0.15,
   });
 
-  /* 4. Safe Haven Demand (10%) — Gold vs equities relative performance
-     CNN equivalent: Bond vs stock returns */
+  /* 4. Safe Haven Demand (10%)
+     Stocks vs Gold relative performance.
+     If stocks outperform gold by +2% → greed. If gold outperforms by +2% → fear. */
   const gold = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
   const goldChange = gold?.changePercent ?? 0;
-  const safeHavenDiff = avgChange - goldChange;
-  const safeHavenScore = sigmoid(safeHavenDiff, 0, 2);
+  const stockVsGold = avgChange - goldChange;
   indicators.push({
     key: "safehaven",
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
-      de: "Vergleicht Aktienperformance vs. Gold. Wenn Anleger in Gold flüchten (Gold > Aktien), herrscht Angst. Aktien > Gold = Risikobereitschaft.",
-      en: "Compares equity vs gold performance. When investors flee to gold (gold > stocks), fear dominates. Stocks > gold = risk appetite."
+      de: "Aktien vs. Gold Relative Performance. Gold schlägt Aktien = Flucht in sichere Häfen (Angst). Aktien schlagen Gold = Risikobereitschaft (Gier).",
+      en: "Stocks vs gold relative performance. Gold outperforming = flight to safety (fear). Stocks outperforming = risk appetite (greed)."
     },
-    score: safeHavenScore,
+    score: linearScore(stockVsGold, -2, 2),
     icon: <ShieldAlert className="h-4 w-4" />,
     weight: 0.10,
   });
 
-  /* 5. Strength Signal (10%) — Magnitude of gainers vs losers
-     CNN equivalent: Stock Price Strength (52-week highs vs lows) */
-  const topGainerAvg = gainers.slice(0, 10).reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0) / Math.max(1, Math.min(10, gainers.length));
-  const topLoserAvg = losers.slice(0, 10).reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0) / Math.max(1, Math.min(10, losers.length));
-  const strengthRatio = (topGainerAvg + topLoserAvg) > 0
-    ? topGainerAvg / (topGainerAvg + topLoserAvg)
-    : 0.5;
-  const strengthScore = sigmoid(strengthRatio, 0.5, 10);
+  /* 5. Price Strength (10%)
+     Avg magnitude of top gainers vs top losers.
+     If gainers are much stronger than losers → greed. Ratio 0.3–0.7 maps to 0–100. */
+  const top10G = gainers.slice(0, 10);
+  const top10L = losers.slice(0, 10);
+  const gainerMag = top10G.length > 0 ? top10G.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0) / top10G.length : 0;
+  const loserMag = top10L.length > 0 ? top10L.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0) / top10L.length : 0;
+  const strengthRatio = (gainerMag + loserMag) > 0 ? gainerMag / (gainerMag + loserMag) : 0.5;
   indicators.push({
     key: "strength",
-    label: { de: "Stärke-Signal", en: "Price Strength" },
+    label: { de: "Kurs-Stärke", en: "Price Strength" },
     description: {
-      de: "Vergleicht die durchschnittliche Stärke der Top-10-Gewinner vs. Top-10-Verlierer. Dominieren starke Gewinner = Gier, starke Verlierer = Angst.",
-      en: "Compares avg magnitude of top 10 gainers vs top 10 losers. Strong gainers dominating = greed, strong losers = fear."
+      de: "Durchschnittliche Stärke der Top-10-Gewinner vs. -Verlierer. Wenn Gewinner dominieren (Ratio >0.6) = Gier, Verlierer dominieren (<0.4) = Angst.",
+      en: "Avg magnitude of top 10 gainers vs losers. Gainers dominating (ratio >0.6) = greed, losers dominating (<0.4) = fear."
     },
-    score: strengthScore,
+    score: linearScore(strengthRatio, 0.3, 0.7),
     icon: <Target className="h-4 w-4" />,
     weight: 0.10,
   });
 
-  /* 6. Risk Appetite (10%) — Energy/commodity momentum as cyclical proxy
-     CNN equivalent: Junk Bond Demand */
+  /* 6. Cyclical Demand (10%)
+     Oil + Copper performance as economic growth proxy.
+     Range: -2% (recession fear) to +2% (growth optimism). */
   const oil = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.name?.includes("Crude"));
   const copper = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol?.includes("COPPER"));
-  const cyclicalChanges = [oil?.changePercent, copper?.changePercent].filter(Boolean) as number[];
-  const cyclicalAvg = cyclicalChanges.length > 0 ? cyclicalChanges.reduce((s, v) => s + v, 0) / cyclicalChanges.length : 0;
-  const riskScore = sigmoid(cyclicalAvg, 0, 2);
+  const cyclicals = [oil?.changePercent, copper?.changePercent].filter((v): v is number => v != null && !isNaN(v));
+  const cyclicalAvg = cyclicals.length > 0 ? cyclicals.reduce((s, v) => s + v, 0) / cyclicals.length : 0;
   indicators.push({
     key: "risk",
-    label: { de: "Risikobereitschaft", en: "Risk Appetite" },
+    label: { de: "Zyklische Nachfrage", en: "Cyclical Demand" },
     description: {
-      de: "Basiert auf zyklischen Rohstoffen (Öl, Kupfer). Steigende Preise deuten auf wirtschaftlichen Optimismus (Gier), fallende auf Rezessionsangst.",
-      en: "Based on cyclical commodities (oil, copper). Rising prices indicate economic optimism (greed), falling prices signal recession fear."
+      de: "Performance von Öl und Kupfer als Konjunkturbarometer. Steigende Preise = Wachstumsoptimismus (Gier), fallende = Rezessionsangst.",
+      en: "Oil and copper performance as economic growth proxy. Rising prices = growth optimism (greed), falling = recession fear."
     },
-    score: riskScore,
+    score: linearScore(cyclicalAvg, -2, 2),
     icon: <Flame className="h-4 w-4" />,
     weight: 0.10,
   });
 
-  /* 7. Market Dispersion (10%) — How correlated are indices
-     Low dispersion = herd behavior (greed), high dispersion = divergence (fear) */
-  let dispersionScore = 50;
+  /* 7. Global Consensus (10%)
+     % of indices moving in same positive direction.
+     All up = extreme greed, all down = extreme fear, mixed = neutral. */
+  let consensusScore = 50;
   if (indexChanges.length >= 3) {
     const positiveCount = indexChanges.filter(c => c > 0).length;
-    const agreement = Math.max(positiveCount, indexChanges.length - positiveCount) / indexChanges.length;
-    // High agreement (all same direction) = confident market = mild greed
-    // If all positive = strong greed, if all negative = strong fear
-    const directionBias = avgChange >= 0 ? 1 : -1;
-    dispersionScore = sigmoid(agreement * directionBias, 0, 4) ;
+    const positivePct = positiveCount / indexChanges.length;
+    // 100% positive = 100, 50% positive = 50, 0% positive = 0
+    consensusScore = positivePct * 100;
   }
   indicators.push({
-    key: "dispersion",
-    label: { de: "Markt-Konsens", en: "Market Consensus" },
+    key: "consensus",
+    label: { de: "Globaler Konsens", en: "Global Consensus" },
     description: {
-      de: "Misst wie einig sich die globalen Indizes in ihrer Richtung sind. Einheitlich positiv = Gier, einheitlich negativ = Angst, gemischt = Unsicherheit.",
-      en: "Measures how aligned global indices are in direction. Uniformly positive = greed, uniformly negative = fear, mixed = uncertainty."
+      de: "Anteil der Indizes mit positiver Tagesperformance. 100% positiv = starker Konsens (Gier), 0% = einheitlich negativ (Angst).",
+      en: "Percentage of indices with positive daily return. 100% positive = strong consensus (greed), 0% = uniformly negative (fear)."
     },
-    score: dispersionScore,
+    score: consensusScore,
     icon: <BarChart2 className="h-4 w-4" />,
     weight: 0.10,
   });
