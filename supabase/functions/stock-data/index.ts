@@ -1987,6 +1987,10 @@ Deno.serve(async (req) => {
       case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
       case "insider_transactions": result = await handleInsiderTransactions(symbol!); break;
       case "earnings_calendar": result = await handleEarningsCalendar(url.searchParams.get("symbols") || symbol || ""); break;
+      case "yahoo_sectors": result = await handleYahooSectorPerformance(); break;
+      case "fred_series": result = await handleFredSeries(symbol || url.searchParams.get("series_id") || ""); break;
+      case "sec_filings": result = await handleSecFilings(symbol!); break;
+      case "openfigi": result = await handleOpenFigi(symbol!); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
