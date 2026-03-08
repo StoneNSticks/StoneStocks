@@ -1182,7 +1182,7 @@ async function handleMostActive() {
 }
 
 const TOP_COMPANIES = [
-  // ── Technology (20) ──
+  // ── Technology (30) ──
   { symbol: "NVDA", name: "NVIDIA" }, { symbol: "AAPL", name: "Apple" },
   { symbol: "MSFT", name: "Microsoft" }, { symbol: "GOOG", name: "Alphabet" },
   { symbol: "META", name: "Meta Platforms" }, { symbol: "AVGO", name: "Broadcom" },
@@ -1193,48 +1193,72 @@ const TOP_COMPANIES = [
   { symbol: "QCOM", name: "Qualcomm" }, { symbol: "IBM", name: "IBM" },
   { symbol: "TXN", name: "Texas Instruments" }, { symbol: "AMAT", name: "Applied Materials" },
   { symbol: "PANW", name: "Palo Alto Networks" }, { symbol: "MU", name: "Micron" },
-  // ── Consumer Cyclical (10) ──
+  { symbol: "LRCX", name: "Lam Research" }, { symbol: "KLAC", name: "KLA Corp" },
+  { symbol: "SNPS", name: "Synopsys" }, { symbol: "CDNS", name: "Cadence Design" },
+  { symbol: "MRVL", name: "Marvell Technology" }, { symbol: "FTNT", name: "Fortinet" },
+  { symbol: "PLTR", name: "Palantir" }, { symbol: "CRWD", name: "CrowdStrike" },
+  { symbol: "SNOW", name: "Snowflake" }, { symbol: "NET", name: "Cloudflare" },
+  // ── Consumer Cyclical (15) ──
   { symbol: "AMZN", name: "Amazon" }, { symbol: "TSLA", name: "Tesla" },
   { symbol: "HD", name: "Home Depot" }, { symbol: "NKE", name: "Nike" },
   { symbol: "MCD", name: "McDonald's" }, { symbol: "SBUX", name: "Starbucks" },
   { symbol: "LOW", name: "Lowe's" }, { symbol: "BKNG", name: "Booking Holdings" },
   { symbol: "TJX", name: "TJX Companies" }, { symbol: "CMG", name: "Chipotle" },
-  // ── Financials (12) ──
+  { symbol: "ABNB", name: "Airbnb" }, { symbol: "MAR", name: "Marriott" },
+  { symbol: "ORLY", name: "O'Reilly Auto" }, { symbol: "GM", name: "General Motors" },
+  { symbol: "F", name: "Ford" },
+  // ── Financials (18) ──
   { symbol: "BRK.B", name: "Berkshire Hathaway" }, { symbol: "JPM", name: "JPMorgan Chase" },
   { symbol: "V", name: "Visa" }, { symbol: "MA", name: "Mastercard" },
   { symbol: "BAC", name: "Bank of America" }, { symbol: "GS", name: "Goldman Sachs" },
   { symbol: "MS", name: "Morgan Stanley" }, { symbol: "BLK", name: "BlackRock" },
   { symbol: "C", name: "Citigroup" }, { symbol: "AXP", name: "American Express" },
   { symbol: "SCHW", name: "Charles Schwab" }, { symbol: "SPGI", name: "S&P Global" },
-  // ── Healthcare (10) ──
+  { symbol: "WFC", name: "Wells Fargo" }, { symbol: "PNC", name: "PNC Financial" },
+  { symbol: "USB", name: "U.S. Bancorp" }, { symbol: "TFC", name: "Truist Financial" },
+  { symbol: "CB", name: "Chubb" }, { symbol: "MMC", name: "Marsh McLennan" },
+  // ── Healthcare (15) ──
   { symbol: "LLY", name: "Eli Lilly" }, { symbol: "UNH", name: "UnitedHealth" },
   { symbol: "JNJ", name: "Johnson & Johnson" }, { symbol: "ABBV", name: "AbbVie" },
   { symbol: "MRK", name: "Merck" }, { symbol: "PFE", name: "Pfizer" },
   { symbol: "TMO", name: "Thermo Fisher" }, { symbol: "ABT", name: "Abbott" },
   { symbol: "AMGN", name: "Amgen" }, { symbol: "ISRG", name: "Intuitive Surgical" },
-  // ── Communication Services (5) ──
+  { symbol: "DHR", name: "Danaher" }, { symbol: "BMY", name: "Bristol-Myers" },
+  { symbol: "GILD", name: "Gilead Sciences" }, { symbol: "VRTX", name: "Vertex Pharma" },
+  { symbol: "REGN", name: "Regeneron" },
+  // ── Communication Services (8) ──
   { symbol: "NFLX", name: "Netflix" }, { symbol: "DIS", name: "Walt Disney" },
   { symbol: "CMCSA", name: "Comcast" }, { symbol: "T", name: "AT&T" },
-  { symbol: "VZ", name: "Verizon" },
-  // ── Consumer Defensive (6) ──
+  { symbol: "VZ", name: "Verizon" }, { symbol: "TMUS", name: "T-Mobile" },
+  { symbol: "CHTR", name: "Charter Comms" }, { symbol: "SPOT", name: "Spotify" },
+  // ── Consumer Defensive (8) ──
   { symbol: "WMT", name: "Walmart" }, { symbol: "PG", name: "Procter & Gamble" },
   { symbol: "COST", name: "Costco" }, { symbol: "KO", name: "Coca-Cola" },
   { symbol: "PEP", name: "PepsiCo" }, { symbol: "PM", name: "Philip Morris" },
-  // ── Energy (5) ──
+  { symbol: "CL", name: "Colgate-Palmolive" }, { symbol: "MDLZ", name: "Mondelez" },
+  // ── Energy (8) ──
   { symbol: "XOM", name: "Exxon Mobil" }, { symbol: "CVX", name: "Chevron" },
   { symbol: "COP", name: "ConocoPhillips" }, { symbol: "SLB", name: "Schlumberger" },
-  { symbol: "EOG", name: "EOG Resources" },
-  // ── Industrials (8) ──
+  { symbol: "EOG", name: "EOG Resources" }, { symbol: "MPC", name: "Marathon Petroleum" },
+  { symbol: "PSX", name: "Phillips 66" }, { symbol: "VLO", name: "Valero Energy" },
+  // ── Industrials (12) ──
   { symbol: "CAT", name: "Caterpillar" }, { symbol: "GE", name: "GE Aerospace" },
   { symbol: "RTX", name: "RTX Corp" }, { symbol: "UNP", name: "Union Pacific" },
   { symbol: "HON", name: "Honeywell" }, { symbol: "BA", name: "Boeing" },
   { symbol: "DE", name: "Deere & Co" }, { symbol: "LMT", name: "Lockheed Martin" },
-  // ── Basic Materials (3) ──
+  { symbol: "UPS", name: "UPS" }, { symbol: "NOC", name: "Northrop Grumman" },
+  { symbol: "GD", name: "General Dynamics" }, { symbol: "WM", name: "Waste Management" },
+  // ── Basic Materials (5) ──
   { symbol: "LIN", name: "Linde" }, { symbol: "APD", name: "Air Products" },
-  { symbol: "FCX", name: "Freeport-McMoRan" },
-  // ── Utilities (3) ──
+  { symbol: "FCX", name: "Freeport-McMoRan" }, { symbol: "NEM", name: "Newmont" },
+  { symbol: "SHW", name: "Sherwin-Williams" },
+  // ── Utilities (5) ──
   { symbol: "NEE", name: "NextEra Energy" }, { symbol: "DUK", name: "Duke Energy" },
-  { symbol: "SO", name: "Southern Company" },
+  { symbol: "SO", name: "Southern Company" }, { symbol: "D", name: "Dominion Energy" },
+  { symbol: "AEP", name: "American Electric" },
+  // ── Real Estate (4) ──
+  { symbol: "PLD", name: "Prologis" }, { symbol: "AMT", name: "American Tower" },
+  { symbol: "CCI", name: "Crown Castle" }, { symbol: "EQIX", name: "Equinix" },
 ];
 
 async function handleTopCompanies() {
