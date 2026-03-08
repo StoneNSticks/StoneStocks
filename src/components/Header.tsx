@@ -12,7 +12,7 @@
  */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase } from "lucide-react";
+import { TrendingUp, Newspaper, BarChart3, Calculator, Menu, Star, LogIn, LogOut, User, Settings, ChevronDown, HelpCircle, Gauge, Briefcase, Wifi, WifiOff } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -43,6 +43,15 @@ export function Header() {
   const t = useT();
   const [showSearch, setShowSearch] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, []);
 
   const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "User";
 
@@ -84,6 +93,10 @@ export function Header() {
             <SearchBar compact />
           </div>
           <div className="hidden md:flex items-center gap-2">
+            <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>
+              {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+              {isOnline ? "Online" : "Offline"}
+            </div>
             <MarketClock />
             <CurrencyToggle />
             <LanguageToggle />
@@ -140,6 +153,10 @@ export function Header() {
                 })}
               </nav>
               <div className="mt-6 pt-6 border-t border-border/60 flex flex-col gap-3">
+                <div className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>
+                  {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
+                  {isOnline ? "Online" : "Offline"}
+                </div>
                 <MarketClock />
                 <CurrencyToggle />
                 <LanguageToggle />
