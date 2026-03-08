@@ -100,7 +100,7 @@ export function DividendGrowth({ dividends, dividendYield }: DividendGrowthProps
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={annualData}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-          <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+          <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} minTickGap={30} />
           <YAxis hide />
           <Tooltip
             contentStyle={{
