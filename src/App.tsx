@@ -83,7 +83,7 @@ const App = () => (
                   <Route path="/index/:symbol" element={<IndexDetail />} />
                   <Route path="/news" element={<NewsPage />} />
                   <Route path="/rankings" element={<RankingsPage />} />
-                  <Route path="/screener" element={<ScreenerPage />} />
+                  {/* screener removed */}
                   <Route path="/calculators" element={<CalculatorPage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/watchlist" element={<WatchlistPage />} />

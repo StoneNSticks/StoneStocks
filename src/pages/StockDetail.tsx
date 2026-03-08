@@ -197,7 +197,14 @@ const StockDetail = () => {
                     <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
                     <ShareButton title={`${companyName} (${upperSymbol}) — StoneStocks`} text={`Check out ${companyName} on StoneStocks`} />
                   </div>
-                  <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>{exchange}: {upperSymbol}</span>
+                    {overview?.PERatio && parseFloat(overview.PERatio) > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted text-xs font-medium">
+                        KGV <span className="text-foreground font-semibold">{parseFloat(overview.PERatio).toFixed(1)}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
