@@ -26,6 +26,7 @@ import { StockComments } from "@/components/StockComments";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PriceAlertForm } from "@/components/PriceAlertForm";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
 import { useT } from "@/contexts/LanguageContext";
