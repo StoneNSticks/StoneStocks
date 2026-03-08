@@ -35,9 +35,8 @@ const navItems: NavItem[] = [
   { to: "/screener", key: "nav.screener", fallback: "Screener", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
-  { to: "/learn", key: "nav.learn", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
-  { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
+  { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 export function Header() {
@@ -117,13 +116,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center gap-2 cursor-pointer">Dashboard</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link to="/compare" className="flex items-center gap-2 cursor-pointer">Compare</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/macro" className="flex items-center gap-2 cursor-pointer">Macro</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/calculators" className="flex items-center gap-2 cursor-pointer">{t("nav.tools")}</Link>
@@ -207,8 +200,6 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
         {[
           { to: "/compare", label: "Compare" },
           { to: "/calculators", label: t("nav.tools") },
-          { to: "/macro", label: "Macro" },
-          { to: "/dashboard", label: "Dashboard" },
           { to: "/crypto", label: "Crypto" },
           { to: "/forex", label: "Forex" },
           { to: "/bonds", label: "Bonds" },
