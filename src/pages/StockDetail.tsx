@@ -197,7 +197,14 @@ const StockDetail = () => {
                     <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
                     <ShareButton title={`${companyName} (${upperSymbol}) — StoneStocks`} text={`Check out ${companyName} on StoneStocks`} />
                   </div>
-                  <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>{exchange}: {upperSymbol}</span>
+                    {overview?.PERatio && parseFloat(overview.PERatio) > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted text-xs font-medium">
+                        KGV <span className="text-foreground font-semibold">{parseFloat(overview.PERatio).toFixed(1)}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -240,12 +247,7 @@ const StockDetail = () => {
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
             </div>
 
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 6: Analyst Consensus + Community Sentiment
-                Left: Gauge showing Strong Buy → Strong Sell + price targets
-                Right: Community bullish/bearish vote
-                ══════════════════════════════════════════════════════════ */}
-            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
+            {/* Analyst Consensus moved to after Company Intelligence */}
 
             {/* Advanced Alerts */}
             <AdvancedAlertBuilder symbol={upperSymbol} currentPrice={quote?.c} />
@@ -297,6 +299,9 @@ const StockDetail = () => {
               massiveRelated={massiveRelated}
               currentSymbol={upperSymbol}
             />
+
+            {/* Analyst Consensus — directly under Company Intelligence */}
+            <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 9: Peer Comparison Table

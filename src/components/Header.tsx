@@ -32,11 +32,18 @@ const navItems: NavItem[] = [
   { to: "/sentiment", key: "nav.sentiment", group: "main" },
   { to: "/rankings", key: "nav.rankings", group: "main" },
   { to: "/news", key: "nav.news", group: "main" },
-  { to: "/screener", key: "nav.screener", fallback: "Screener", group: "main" },
   { to: "/portfolio", key: "nav.portfolio", group: "main" },
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
   { to: "/learn", key: "nav.learn", group: "main" },
+];
+
+const toolItems = [
+  { to: "/calculators", label: "Calculators" },
+  { to: "/compare", label: "Compare" },
+  { to: "/crypto", label: "Crypto" },
+  { to: "/forex", label: "Forex" },
+  { to: "/bonds", label: "Bonds" },
 ];
 
 export function Header() {
@@ -166,6 +173,24 @@ export function Header() {
                 </Link>
               );
             })}
+            {/* Tools dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`relative px-3.5 h-10 flex items-center gap-1 text-[13px] font-medium whitespace-nowrap transition-colors ${toolItems.some(t => location.pathname.startsWith(t.to)) ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  Tools <ChevronDown className="h-3 w-3" />
+                  {toolItems.some(t => location.pathname.startsWith(t.to)) && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-44">
+                {toolItems.map(item => (
+                  <DropdownMenuItem key={item.to} asChild>
+                    <Link to={item.to} className={`cursor-pointer ${location.pathname.startsWith(item.to) ? "text-primary font-medium" : ""}`}>
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
       </div>

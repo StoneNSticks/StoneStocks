@@ -987,14 +987,20 @@ const CalculatorPage = () => {
           ))}
         </div>
 
-        <Tabs defaultValue="portfolio" className="space-y-4">
-          <TabsList className="bg-card border border-border/60 p-1 rounded-xl h-auto gap-1 scroll-x-touch max-w-full flex flex-nowrap">
+        <Tabs defaultValue="portfolio" className="space-y-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
             {filteredTabs.map(tab => (
-              <TabsTrigger key={tab.value} value={tab.value} className="rounded-lg gap-1.5 text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                {tab.icon}{tab.label}
-              </TabsTrigger>
+              <TabsList key={tab.value} className="bg-transparent p-0 h-auto w-full">
+                <TabsTrigger
+                  value={tab.value}
+                  className="w-full flex flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-card px-3 py-3 text-xs font-medium text-muted-foreground transition-all hover:border-primary/30 hover:bg-primary/5 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <span className="p-1.5 rounded-lg bg-muted/60 data-[state=active]:bg-primary/15">{tab.icon}</span>
+                  <span className="text-center leading-tight">{tab.label}</span>
+                </TabsTrigger>
+              </TabsList>
             ))}
-          </TabsList>
+          </div>
           {filteredTabs.map(tab => (
             <TabsContent key={tab.value} value={tab.value}>{tab.component}</TabsContent>
           ))}
