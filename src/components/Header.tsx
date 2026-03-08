@@ -6,9 +6,11 @@
  */
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Menu, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
+import { Menu, LogIn, LogOut, User, Settings, ChevronDown, BookOpen } from "lucide-react";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { NotificationBell } from "@/components/NotificationBell";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -89,6 +91,14 @@ export function Header() {
             <ThemeToggle />
             <NotificationCenter />
             <NotificationBell />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                  <Link to="/glossary"><BookOpen className="h-4 w-4 text-muted-foreground" /></Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}</TooltipContent>
+            </Tooltip>
 
             {user ? (
               <DropdownMenu>
