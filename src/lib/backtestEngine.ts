@@ -570,7 +570,7 @@ export function runHighStrategy(data: OHLC[], capital: number, lookback = 252, t
     return { date: d.date, equity: cash + shares * d.close, benchmark: benchShares * d.close };
   });
 
-  return { equity, trades, metrics: computeMetrics(equity, trades, capital) };
+  return { equity, trades, metrics: calculateMetrics(equity, trades, capital) };
 }
 
 // === 18. Moving Average Envelope ===
