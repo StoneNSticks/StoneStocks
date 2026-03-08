@@ -220,6 +220,7 @@ const StockDetail = () => {
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
                     <WatchlistStar symbol={upperSymbol} />
                     <PriceAlertForm symbol={upperSymbol} currentPrice={quote?.c} />
+                    <ShareButton title={`${companyName} (${upperSymbol}) — StoneStocks`} text={`Check out ${companyName} on StoneStocks`} />
                   </div>
                   <p className="text-sm text-muted-foreground">{exchange}: {upperSymbol}</p>
                 </div>

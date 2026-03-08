@@ -682,4 +682,20 @@ const translations: Record<string, Record<Language, string>> = {
   "news.bullish": { de: "Bullisch", en: "Bullish" },
   "news.bearish": { de: "Bärisch", en: "Bearish" },
   "news.neutral": { de: "Neutral", en: "Neutral" },
+
+  // ── Share ──
+  "share.title": { de: "Teilen", en: "Share" },
+  "share.native": { de: "Teilen…", en: "Share…" },
+  "share.copyLink": { de: "Link kopieren", en: "Copy Link" },
+  "share.copied": { de: "Kopiert!", en: "Copied!" },
+
+  // ── Compare Pro ──
+  "compare.overview": { de: "Übersicht", en: "Overview" },
+  "compare.charts": { de: "Charts", en: "Charts" },
+  "compare.financials": { de: "Finanzdaten", en: "Financials" },
+  "compare.exportCSV": { de: "CSV Export", en: "Export CSV" },
+  "compare.revenue": { de: "Umsatz", en: "Revenue" },
+
+  // ── Backtest ──
+  "nav.backtest": { de: "Backtest", en: "Backtest" },
 };

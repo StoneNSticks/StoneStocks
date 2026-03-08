@@ -85,6 +85,7 @@ const App = () => (
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/compare" element={<ComparePage />} />
                   <Route path="/macro" element={<MacroDashboard />} />
+                  <Route path="/backtest" element={<BacktestPage />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
