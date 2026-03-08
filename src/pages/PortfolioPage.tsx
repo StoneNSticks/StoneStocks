@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon, DollarSign, Percent, BarChart3 } from "lucide-react";
+import { Briefcase, Plus, Trash2, TrendingUp, TrendingDown, LogIn, PieChart as PieChartIcon, DollarSign, Percent, BarChart3, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
