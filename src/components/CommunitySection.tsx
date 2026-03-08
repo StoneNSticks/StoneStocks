@@ -86,9 +86,12 @@ export function CommunitySection({ symbol }: { symbol: string }) {
 
     const channel = supabase
       .channel(`community-${symbol}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, (payload) => {
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, async (payload) => {
         const newC = payload.new as any;
-        setComments(prev => [{ ...newC, display_name: "User", show_username: true }, ...prev]);
+        const { data: prof } = await supabase.from("profiles").select("display_name, username, show_username").eq("id", newC.user_id).single();
+        const displayName = prof?.display_name || prof?.username || "User";
+        const showUsername = prof?.show_username !== false;
+        setComments(prev => [{ ...newC, display_name: displayName, show_username: showUsername }, ...prev]);
       })
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, (payload) => {
         const oldC = payload.old as any;

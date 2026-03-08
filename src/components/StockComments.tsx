@@ -49,9 +49,10 @@ export function StockComments({ symbol }: { symbol: string }) {
 
     const channel = supabase
       .channel(`comments-${symbol}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, (payload) => {
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, async (payload) => {
         const newC = payload.new as any;
-        setComments(prev => [{ ...newC, display_name: "User" }, ...prev]);
+        const { data: prof } = await supabase.from("profiles").select("display_name, username").eq("id", newC.user_id).single();
+        setComments(prev => [{ ...newC, display_name: prof?.display_name || prof?.username || "User" }, ...prev]);
       })
       .subscribe();
 
