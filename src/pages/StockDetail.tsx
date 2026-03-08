@@ -26,7 +26,7 @@ import { SecFilings } from "@/components/SecFilings";
 import { FairValue } from "@/components/FairValue";
 import { DCFCalculator } from "@/components/DCFCalculator";
 import { AIStockSummary } from "@/components/AIStockSummary";
-import { AdvancedAlertBuilder } from "@/components/AdvancedAlertBuilder";
+// AdvancedAlertBuilder removed — integrated into PriceAlertForm bell icon
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
