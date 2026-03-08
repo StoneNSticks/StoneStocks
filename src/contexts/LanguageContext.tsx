@@ -566,4 +566,9 @@ const translations: Record<string, Record<Language, string>> = {
   "compare.perfChart": { de: "Performance-Vergleich", en: "Performance Comparison" },
   "compare.base100": { de: "Basis 100", en: "Base 100" },
   "compare.noChartData": { de: "Keine Chart-Daten verfügbar", en: "No chart data available" },
+  // ── Error states ──
+  "error.loadFailed": { de: "Daten konnten nicht geladen werden", en: "Failed to load data" },
+  "error.somethingWrong": { de: "Etwas ist schiefgelaufen", en: "Something went wrong" },
+  "error.tryAgain": { de: "Bitte versuche es später erneut", en: "Please try again later" },
+  "error.retry": { de: "Erneut versuchen", en: "Retry" },
 };
