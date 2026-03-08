@@ -93,6 +93,10 @@ export function Header() {
             <SearchBar compact />
           </div>
           <div className="hidden md:flex items-center gap-2">
+            <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>
+              {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+              {isOnline ? "Online" : "Offline"}
+            </div>
             <MarketClock />
             <CurrencyToggle />
             <LanguageToggle />
