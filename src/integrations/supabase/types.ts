@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      earnings_notifications: {
+        Row: {
+          earnings_date: string
+          id: string
+          notified_at: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          earnings_date: string
+          id?: string
+          notified_at?: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          earnings_date?: string
+          id?: string
+          notified_at?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_positions: {
         Row: {
           avg_cost: number
@@ -125,6 +149,33 @@ export type Database = {
           email?: string | null
           id?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
         }
         Relationships: []
       }
