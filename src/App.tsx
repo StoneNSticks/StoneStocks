@@ -110,7 +110,7 @@ const App = () => (
                   <Route path="/paper-trading" element={<PaperTradingPage />} />
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
-                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
