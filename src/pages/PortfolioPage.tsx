@@ -355,6 +355,19 @@ export default function PortfolioPage() {
                       <Download className="h-3.5 w-3.5" />
                       CSV
                     </Button>
+                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => {
+                      const symbols = positions!.map((p: any) => p.symbol).join(",");
+                      const url = `${window.location.origin}/shared-watchlist?symbols=${symbols}`;
+                      if (navigator.share) {
+                        navigator.share({ title: "My Portfolio", url });
+                      } else {
+                        navigator.clipboard.writeText(url);
+                        toast.success(lang === "de" ? "Link kopiert!" : "Link copied!");
+                      }
+                    }}>
+                      <Share2 className="h-3.5 w-3.5" />
+                      {lang === "de" ? "Teilen" : "Share"}
+                    </Button>
                   )}
                 </>
               ) : (
