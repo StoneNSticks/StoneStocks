@@ -93,7 +93,7 @@ export const FinancialChart = memo(function FinancialChart({
       </div>
     </div>
   );
-}
+});
 
 export function extractFinancialSeries(financials: Array<Record<string, unknown>>, metric: string, statement: string = "income_statement"): Array<{ label: string; value: number }> {
   if (!financials || !Array.isArray(financials)) return [];
