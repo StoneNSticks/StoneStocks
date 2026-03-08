@@ -108,8 +108,8 @@ export default function ScreenerPage() {
         <div className="text-xs text-muted-foreground mb-3">{filtered.length} {t("screener.results")}</div>
 
         {/* Results Table */}
-        <div className="rounded-xl border border-border/60 overflow-hidden bg-card">
-          <div className="grid grid-cols-[1fr_5rem_5rem_4.5rem_4.5rem] sm:grid-cols-[1fr_7rem_6rem_5rem_5rem] gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+        <div className="rounded-xl border border-border/60 overflow-hidden bg-card scroll-x-touch">
+          <div className="min-w-[500px] grid grid-cols-[1fr_5rem_5rem_4.5rem_4.5rem] sm:grid-cols-[1fr_7rem_6rem_5rem_5rem] gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
             <button onClick={() => toggleSort("name")} className="text-left flex items-center gap-1 hover:text-foreground"><span>{t("screener.company")}</span><ArrowUpDown className="h-3 w-3" /></button>
             <button onClick={() => toggleSort("marketCap")} className="text-right flex items-center justify-end gap-1 hover:text-foreground"><span>{t("screener.mcap")}</span><ArrowUpDown className="h-3 w-3" /></button>
             <button onClick={() => toggleSort("change")} className="text-right flex items-center justify-end gap-1 hover:text-foreground"><span>{t("screener.change")}</span><ArrowUpDown className="h-3 w-3" /></button>
