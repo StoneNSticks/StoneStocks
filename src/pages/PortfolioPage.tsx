@@ -348,16 +348,21 @@ export default function PortfolioPage() {
       <Header />
       <main className="container py-6 sm:py-10 max-w-4xl px-3 sm:px-4">
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
-              <Briefcase className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+                <Briefcase className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="font-display text-2xl sm:text-3xl font-bold">{lang === "de" ? "Mein Portfolio" : "My Portfolio"}</h1>
+                <p className="text-sm text-muted-foreground">
+                  {count > 0 ? `${count} ${lang === "de" ? "Positionen" : "positions"}` : (lang === "de" ? "Starte mit dem Aufbau deines Portfolios" : "Start building your portfolio")}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">{lang === "de" ? "Mein Portfolio" : "My Portfolio"}</h1>
-              <p className="text-sm text-muted-foreground">
-                {count > 0 ? `${count} ${lang === "de" ? "Positionen" : "positions"}` : (lang === "de" ? "Starte mit dem Aufbau deines Portfolios" : "Start building your portfolio")}
-              </p>
-            </div>
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <Link to="/backtest"><BarChart3 className="h-3.5 w-3.5" />{lang === "de" ? "Backtest" : "Backtest"}</Link>
+            </Button>
           </div>
         </motion.div>
 
