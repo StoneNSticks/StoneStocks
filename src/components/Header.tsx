@@ -91,6 +91,14 @@ export function Header() {
             <ThemeToggle />
             <NotificationCenter />
             <NotificationBell />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                  <Link to="/glossary"><BookOpen className="h-4 w-4 text-muted-foreground" /></Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}</TooltipContent>
+            </Tooltip>
 
             {user ? (
               <DropdownMenu>
