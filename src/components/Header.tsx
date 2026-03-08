@@ -7,6 +7,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Menu, LogIn, LogOut, User, Settings, ChevronDown } from "lucide-react";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SearchBar } from "@/components/SearchBar";
 import { CurrencyToggle } from "@/components/CurrencyToggle";
@@ -88,6 +89,7 @@ export function Header() {
             <CurrencyToggle />
             <LanguageToggle />
             <ThemeToggle />
+            <NotificationCenter />
             <NotificationBell />
 
             {user ? (

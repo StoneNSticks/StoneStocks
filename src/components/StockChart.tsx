@@ -134,8 +134,8 @@ export function StockChart({ symbol }: { symbol: string }) {
                 </linearGradient>
               )}
             </defs>
-            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }} tickFormatter={formatXLabel} minTickGap={40} />
-            <YAxis domain={["auto", "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(220,10%,50%)" }} tickFormatter={(v: number) => `${currSymbol}${(convert(v) ?? v).toFixed(0)}`} width={55} />
+            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={formatXLabel} minTickGap={40} />
+            <YAxis domain={["auto", "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v: number) => `${currSymbol}${(convert(v) ?? v).toFixed(0)}`} width={55} />
             <Tooltip
               contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }}
               formatter={(v: number, name: string) => {

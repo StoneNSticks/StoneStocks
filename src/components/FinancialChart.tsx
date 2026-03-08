@@ -75,16 +75,16 @@ export const FinancialChart = memo(function FinancialChart({
           {type === "area" ? (
             <AreaChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
               <defs><linearGradient id={`grad-${dataKey}`} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.15} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }} minTickGap={30} />
-              <YAxis domain={[minVal < 0 ? "auto" : 0, "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }} tickFormatter={effectiveFormat} width={50} />
-              <Tooltip contentStyle={{ background: "hsl(222, 25%, 9%)", border: "1px solid hsl(222, 20%, 16%)", borderRadius: "8px", fontSize: 11, color: "hsl(210, 20%, 92%)" }} formatter={(v: number) => [effectiveFormat(v), title]} />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} minTickGap={30} />
+              <YAxis domain={[minVal < 0 ? "auto" : 0, "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickFormatter={effectiveFormat} width={50} />
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 11, color: "hsl(var(--foreground))" }} formatter={(v: number) => [effectiveFormat(v), title]} />
               <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} fill={`url(#grad-${dataKey})`} />
             </AreaChart>
           ) : (
             <BarChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }} minTickGap={20} />
-              <YAxis domain={[minVal < 0 ? "auto" : 0, "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(220,10%,50%)" }} tickFormatter={effectiveFormat} width={50} />
-              <Tooltip contentStyle={{ background: "hsl(222, 25%, 9%)", border: "1px solid hsl(222, 20%, 16%)", borderRadius: "8px", fontSize: 11, color: "hsl(210, 20%, 92%)" }} formatter={(v: number, name: string) => [effectiveFormat(v), name === dataKey ? title : secondaryLabel || name]} />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} minTickGap={20} />
+              <YAxis domain={[minVal < 0 ? "auto" : 0, "auto"]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickFormatter={effectiveFormat} width={50} />
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 11, color: "hsl(var(--foreground))" }} formatter={(v: number, name: string) => [effectiveFormat(v), name === dataKey ? title : secondaryLabel || name]} />
               <Bar dataKey={dataKey} fill={color} radius={[2, 2, 0, 0]} />
               {secondaryKey && <Bar dataKey={secondaryKey} fill={secondaryColor} radius={[2, 2, 0, 0]} />}
             </BarChart>
