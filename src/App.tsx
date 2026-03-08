@@ -12,6 +12,7 @@ import { BackToTop } from "@/components/BackToTop";
 import { OnboardingModal } from "@/components/OnboardingModal";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { AlertNotifications } from "@/components/AlertNotifications";
+import { EarningsNotificationProvider } from "@/components/EarningsNotificationProvider";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
