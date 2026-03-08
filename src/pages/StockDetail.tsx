@@ -302,13 +302,6 @@ const StockDetail = () => {
             {/* Analyst Consensus — directly under Company Intelligence */}
             <AnalystConsensus recommendation={recommendation} overview={overview} quote={quote} />
 
-            {/* ══════════════════════════════════════════════════════════
-                SECTION 9: Peer Comparison Table
-                Side-by-side metrics comparison with top 3 peer companies
-                ══════════════════════════════════════════════════════════ */}
-            {peers && peers.length > 0 && (
-              <PeerComparison currentSymbol={upperSymbol} peers={peers} />
-            )}
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 10: Technical Indicators + Earnings History
