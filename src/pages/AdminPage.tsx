@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Shield, Users, Star, MessageSquare, Database, BarChart3 } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 export default function AdminPage() {
   const { user } = useAuth();
