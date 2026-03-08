@@ -1,0 +1,1 @@
+DELETE FROM api_cache WHERE cache_key = 'market:top_companies:v2';
