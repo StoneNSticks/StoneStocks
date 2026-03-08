@@ -51,6 +51,9 @@ const StockDetail = () => {
   const upperSymbol = symbol?.toUpperCase() || "";
   const { data, isLoading, error } = useFullStock(upperSymbol);
   const t = useT();
+  const { symbol: cSym } = useCurrency();
+
+  const formatDividendValue = (num: number): string => `${cSym}${num.toFixed(2)}`;
 
   const profile = data?.profile;
   const quote = data?.quote;
