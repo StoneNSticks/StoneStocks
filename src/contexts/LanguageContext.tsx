@@ -55,6 +55,7 @@ const translations: Record<string, Record<Language, string>> = {
   "nav.rankings": { de: "Rankings", en: "Rankings" },
   "nav.tools": { de: "Rechner", en: "Tools" },
   "nav.watchlist": { de: "Watchlist", en: "Watchlist" },
+  "nav.sentiment": { de: "Stimmung", en: "Pulse" },
   "nav.learn": { de: "Finanzwissen", en: "Financial Knowledge" },
   "nav.login": { de: "Anmelden", en: "Login" },
   "nav.logout": { de: "Abmelden", en: "Logout" },

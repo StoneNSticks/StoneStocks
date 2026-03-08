@@ -1,9 +1,14 @@
+/**
+ * BottomNav — Fixed mobile bottom navigation bar (visible only on <768px screens).
+ * Shows 5 primary navigation items: Home, Sentiment, Rankings, Portfolio, Watchlist.
+ */
 import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, BarChart3, Briefcase, Star, Menu } from "lucide-react";
+import { TrendingUp, BarChart3, Briefcase, Star, Gauge } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
 
 const items = [
   { to: "/", icon: TrendingUp, key: "nav.markets" },
+  { to: "/sentiment", icon: Gauge, key: "nav.sentiment" },
   { to: "/rankings", icon: BarChart3, key: "nav.rankings" },
   { to: "/portfolio", icon: Briefcase, key: "nav.portfolio" },
   { to: "/watchlist", icon: Star, key: "nav.watchlist" },
