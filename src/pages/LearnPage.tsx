@@ -1124,6 +1124,23 @@ export default function LearnPage() {
           <p>{t("learn.disclaimer")}</p>
         </motion.div>
       </main>
+
+      {/* Side scroll-to-top arrow */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary transition-colors"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <Footer />
     </div>
   );
