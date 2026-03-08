@@ -31,6 +31,7 @@ const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
 const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
 const ScreenerPage = lazy(() => import("./pages/ScreenerPage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 const queryClient = new QueryClient();
 
