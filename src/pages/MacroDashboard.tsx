@@ -45,7 +45,16 @@ function FredChart({ indicator }: { indicator: FredIndicator }) {
     .slice(0, 120)
     .reverse();
 
-  if (observations.length === 0) return null;
+  if (!data || observations.length === 0) {
+    const { lang } = useLanguage();
+    return (
+      <div className="rounded-xl border border-border/60 bg-card p-6 text-center">
+        <indicator.icon className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+        <p className="text-sm font-medium">{lang === "de" ? indicator.labelDe : indicator.labelEn}</p>
+        <p className="text-xs text-muted-foreground mt-1">{lang === "de" ? "Daten nicht verfügbar" : "Data unavailable"}</p>
+      </div>
+    );
+  }
 
   const latest = observations[observations.length - 1];
   const previous = observations.length > 1 ? observations[observations.length - 2] : null;
