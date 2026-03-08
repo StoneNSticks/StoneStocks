@@ -23,6 +23,8 @@ import { TechnicalIndicators } from "@/components/TechnicalIndicators";
 import { EarningsCard } from "@/components/EarningsCard";
 import { SentimentVote } from "@/components/SentimentVote";
 import { StockComments } from "@/components/StockComments";
+import { InsiderTrades } from "@/components/InsiderTrades";
+import { MetricBars } from "@/components/MetricBars";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
