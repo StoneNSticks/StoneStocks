@@ -1,7 +1,5 @@
 /**
- * NewsPage — Market news with category filters, search, and load-more.
- * Fetches news from the edge function via useMarketNews hook.
- * Features: category tabs, search within headlines, thumbnail images, load more.
+ * NewsPage — Market news with category filters, search, sentiment AI, and load-more.
  */
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
@@ -14,7 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, Search, ExternalLink, Clock } from "lucide-react";
+import { Newspaper, Search, ExternalLink, Clock, Brain, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CATEGORIES = ["All", "Technology", "Finance", "Energy", "Healthcare", "Crypto"];
 
