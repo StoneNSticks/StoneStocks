@@ -931,7 +931,7 @@ export default function LearnPage() {
             <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.covidCrashTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.covidCrashP1") }} />
             </SectionCard>
-            <QuizSection sectionId="market-history" title={t("learn.quizMarketHistory")} questions={quizMarketHistory} />
+            
           </motion.section>
 
           {/* Section 26: Personal Finance & Retirement */}
