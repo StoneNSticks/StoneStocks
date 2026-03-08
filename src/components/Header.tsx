@@ -56,8 +56,7 @@ export function Header() {
     return translated !== item.key ? translated : (item.fallback || item.key);
   };
 
-  const mainItems = navItems.filter(n => n.group === "main");
-  const toolItems = navItems.filter(n => n.group === "tools");
+  const mainItems = navItems;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl">
