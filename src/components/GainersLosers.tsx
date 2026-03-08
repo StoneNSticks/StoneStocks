@@ -3,14 +3,24 @@ import { Link } from "react-router-dom";
 import { useGainersLosers } from "@/hooks/useStockData";
 import { formatPercent, formatNumber, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
 
 export function GainersLosers() {
   const [tab, setTab] = useState<"gainers" | "losers">("gainers");
-  const { data, isLoading } = useGainersLosers();
+  const { data, isLoading, error, refetch } = useGainersLosers();
   const fc = useFormattedCurrency();
   const t = useT();
+
+  if (error && !data) {
+    return (
+      <div className="rounded-xl border border-border/60 bg-card p-5">
+        <h2 className="font-display text-lg font-semibold mb-4">{t("gl.title")}</h2>
+        <ErrorState onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

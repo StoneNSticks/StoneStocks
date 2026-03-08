@@ -2,12 +2,22 @@ import { useMarketNews } from "@/hooks/useStockData";
 import { formatDate } from "@/lib/formatters";
 import { ExternalLink, Newspaper } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import { Link } from "react-router-dom";
 import { useT } from "@/contexts/LanguageContext";
 
 export function MarketNewsSection({ limit = 8 }: { limit?: number }) {
-  const { data: news, isLoading } = useMarketNews();
+  const { data: news, isLoading, error, refetch } = useMarketNews();
   const t = useT();
+
+  if (error && !news) {
+    return (
+      <div className="rounded-xl border border-border/60 bg-card p-5">
+        <h2 className="font-display text-lg font-semibold mb-4">{t("news.title")}</h2>
+        <ErrorState onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -2,13 +2,26 @@ import { Link } from "react-router-dom";
 import { useMostActive } from "@/hooks/useStockData";
 import { formatPercent, formatNumber, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import { Activity } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
 
 export function MostActive() {
-  const { data: stocks, isLoading } = useMostActive();
+  const { data: stocks, isLoading, error, refetch } = useMostActive();
   const fc = useFormattedCurrency();
   const t = useT();
+
+  if (error && !stocks) {
+    return (
+      <div className="rounded-xl border border-border/60 bg-card p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="h-4 w-4 text-primary" />
+          <h2 className="font-display text-lg font-semibold">{t("active.title")}</h2>
+        </div>
+        <ErrorState onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
