@@ -8,9 +8,11 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { BottomNav } from "@/components/BottomNav";
+import { BackToTop } from "@/components/BackToTop";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// ── Lazy-loaded page components for code splitting ──
 const Index = lazy(() => import("./pages/Index"));
 const StockDetail = lazy(() => import("./pages/StockDetail"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
@@ -27,6 +29,8 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const CommodityDetail = lazy(() => import("./pages/CommodityDetail"));
 const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
 const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
+const ScreenerPage = lazy(() => import("./pages/ScreenerPage"));
+const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
 
 const queryClient = new QueryClient();
 
@@ -50,6 +54,7 @@ const App = () => (
                   <Route path="/index/:symbol" element={<IndexDetail />} />
                   <Route path="/news" element={<NewsPage />} />
                   <Route path="/rankings" element={<RankingsPage />} />
+                  <Route path="/screener" element={<ScreenerPage />} />
                   <Route path="/calculators" element={<CalculatorPage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/watchlist" element={<WatchlistPage />} />
@@ -57,12 +62,14 @@ const App = () => (
                   <Route path="/commodity/:symbol" element={<CommodityDetail />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/learn" element={<LearnPage />} />
+                  <Route path="/glossary" element={<GlossaryPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
               <BottomNav />
+              <BackToTop />
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>

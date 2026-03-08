@@ -1,3 +1,10 @@
+/**
+ * StockDetail — Main stock analysis page.
+ * Shows company info, price chart, financial charts, metrics, analyst data,
+ * community sentiment voting, comments, and peer stocks.
+ * Data sources: Finnhub (quote, profile, recommendation, earnings),
+ * Alpha Vantage (overview), Polygon (financials, ticker, dividends, snapshot).
+ */
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { WatchlistStar } from "@/components/WatchlistStar";
@@ -14,10 +21,12 @@ import { WeekRangeBar } from "@/components/WeekRangeBar";
 import { AnalystTargets } from "@/components/AnalystTargets";
 import { TechnicalIndicators } from "@/components/TechnicalIndicators";
 import { EarningsCard } from "@/components/EarningsCard";
+import { SentimentVote } from "@/components/SentimentVote";
+import { StockComments } from "@/components/StockComments";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Globe } from "lucide-react";
+import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
 import { useT } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +34,7 @@ import { getEarnings } from "@/lib/stockApi";
 
 function formatDividendValue(num: number, sym = "$"): string { return `${sym}${num.toFixed(2)}`; }
 
+/** Wrapper to fetch earnings data separately for the EarningsCard */
 function EarningsCardWrapper({ symbol }: { symbol: string }) {
   const { data: earnings } = useQuery({
     queryKey: ["earnings", symbol],
@@ -53,6 +63,7 @@ const StockDetail = () => {
   const massiveDividends = data?.massiveDividends;
   const massiveSnapshot = data?.massiveSnapshot;
 
+  // ── Financial data series extraction from Polygon financials ──
   const revenueData = useMemo(() => extractFinancialSeries(massiveFinancials || [], "revenues", "income_statement"), [massiveFinancials]);
   const netIncomeData = useMemo(() => extractFinancialSeries(massiveFinancials || [], "net_income_loss", "income_statement"), [massiveFinancials]);
   const opIncomeData = useMemo(() => extractFinancialSeries(massiveFinancials || [], "operating_income_loss", "income_statement"), [massiveFinancials]);
@@ -94,6 +105,13 @@ const StockDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
+          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1"><Home className="h-3 w-3" />{t("nav.markets")}</Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-foreground font-medium">{upperSymbol}</span>
+        </nav>
+
         <div className="mb-6"><SearchBar /></div>
         {isLoading ? (
           <div className="space-y-4">
@@ -105,9 +123,10 @@ const StockDetail = () => {
           <div className="text-center py-20"><p className="text-muted-foreground">{t("sd.failedToLoad")} {upperSymbol}.</p></div>
         ) : (
           <div className="space-y-4 sm:space-y-5">
+            {/* Company header card */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border/60 bg-card p-5">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                {logoUrl && <img src={logoUrl} alt={companyName} className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0" />}
+                {logoUrl && <img src={logoUrl} alt={companyName} className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0" loading="lazy" />}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>
@@ -128,13 +147,8 @@ const StockDetail = () => {
 
             <MetricsGrid overview={overview} quote={quote} derived={derived} profile={profile} massiveTicker={massiveTicker} />
 
-            {/* 52-Week Range Bar */}
             {overview?.["52WeekHigh"] && overview?.["52WeekLow"] && quote?.c && (
-              <WeekRangeBar
-                low52={Number(overview["52WeekLow"])}
-                high52={Number(overview["52WeekHigh"])}
-                current={quote.c}
-              />
+              <WeekRangeBar low52={Number(overview["52WeekLow"])} high52={Number(overview["52WeekHigh"])} current={quote.c} />
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -142,6 +156,13 @@ const StockDetail = () => {
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
             </div>
 
+            {/* Community Sentiment */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <SentimentVote symbol={upperSymbol} />
+              <AnalystTargets overview={overview} quote={quote} />
+            </div>
+
+            {/* Financial charts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <FinancialChart title={t("sd.revenue")} data={revenueData} dataKey="value" color="hsl(210, 80%, 55%)" />
               <FinancialChart title={t("sd.grossProfit")} data={grossProfitData} dataKey="value" color="hsl(280, 65%, 55%)" />
@@ -157,15 +178,14 @@ const StockDetail = () => {
 
             <CompanyInfoCard profile={profile} overview={overview} massiveTicker={massiveTicker} symbol={upperSymbol} />
 
-            {/* Analyst Targets + Technical Indicators */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <AnalystTargets overview={overview} quote={quote} />
               <TechnicalIndicators symbol={upperSymbol} />
+              <EarningsCardWrapper symbol={upperSymbol} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <RecommendationChart data={recommendation} />
-              <EarningsCardWrapper symbol={upperSymbol} />
+              <StockComments symbol={upperSymbol} />
             </div>
 
             <PeersList peers={peers} currentSymbol={upperSymbol} />
