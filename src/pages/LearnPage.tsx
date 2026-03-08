@@ -72,6 +72,7 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <ReadingProgress />
       <Header />
       <main className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
         {/* Hero */}
