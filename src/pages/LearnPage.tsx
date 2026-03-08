@@ -5,7 +5,7 @@ import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, Doll
 import { motion, AnimatePresence } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, StepList, fadeIn, stagger } from "@/components/learn/LearnComponents";
-import { QuizSection, type QuizQuestion } from "@/components/learn/QuizSection";
+
 import { ReadingProgress } from "@/components/learn/ReadingProgress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
