@@ -283,9 +283,6 @@ function RiskAnalyticsWrapper({ positions }: { positions: any[] }) {
 function PortfolioRebalancingWrapper({ positions }: { positions: any[] }) {
   return <EnrichedPositionsWrapper positions={positions}>{(posData) => <PortfolioRebalancing positions={posData} />}</EnrichedPositionsWrapper>;
 }
-function AIPortfolioReviewWrapper({ positions }: { positions: any[] }) {
-  return <EnrichedPositionsWrapper positions={positions}>{(posData) => <AIPortfolioReview positions={posData} />}</EnrichedPositionsWrapper>;
-}
 export default function PortfolioPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: positions, isLoading } = usePortfolio();
