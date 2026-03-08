@@ -16,6 +16,7 @@ import { useIsAdmin } from "@/hooks/useUserRole";
 export default function AdminPage() {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  const isAdmin = useIsAdmin();
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["admin-stats"],
