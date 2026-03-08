@@ -87,7 +87,9 @@ const App = () => (
                 </Routes>
               </Suspense>
               <OnboardingModal />
-              <BottomNav />
+              <EarningsNotificationProvider>
+                <BottomNav />
+              </EarningsNotificationProvider>
               <BackToTop />
               <InstallPrompt />
               <AlertNotifications />

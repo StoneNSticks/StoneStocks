@@ -103,6 +103,7 @@ export function Header() {
             <LanguageToggle />
           </div>
           <ThemeToggle />
+          <NotificationBell />
           <Link to="/learn" className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/60" title={t("nav.learn")}>
             <HelpCircle className="h-4 w-4" />
           </Link>
