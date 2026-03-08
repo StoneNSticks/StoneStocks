@@ -510,7 +510,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.supportResistanceP1") }} />
             </SectionCard>
             <motion.div variants={fadeIn}><WarningBox title={t("learn.warning")}>{t("learn.taWarning")}</WarningBox></motion.div>
-            <QuizSection sectionId="technical-analysis" title={t("learn.quizTA")} questions={quizTA} />
+            
           </motion.section>
 
           {/* Section 11: Derivatives */}
