@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities, getCommodityHistory } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";
