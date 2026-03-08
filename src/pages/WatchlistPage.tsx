@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X } from "lucide-react";
+import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
@@ -411,6 +411,14 @@ export default function WatchlistPage() {
                     </Button>
                     <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => exportWatchlistCSV(watchlist || [], lang)} title={lang === "de" ? "CSV exportieren" : "Export CSV"}>
                       <Download className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => {
+                      const symbols = (watchlist || []).map(w => w.symbol).join(",");
+                      const url = `${window.location.origin}/shared-watchlist?symbols=${symbols}`;
+                      navigator.clipboard.writeText(url);
+                      import("sonner").then(({ toast }) => toast.success(lang === "de" ? "Link kopiert!" : "Link copied!"));
+                    }} title={lang === "de" ? "Watchlist teilen" : "Share Watchlist"}>
+                      <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </motion.div>

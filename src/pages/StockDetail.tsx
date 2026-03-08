@@ -23,6 +23,8 @@ import { TechnicalIndicators } from "@/components/TechnicalIndicators";
 import { EarningsCard } from "@/components/EarningsCard";
 import { SentimentVote } from "@/components/SentimentVote";
 import { StockComments } from "@/components/StockComments";
+import { InsiderTrades } from "@/components/InsiderTrades";
+import { MetricBars } from "@/components/MetricBars";
 import { useFullStock } from "@/hooks/useStockData";
 import { formatCurrency, formatPercent, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -156,6 +158,8 @@ const StockDetail = () => {
               <WeekRangeBar low52={Number(overview["52WeekLow"])} high52={Number(overview["52WeekHigh"])} current={quote.c} />
             )}
 
+            <MetricBars overview={overview} quote={quote} derived={derived} />
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="lg:col-span-2"><StockChart symbol={upperSymbol} /></div>
               <StockPerformance quote={quote} overview={overview} massiveSnapshot={massiveSnapshot} />
@@ -190,8 +194,10 @@ const StockDetail = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <RecommendationChart data={recommendation} />
-              <StockComments symbol={upperSymbol} />
+              <InsiderTrades symbol={upperSymbol} />
             </div>
+
+            <StockComments symbol={upperSymbol} />
 
             <PeersList peers={peers} currentSymbol={upperSymbol} />
 

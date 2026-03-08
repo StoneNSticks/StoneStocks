@@ -40,6 +40,7 @@ const TTL: Record<string, number> = {
   most_active: 10, top_companies: 15, currency_rates: 60,
   simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
   commodities: 10,
+  insider_transactions: 30,
 };
 
 async function getCached(key: string): Promise<unknown | null> {
@@ -1317,6 +1318,21 @@ function calculateDerivedMetrics(overview: Record<string, string> | null, quote:
   };
 }
 
+async function handleInsiderTransactions(symbol: string) {
+  const cacheKey = `insider_tx:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached;
+  try {
+    const data = await fetchFinnhub("stock/insider-transactions", { symbol });
+    const txs = data?.data || [];
+    await setCache(cacheKey, txs, "finnhub", TTL.insider_transactions);
+    return txs;
+  } catch (e) {
+    console.warn("Insider transactions fetch failed:", e);
+    return [];
+  }
+}
+
 // === Full Stock (with cross-source gap filling) ===
 
 async function handleFullStock(symbol: string) {
@@ -1531,6 +1547,7 @@ Deno.serve(async (req) => {
       case "hidden_gems": result = await handleHiddenGems(); break;
       case "commodities": result = await handleCommodities(); break;
       case "commodity_history": result = await handleCommodityHistory(url.searchParams.get("symbol") || "", interval); break;
+      case "insider_transactions": result = await handleInsiderTransactions(symbol!); break;
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
