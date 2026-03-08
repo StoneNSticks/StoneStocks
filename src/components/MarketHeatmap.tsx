@@ -115,7 +115,8 @@ export function MarketHeatmap() {
   };
 
   if (isLoading) return <Skeleton className="h-72 rounded-2xl" />;
-  if (!treemapData.length) return null;
+  if (!companies?.length) return null;
+  const hasFilteredData = treemapData.length > 0;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-5">
