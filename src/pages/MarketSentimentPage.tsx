@@ -393,7 +393,7 @@ function FearGreedCard({ indicators, compositeScore }: { indicators: SubIndicato
                   <span className="text-muted-foreground font-normal">({(ind.weight * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground font-mono">{ind.rawValue}</span>
+                  <span className={`text-[10px] font-mono ${ind.rawValue.startsWith("+") || ind.rawValue.startsWith("Δ +") ? "text-chart-2" : ind.rawValue.startsWith("-") || ind.rawValue.startsWith("Δ -") ? "text-destructive" : "text-muted-foreground"}`}>{ind.rawValue}</span>
                   <span className={`font-mono font-bold ${getScoreColor(ind.score)}`}>
                     {ind.score.toFixed(0)}
                   </span>
