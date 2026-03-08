@@ -40,6 +40,8 @@ const ComparePage = lazy(() => import("./pages/ComparePage"));
 const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 const MacroDashboard = lazy(() => import("./pages/MacroDashboard"));
 const BacktestPage = lazy(() => import("./pages/BacktestPage"));
+const StockChatPage = lazy(() => import("./pages/StockChatPage"));
+const CustomDashboard = lazy(() => import("./pages/CustomDashboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
