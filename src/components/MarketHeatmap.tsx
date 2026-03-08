@@ -152,7 +152,7 @@ export function MarketHeatmap() {
             onClick={handleClick}
           >
             <Tooltip
-              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12 }}
+              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }}
               formatter={(_: unknown, __: string, entry: any) => [
                 `${(entry.payload.changePercent || 0) >= 0 ? "+" : ""}${(entry.payload.changePercent || 0).toFixed(2)}% · ${formatCompact(entry.payload.marketCap)}`,
                 entry.payload.fullName,
