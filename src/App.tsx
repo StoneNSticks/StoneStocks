@@ -67,9 +67,11 @@ const App = () => (
                   <Route path="/glossary" element={<GlossaryPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/admin" element={<AdminPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              <OnboardingModal />
               <BottomNav />
               <BackToTop />
             </BrowserRouter>

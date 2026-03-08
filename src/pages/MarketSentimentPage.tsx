@@ -257,6 +257,9 @@ export default function MarketSentimentPage() {
             {/* Global Indices */}
             {indices?.length > 0 && <IndexGrid indices={indices} />}
 
+            {/* Market Heatmap */}
+            <MarketHeatmap />
+
             {/* Top Movers */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {gainers.length > 0 && (
