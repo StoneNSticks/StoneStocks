@@ -36,7 +36,15 @@ const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ComparePage = lazy(() => import("./pages/ComparePage"));
 const SharedWatchlistPage = lazy(() => import("./pages/SharedWatchlistPage"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const PageLoader = () => <div className="min-h-screen bg-background flex items-center justify-center"><Skeleton className="h-8 w-32 rounded-lg" /></div>;
 

@@ -20,7 +20,7 @@ function safeNum(val: unknown): number { const n = Number(val); return isNaN(n) 
 function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => void }) {
   const { data, isLoading } = useFullStock(symbol);
   const { convert, symbol: cSym } = useCurrency();
-  const { lang } = useLanguage();
+  const t = useT();
 
   if (isLoading) return <Skeleton className="h-96 rounded-xl" />;
   if (!data) return null;
@@ -55,17 +55,17 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
   const pctColor = (v: number) => v > 0 ? "text-chart-2" : v < 0 ? "text-destructive" : "";
 
   const metrics = [
-    { label: lang === "de" ? "Kurs" : "Price", value: fmtCur(price || 0), color: "" },
-    { label: lang === "de" ? "Veränderung" : "Change", value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change) },
-    { label: lang === "de" ? "Marktkapitalisierung" : "Market Cap", value: fmtMcap(mcap), color: "" },
+    { label: t("compare.price"), value: fmtCur(price || 0), color: "" },
+    { label: t("compare.change"), value: `${isUp ? "+" : ""}${change.toFixed(2)}%`, color: pctColor(change) },
+    { label: t("compare.marketCap"), value: fmtMcap(mcap), color: "" },
     { label: "P/E", value: fmtNum(pe), color: "" },
     { label: "P/B", value: fmtNum(pb), color: "" },
     { label: "EPS", value: fmtCur(eps), color: "" },
     { label: "Beta", value: fmtNum(beta), color: "" },
-    { label: lang === "de" ? "Dividendenrendite" : "Div Yield", value: fmtPct(divYield), color: pctColor(divYield) },
-    { label: lang === "de" ? "Gewinnmarge" : "Profit Margin", value: fmtPct(profitMargin), color: pctColor(profitMargin) },
+    { label: t("compare.divYield"), value: fmtPct(divYield), color: pctColor(divYield) },
+    { label: t("compare.profitMargin"), value: fmtPct(profitMargin), color: pctColor(profitMargin) },
     { label: "ROE", value: fmtPct(roe), color: pctColor(roe) },
-    { label: lang === "de" ? "Umsatzwachstum" : "Rev Growth", value: fmtPct(revGrowth), color: pctColor(revGrowth) },
+    { label: t("compare.revGrowth"), value: fmtPct(revGrowth), color: pctColor(revGrowth) },
   ];
 
   return (
@@ -97,6 +97,7 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
 }
 
 export default function ComparePage() {
+  const t = useT();
   const { lang } = useLanguage();
   const [symbols, setSymbols] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -120,11 +121,11 @@ export default function ComparePage() {
           <div className="inline-flex items-center gap-2 mb-3">
             <GitCompare className="h-6 w-6 text-primary" />
             <h1 className="font-display text-2xl sm:text-3xl font-bold">
-              {lang === "de" ? "Aktien" : "Stock"} <span className="text-primary">{lang === "de" ? "Vergleich" : "Compare"}</span>
+              {t("compare.title")} <span className="text-primary">{t("compare.titleHighlight")}</span>
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            {lang === "de" ? "Bis zu 4 Aktien nebeneinander vergleichen" : "Compare up to 4 stocks side by side"}
+            {t("compare.subtitle")}
           </p>
         </motion.div>
 
@@ -132,7 +133,7 @@ export default function ComparePage() {
         <div className="relative max-w-md mx-auto mb-8">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={lang === "de" ? "Aktie suchen (z.B. AAPL)" : "Search stock (e.g. AAPL)"}
+            placeholder={t("compare.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl"
@@ -161,7 +162,7 @@ export default function ComparePage() {
             ))}
             {symbols.length < 4 && (
               <Badge variant="outline" className="text-xs text-muted-foreground gap-1">
-                <Plus className="h-3 w-3" />{4 - symbols.length} {lang === "de" ? "übrig" : "remaining"}
+                <Plus className="h-3 w-3" />{4 - symbols.length} {t("compare.remaining")}
               </Badge>
             )}
           </div>
@@ -172,7 +173,7 @@ export default function ComparePage() {
           <div className="text-center py-20">
             <GitCompare className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
             <p className="text-muted-foreground text-sm">
-              {lang === "de" ? "Suche nach Aktien, um den Vergleich zu starten" : "Search for stocks to start comparing"}
+              {t("compare.emptyHint")}
             </p>
           </div>
         ) : (

@@ -440,6 +440,38 @@ const translations: Record<string, Record<Language, string>> = {
   // ── Sector Performance ──
   "sector.title": { de: "Sektorperformance", en: "Sector Performance" },
 
+  // ── Index Quick Actions ──
+  "index.quickActions": { de: "Schnellzugriff", en: "Quick Actions" },
+  "index.marketPulse": { de: "Marktstimmung", en: "Market Pulse" },
+  "index.stockCompare": { de: "Aktienvergleich", en: "Stock Compare" },
+
+  // ── KeyMetrics ──
+  "km.title": { de: "Kennzahlen", en: "Key Metrics" },
+  "km.marketCap": { de: "Marktkapitalisierung", en: "Market Cap" },
+  "km.peRatio": { de: "KGV", en: "P/E Ratio" },
+  "km.pbRatio": { de: "KBV", en: "P/B Ratio" },
+  "km.psRatio": { de: "KUV", en: "P/S Ratio" },
+  "km.evEbitda": { de: "EV/EBITDA", en: "EV/EBITDA" },
+  "km.eps": { de: "EPS", en: "EPS" },
+  "km.dividendYield": { de: "Dividendenrendite", en: "Dividend Yield" },
+  "km.fcfYield": { de: "FCF-Rendite", en: "FCF Yield" },
+  "km.beta": { de: "Beta", en: "Beta" },
+  "km.52wHigh": { de: "52W-Hoch", en: "52W High" },
+  "km.52wLow": { de: "52W-Tief", en: "52W Low" },
+  "km.profitMargin": { de: "Gewinnmarge", en: "Profit Margin" },
+  "km.revenueTTM": { de: "Umsatz TTM", en: "Revenue TTM" },
+  "km.grossProfitTTM": { de: "Bruttogewinn TTM", en: "Gross Profit TTM" },
+  "km.roe": { de: "EKR", en: "ROE" },
+  "km.roa": { de: "GKR", en: "ROA" },
+
+  // ── ComparePage ──
+  "compare.price": { de: "Kurs", en: "Price" },
+  "compare.change": { de: "Veränderung", en: "Change" },
+  "compare.marketCap": { de: "Marktkapitalisierung", en: "Market Cap" },
+  "compare.divYield": { de: "Dividendenrendite", en: "Div Yield" },
+  "compare.profitMargin": { de: "Gewinnmarge", en: "Profit Margin" },
+  "compare.revGrowth": { de: "Umsatzwachstum", en: "Rev Growth" },
+
   // ── Social / Comments ──
   "comments.title": { de: "Diskussion", en: "Discussion" },
   "comments.placeholder": { de: "Deine Meinung teilen...", en: "Share your take..." },
@@ -458,4 +490,10 @@ const translations: Record<string, Record<Language, string>> = {
   "calc.optionType": { de: "Typ", en: "Type" },
   "calc.dcaMonths": { de: "Monate", en: "Months" },
   "calc.dcaVolatility": { de: "Volatilität (%)", en: "Volatility (%)" },
+  "compare.title": { de: "Aktien", en: "Stock" },
+  "compare.titleHighlight": { de: "Vergleich", en: "Compare" },
+  "compare.subtitle": { de: "Bis zu 4 Aktien nebeneinander vergleichen", en: "Compare up to 4 stocks side by side" },
+  "compare.searchPlaceholder": { de: "Aktie suchen (z.B. AAPL)", en: "Search stock (e.g. AAPL)" },
+  "compare.remaining": { de: "übrig", en: "remaining" },
+  "compare.emptyHint": { de: "Suche nach Aktien, um den Vergleich zu starten", en: "Search for stocks to start comparing" },
 };

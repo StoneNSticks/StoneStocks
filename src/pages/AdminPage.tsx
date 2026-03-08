@@ -1,6 +1,6 @@
 /**
  * AdminPage — Dashboard with user stats, popular stocks, and cache info.
- * Only accessible to authenticated users (no admin role check for now, just stats).
+ * Protected by useIsAdmin() hook which checks user_roles table via RLS.
  * Data: counts from watchlist, stock_votes, stock_comments, api_cache tables.
  */
 import { Header } from "@/components/Header";
