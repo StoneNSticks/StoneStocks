@@ -153,6 +153,10 @@ export function Header() {
                 })}
               </nav>
               <div className="mt-6 pt-6 border-t border-border/60 flex flex-col gap-3">
+                <div className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ${isOnline ? "bg-chart-2/10 text-chart-2" : "bg-destructive/10 text-destructive"}`}>
+                  {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
+                  {isOnline ? "Online" : "Offline"}
+                </div>
                 <MarketClock />
                 <CurrencyToggle />
                 <LanguageToggle />
