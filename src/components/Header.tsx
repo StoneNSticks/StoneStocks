@@ -171,8 +171,8 @@ export function Header() {
           </nav>
         </div>
       </div>
-      {/* Row 3: Ticker tape */}
-      <TickerTape />
+      {/* Row 3: Ticker tape — on home, only show when main indices scrolled away */}
+      {(!isHome || !mainIndicesVisible) && <TickerTape />}
     </header>
   );
 }

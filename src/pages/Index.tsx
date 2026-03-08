@@ -30,9 +30,9 @@ const Index = () => {
             {t("index.title")} <span className="text-primary">{t("index.titleHighlight")}</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-5">{t("index.subtitle")}</p>
-          <SearchBar />
+          <div id="main-search-bar"><SearchBar /></div>
         </section>
-        <section className="mb-4 sm:mb-6"><MarketOverview /></section>
+        <section id="main-market-overview" className="mb-4 sm:mb-6"><MarketOverview /></section>
 
         {/* Sentiment + Market Overview Row */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 sm:gap-6 mb-4 sm:mb-6">
