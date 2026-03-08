@@ -751,45 +751,66 @@ function isCommonStock(ticker: string): boolean {
 
   // Comprehensive ETF / ETP / leveraged & inverse product blacklist
   const ETF_BLACKLIST = new Set([
-    // Major index ETFs
+    // ── Major broad-market index ETFs ──
     "SPY","QQQ","IWM","DIA","VOO","VTI","IVV","RSP","MDY","IJH","IJR","VB","VTV","VUG","SCHD","SCHX","SCHB",
-    // Sector ETFs (XL* family + others)
+    "SPLG","SPTM","ITOT","DFAC","DFAS","DFAT","DFAU","DFUS","DFLV","DGRS","AVUV","AVLV","AVUS",
+    // ── S&P sector ETFs (XL* + Vanguard + iShares) ──
     "XLB","XLC","XLE","XLF","XLI","XLK","XLP","XLRE","XLU","XLV","XLY","VGT","VHT","VNQ","VFH","VIS","VAW","VCR","VPU","VOX",
-    // ARK ETFs
-    "ARKK","ARKW","ARKQ","ARKG","ARKF","ARKX","ARKB",
-    // Leveraged & Inverse (2x/3x)
+    "IYW","IYF","IYH","IYC","IYE","IYJ","IYK","IYM","IYR","IYZ","IDU",
+    "FCOM","FREL","FENY","FDIS","FHLC","FIDU","FMAT","FNCL","FSTA","FTEC","FUTY",
+    // ── ARK ETFs ──
+    "ARKK","ARKW","ARKQ","ARKG","ARKF","ARKX","ARKB","ARKY","ARKZ",
+    // ── Leveraged & Inverse (2x/3x) — single-stock and index ──
     "TQQQ","SQQQ","UPRO","SPXU","UDOW","SDOW","TNA","TZA","FAS","FAZ","SOXL","SOXS","LABU","LABD","JNUG","DUST","NUGT",
     "FNGU","FNGD","TECL","TECS","SPXS","SSO","SH","SDS","QLD","QID","DDM","DXD","MVV","MZZ","UWM","TWM",
     "UVXY","SVXY","VXX","VIXY","UVIX","SVIX",
     "BOIL","KOLD","UCO","SCO","GUSH","DRIP","NAIL","DRV","CURE","PILL","ERX","ERY","DFEN","WEBS",
     "YINN","YANG","INDL","SMIN","BNKU","BNKD","DPST","WEAT","CORN","SOYB",
     "BULL","BEAR","SPXL",
-    // Crypto / Commodity ETFs
-    "BITO","GBTC","ETHE","IBIT","FBTC","BITB","HODL","BTCO","GLD","SLV","IAU","SGOL","PPLT","PALL","SLX","COPX","GLTR","DBA","DBC","GSG","PDBC","USO","UNG","BNO",
-    // Bond / Fixed Income ETFs
+    "NVD","NVDL","NVDS","TSLL","TSLS","AAPD","AAPU","AMZU","AMZD","GOOX","MSFU","MSFD","METD",
+    "BITX","BITU","SBIT","ETHD","MSTX","MSTZ","MSTU","CONL","COHX","IONZ","LUNL","CRCG",
+    "SPDN","PLTD","TSLG","TSLR","SMCX","FNGG","FNGS","BERZ","HIBS",
+    // ── Crypto / Commodity ETFs ──
+    "BITO","GBTC","ETHE","IBIT","FBTC","BITB","HODL","BTCO","EZBC","BTCW","DEFI","BRRR",
+    "GLD","SLV","IAU","SGOL","PPLT","PALL","SLX","COPX","GLTR","DBA","DBC","GSG","PDBC","USO","UNG","BNO",
+    "CPER","JJC","WTIC","OILK","USCI","GCC","RJI",
+    // ── Bond / Fixed Income ETFs ──
     "TLT","TLH","IEF","SHY","BND","AGG","LQD","HYG","JNK","EMB","MUB","TIP","BNDX","VCSH","VCIT","VMBS","MBB","GOVT","FLOT",
-    // International / Country ETFs
+    "VGSH","VGIT","VGLT","BSV","BIV","BLV","SCHO","SCHR","SCHZ","SPAB","SPSB","SPIB","SPLB",
+    "IGSB","IGIB","USIG","LMBS","GNMA","QLTA","ANGL",
+    // ── International / Country ETFs ──
     "EFA","EEM","IEMG","VEA","VWO","IXUS","ACWI","VXUS","HEFA","SCZ","IEFA",
     "EWA","EWC","EWG","EWH","EWI","EWJ","EWL","EWN","EWP","EWQ","EWS","EWT","EWU","EWW","EWY","EWZ","EWK","EWD","EWM","EWO",
     "FEZ","FXI","KWEB","MCHI","ASHR","GXC","INDA","INDY","THD","VNM","EPHE","EPU","ECH","ENZL","NORW","EDEN",
-    // Dividend / Strategy ETFs
+    "FLKR","FLCH","FLJP","FLGB","FLAU","FLBR","FLMX","FLCA","FLTW","FLKR",
+    "VGK","VPL","VSS","VNQI","VIGI","VYMI",
+    // ── Dividend / Strategy / Covered Call ETFs ──
     "DVY","HDV","VIG","DGRO","NOBL","SDY","DGRW","JEPI","JEPQ","QYLD","XYLD","RYLD","DIVO","NUSI",
-    // Thematic / Specialty ETFs
+    "SPYD","SPHD","FVD","LVHD","FDVV","SCHD","VYM","VYMI","DIVB",
+    "QQQI","SPYI","SVOL","FEPI","GPIQ","GIAX",
+    // ── Thematic / Specialty ETFs ──
     "HACK","ROBO","BOTZ","IRBO","LIT","TAN","ICLN","QCLN","PBW","FAN","ACES","DRIV","IDRV","CARZ","JETS","UFO","MOON","HERO","ESPO","GAMR","NERD","BETZ","PAVE","IFRA","WOOD","PHO","REMX","URA",
-    // Misc popular ETFs
-    "IYR","XLRE","REM","MORT","RWR","USRT","ICF",
-    "IBB","XBI","ARKG","IDNA","GNOM",
-    "GDX","GDXJ","SIL","SILJ",
-    "KBE","KRE","IAI","XHB","ITB",
-    "SPHD","SPLV","USMV","MTUM","QUAL","VLUE","SIZE",
-    "MOAT","COWZ","FTCS","XMLV","XSLV",
-    "AMLP","MLPA","TPYP",
-    // Additional leveraged/inverse single-stock ETFs
-    "NVD","NVDL","NVDS","CRCG","MSTX","TSLS","COHX","IONZ","LUNL","CONL","MSTZ","MSTU",
-    "TSLL","AAPD","AAPU","AMZU","AMZD","GOOX","GOOGL","MSFU","MSFD","METD","NFLX",
-    "BITX","BITU","SBIT","ETHD",
-    "SPDN","PLTD","TSLG","TSLR","SMCX","FNGG","FNGS","BERZ","HIBS","WEBS","LABU","LABD","SOXL","SOXS","TQQQ","SQQQ","UPRO","SPXU","UDOW","SDOW",
+    "SKYY","WCLD","CLOU","BUG","CIBR","IHAK","AIQ","AIEQ","CHAT","ROBT",
+    "BLOK","DAPP","BITQ","LEGR","META","METV",
+    "MSOS","MJ","CNBS","YOLO","POTX","THCX",
+    "IPAY","FINX","LEND","KBWB","BUZZ","VPC",
+    // ── Real Estate ETFs ──
+    "IYR","XLRE","REM","MORT","RWR","USRT","ICF","REET","SCHH","VNQI",
+    // ── Biotech / Healthcare ETFs ──
+    "IBB","XBI","IDNA","GNOM","LABU","LABD","SBIO","BBH",
+    // ── Gold/Silver Miners ETFs ──
+    "GDX","GDXJ","SIL","SILJ","RING","GOAU",
+    // ── Banking / Financial ETFs ──
+    "KBE","KRE","IAI","XHB","ITB","KBWB","KBWP",
+    // ── Factor / Smart Beta ETFs ──
+    "SPHD","SPLV","USMV","MTUM","QUAL","VLUE","SIZE","MOAT","COWZ","FTCS","XMLV","XSLV",
+    "DSTL","VFMO","VFMV","VFQY","VFVA","JMOM","JVAL","JMIN","JQUA",
+    // ── MLP / Infrastructure ETFs ──
+    "AMLP","MLPA","TPYP","EMLP","ENFR",
+    // ── Money Market / Short-term ETFs ──
+    "SHV","BIL","SGOV","TFLO","USFR","GBIL","MINT","JPST","ICSH","FLRN","FLTR",
   ]);
+
 
   if (ETF_BLACKLIST.has(ticker)) return false;
   return /^[A-Z]{1,5}$/.test(ticker);
