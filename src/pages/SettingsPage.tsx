@@ -52,6 +52,17 @@ export default function SettingsPage() {
     if (!authLoading && !user) navigate("/auth");
   }, [authLoading, user, navigate]);
 
+  // Fetch profile settings
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("show_username, comment_reply_alerts").eq("id", user.id).single().then(({ data }) => {
+      if (data) {
+        setShowUsername((data as any).show_username !== false);
+        setCommentReplyAlerts((data as any).comment_reply_alerts === true);
+      }
+    });
+  }, [user]);
+
   const handlePasswordChange = async () => {
     if (newPassword.length < 6) {
       toast({ title: t("settings.pwTooShort"), variant: "destructive" });
