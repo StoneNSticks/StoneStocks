@@ -656,8 +656,9 @@ function AdditionalIndicators({ indices, gainers, losers, commodities }: { indic
       color: dxyLevel.color,
       bar: { pct: Math.min(100, Math.max(0, (dollarProxy + 3) / 6 * 100)), cls: dollarProxy > 0 ? "bg-chart-2" : "bg-destructive" },
       desc: lang === "de"
-        ? "Inverse der Rohstoff-Performance. Starker Dollar drückt Rohstoffpreise."
-        : "Inverse of commodity performance. Strong dollar depresses commodity prices."
+        ? commoditiesStale ? "Rohstoffmärkte geschlossen — Wert zeigt 0%." : "Inverse der Rohstoff-Performance. Starker Dollar drückt Rohstoffpreise."
+        : commoditiesStale ? "Commodity markets closed — showing 0%." : "Inverse of commodity performance. Strong dollar depresses commodity prices.",
+      stale: commoditiesStale,
     },
     {
       title: lang === "de" ? "Small vs Large Cap" : "Small vs Large Cap",
