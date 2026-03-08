@@ -536,6 +536,122 @@ function DCASimulator() {
   );
 }
 
+/** Tax-Loss Harvesting Tool — Shows portfolio positions with unrealized losses */
+function TaxLossHarvesting() {
+  const t = useT();
+  const { lang } = useLanguage();
+  const [positions, setPositions] = useState([
+    { symbol: "AAPL", shares: 10, avgCost: 180, currentPrice: 172 },
+    { symbol: "TSLA", shares: 5, avgCost: 260, currentPrice: 245 },
+    { symbol: "MSFT", shares: 15, avgCost: 380, currentPrice: 410 },
+    { symbol: "NVDA", shares: 8, avgCost: 480, currentPrice: 520 },
+  ]);
+  const [taxRate, setTaxRate] = useState(26.375); // DE: 25% + Soli
+
+  const analysis = useMemo(() => {
+    return positions.map(p => {
+      const unrealized = (p.currentPrice - p.avgCost) * p.shares;
+      const isLoss = unrealized < 0;
+      return { ...p, unrealized, isLoss, taxSaving: isLoss ? Math.abs(unrealized) * (taxRate / 100) : 0 };
+    });
+  }, [positions, taxRate]);
+
+  const totalLosses = analysis.filter(a => a.isLoss).reduce((s, a) => s + Math.abs(a.unrealized), 0);
+  const totalSaving = totalLosses * (taxRate / 100);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <ResultCard label={lang === "de" ? "Realisierbare Verluste" : "Harvestable Losses"} value={formatMoney(totalLosses)} color="text-destructive" />
+        <ResultCard label={lang === "de" ? "Geschätzte Steuerersparnis" : "Est. Tax Savings"} value={formatMoney(totalSaving)} color="text-gain" />
+      </div>
+      <div className="flex items-end gap-3">
+        <div className="flex-1"><Label className="text-xs text-muted-foreground">{lang === "de" ? "Steuersatz (%)" : "Tax Rate (%)"}</Label><Input type="number" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <div className="grid grid-cols-[1fr_4rem_5rem_5rem_5rem] gap-2 px-4 py-2 bg-muted/40 text-[10px] uppercase font-mono text-muted-foreground">
+          <span>Symbol</span><span className="text-right">{lang === "de" ? "Stk." : "Qty"}</span><span className="text-right">{lang === "de" ? "Ø Kauf" : "Avg Cost"}</span><span className="text-right">{lang === "de" ? "Aktuell" : "Current"}</span><span className="text-right">P&L</span>
+        </div>
+        {analysis.map((a, i) => (
+          <div key={i} className="grid grid-cols-[1fr_4rem_5rem_5rem_5rem] gap-2 px-4 py-2.5 border-t border-border/20 text-sm">
+            <span className="font-mono font-bold">{a.symbol}</span>
+            <span className="text-right text-muted-foreground">{a.shares}</span>
+            <span className="text-right">${a.avgCost}</span>
+            <span className="text-right">${a.currentPrice}</span>
+            <span className={`text-right font-semibold ${a.isLoss ? "text-destructive" : "text-chart-2"}`}>{a.unrealized >= 0 ? "+" : ""}{formatMoney(a.unrealized)}</span>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">{lang === "de" ? "Bearbeite die Positionen oben, um deine individuelle Situation zu simulieren. Die Steuerersparnis ist eine Schätzung." : "Edit positions above to simulate your individual situation. Tax savings are estimates."}</p>
+    </div>
+  );
+}
+
+/** Dividend Income Projector — Projects annual dividend income from portfolio */
+function DividendProjector() {
+  const { lang } = useLanguage();
+  const [holdings, setHoldings] = useState([
+    { symbol: "AAPL", shares: 50, annualDiv: 3.92 },
+    { symbol: "JNJ", shares: 30, annualDiv: 4.96 },
+    { symbol: "KO", shares: 100, annualDiv: 1.94 },
+    { symbol: "MSFT", shares: 20, annualDiv: 3.32 },
+  ]);
+  const [growthRate, setGrowthRate] = useState(5);
+  const [years, setYears] = useState(10);
+
+  const data = useMemo(() => {
+    const pts: { year: number; income: number; cumulative: number }[] = [];
+    let cumulative = 0;
+    for (let y = 0; y <= years; y++) {
+      const income = holdings.reduce((s, h) => s + h.shares * h.annualDiv * Math.pow(1 + growthRate / 100, y), 0);
+      cumulative += y > 0 ? income : 0;
+      pts.push({ year: y, income: Math.round(income), cumulative: Math.round(cumulative) });
+    }
+    return pts;
+  }, [holdings, growthRate, years]);
+
+  const finalIncome = data[data.length - 1]?.income || 0;
+  const totalCum = data[data.length - 1]?.cumulative || 0;
+  const currentIncome = data[0]?.income || 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <ResultCard label={lang === "de" ? "Aktuelle jährl. Dividende" : "Current Annual Dividends"} value={formatMoney(currentIncome)} />
+        <ResultCard label={`${lang === "de" ? "Dividende in Jahr" : "Dividends Year"} ${years}`} value={formatMoney(finalIncome)} color="text-primary" />
+        <ResultCard label={lang === "de" ? "Kumuliert über Zeitraum" : "Cumulative Total"} value={formatMoney(totalCum)} color="text-gain" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div><Label className="text-xs text-muted-foreground">{lang === "de" ? "Dividendenwachstum (%/Jahr)" : "Div. Growth (%/yr)"}</Label><Input type="number" value={growthRate} onChange={(e) => setGrowthRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{lang === "de" ? "Projektionszeitraum (Jahre)" : "Projection (years)"}</Label><Input type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1" /></div>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4">
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="year" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(y) => `${y}y`} />
+            <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => formatMoney(v)} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 12, color: "hsl(var(--foreground))" }} formatter={(v: number) => [formatMoney(v)]} />
+            <Bar dataKey="income" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} name={lang === "de" ? "Jahres-Dividende" : "Annual Dividends"} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <div className="grid grid-cols-[1fr_4rem_5rem] gap-2 px-4 py-2 bg-muted/40 text-[10px] uppercase font-mono text-muted-foreground">
+          <span>Symbol</span><span className="text-right">{lang === "de" ? "Stk." : "Qty"}</span><span className="text-right">{lang === "de" ? "Div./Aktie" : "Div./Share"}</span>
+        </div>
+        {holdings.map((h, i) => (
+          <div key={i} className="grid grid-cols-[1fr_4rem_5rem] gap-2 px-4 py-2.5 border-t border-border/20 text-sm">
+            <span className="font-mono font-bold">{h.symbol}</span>
+            <span className="text-right text-muted-foreground">{h.shares}</span>
+            <span className="text-right">${h.annualDiv.toFixed(2)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const CalculatorPage = () => {
   const t = useT();
   return (
