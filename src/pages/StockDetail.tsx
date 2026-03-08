@@ -147,10 +147,18 @@ const StockDetail = () => {
 
             <CompanyInfoCard profile={profile} overview={overview} massiveTicker={massiveTicker} symbol={upperSymbol} />
 
+            {/* Analyst Targets + Technical Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <AnalystTargets overview={overview} quote={quote} />
+              <TechnicalIndicators symbol={upperSymbol} />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <RecommendationChart data={recommendation} />
-              <PeersList peers={peers} currentSymbol={upperSymbol} />
+              <EarningsCardWrapper symbol={upperSymbol} />
             </div>
+
+            <PeersList peers={peers} currentSymbol={upperSymbol} />
 
             <NewsList news={news} />
           </div>

@@ -19,6 +19,7 @@ const navKeys = [
   { to: "/", key: "nav.markets", icon: TrendingUp },
   { to: "/news", key: "nav.news", icon: Newspaper },
   { to: "/rankings", key: "nav.rankings", icon: BarChart3 },
+  { to: "/portfolio", key: "nav.portfolio", icon: BarChart3 },
   { to: "/calculators", key: "nav.tools", icon: Calculator },
   { to: "/watchlist", key: "nav.watchlist", icon: Star },
 ];
