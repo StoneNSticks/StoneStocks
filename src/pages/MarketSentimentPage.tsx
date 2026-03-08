@@ -775,11 +775,42 @@ export default function MarketSentimentPage() {
           </div>
         ) : (
           <>
-            {/* Fear & Greed — full width, CNN-style */}
-            <FearGreedCard indicators={indicators} compositeScore={compositeScore} />
-
-            {/* Market Breadth */}
-            <MarketBreadth gainers={gainers.length} losers={losers.length} />
+            {/* Fear & Greed with sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+              <div className="lg:col-span-3">
+                <FearGreedCard indicators={indicators} compositeScore={compositeScore} />
+              </div>
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                <MarketBreadth gainers={gainers.length} losers={losers.length} />
+                {/* Indicator overview grid */}
+                <motion.div initial="hidden" animate="visible" variants={fadeIn}
+                  className="rounded-2xl border border-border/60 bg-card p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BarChart2 className="h-5 w-5 text-primary" />
+                    <h3 className="font-display font-semibold text-sm">
+                      {lang === "de" ? "Indikator-Übersicht" : "Indicator Overview"}
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {indicators.map((ind) => {
+                      const lbl = getScoreLabel(ind.score, lang);
+                      return (
+                        <div key={ind.key} className="rounded-lg bg-muted/30 p-2.5 border border-border/30">
+                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium mb-1">
+                            {ind.icon}
+                            <span className="truncate">{lang === "de" ? ind.label.de : ind.label.en}</span>
+                          </div>
+                          <div className={`font-mono font-bold text-sm ${getScoreColor(ind.score)}`}>
+                            {ind.score.toFixed(0)}
+                          </div>
+                          <div className="text-[9px] text-muted-foreground">{lbl}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
 
             {/* ── Additional Market Indicators ── */}
             <AdditionalIndicators indices={indices} gainers={gainers} losers={losers} commodities={commodities} />
