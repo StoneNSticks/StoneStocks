@@ -26,30 +26,27 @@ export function StockComments({ symbol }: { symbol: string }) {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("stock_comments")
         .select("id, content, created_at, user_id")
         .eq("symbol", symbol)
         .order("created_at", { ascending: false })
         .limit(20);
       if (data) {
-        // Fetch display names
-        const userIds = [...new Set(data.map(c => c.user_id))];
+        const userIds = [...new Set(data.map((c: any) => c.user_id))];
         const { data: profiles } = await supabase
           .from("profiles")
           .select("id, display_name, username")
-          .in("id", userIds);
+          .in("id", userIds as string[]);
         const nameMap: Record<string, string> = {};
         profiles?.forEach(p => { nameMap[p.id] = p.display_name || p.username || "User"; });
-        setComments(data.map(c => ({ ...c, display_name: nameMap[c.user_id] || "User" })));
+        setComments(data.map((c: any) => ({ ...c, display_name: nameMap[c.user_id] || "User" })));
       }
     };
     fetchComments();
 
-    // Realtime subscription
     const channel = supabase
       .channel(`comments-${symbol}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "stock_comments", filter: `symbol=eq.${symbol}` }, (payload) => {
@@ -64,7 +61,7 @@ export function StockComments({ symbol }: { symbol: string }) {
   const handleSubmit = async () => {
     if (!user || !newComment.trim()) return;
     setLoading(true);
-    await supabase.from("stock_comments").insert({
+    await (supabase as any).from("stock_comments").insert({
       symbol,
       user_id: user.id,
       content: newComment.trim(),

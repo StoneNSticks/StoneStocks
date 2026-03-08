@@ -18,16 +18,16 @@ export function SentimentVote({ symbol }: { symbol: string }) {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("stock_votes")
         .select("vote")
         .eq("symbol", symbol);
       if (data) {
-        setBulls(data.filter(v => v.vote === "bullish").length);
-        setBears(data.filter(v => v.vote === "bearish").length);
+        setBulls(data.filter((v: any) => v.vote === "bullish").length);
+        setBears(data.filter((v: any) => v.vote === "bearish").length);
       }
       if (user) {
-        const { data: myVote } = await supabase
+        const { data: myVote } = await (supabase as any)
           .from("stock_votes")
           .select("vote")
           .eq("symbol", symbol)
@@ -41,11 +41,10 @@ export function SentimentVote({ symbol }: { symbol: string }) {
 
   const vote = async (v: "bullish" | "bearish") => {
     if (!user) return;
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("stock_votes")
       .upsert({ user_id: user.id, symbol, vote: v }, { onConflict: "user_id,symbol" });
     if (!error) {
-      // Adjust counts
       if (userVote === v) return;
       if (userVote) {
         if (userVote === "bullish") setBulls(b => b - 1); else setBears(b => b - 1);
