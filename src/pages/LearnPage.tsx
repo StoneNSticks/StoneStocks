@@ -1094,6 +1094,9 @@ export default function LearnPage() {
               <WarningBox title={t("learn.warning")}>{lang === "de" ? "MMT ist hochkontrovers und wird von der Mehrheit der Ökonomen kritisch gesehen." : "MMT is highly controversial and viewed critically by most economists."}</WarningBox>
             </SectionCard>
           </motion.section>
+          <a href="#quiz-valuation" className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+            📝 {lang === "de" ? "Zu den Quizfragen" : "Go to quizzes"}
+          </a>
         </SuperSection>
 
         {/* Glossary CTA */}
