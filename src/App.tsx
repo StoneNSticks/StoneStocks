@@ -88,6 +88,8 @@ const App = () => (
                   <Route path="/compare" element={<ComparePage />} />
                   <Route path="/macro" element={<MacroDashboard />} />
                   <Route path="/backtest" element={<BacktestPage />} />
+                  <Route path="/ai-chat" element={<StockChatPage />} />
+                  <Route path="/dashboard" element={<CustomDashboard />} />
                   <Route path="/shared-watchlist" element={<SharedWatchlistPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
