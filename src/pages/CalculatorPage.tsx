@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from "recharts";
-import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale } from "lucide-react";
+import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale, ArrowLeftRight } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrencyRates } from "@/lib/stockApi";
 
 function formatMoney(n: number): string {
   if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M";
@@ -360,6 +362,60 @@ function RiskRewardCalc() {
   );
 }
 
+const POPULAR_CURRENCIES = ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "CNY", "INR", "KRW", "BRL", "MXN", "SEK", "NOK", "DKK", "PLN", "TRY", "ZAR", "SGD", "HKD"];
+
+function CurrencyConverter() {
+  const t = useT();
+  const [amount, setAmount] = useState(1000);
+  const [from, setFrom] = useState("USD");
+  const [to, setTo] = useState("EUR");
+
+  const { data: rates } = useQuery({
+    queryKey: ["currencyRates"],
+    queryFn: getCurrencyRates,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const result = useMemo(() => {
+    if (!rates) return 0;
+    const fromRate = from === "USD" ? 1 : (rates as Record<string, number>)[from] || 1;
+    const toRate = to === "USD" ? 1 : (rates as Record<string, number>)[to] || 1;
+    return (amount / fromRate) * toRate;
+  }, [amount, from, to, rates]);
+
+  const swap = () => { setFrom(to); setTo(from); };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3 items-end">
+        <div>
+          <Label className="text-xs text-muted-foreground">{t("calc.amount") || "Amount"}</Label>
+          <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} className="mt-1" />
+          <select value={from} onChange={(e) => setFrom(e.target.value)} className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            {POPULAR_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <button onClick={swap} className="flex items-center justify-center h-10 w-10 rounded-lg border border-border hover:bg-muted transition-colors mx-auto">
+          <ArrowLeftRight className="h-4 w-4" />
+        </button>
+        <div>
+          <Label className="text-xs text-muted-foreground">{t("calc.convertedAmount") || "Converted"}</Label>
+          <div className="mt-1 h-10 flex items-center px-3 rounded-lg border border-border bg-muted/50 font-mono font-bold text-lg text-primary">
+            {result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <select value={to} onChange={(e) => setTo(e.target.value)} className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            {POPULAR_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <ResultCard label={`1 ${from}`} value={`${(result / (amount || 1)).toFixed(4)} ${to}`} color="text-primary" />
+        <ResultCard label={`1 ${to}`} value={`${((amount || 1) / (result || 1)).toFixed(4)} ${from}`} />
+      </div>
+    </div>
+  );
+}
+
 const CalculatorPage = () => {
   const t = useT();
   return (
@@ -384,6 +440,7 @@ const CalculatorPage = () => {
             <TabsTrigger value="position" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><BarChart3 className="h-3.5 w-3.5" />{t("calc.positionSize")}</TabsTrigger>
             <TabsTrigger value="loan" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Landmark className="h-3.5 w-3.5" />{t("calc.loanCalc")}</TabsTrigger>
             <TabsTrigger value="riskreward" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Scale className="h-3.5 w-3.5" />{t("calc.riskReward")}</TabsTrigger>
+            <TabsTrigger value="currency" className="rounded-lg gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><ArrowLeftRight className="h-3.5 w-3.5" />{t("calc.currencyConverter") || "Currency"}</TabsTrigger>
           </TabsList>
           <TabsContent value="portfolio"><PortfolioGrowth /></TabsContent>
           <TabsContent value="compound"><CompoundInterest /></TabsContent>
@@ -392,6 +449,7 @@ const CalculatorPage = () => {
           <TabsContent value="position"><PositionSize /></TabsContent>
           <TabsContent value="loan"><LoanCalc /></TabsContent>
           <TabsContent value="riskreward"><RiskRewardCalc /></TabsContent>
+          <TabsContent value="currency"><CurrencyConverter /></TabsContent>
         </Tabs>
       </main>
     </div>

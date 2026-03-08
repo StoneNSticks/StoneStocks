@@ -8,12 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Eye, Filter } from "lucide-react";
+import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
-import { getQuote } from "@/lib/stockApi";
+import { getQuote, getProfile } from "@/lib/stockApi";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { AreaChart, Area, ResponsiveContainer } from "recharts";
 
@@ -22,7 +21,6 @@ const item = { hidden: { opacity: 0, y: 12, scale: 0.97 }, show: { opacity: 1, y
 
 type SortMode = "newest" | "oldest" | "alpha" | "performance";
 
-// Bloomberg-style mini sparkline
 function MiniSparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
   const chartData = data.map((v, i) => ({ i, v }));
   const color = isUp ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
@@ -43,13 +41,24 @@ function MiniSparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
   );
 }
 
-function WatchlistQuote({ symbol }: { symbol: string }) {
+function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoaded?: (dp: number) => void }) {
   const { convert, symbol: cSym } = useCurrency();
   const { data: quote, isLoading } = useQuery({
     queryKey: ["watchlist-quote", symbol],
     queryFn: () => getQuote(symbol),
     staleTime: 60_000,
   });
+
+  const { data: profileData } = useQuery({
+    queryKey: ["watchlist-profile", symbol],
+    queryFn: () => getProfile(symbol),
+    staleTime: 5 * 60_000,
+  });
+
+  // Report dp for sorting
+  useMemo(() => {
+    if (quote?.dp != null && onQuoteLoaded) onQuoteLoaded(quote.dp);
+  }, [quote?.dp, onQuoteLoaded]);
 
   const isUp = (quote?.dp || 0) >= 0;
   const sparkData = useMemo(() => {
@@ -76,12 +85,17 @@ function WatchlistQuote({ symbol }: { symbol: string }) {
   );
   if (!quote?.c) return null;
 
+  const companyName = profileData?.name || "";
+  const logo = profileData?.logo || "";
+
   return (
     <div className="flex items-center gap-3">
+      {logo && <img src={logo} alt="" className="h-6 w-6 rounded-md object-contain bg-background border border-border/40 shrink-0 hidden sm:block" />}
+      {companyName && <span className="text-xs text-muted-foreground truncate max-w-[100px] hidden lg:block">{companyName}</span>}
       <MiniSparkline data={sparkData} isUp={isUp} />
       <div className="text-right shrink-0">
         <div className="font-mono font-bold text-sm tabular-nums">
-          {cSym}{convert(quote.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {cSym}{convert(quote.c)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <div className={`flex items-center justify-end gap-1 text-xs font-bold tabular-nums ${isUp ? "text-chart-2" : "text-destructive"}`}>
           {isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
@@ -92,9 +106,44 @@ function WatchlistQuote({ symbol }: { symbol: string }) {
   );
 }
 
-// Portfolio summary bar
+// Daily P&L Summary
+function DailyPLSummary({ quoteMap, count, lang }: { quoteMap: Record<string, number>; count: number; lang: string }) {
+  const entries = Object.values(quoteMap);
+  if (entries.length === 0) return null;
+  const avg = entries.reduce((s, v) => s + v, 0) / entries.length;
+  const gainers = entries.filter(v => v > 0).length;
+  const losers = entries.filter(v => v < 0).length;
+  const isUp = avg >= 0;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-xl bg-gradient-to-r from-card to-muted/30 border border-border/40 p-4 mt-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">{lang === "de" ? "Heutige Performance" : "Today's Performance"}</span>
+          <div className={`font-display text-2xl font-bold ${isUp ? "text-chart-2" : "text-destructive"}`}>
+            {isUp ? "+" : ""}{avg.toFixed(2)}%
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <div className="text-center">
+            <div className="font-bold text-chart-2">{gainers}</div>
+            <div className="text-[10px] text-muted-foreground">{lang === "de" ? "Gewinner" : "Gainers"}</div>
+          </div>
+          <div className="text-center">
+            <div className="font-bold text-destructive">{losers}</div>
+            <div className="text-[10px] text-muted-foreground">{lang === "de" ? "Verlierer" : "Losers"}</div>
+          </div>
+          <div className="text-center">
+            <div className="font-bold text-foreground">{count - gainers - losers}</div>
+            <div className="text-[10px] text-muted-foreground">{lang === "de" ? "Unverändert" : "Flat"}</div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function PortfolioSummary({ watchlist, lang }: { watchlist: any[]; lang: string }) {
-  const gainersCount = watchlist.length; // Placeholder
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
       <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
@@ -132,6 +181,19 @@ function PortfolioSummary({ watchlist, lang }: { watchlist: any[]; lang: string 
   );
 }
 
+function exportWatchlistCSV(watchlist: any[], lang: string) {
+  const header = lang === "de" ? "Symbol,Hinzugefügt" : "Symbol,Added";
+  const rows = watchlist.map(w => `${w.symbol},${new Date(w.created_at).toISOString().slice(0, 10)}`);
+  const csv = [header, ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `watchlist-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function WatchlistPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: watchlist, isLoading } = useWatchlist();
@@ -141,6 +203,16 @@ export default function WatchlistPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [quoteMap, setQuoteMap] = useState<Record<string, number>>({});
+
+  const handleQuoteLoaded = useMemo(() => {
+    return (symbol: string) => (dp: number) => {
+      setQuoteMap(prev => {
+        if (prev[symbol] === dp) return prev;
+        return { ...prev, [symbol]: dp };
+      });
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     if (!watchlist) return [];
@@ -150,16 +222,20 @@ export default function WatchlistPage() {
     }
     if (sortMode === "oldest") items.reverse();
     if (sortMode === "alpha") items.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    if (sortMode === "performance") {
+      items.sort((a, b) => (quoteMap[b.symbol] || 0) - (quoteMap[a.symbol] || 0));
+    }
     return items;
-  }, [watchlist, searchQuery, sortMode]);
+  }, [watchlist, searchQuery, sortMode, quoteMap]);
 
   const count = watchlist?.length ?? 0;
 
   const cycleSortMode = () => {
-    setSortMode((prev) => prev === "newest" ? "oldest" : prev === "oldest" ? "alpha" : "newest");
+    const modes: SortMode[] = ["newest", "oldest", "alpha", "performance"];
+    setSortMode(prev => modes[(modes.indexOf(prev) + 1) % modes.length]);
   };
 
-  const sortLabel = sortMode === "newest" ? t("watchlist.sortNewest") : sortMode === "oldest" ? t("watchlist.sortOldest") : t("watchlist.sortAlpha");
+  const sortLabel = sortMode === "newest" ? t("watchlist.sortNewest") : sortMode === "oldest" ? t("watchlist.sortOldest") : sortMode === "alpha" ? t("watchlist.sortAlpha") : (lang === "de" ? "Performance" : "Performance");
 
   return (
     <div className="min-h-screen bg-background">
@@ -168,7 +244,6 @@ export default function WatchlistPage() {
         {/* Terminal-style Header */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/60 shadow-2xl">
-            {/* Terminal top bar */}
             <div className="flex items-center gap-2 px-5 py-2.5 bg-muted/50 border-b border-border/40">
               <div className="flex gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
@@ -176,9 +251,7 @@ export default function WatchlistPage() {
                 <div className="h-2.5 w-2.5 rounded-full bg-chart-2/60" />
               </div>
               <div className="flex-1 text-center">
-                <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">
-                  {lang === "de" ? "WATCHLIST TERMINAL" : "WATCHLIST TERMINAL"}
-                </span>
+                <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">WATCHLIST TERMINAL</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" /></span>
@@ -213,10 +286,9 @@ export default function WatchlistPage() {
                 )}
               </div>
 
-              {/* Portfolio Summary */}
               {user && count > 0 && <PortfolioSummary watchlist={watchlist || []} lang={lang} />}
+              {user && count > 0 && <DailyPLSummary quoteMap={quoteMap} count={count} lang={lang} />}
 
-              {/* Search & Controls */}
               {user && count > 0 && (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex items-center gap-2 mt-5">
                   <div className="relative flex-1">
@@ -234,7 +306,15 @@ export default function WatchlistPage() {
                   <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
                     {viewMode === "list" ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
                   </Button>
+                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => exportWatchlistCSV(watchlist || [], lang)} title={lang === "de" ? "CSV exportieren" : "Export CSV"}>
+                    <Download className="h-4 w-4" />
+                  </Button>
                 </motion.div>
+              )}
+              {user && count > 0 && (
+                <div className="mt-2 text-[10px] font-mono text-muted-foreground/50">
+                  {lang === "de" ? "Sortierung" : "Sort"}: <span className="text-muted-foreground">{sortLabel}</span>
+                </div>
               )}
             </div>
           </div>
@@ -290,7 +370,7 @@ export default function WatchlistPage() {
                         <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
                       </div>
                       <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
-                      <div className="mt-2"><WatchlistQuote symbol={w.symbol} /></div>
+                      <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
                       <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
                         <Clock className="h-2.5 w-2.5" />
                         {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
@@ -302,9 +382,7 @@ export default function WatchlistPage() {
             </AnimatePresence>
           </motion.div>
         ) : (
-          /* Bloomberg Terminal List View */
           <div className="rounded-xl border border-border/60 overflow-hidden bg-card shadow-lg">
-            {/* Table Header */}
             <div className="grid grid-cols-[2rem_2.5rem_1fr_7rem_8rem_2.5rem] sm:grid-cols-[2rem_2.5rem_1fr_5rem_7rem_8rem_2.5rem] items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
               <span>#</span>
               <span></span>
@@ -332,7 +410,7 @@ export default function WatchlistPage() {
                           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
                         </span>
                       </div>
-                      <div className="flex justify-end"><WatchlistQuote symbol={w.symbol} /></div>
+                      <div className="flex justify-end"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
                       <Link to={`/stock/${w.symbol}`} className="hidden sm:flex items-center justify-center h-8 w-8 rounded-lg bg-muted/50 hover:bg-primary/10 transition-colors shrink-0 ml-auto">
                         <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                       </Link>
@@ -344,7 +422,6 @@ export default function WatchlistPage() {
           </div>
         )}
 
-        {/* Footer */}
         {user && count > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
             <span className="flex items-center gap-1.5">

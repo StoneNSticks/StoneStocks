@@ -718,6 +718,7 @@ function isCommonStock(ticker: string): boolean {
     "NVD","NVDL","NVDS","CRCG","MSTX","TSLS","COHX","IONZ","LUNL","CONL","MSTZ","MSTU",
     "TSLL","AAPD","AAPU","AMZU","AMZD","GOOX","GOOGL","MSFU","MSFD","METD","NFLX",
     "BITX","BITU","SBIT","ETHD",
+    "SPDN","PLTD","TSLG","TSLR","SMCX","FNGG","FNGS","BERZ","HIBS","WEBS","LABU","LABD","SOXL","SOXS","TQQQ","SQQQ","UPRO","SPXU","UDOW","SDOW",
   ]);
 
   if (ETF_BLACKLIST.has(ticker)) return false;
@@ -739,6 +740,10 @@ function isETFByName(name: string): boolean {
     lower.includes("t-rex") ||
     lower.includes("yieldmax") ||
     lower.includes("microsectors") ||
+    lower.includes("inverse") ||
+    lower.includes("single stock") ||
+    lower.includes("roundhill") ||
+    lower.includes("tuttle") ||
     (lower.includes("daily") && (lower.includes("short") || lower.includes("long") || lower.includes("bull") || lower.includes("bear")));
 }
 
@@ -1043,8 +1048,9 @@ async function handleTopCompanies() {
         const shareOutstanding = profile?.shareOutstanding || 0;
         const computedMarketCap = (q.c || 0) * shareOutstanding * 1e6;
         // Prefer Finnhub for accuracy, only use Polygon if reasonable, fallback to computed
+        // Apply MAX_REASONABLE_MCAP sanity cap to ALL sources (fixes ADR issues like TSM)
         let marketCap = 0;
-        if (finnhubMarketCap > 0) {
+        if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = finnhubMarketCap;
         } else if (polygonMarketCap > 0 && polygonMarketCap < MAX_REASONABLE_MCAP) {
           marketCap = polygonMarketCap;
