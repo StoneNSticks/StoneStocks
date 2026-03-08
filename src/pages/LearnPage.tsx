@@ -491,7 +491,7 @@ export default function LearnPage() {
               <InfoBox title={t("learn.tipTitle")}>{t("learn.compoundInfo")}</InfoBox>
             </SectionCard>
             <CalcLink to="/calculator" label={lang === "de" ? "Zinseszins" : "Compound Interest"} />
-            {interactive && <CompoundInterestCalc lang={lang} />}
+            
             <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.brokerTitle")}>
               <p>{t("learn.brokerP1")}</p>
               <p>{t("learn.brokerP2")}</p>
