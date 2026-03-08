@@ -171,18 +171,6 @@ export function Header() {
                 </Link>
               );
             })}
-
-            <span className="w-px h-4 bg-border/60 mx-1.5 flex-shrink-0" />
-
-            {toolItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
-                <Link key={item.to} to={item.to} className={`relative px-3.5 h-10 flex items-center text-[13px] font-medium whitespace-nowrap transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-                  {label(item)}
-                  {isActive && <span className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-primary rounded-full" />}
-                </Link>
-              );
-            })}
           </nav>
         </div>
       </div>
