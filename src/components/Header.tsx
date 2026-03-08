@@ -214,10 +214,6 @@ function MobileNav({ items, location, label, user, username, t, signOut }: {
         </div>
         {[
           { to: "/compare", label: "Compare" },
-          { to: "/calculators", label: t("nav.tools") },
-          { to: "/crypto", label: "Crypto" },
-          { to: "/forex", label: "Forex" },
-          { to: "/bonds", label: "Bonds" },
         ].map((item) => {
           const isActive = location.pathname === item.to;
           return (
