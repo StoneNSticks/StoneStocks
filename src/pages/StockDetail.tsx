@@ -208,6 +208,8 @@ const StockDetail = () => {
               <EarningsCardWrapper symbol={upperSymbol} />
             </div>
 
+            <EarningsCalendar symbols={[upperSymbol]} compact />
+
             <InsiderTrades symbol={upperSymbol} />
 
             <StockComments symbol={upperSymbol} />
