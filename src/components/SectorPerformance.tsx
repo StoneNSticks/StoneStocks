@@ -343,7 +343,7 @@ export function SectorPerformance() {
           </button>
         </div>
       </div>
-      <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
+      <div className="space-y-1.5">
         {items.map(s => {
           const isUp = s.avg >= 0;
           const width = Math.min(Math.abs(s.avg) / max * 100, 100);
