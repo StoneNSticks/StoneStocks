@@ -8,7 +8,7 @@ import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { BookOpen, Search, GraduationCap } from "lucide-react";
+import { BookOpen, Search, GraduationCap, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getGlossaryDE } from "@/data/glossaryDE";
 import { getGlossaryEN } from "@/data/glossaryEN";
@@ -60,7 +60,12 @@ export default function GlossaryPage() {
 
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder={lang === "de" ? "Begriffe oder Abkürzungen suchen..." : "Search terms or abbreviations..."} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+          <Input placeholder={lang === "de" ? "Begriffe oder Abkürzungen suchen..." : "Search terms or abbreviations..."} value={search} onChange={(e) => { setSearch(e.target.value); if (!e.target.value) setLetter(null); }} className="pl-9 pr-9" />
+          {search && (
+            <button onClick={() => { setSearch(""); setLetter(null); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-1 mb-6">
