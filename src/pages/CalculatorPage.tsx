@@ -907,6 +907,71 @@ function TaxLossHarvesting() {
   );
 }
 
+function KellyCalc() {
+  const t = useT();
+  const [winRate, setWinRate] = useState(55);
+  const [winLossRatio, setWinLossRatio] = useState(1.5);
+  const [capital, setCapital] = useState(10000);
+  const [trades, setTrades] = useState(20);
+
+  const kellyFraction = useMemo(() => {
+    const p = winRate / 100;
+    const q = 1 - p;
+    const b = winLossRatio;
+    return Math.max(0, (b * p - q) / b);
+  }, [winRate, winLossRatio]);
+
+  const halfKelly = kellyFraction / 2;
+  const quarterKelly = kellyFraction / 4;
+  const betAmount = capital * halfKelly;
+
+  const simData = useMemo(() => {
+    const pts: { trade: number; full: number; half: number; quarter: number }[] = [{ trade: 0, full: capital, half: capital, quarter: capital }];
+    let full = capital, half = capital, quarter = capital;
+    for (let i = 1; i <= trades; i++) {
+      const win = Math.sin(i * 1.3 + 0.5) > 0;
+      const grow = (f: number, k: number) => win ? f * (1 + k * winLossRatio) : f * (1 - k);
+      full = grow(full, kellyFraction);
+      half = grow(half, halfKelly);
+      quarter = grow(quarter, quarterKelly);
+      pts.push({ trade: i, full: Math.round(full), half: Math.round(half), quarter: Math.round(quarter) });
+    }
+    return pts;
+  }, [capital, trades, kellyFraction, halfKelly, quarterKelly, winLossRatio]);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div><Label className="text-xs text-muted-foreground">Gewinnquote (%)</Label><Input type="number" value={winRate} onChange={(e) => setWinRate(Math.min(99, Math.max(1, Number(e.target.value))))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Gewinn/Verlust-Ratio</Label><Input type="number" value={winLossRatio} onChange={(e) => setWinLossRatio(Number(e.target.value))} className="mt-1" step="0.1" min="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Kapital ($)</Label><Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Simulierte Trades</Label><Input type="number" value={trades} onChange={(e) => setTrades(Math.min(100, Math.max(5, Number(e.target.value))))} className="mt-1" /></div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <ResultCard label="Kelly-Anteil" value={`${(kellyFraction * 100).toFixed(1)}%`} color="text-primary" />
+        <ResultCard label="Half-Kelly" value={`${(halfKelly * 100).toFixed(1)}%`} color="text-gain" />
+        <ResultCard label="Quarter-Kelly" value={`${(quarterKelly * 100).toFixed(1)}%`} />
+        <ResultCard label="Einsatz (Half-Kelly)" value={formatMoney(betAmount)} color="text-primary" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4">
+        <div className="text-xs text-muted-foreground mb-2">Kapitalverlauf über {trades} simulierte Trades</div>
+        <ResponsiveContainer width="100%" height={230}>
+          <LineChart data={simData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="trade" tick={tickStyle} axisLine={false} tickLine={false} tickFormatter={(v) => `#${v}`} />
+            <YAxis tick={tickStyle} axisLine={false} tickLine={false} tickFormatter={(v) => formatMoney(v)} />
+            <Tooltip contentStyle={chartStyle} formatter={(v: number, name: string) => [formatMoney(v), name === "full" ? "Full Kelly" : name === "half" ? "Half Kelly" : "Quarter Kelly"]} />
+            <Line type="monotone" dataKey="full" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="full" />
+            <Line type="monotone" dataKey="half" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={false} name="half" />
+            <Line type="monotone" dataKey="quarter" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="quarter" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <p className="text-xs text-muted-foreground">Half-Kelly reduziert die Volatilität erheblich bei nur leicht geringerem Erwartungswert.</p>
+    </div>
+  );
+}
+
 function DividendProjector() {
   const t = useT();
   const [holdings] = useState([
