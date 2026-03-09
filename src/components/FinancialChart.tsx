@@ -97,5 +97,19 @@ export const FinancialChart = memo(function FinancialChart({
 
 export function extractFinancialSeries(financials: Array<Record<string, unknown>>, metric: string, statement: string = "income_statement"): Array<{ label: string; value: number }> {
   if (!financials || !Array.isArray(financials)) return [];
-  return financials.filter((f: Record<string, unknown>) => { const statements = f.financials as Record<string, Record<string, Record<string, unknown>>> | undefined; return statements?.[statement]?.[metric]?.value != null; }).map((f: Record<string, unknown>) => { const statements = f.financials as Record<string, Record<string, Record<string, unknown>>>; const val = Number(statements[statement][metric].value); const endDate = f.end_date as string; const period = f.fiscal_period as string; const year = f.fiscal_year as string; return { label: period ? `${period} ${year?.slice(-2)}` : endDate?.slice(0, 7) || "", value: val }; }).reverse();
+  return financials
+    .filter((f: Record<string, unknown>) => {
+      const statements = f.financials as Record<string, Record<string, Record<string, unknown>>> | undefined;
+      return statements?.[statement]?.[metric]?.value != null;
+    })
+    .map((f: Record<string, unknown>) => {
+      const statements = f.financials as Record<string, Record<string, Record<string, unknown>>>;
+      const val = Number(statements[statement][metric].value);
+      const endDate = f.end_date as string;
+      const period = f.fiscal_period as string;
+      const year = f.fiscal_year as string;
+      return { label: period ? `${period} ${year?.slice(-2)}` : endDate?.slice(0, 7) || "", value: val, _date: endDate || "" };
+    })
+    .sort((a, b) => a._date.localeCompare(b._date))
+    .map(({ label, value }) => ({ label, value }));
 }
