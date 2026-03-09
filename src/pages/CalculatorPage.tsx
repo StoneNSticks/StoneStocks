@@ -675,6 +675,75 @@ function SavingsGoalCalc() {
   );
 }
 
+function NetWorthCalc() {
+  const t = useT();
+  const [assets, setAssets] = useState([
+    { label: "Cash & Bank", value: 20000 },
+    { label: "Stocks", value: 85000 },
+    { label: "Real Estate", value: 350000 },
+    { label: "Retirement", value: 60000 },
+  ]);
+  const [liabilities, setLiabilities] = useState([
+    { label: "Mortgage", value: 220000 },
+    { label: "Car Loan", value: 15000 },
+    { label: "Credit Card", value: 3500 },
+  ]);
+
+  const totalAssets = assets.reduce((s, a) => s + a.value, 0);
+  const totalLiabilities = liabilities.reduce((s, l) => s + l.value, 0);
+  const netWorth = totalAssets - totalLiabilities;
+
+  const pieData = assets.map(a => ({ name: a.label, value: a.value }));
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
+
+  const updateAsset = (i: number, val: number) => {
+    setAssets(prev => prev.map((a, idx) => idx === i ? { ...a, value: val } : a));
+  };
+  const updateLiability = (i: number, val: number) => {
+    setLiabilities(prev => prev.map((l, idx) => idx === i ? { ...l, value: val } : l));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <ResultCard label="Gesamtvermögen" value={formatMoney(totalAssets)} color="text-gain" />
+        <ResultCard label="Gesamtschulden" value={formatMoney(totalLiabilities)} color="text-destructive" />
+        <ResultCard label="Nettovermögen" value={formatMoney(netWorth)} color={netWorth >= 0 ? "text-primary" : "text-destructive"} />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Vermögenswerte</div>
+          {assets.map((a, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
+              <span className="text-xs text-muted-foreground flex-1 truncate">{a.label}</span>
+              <Input type="number" value={a.value} onChange={(e) => updateAsset(i, Number(e.target.value))} className="h-7 w-28 text-xs text-right" />
+            </div>
+          ))}
+        </div>
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Verbindlichkeiten</div>
+          {liabilities.map((l, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full flex-shrink-0 bg-destructive/70" />
+              <span className="text-xs text-muted-foreground flex-1 truncate">{l.label}</span>
+              <Input type="number" value={l.value} onChange={(e) => updateLiability(i, Number(e.target.value))} className="h-7 w-28 text-xs text-right" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4 flex justify-center">
+        <PieChart width={220} height={180}>
+          <Pie data={pieData} cx={110} cy={90} innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
+            {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+          </Pie>
+          <Tooltip contentStyle={chartStyle} formatter={(v: number) => [formatMoney(v)]} />
+        </PieChart>
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // SPECIAL CATEGORY
 // ═══════════════════════════════════════════════════
