@@ -1074,10 +1074,12 @@ const CalculatorPage = () => {
     { value: "loan", label: t("calc.loanCalc"), icon: <Landmark className="h-3.5 w-3.5" />, category: "planning", component: <LoanCalc /> },
     { value: "retirement", label: t("calc.retirementCalc"), icon: <Wallet className="h-3.5 w-3.5" />, category: "planning", component: <RetirementWithdrawal /> },
     { value: "savingsgoal", label: t("calc.savingsGoal"), icon: <Target className="h-3.5 w-3.5" />, category: "planning", component: <SavingsGoalCalc /> },
+    { value: "networth", label: "Nettovermögen", icon: <LayoutList className="h-3.5 w-3.5" />, category: "planning", component: <NetWorthCalc /> },
     { value: "dca", label: t("calc.dcaSimulator"), icon: <Target className="h-3.5 w-3.5" />, category: "special", component: <DCASimulator /> },
     { value: "currency", label: t("calc.currencyConverter"), icon: <ArrowLeftRight className="h-3.5 w-3.5" />, category: "special", component: <CurrencyConverter /> },
     { value: "taxloss", label: t("calc.taxLossHarvesting"), icon: <Scissors className="h-3.5 w-3.5" />, category: "special", component: <TaxLossHarvesting /> },
     { value: "divproject", label: t("calc.divProjector"), icon: <Coins className="h-3.5 w-3.5" />, category: "special", component: <DividendProjector /> },
+    { value: "kelly", label: "Kelly-Kriterium", icon: <Activity className="h-3.5 w-3.5" />, category: "special", component: <KellyCalc /> },
   ];
 
   const filteredTabs = activeCategory === "all" ? tabs : tabs.filter(tab => tab.category === activeCategory);
