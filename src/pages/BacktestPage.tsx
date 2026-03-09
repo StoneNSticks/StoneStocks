@@ -253,13 +253,6 @@ export default function BacktestPage() {
                   ))}
                 </div>
               )}
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {["AAPL","MSFT","GOOGL","AMZN","NVDA","TSLA","META","JPM","V","JNJ","WMT","PG","UNH","HD","MA","DIS","NFLX","ADBE","CRM","PYPL","AMD","INTC","CSCO","PEP","KO","MRK","ABT","NKE","BA","CAT","GS","MS","BLK","COST","SBUX","MCD","IBM","ORCL","QCOM","TXN","AVGO","LLY","NOW","SNOW","SHOP","SQ","COIN","PLTR","SOFI","UBER","ABNB","RIVN","LCID","NIO","BABA","TSM","ASML","SAP","SONY","TM"].map(s => (
-                  <button key={s} onClick={() => selectSymbol(s)} className={`px-2 py-0.5 rounded-md text-[10px] font-medium transition-colors ${symbol === s ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
-                    {s}
-                  </button>
-                ))}
-              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
