@@ -21,8 +21,9 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ["favicon.svg", "pwa-192.png", "pwa-512.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        navigateFallback: "offline.html",
-        navigateFallbackDenylist: [/^\/~oauth/],
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/offline\.html$/],
+        offlineFallbackPage: "offline.html",
         // Import push handler into the generated service worker
         importScripts: ["/sw-push.js"],
         runtimeCaching: [
