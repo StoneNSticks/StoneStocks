@@ -11,7 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles, Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink, BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X, Share2 } from "lucide-react";
+import {
+  Star, LogIn, ArrowLeft, TrendingUp, TrendingDown, Clock, Sparkles,
+  Search, SortAsc, SortDesc, LayoutGrid, List, ExternalLink,
+  BarChart3, Activity, Zap, Download, StickyNote, FolderOpen, Tag, X, Share2
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -53,12 +57,6 @@ function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoad
     staleTime: 60_000,
   });
 
-  const { data: profileData } = useQuery({
-    queryKey: ["watchlist-profile", symbol],
-    queryFn: () => getProfile(symbol),
-    staleTime: 5 * 60_000,
-  });
-
   useMemo(() => {
     if (quote?.dp != null && onQuoteLoaded) onQuoteLoaded(quote.dp);
   }, [quote?.dp, onQuoteLoaded]);
@@ -88,13 +86,8 @@ function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoad
   );
   if (!quote?.c) return null;
 
-  const companyName = profileData?.name || "";
-  const logo = profileData?.logo || "";
-
   return (
     <div className="flex items-center gap-3">
-      {logo && <img src={logo} alt="" className="h-6 w-6 rounded-md object-contain bg-background border border-border/40 shrink-0 hidden sm:block" />}
-      {companyName && <span className="text-xs text-muted-foreground truncate max-w-[100px] hidden lg:block">{companyName}</span>}
       <MiniSparkline data={sparkData} isUp={isUp} />
       <div className="text-right shrink-0">
         <div className="font-mono font-bold text-sm tabular-nums">
@@ -105,6 +98,83 @@ function WatchlistQuote({ symbol, onQuoteLoaded }: { symbol: string; onQuoteLoad
           {isUp ? "+" : ""}{(quote.dp || 0).toFixed(2)}%
         </div>
       </div>
+    </div>
+  );
+}
+
+/** List row with company logo from profile API */
+function WatchlistListRow({
+  w, i, lang, groups, handleQuoteLoaded
+}: {
+  w: any; i: number; lang: string; groups: string[];
+  handleQuoteLoaded: (symbol: string) => (dp: number) => void;
+}) {
+  const { data: profileData } = useQuery({
+    queryKey: ["watchlist-profile", w.symbol],
+    queryFn: () => getProfile(w.symbol),
+    staleTime: 5 * 60_000,
+  });
+  const logo = profileData?.logo || "";
+  const companyName = profileData?.name || "";
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors group">
+      {/* # */}
+      <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none w-6 shrink-0">{i + 1}</span>
+
+      {/* Star */}
+      <div className="shrink-0"><WatchlistStar symbol={w.symbol} /></div>
+
+      {/* Symbol + Logo + Name */}
+      <Link to={`/stock/${w.symbol}`} className="flex items-center gap-2.5 flex-1 min-w-0">
+        {logo ? (
+          <img
+            src={logo}
+            alt=""
+            className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-0.5 shrink-0"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center shrink-0 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
+            <span className="font-mono font-bold text-primary text-xs">{w.symbol.slice(0, 2)}</span>
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors">{w.symbol}</span>
+            {companyName && (
+              <span className="text-[11px] text-muted-foreground truncate hidden md:block max-w-[160px]">{companyName}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{w.group_name}</span>}
+            {w.note && <span className="text-[9px] text-muted-foreground/60 truncate max-w-[120px]" title={w.note}>📝 {w.note}</span>}
+          </div>
+        </div>
+      </Link>
+
+      {/* Actions */}
+      <div className="flex items-center gap-0.5 shrink-0">
+        <NoteEditor item={w} lang={lang} />
+        <GroupEditor item={w} groups={groups} lang={lang} />
+      </div>
+
+      {/* Added date */}
+      <div className="hidden sm:block text-right shrink-0 w-16">
+        <span className="text-[10px] font-mono text-muted-foreground/50">
+          {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
+        </span>
+      </div>
+
+      {/* Quote + Sparkline */}
+      <div className="shrink-0">
+        <WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} />
+      </div>
+
+      {/* External link */}
+      <Link to={`/stock/${w.symbol}`} className="hidden sm:flex items-center justify-center h-8 w-8 rounded-lg bg-muted/50 hover:bg-primary/10 transition-colors shrink-0">
+        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+      </Link>
     </div>
   );
 }
@@ -149,33 +219,28 @@ function PortfolioSummary({ watchlist, lang }: { watchlist: any[]; lang: string 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
       <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
-          {lang === "de" ? "Positionen" : "Positions"}
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">{lang === "de" ? "Positionen" : "Positions"}</div>
         <div className="font-display font-bold text-xl text-foreground">{watchlist.length}</div>
       </div>
       <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
-          {lang === "de" ? "Seit" : "Since"}
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">{lang === "de" ? "Seit" : "Since"}</div>
         <div className="font-display font-bold text-sm text-foreground">
           {watchlist.length > 0 ? new Date(watchlist[watchlist.length - 1].created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", year: "numeric" }) : "—"}
         </div>
       </div>
       <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
-          {lang === "de" ? "Letzte Änderung" : "Last Updated"}
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">{lang === "de" ? "Letzte Änderung" : "Last Updated"}</div>
         <div className="font-display font-bold text-sm text-foreground">
           {watchlist.length > 0 ? new Date(watchlist[0].created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" }) : "—"}
         </div>
       </div>
       <div className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/40 p-3 text-center">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
-          {lang === "de" ? "Live-Daten" : "Live Data"}
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">{lang === "de" ? "Live-Daten" : "Live Data"}</div>
         <div className="flex items-center justify-center gap-1.5">
-          <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-chart-2" /></span>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-chart-2" />
+          </span>
           <span className="font-display font-bold text-sm text-chart-2">LIVE</span>
         </div>
       </div>
@@ -196,7 +261,6 @@ function exportWatchlistCSV(watchlist: any[], lang: string) {
   URL.revokeObjectURL(url);
 }
 
-/** Inline note editor popover */
 function NoteEditor({ item: wItem, lang }: { item: any; lang: string }) {
   const updateMutation = useUpdateWatchlistItem();
   const [note, setNote] = useState(wItem.note || "");
@@ -231,7 +295,6 @@ function NoteEditor({ item: wItem, lang }: { item: any; lang: string }) {
   );
 }
 
-/** Group assignment popover */
 function GroupEditor({ item: wItem, groups, lang }: { item: any; groups: string[]; lang: string }) {
   const updateMutation = useUpdateWatchlistItem();
   const [open, setOpen] = useState(false);
@@ -311,14 +374,10 @@ export default function WatchlistPage() {
     if (!watchlist) return [];
     let items = [...watchlist];
     if (groupFilter) items = items.filter(w => w.group_name === groupFilter);
-    if (searchQuery) {
-      items = items.filter((w) => w.symbol.toLowerCase().includes(searchQuery.toLowerCase()));
-    }
+    if (searchQuery) items = items.filter(w => w.symbol.toLowerCase().includes(searchQuery.toLowerCase()));
     if (sortMode === "oldest") items.reverse();
     if (sortMode === "alpha") items.sort((a, b) => a.symbol.localeCompare(b.symbol));
-    if (sortMode === "performance") {
-      items.sort((a, b) => (quoteMap[b.symbol] || 0) - (quoteMap[a.symbol] || 0));
-    }
+    if (sortMode === "performance") items.sort((a, b) => (quoteMap[b.symbol] || 0) - (quoteMap[a.symbol] || 0));
     return items;
   }, [watchlist, searchQuery, sortMode, quoteMap, groupFilter]);
 
@@ -338,6 +397,7 @@ export default function WatchlistPage() {
         {/* Terminal-style Header */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/60 shadow-2xl">
+            {/* Title bar */}
             <div className="flex items-center gap-2 px-5 py-2.5 bg-muted/50 border-b border-border/40">
               <div className="flex gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
@@ -348,7 +408,10 @@ export default function WatchlistPage() {
                 <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">WATCHLIST TERMINAL</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" /></span>
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" />
+                </span>
                 <span className="text-[10px] font-mono text-chart-2">CONNECTED</span>
               </div>
             </div>
@@ -385,7 +448,6 @@ export default function WatchlistPage() {
 
               {user && count > 0 && (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-3 mt-5">
-                  {/* Group filter chips */}
                   {groups.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
@@ -482,74 +544,35 @@ export default function WatchlistPage() {
             <AnimatePresence>
               {filtered.map((w) => (
                 <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}>
-                  <div className="rounded-xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-0.5">
-                      <NoteEditor item={w} lang={lang} />
-                      <GroupEditor item={w} groups={groups} lang={lang} />
-                      <WatchlistStar symbol={w.symbol} />
-                    </div>
-                    <Link to={`/stock/${w.symbol}`} className="block p-4 text-center relative">
-                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-2 flex items-center justify-center shadow-md shadow-primary/5">
-                        <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
-                      </div>
-                      <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
-                      {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium mt-1 inline-block">{w.group_name}</span>}
-                      <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
-                      <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
-                        <Clock className="h-2.5 w-2.5" />
-                        {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
-                      </div>
-                    </Link>
-                    {w.note && <div className="px-3 pb-2 text-[10px] text-muted-foreground truncate" title={w.note}>📝 {w.note}</div>}
-                  </div>
+                  <GridCard w={w} lang={lang} groups={groups} handleQuoteLoaded={handleQuoteLoaded} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
         ) : (
+          /* List view */
           <div className="rounded-xl border border-border/60 overflow-hidden bg-card shadow-lg">
-            <div className="grid grid-cols-[2rem_2.5rem_1fr_4rem_7rem_8rem_4rem] sm:grid-cols-[2rem_2.5rem_1fr_4rem_5rem_7rem_8rem_4rem] items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
-              <span>#</span>
-              <span></span>
-              <span>Symbol</span>
-              <span className="text-center">{lang === "de" ? "Aktionen" : "Actions"}</span>
-              <span className="hidden sm:block text-right">{lang === "de" ? "Hinzugefügt" : "Added"}</span>
-              <span className="text-right">Chart</span>
-              <span className="text-right">{lang === "de" ? "Kurs" : "Price"}</span>
-              <span></span>
+            {/* Column header */}
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/40 text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+              <span className="w-6 shrink-0">#</span>
+              <span className="w-8 shrink-0"></span>
+              <span className="flex-1">{lang === "de" ? "Instrument" : "Instrument"}</span>
+              <span className="w-14 shrink-0">{lang === "de" ? "Aktionen" : "Actions"}</span>
+              <span className="w-16 text-right shrink-0">{lang === "de" ? "Hinzugefügt" : "Added"}</span>
+              <span className="text-right">{lang === "de" ? "Kurs & Chart" : "Price & Chart"}</span>
+              <span className="w-8 shrink-0"></span>
             </div>
             <motion.div variants={container} initial="hidden" animate="show">
               <AnimatePresence>
                 {filtered.map((w, i) => (
                   <motion.div key={w.symbol} variants={item} layout exit={{ opacity: 0, x: -50, transition: { duration: 0.2 } }} className="group">
-                    <div className="grid grid-cols-[2rem_2.5rem_1fr_4rem_7rem_8rem_4rem] sm:grid-cols-[2rem_2.5rem_1fr_4rem_5rem_7rem_8rem_4rem] items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors relative">
-                      <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none">{i + 1}</span>
-                      <div><WatchlistStar symbol={w.symbol} /></div>
-                      <Link to={`/stock/${w.symbol}`} className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center shrink-0 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
-                          <span className="font-mono font-bold text-primary text-xs">{w.symbol.slice(0, 2)}</span>
-                        </div>
-                        <div className="min-w-0">
-                          <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors truncate block">{w.symbol}</span>
-                          {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{w.group_name}</span>}
-                          {w.note && <span className="text-[9px] text-muted-foreground/60 truncate block max-w-[120px]" title={w.note}>📝 {w.note}</span>}
-                        </div>
-                      </Link>
-                      <div className="flex items-center justify-center gap-0.5">
-                        <NoteEditor item={w} lang={lang} />
-                        <GroupEditor item={w} groups={groups} lang={lang} />
-                      </div>
-                      <div className="hidden sm:block text-right">
-                        <span className="text-[10px] font-mono text-muted-foreground/50">
-                          {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
-                        </span>
-                      </div>
-                      <div className="flex justify-end"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
-                      <Link to={`/stock/${w.symbol}`} className="hidden sm:flex items-center justify-center h-8 w-8 rounded-lg bg-muted/50 hover:bg-primary/10 transition-colors shrink-0 ml-auto">
-                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </Link>
-                    </div>
+                    <WatchlistListRow
+                      w={w}
+                      i={i}
+                      lang={lang}
+                      groups={groups}
+                      handleQuoteLoaded={handleQuoteLoaded}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -557,7 +580,7 @@ export default function WatchlistPage() {
           </div>
         )}
 
-        {/* Earnings Calendar for watchlist stocks */}
+        {/* Earnings Calendar */}
         {user && watchlist && watchlist.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6">
             <EarningsCalendar symbols={watchlist.map(w => w.symbol)} />
@@ -567,7 +590,10 @@ export default function WatchlistPage() {
         {user && count > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
-              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" /></span>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-chart-2" />
+              </span>
               {lang === "de" ? "Echtzeit-Daten" : "Real-time data"}
             </span>
             <span>•</span>
@@ -578,6 +604,47 @@ export default function WatchlistPage() {
         )}
       </main>
       <Footer />
+    </div>
+  );
+}
+
+/** Grid card with logo */
+function GridCard({ w, lang, groups, handleQuoteLoaded }: {
+  w: any; lang: string; groups: string[];
+  handleQuoteLoaded: (symbol: string) => (dp: number) => void;
+}) {
+  const { data: profileData } = useQuery({
+    queryKey: ["watchlist-profile", w.symbol],
+    queryFn: () => getProfile(w.symbol),
+    staleTime: 5 * 60_000,
+  });
+  const logo = profileData?.logo || "";
+
+  return (
+    <div className="rounded-xl border border-border/50 bg-card hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-0.5">
+        <NoteEditor item={w} lang={lang} />
+        <GroupEditor item={w} groups={groups} lang={lang} />
+        <WatchlistStar symbol={w.symbol} />
+      </div>
+      <Link to={`/stock/${w.symbol}`} className="block p-4 text-center relative">
+        {logo ? (
+          <img src={logo} alt="" className="h-12 w-12 rounded-xl object-contain bg-background border border-border/40 p-1 mx-auto mb-2 shadow-md" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        ) : (
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-2 flex items-center justify-center shadow-md shadow-primary/5">
+            <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>
+          </div>
+        )}
+        <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
+        {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium mt-1 inline-block">{w.group_name}</span>}
+        <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
+        <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
+          <Clock className="h-2.5 w-2.5" />
+          {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
+        </div>
+      </Link>
+      {w.note && <div className="px-3 pb-2 text-[10px] text-muted-foreground truncate" title={w.note}>📝 {w.note}</div>}
     </div>
   );
 }
