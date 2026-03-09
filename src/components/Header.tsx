@@ -38,9 +38,9 @@ const navItems: NavItem[] = [
   { to: "/watchlist", key: "nav.watchlist", group: "main" },
   { to: "/calculators", key: "nav.calculators", fallback: "Rechner", group: "main" },
   { to: "/compare", key: "nav.compare", fallback: "Compare", group: "main" },
-  { to: "/learn", key: "nav.learn", group: "main" },
   { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
+  { to: "/learn", key: "nav.learn", group: "main" },
 ];
 
 export function Header() {
