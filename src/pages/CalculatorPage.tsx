@@ -5,8 +5,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, LineChart, Line } from "recharts";
-import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale, ArrowLeftRight, Crosshair, Scissors, Coins, TrendingDown, Wallet, RotateCcw } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell } from "recharts";
+import { Calculator, TrendingUp, Percent, DollarSign, PiggyBank, BarChart3, Landmark, Target, Scale, ArrowLeftRight, Crosshair, Scissors, Coins, TrendingDown, Wallet, RotateCcw, Activity, LayoutList } from "lucide-react";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useQuery } from "@tanstack/react-query";
@@ -675,6 +675,75 @@ function SavingsGoalCalc() {
   );
 }
 
+function NetWorthCalc() {
+  const t = useT();
+  const [assets, setAssets] = useState([
+    { label: "Cash & Bank", value: 20000 },
+    { label: "Stocks", value: 85000 },
+    { label: "Real Estate", value: 350000 },
+    { label: "Retirement", value: 60000 },
+  ]);
+  const [liabilities, setLiabilities] = useState([
+    { label: "Mortgage", value: 220000 },
+    { label: "Car Loan", value: 15000 },
+    { label: "Credit Card", value: 3500 },
+  ]);
+
+  const totalAssets = assets.reduce((s, a) => s + a.value, 0);
+  const totalLiabilities = liabilities.reduce((s, l) => s + l.value, 0);
+  const netWorth = totalAssets - totalLiabilities;
+
+  const pieData = assets.map(a => ({ name: a.label, value: a.value }));
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
+
+  const updateAsset = (i: number, val: number) => {
+    setAssets(prev => prev.map((a, idx) => idx === i ? { ...a, value: val } : a));
+  };
+  const updateLiability = (i: number, val: number) => {
+    setLiabilities(prev => prev.map((l, idx) => idx === i ? { ...l, value: val } : l));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <ResultCard label="Gesamtvermögen" value={formatMoney(totalAssets)} color="text-gain" />
+        <ResultCard label="Gesamtschulden" value={formatMoney(totalLiabilities)} color="text-destructive" />
+        <ResultCard label="Nettovermögen" value={formatMoney(netWorth)} color={netWorth >= 0 ? "text-primary" : "text-destructive"} />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Vermögenswerte</div>
+          {assets.map((a, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
+              <span className="text-xs text-muted-foreground flex-1 truncate">{a.label}</span>
+              <Input type="number" value={a.value} onChange={(e) => updateAsset(i, Number(e.target.value))} className="h-7 w-28 text-xs text-right" />
+            </div>
+          ))}
+        </div>
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Verbindlichkeiten</div>
+          {liabilities.map((l, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full flex-shrink-0 bg-destructive/70" />
+              <span className="text-xs text-muted-foreground flex-1 truncate">{l.label}</span>
+              <Input type="number" value={l.value} onChange={(e) => updateLiability(i, Number(e.target.value))} className="h-7 w-28 text-xs text-right" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4 flex justify-center">
+        <PieChart width={220} height={180}>
+          <Pie data={pieData} cx={110} cy={90} innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
+            {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+          </Pie>
+          <Tooltip contentStyle={chartStyle} formatter={(v: number) => [formatMoney(v)]} />
+        </PieChart>
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // SPECIAL CATEGORY
 // ═══════════════════════════════════════════════════
@@ -838,6 +907,71 @@ function TaxLossHarvesting() {
   );
 }
 
+function KellyCalc() {
+  const t = useT();
+  const [winRate, setWinRate] = useState(55);
+  const [winLossRatio, setWinLossRatio] = useState(1.5);
+  const [capital, setCapital] = useState(10000);
+  const [trades, setTrades] = useState(20);
+
+  const kellyFraction = useMemo(() => {
+    const p = winRate / 100;
+    const q = 1 - p;
+    const b = winLossRatio;
+    return Math.max(0, (b * p - q) / b);
+  }, [winRate, winLossRatio]);
+
+  const halfKelly = kellyFraction / 2;
+  const quarterKelly = kellyFraction / 4;
+  const betAmount = capital * halfKelly;
+
+  const simData = useMemo(() => {
+    const pts: { trade: number; full: number; half: number; quarter: number }[] = [{ trade: 0, full: capital, half: capital, quarter: capital }];
+    let full = capital, half = capital, quarter = capital;
+    for (let i = 1; i <= trades; i++) {
+      const win = Math.sin(i * 1.3 + 0.5) > 0;
+      const grow = (f: number, k: number) => win ? f * (1 + k * winLossRatio) : f * (1 - k);
+      full = grow(full, kellyFraction);
+      half = grow(half, halfKelly);
+      quarter = grow(quarter, quarterKelly);
+      pts.push({ trade: i, full: Math.round(full), half: Math.round(half), quarter: Math.round(quarter) });
+    }
+    return pts;
+  }, [capital, trades, kellyFraction, halfKelly, quarterKelly, winLossRatio]);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div><Label className="text-xs text-muted-foreground">Gewinnquote (%)</Label><Input type="number" value={winRate} onChange={(e) => setWinRate(Math.min(99, Math.max(1, Number(e.target.value))))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Gewinn/Verlust-Ratio</Label><Input type="number" value={winLossRatio} onChange={(e) => setWinLossRatio(Number(e.target.value))} className="mt-1" step="0.1" min="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Kapital ($)</Label><Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Simulierte Trades</Label><Input type="number" value={trades} onChange={(e) => setTrades(Math.min(100, Math.max(5, Number(e.target.value))))} className="mt-1" /></div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <ResultCard label="Kelly-Anteil" value={`${(kellyFraction * 100).toFixed(1)}%`} color="text-primary" />
+        <ResultCard label="Half-Kelly" value={`${(halfKelly * 100).toFixed(1)}%`} color="text-gain" />
+        <ResultCard label="Quarter-Kelly" value={`${(quarterKelly * 100).toFixed(1)}%`} />
+        <ResultCard label="Einsatz (Half-Kelly)" value={formatMoney(betAmount)} color="text-primary" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card p-4">
+        <div className="text-xs text-muted-foreground mb-2">Kapitalverlauf über {trades} simulierte Trades</div>
+        <ResponsiveContainer width="100%" height={230}>
+          <LineChart data={simData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="trade" tick={tickStyle} axisLine={false} tickLine={false} tickFormatter={(v) => `#${v}`} />
+            <YAxis tick={tickStyle} axisLine={false} tickLine={false} tickFormatter={(v) => formatMoney(v)} />
+            <Tooltip contentStyle={chartStyle} formatter={(v: number, name: string) => [formatMoney(v), name === "full" ? "Full Kelly" : name === "half" ? "Half Kelly" : "Quarter Kelly"]} />
+            <Line type="monotone" dataKey="full" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="full" />
+            <Line type="monotone" dataKey="half" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={false} name="half" />
+            <Line type="monotone" dataKey="quarter" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="quarter" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <p className="text-xs text-muted-foreground">Half-Kelly reduziert die Volatilität erheblich bei nur leicht geringerem Erwartungswert.</p>
+    </div>
+  );
+}
+
 function DividendProjector() {
   const t = useT();
   const [holdings] = useState([
@@ -940,10 +1074,12 @@ const CalculatorPage = () => {
     { value: "loan", label: t("calc.loanCalc"), icon: <Landmark className="h-3.5 w-3.5" />, category: "planning", component: <LoanCalc /> },
     { value: "retirement", label: t("calc.retirementCalc"), icon: <Wallet className="h-3.5 w-3.5" />, category: "planning", component: <RetirementWithdrawal /> },
     { value: "savingsgoal", label: t("calc.savingsGoal"), icon: <Target className="h-3.5 w-3.5" />, category: "planning", component: <SavingsGoalCalc /> },
+    { value: "networth", label: "Nettovermögen", icon: <LayoutList className="h-3.5 w-3.5" />, category: "planning", component: <NetWorthCalc /> },
     { value: "dca", label: t("calc.dcaSimulator"), icon: <Target className="h-3.5 w-3.5" />, category: "special", component: <DCASimulator /> },
     { value: "currency", label: t("calc.currencyConverter"), icon: <ArrowLeftRight className="h-3.5 w-3.5" />, category: "special", component: <CurrencyConverter /> },
     { value: "taxloss", label: t("calc.taxLossHarvesting"), icon: <Scissors className="h-3.5 w-3.5" />, category: "special", component: <TaxLossHarvesting /> },
     { value: "divproject", label: t("calc.divProjector"), icon: <Coins className="h-3.5 w-3.5" />, category: "special", component: <DividendProjector /> },
+    { value: "kelly", label: "Kelly-Kriterium", icon: <Activity className="h-3.5 w-3.5" />, category: "special", component: <KellyCalc /> },
   ];
 
   const filteredTabs = activeCategory === "all" ? tabs : tabs.filter(tab => tab.category === activeCategory);
