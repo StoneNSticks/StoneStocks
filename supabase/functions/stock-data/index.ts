@@ -1285,7 +1285,7 @@ const TOP_COMPANIES = [
 ];
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v6";
+  const cacheKey = "market:top_companies:v7";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
