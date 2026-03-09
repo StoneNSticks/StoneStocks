@@ -245,7 +245,7 @@ export default function BacktestPage() {
               </div>
               {searchResults && searchQuery.length >= 1 && !symbol && (
                 <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-border/60 bg-card shadow-xl z-50 overflow-hidden max-h-48 overflow-y-auto">
-                  {(searchResults as any[]).slice(0, 6).map((r: any) => (
+                  {(searchResults as any[]).slice(0, 8).map((r: any) => (
                     <button key={r.symbol} onClick={() => selectSymbol(r.symbol || r.displaySymbol)} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-muted/40 transition-colors text-left">
                       <span className="font-mono font-bold text-sm text-primary">{r.displaySymbol || r.symbol}</span>
                       <span className="text-xs text-muted-foreground truncate">{r.description}</span>
@@ -253,6 +253,13 @@ export default function BacktestPage() {
                   ))}
                 </div>
               )}
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {["AAPL","MSFT","GOOGL","AMZN","NVDA","TSLA","META","JPM","V","JNJ","WMT","PG","UNH","HD","MA","DIS","NFLX","ADBE","CRM","PYPL","AMD","INTC","CSCO","PEP","KO","MRK","ABT","NKE","BA","CAT","GS","MS","BLK","COST","SBUX","MCD","IBM","ORCL","QCOM","TXN","AVGO","LLY","NOW","SNOW","SHOP","SQ","COIN","PLTR","SOFI","UBER","ABNB","RIVN","LCID","NIO","BABA","TSM","ASML","SAP","SONY","TM"].map(s => (
+                  <button key={s} onClick={() => selectSymbol(s)} className={`px-2 py-0.5 rounded-md text-[10px] font-medium transition-colors ${symbol === s ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
