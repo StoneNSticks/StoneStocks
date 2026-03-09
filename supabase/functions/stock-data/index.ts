@@ -344,6 +344,40 @@ async function handleTimeSeries(symbol: string, interval: string, outputsize = "
         meta: { symbol, interval: params.interval, source: "polygon" },
       };
     },
+    // 3. Alpha Vantage (supports international symbols like SAP.DE, NESN.SW etc.)
+    async () => {
+      const avFnMap: Record<string, string> = { "1day": "TIME_SERIES_DAILY", "1week": "TIME_SERIES_WEEKLY", "1month": "TIME_SERIES_MONTHLY" };
+      const avFn = avFnMap[params.interval];
+      if (!avFn) return null;
+      const avParams: Record<string, string> = { symbol, outputsize: parseInt(outputsize) > 100 ? "full" : "compact" };
+      const data = await fetchAlphaVantage(avFn, avParams);
+      const seriesKey = Object.keys(data).find(k => k.includes("Time Series"));
+      if (!seriesKey || !data[seriesKey]) return null;
+      const entries = Object.entries(data[seriesKey]);
+      if (!entries.length) return null;
+      return {
+        values: entries.slice(0, parseInt(outputsize)).map(([date, v]: [string, any]) => ({
+          datetime: date,
+          open: v["1. open"], high: v["2. high"], low: v["3. low"], close: v["4. close"], volume: v["5. volume"] || "0",
+        })),
+        meta: { symbol, interval: params.interval, source: "alphavantage" },
+      };
+    },
+    // 4. Finnhub candles (supports some international exchanges)
+    async () => {
+      if (params.interval !== "1day") return null;
+      const to = Math.floor(Date.now() / 1000);
+      const from = to - (parseInt(outputsize) * 24 * 60 * 60 * 1.5);
+      const data = await fetchFinnhub("stock/candle", { symbol, resolution: "D", from: String(Math.floor(from)), to: String(to) });
+      if (data?.s !== "ok" || !data?.c?.length) return null;
+      return {
+        values: data.c.map((_: any, i: number) => ({
+          datetime: new Date(data.t[i] * 1000).toISOString().split("T")[0],
+          open: String(data.o[i]), high: String(data.h[i]), low: String(data.l[i]), close: String(data.c[i]), volume: String(data.v[i]),
+        })),
+        meta: { symbol, interval: params.interval, source: "finnhub" },
+      };
+    },
   ], (r) => r != null);
 
   if (result) { await setCache(cacheKey, result, "multi", TTL[ttlKey]); return result; }
