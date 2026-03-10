@@ -159,6 +159,37 @@ async function fetchYahooRSS(path = ""): Promise<any[]> {
   return items;
 }
 
+// Yahoo Finance chart API (supports European symbols like SIE.DE, VOW3.DE etc.)
+async function fetchYahooChart(symbol: string, interval = "1d", range = "1y"): Promise<any> {
+  // Map Finnhub-style suffixes to Yahoo Finance format
+  const yahooSymbol = symbol
+    .replace(/\.DE$/, ".DE")  // XETRA stays same
+    .replace(/\.BD$/, ".DE")  // Berlin → XETRA
+    .replace(/\.DU$/, ".DU")  // Düsseldorf
+    .replace(/\.F$/, ".F")    // Frankfurt
+    .replace(/\.HM$/, ".HM")  // Hamburg
+    .replace(/\.MU$/, ".MU")  // Munich
+    .replace(/\.SW$/, ".SW")  // Swiss
+    .replace(/\.L$/, ".L")    // London
+    .replace(/\.PA$/, ".PA")  // Paris
+    .replace(/\.AS$/, ".AS")  // Amsterdam
+    .replace(/\.MI$/, ".MI")  // Milan
+    .replace(/\.MC$/, ".MC")  // Madrid
+    .replace(/\.BR$/, ".BR")  // Brussels
+    .replace(/\.VI$/, ".VI")  // Vienna
+    .replace(/\.HE$/, ".HE")  // Helsinki
+    .replace(/\.CO$/, ".CO")  // Copenhagen
+    .replace(/\.ST$/, ".ST")  // Stockholm
+    .replace(/\.OL$/, ".OL"); // Oslo
+
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=${interval}&range=${range}&includePrePost=false`;
+  const res = await fetchWithBackoff(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+  });
+  if (!res.ok) throw new Error(`Yahoo Chart error: ${res.status}`);
+  return res.json();
+}
+
 async function fetchEulerpool(endpoint: string) {
   const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
   const res = await fetch(url);
