@@ -438,7 +438,7 @@ export default function BacktestPage() {
           </motion.div>
         )}
 
-        {/* Empty state */}
+        {/* Empty state - before running */}
         {!seriesLoading && !result && runKey === 0 && (
           <div className="text-center py-20">
             <Activity className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
@@ -446,6 +446,21 @@ export default function BacktestPage() {
               {lang === "de"
                 ? "Wähle eine Aktie und Strategie, dann starte den Backtest."
                 : "Select a stock and strategy, then run the backtest."}
+            </p>
+          </div>
+        )}
+
+        {/* No data state - after running but no data returned */}
+        {!seriesLoading && !result && runKey > 0 && (
+          <div className="text-center py-16 rounded-xl border border-destructive/20 bg-destructive/5">
+            <AlertTriangle className="h-12 w-12 text-destructive/50 mx-auto mb-3" />
+            <p className="text-sm font-medium text-foreground mb-1">
+              {lang === "de" ? "Keine historischen Daten verfügbar" : "No historical data available"}
+            </p>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              {lang === "de"
+                ? `Für "${symbol}" konnten keine Kursdaten geladen werden. Versuche das US-Symbol (z.B. "SAP" statt "SAP.DE") oder suche nach dem Unternehmensnamen.`
+                : `Could not load price data for "${symbol}". Try the US symbol (e.g. "SAP" instead of "SAP.DE") or search by company name.`}
             </p>
           </div>
         )}

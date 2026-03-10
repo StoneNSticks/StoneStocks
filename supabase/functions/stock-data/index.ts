@@ -159,6 +159,37 @@ async function fetchYahooRSS(path = ""): Promise<any[]> {
   return items;
 }
 
+// Yahoo Finance chart API (supports European symbols like SIE.DE, VOW3.DE etc.)
+async function fetchYahooChart(symbol: string, interval = "1d", range = "1y"): Promise<any> {
+  // Map Finnhub-style suffixes to Yahoo Finance format
+  const yahooSymbol = symbol
+    .replace(/\.DE$/, ".DE")  // XETRA stays same
+    .replace(/\.BD$/, ".DE")  // Berlin → XETRA
+    .replace(/\.DU$/, ".DU")  // Düsseldorf
+    .replace(/\.F$/, ".F")    // Frankfurt
+    .replace(/\.HM$/, ".HM")  // Hamburg
+    .replace(/\.MU$/, ".MU")  // Munich
+    .replace(/\.SW$/, ".SW")  // Swiss
+    .replace(/\.L$/, ".L")    // London
+    .replace(/\.PA$/, ".PA")  // Paris
+    .replace(/\.AS$/, ".AS")  // Amsterdam
+    .replace(/\.MI$/, ".MI")  // Milan
+    .replace(/\.MC$/, ".MC")  // Madrid
+    .replace(/\.BR$/, ".BR")  // Brussels
+    .replace(/\.VI$/, ".VI")  // Vienna
+    .replace(/\.HE$/, ".HE")  // Helsinki
+    .replace(/\.CO$/, ".CO")  // Copenhagen
+    .replace(/\.ST$/, ".ST")  // Stockholm
+    .replace(/\.OL$/, ".OL"); // Oslo
+
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=${interval}&range=${range}&includePrePost=false`;
+  const res = await fetchWithBackoff(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+  });
+  if (!res.ok) throw new Error(`Yahoo Chart error: ${res.status}`);
+  return res.json();
+}
+
 async function fetchEulerpool(endpoint: string) {
   const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
   const res = await fetch(url);
@@ -377,6 +408,41 @@ async function handleTimeSeries(symbol: string, interval: string, outputsize = "
         })),
         meta: { symbol, interval: params.interval, source: "finnhub" },
       };
+    },
+    // 5. Yahoo Finance chart (best coverage for European stocks like SIE.DE, VOW3.DE, BMW.DE)
+    async () => {
+      const rangeMap: Record<string, string> = { "1day": "4y", "1week": "10y", "1month": "max" };
+      const intervalMap: Record<string, string> = { "1day": "1d", "1week": "1wk", "1month": "1mo", "5min": "5m", "15min": "15m", "1h": "1h" };
+      const yahooInterval = intervalMap[params.interval];
+      const yahooRange = rangeMap[params.interval];
+      if (!yahooInterval) return null;
+      try {
+        const data = await fetchYahooChart(symbol, yahooInterval, yahooRange || "1y");
+        const result = data?.chart?.result?.[0];
+        if (!result?.timestamp?.length) return null;
+        const timestamps = result.timestamp;
+        const quotes = result.indicators?.quote?.[0];
+        if (!quotes) return null;
+        const values = timestamps
+          .map((t: number, i: number) => ({
+            datetime: new Date(t * 1000).toISOString().split("T")[0],
+            open: quotes.open?.[i] != null ? String(quotes.open[i]) : "0",
+            high: quotes.high?.[i] != null ? String(quotes.high[i]) : "0",
+            low: quotes.low?.[i] != null ? String(quotes.low[i]) : "0",
+            close: quotes.close?.[i] != null ? String(quotes.close[i]) : "0",
+            volume: quotes.volume?.[i] != null ? String(quotes.volume[i]) : "0",
+          }))
+          .filter((v: any) => v.close !== "0" && v.close !== "null")
+          .slice(-parseInt(outputsize));
+        if (!values.length) return null;
+        return {
+          values,
+          meta: { symbol, interval: params.interval, source: "yahoo" },
+        };
+      } catch (e) {
+        console.warn("Yahoo chart fallback failed:", e);
+        return null;
+      }
     },
   ], (r) => r != null);
 
