@@ -85,27 +85,25 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Market Breadth (20%) — McClellan-style advancing vs declining volume proxy */
-  const advancingSum = gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
-  const decliningSum = losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
-  const totalMagnitude = advancingSum + decliningSum;
-  // Net breadth thrust: how much stronger are advances vs declines in magnitude
-  const breadthThrust = totalMagnitude > 0 ? (advancingSum - decliningSum) / totalMagnitude : 0;
-  // Map from [-1, +1] to [0, 100]
-  const breadthScore = Math.min(100, Math.max(0, (breadthThrust + 1) / 2 * 100));
+  /* 2. Advance/Decline Ratio (15%) — Market participation count */
+  const advCount = gainers.length;
+  const decCount = losers.length;
+  const totalCount = advCount + decCount;
+  const adRatio = totalCount > 0 ? advCount / totalCount : 0.5;
+  const adScore = Math.min(100, Math.max(0, adRatio * 100));
   indicators.push({
-    key: "breadth", weight: 0.20,
-    label: { de: "Marktbreite (Proxy)", en: "Market Breadth (Proxy)" },
+    key: "ad_ratio", weight: 0.15,
+    label: { de: "Advance/Decline Ratio", en: "Advance/Decline Ratio" },
     description: {
-      de: "McClellan-Proxy: Vergleicht die kumulierte Stärke aller Gewinner mit der Stärke aller Verlierer. Nicht nur Anzahl, sondern wie stark die Bewegungen sind. Starke Gewinne bei schwachen Verlusten = Gier.",
-      en: "McClellan-style proxy: Compares the cumulative magnitude of all gainers vs all losers. Not just count, but how strong the moves are. Strong advances with weak declines = greed."
+      de: "Misst die Marktbeteiligung: Wie viele Aktien steigen im Verhältnis zur Gesamtzahl? Hohe Beteiligung = breite Rally = Gier.",
+      en: "Measures market participation: how many stocks are advancing relative to total? High participation = broad rally = greed."
     },
     formula: {
-      de: `Score = ((Σ Gewinne − Σ Verluste) / (Σ Gewinne + Σ Verluste) + 1) / 2 × 100. Gewinne: ${advancingSum.toFixed(1)}%, Verluste: ${decliningSum.toFixed(1)}%.`,
-      en: `Score = ((Σ gains − Σ losses) / (Σ gains + Σ losses) + 1) / 2 × 100. Gains: ${advancingSum.toFixed(1)}%, Losses: ${decliningSum.toFixed(1)}%.`
+      de: `Score = Gewinner / (Gewinner + Verlierer) × 100. ${advCount} Gewinner, ${decCount} Verlierer von ${totalCount} gesamt.`,
+      en: `Score = advancers / (advancers + decliners) × 100. ${advCount} advancers, ${decCount} decliners of ${totalCount} total.`
     },
-    score: breadthScore,
-    rawValue: `+${advancingSum.toFixed(1)}% / -${decliningSum.toFixed(1)}%`,
+    score: adScore,
+    rawValue: `${advCount}↑ / ${decCount}↓`,
     icon: <Activity className="h-4 w-4" />,
   });
 
@@ -166,30 +164,49 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Stock Price Strength (5%) — Average gain magnitude vs loss magnitude */
-  const avgGainMag = gainers.length > 0
-    ? gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0) / gainers.length
-    : 0;
-  const avgLossMag = losers.length > 0
-    ? losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0) / losers.length
-    : 0;
-  // Ratio: avgGain / (avgGain + avgLoss). If gains are stronger than losses, ratio > 0.5 → bullish
-  const strengthRatio = (avgGainMag + avgLossMag) > 0 ? avgGainMag / (avgGainMag + avgLossMag) : 0.5;
-  const priceStrengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
+  /* 5a. Extreme Movers (5%) — Tail behavior */
+  const extremeGainers = gainers.filter((g: any) => (g.changePercent || 0) > 3).length;
+  const extremeLosers = losers.filter((l: any) => (l.changePercent || 0) < -3).length;
+  const totalExtreme = extremeGainers + extremeLosers;
+  const extremeScore = totalExtreme > 0
+    ? Math.min(100, Math.max(0, (extremeGainers / totalExtreme) * 100))
+    : 50;
   indicators.push({
-    key: "price_strength", weight: 0.05,
-    label: { de: "Kursstärke", en: "Price Strength" },
+    key: "extreme_movers", weight: 0.05,
+    label: { de: "Extreme Bewegungen", en: "Extreme Movers" },
     description: {
-      de: "Vergleicht die durchschnittliche Stärke der Tagesgewinner mit der durchschnittlichen Stärke der Tagesverlierer. Wenn Gewinne im Schnitt stärker ausfallen als Verluste, deutet das auf bullische Marktstimmung hin.",
-      en: "Compares average magnitude of daily gainers vs daily losers. When average gains are stronger than average losses, it signals bullish market sentiment."
+      de: "Zählt Aktien mit Tagesbewegungen über ±3%. Viele extreme Gewinner = Euphorie (Gier), viele extreme Verlierer = Panik (Angst).",
+      en: "Counts stocks with daily moves exceeding ±3%. Many extreme gainers = euphoria (greed), many extreme losers = panic (fear)."
     },
     formula: {
-      de: `Score = Ø Gewinn / (Ø Gewinn + Ø Verlust) × 100. Ø Gewinn: ${avgGainMag.toFixed(2)}%, Ø Verlust: ${avgLossMag.toFixed(2)}%.`,
-      en: `Score = avg gain / (avg gain + avg loss) × 100. Avg gain: ${avgGainMag.toFixed(2)}%, Avg loss: ${avgLossMag.toFixed(2)}%.`
+      de: `Score = Extreme Gewinner / (Extreme Gewinner + Extreme Verlierer) × 100. ${extremeGainers} Gewinner >+3%, ${extremeLosers} Verlierer <-3%.`,
+      en: `Score = extreme gainers / (extreme gainers + extreme losers) × 100. ${extremeGainers} gainers >+3%, ${extremeLosers} losers <-3%.`
     },
-    score: priceStrengthScore,
-    rawValue: `+${avgGainMag.toFixed(2)}% / -${avgLossMag.toFixed(2)}%`,
-    icon: <TrendingUp className="h-4 w-4" />,
+    score: extremeScore,
+    rawValue: `${extremeGainers}↑ / ${extremeLosers}↓`,
+    icon: <Zap className="h-4 w-4" />,
+  });
+
+  /* 5b. Market Participation (5%) — Conviction indicator */
+  const significantMovers = [...gainers, ...losers].filter((s: any) => Math.abs(s.changePercent || 0) > 1).length;
+  const allStocks = gainers.length + losers.length;
+  const participationRate = allStocks > 0 ? significantMovers / allStocks : 0.5;
+  const participationBias = avgChange >= 0 ? participationRate : (1 - participationRate);
+  const participationScore = Math.min(100, Math.max(0, participationBias * 100));
+  indicators.push({
+    key: "participation", weight: 0.05,
+    label: { de: "Marktaktivität", en: "Market Participation" },
+    description: {
+      de: "Misst wie viele Aktien sich signifikant bewegen (>1%). Hohe Aktivität bei positiver Tendenz = Überzeugung (Gier). Hohe Aktivität bei negativer Tendenz = Panik (Angst).",
+      en: "Measures how many stocks move significantly (>1%). High activity with positive bias = conviction (greed). High activity with negative bias = panic (fear)."
+    },
+    formula: {
+      de: `${significantMovers} von ${allStocks} Aktien bewegen sich >1% (${(participationRate*100).toFixed(0)}%). Tendenz: ${avgChange >= 0 ? "positiv" : "negativ"}.`,
+      en: `${significantMovers} of ${allStocks} stocks move >1% (${(participationRate*100).toFixed(0)}%). Bias: ${avgChange >= 0 ? "positive" : "negative"}.`
+    },
+    score: participationScore,
+    rawValue: `${significantMovers}/${allStocks} (${(participationRate*100).toFixed(0)}%)`,
+    icon: <Target className="h-4 w-4" />,
   });
 
   /* 5b. Junk Bond Demand (5%) — CNN: yield spread proxy */
