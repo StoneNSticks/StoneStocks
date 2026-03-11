@@ -37,7 +37,7 @@ const TTL: Record<string, number> = {
   massive_dividends: 60 * 24 * 7, massive_splits: 60 * 24 * 7,
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
   massive_news: 30, market_news: 15, gainers_losers: 30,
-  most_active: 10, top_companies: 30, currency_rates: 60,
+  most_active: 10, top_companies: 60, currency_rates: 60,
   simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
   commodities: 10,
   insider_transactions: 30,
@@ -51,6 +51,13 @@ const TTL: Record<string, number> = {
 async function getCached(key: string): Promise<unknown | null> {
   const { data } = await supabase.from("api_cache").select("data, expires_at").eq("cache_key", key).single();
   if (data && new Date(data.expires_at) > new Date()) return data.data;
+  return null;
+}
+
+// Get stale cached data (even if expired) for fallback merging
+async function getStaleCached(key: string): Promise<unknown | null> {
+  const { data } = await supabase.from("api_cache").select("data").eq("cache_key", key).single();
+  if (data) return data.data;
   return null;
 }
 
@@ -1385,61 +1392,149 @@ const TOP_COMPANIES = [
 ];
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v7";
+  const cacheKey = "market:top_companies:v8";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  // Fetch in batches of 15 to avoid rate limits
-  const BATCH_SIZE = 15;
+  const BATCH_SIZE = 10; // Smaller batches to reduce rate limit risk
   const allQuotes: any[] = [];
-
-  // Finnhub uses BRK-B format (dash), not BRK.B (dot)
   const toFinnhubSymbol = (sym: string) => sym.replace(".", "-");
 
-  for (let i = 0; i < TOP_COMPANIES.length; i += BATCH_SIZE) {
-    const batch = TOP_COMPANIES.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(
-      batch.map(async (c) => {
-        const finnhubSym = toFinnhubSymbol(c.symbol);
-        try {
-          const [q, profile] = await Promise.all([
-            fetchFinnhub("quote", { symbol: finnhubSym }),
-            fetchFinnhub("stock/profile2", { symbol: finnhubSym }),
-          ]);
-          const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8, LI: 2, XPEV: 2, ZTO: 1, VNET: 6, BILI: 1, IQ: 7, TME: 2, WB: 1, YUMC: 1, HTHT: 0.25, TAL: 3, EDU: 1, FUTU: 1, TIGR: 1, DIDI: 4, SE: 1, GRAB: 1, MELI: 1, NU: 1, STNE: 1, PAGS: 1 };
-          const MAX_REASONABLE_MCAP = 5e12;
-          const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
-          const shareOutstanding = profile?.shareOutstanding || 0;
-          const adrRatio = ADR_RATIOS[c.symbol] || 1;
-          const computedMarketCap = ((q.c || 0) * shareOutstanding * 1e6) / adrRatio;
-          let marketCap = 0;
-          if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
-            marketCap = finnhubMarketCap;
-          } else if (computedMarketCap > 0 && computedMarketCap < MAX_REASONABLE_MCAP) {
-            marketCap = computedMarketCap;
-          }
-          if (marketCap === 0) {
-            const candidates = [finnhubMarketCap, computedMarketCap].filter(v => v > 0);
-            marketCap = candidates.length > 0 ? Math.min(...candidates) : 0;
-          }
-          return {
-            symbol: c.symbol, name: c.name, price: q.c || 0,
-            change: q.d || 0, changePercent: q.dp || 0,
-            marketCap,
-            logo: profile?.logo || "",
-            sector: profile?.finnhubIndustry || "",
-          };
-        } catch {
-          return { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "" };
-        }
-      })
-    );
-    allQuotes.push(...batchResults);
+  const ADR_RATIOS: Record<string, number> = { TSM: 5, BABA: 8, PDD: 4, NIO: 1, JD: 2, BIDU: 8, LI: 2, XPEV: 2, ZTO: 1, VNET: 6, BILI: 1, IQ: 7, TME: 2, WB: 1, YUMC: 1, HTHT: 0.25, TAL: 3, EDU: 1, FUTU: 1, TIGR: 1, DIDI: 4, SE: 1, GRAB: 1, MELI: 1, NU: 1, STNE: 1, PAGS: 1 };
+  const MAX_REASONABLE_MCAP = 5e12;
+
+  // Helper: fetch single company with retry + multi-provider fallback
+  async function fetchCompanyData(c: { symbol: string; name: string }): Promise<any> {
+    const finnhubSym = toFinnhubSymbol(c.symbol);
+    const baseResult = { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 };
+
+    // Attempt 1: Finnhub (with 1 retry built into fetchWithBackoff)
+    try {
+      const [q, profile] = await Promise.all([
+        fetchFinnhub("quote", { symbol: finnhubSym }),
+        fetchFinnhub("stock/profile2", { symbol: finnhubSym }),
+      ]);
+      const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
+      const shareOutstanding = profile?.shareOutstanding || 0;
+      const adrRatio = ADR_RATIOS[c.symbol] || 1;
+      const computedMarketCap = ((q.c || 0) * shareOutstanding * 1e6) / adrRatio;
+      let marketCap = 0;
+      if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP) {
+        marketCap = finnhubMarketCap;
+      } else if (computedMarketCap > 0 && computedMarketCap < MAX_REASONABLE_MCAP) {
+        marketCap = computedMarketCap;
+      }
+      if (marketCap === 0) {
+        const candidates = [finnhubMarketCap, computedMarketCap].filter(v => v > 0);
+        marketCap = candidates.length > 0 ? Math.min(...candidates) : 0;
+      }
+      if (marketCap > 0 && q.c > 0) {
+        return {
+          ...baseResult, price: q.c, change: q.d || 0, changePercent: q.dp || 0,
+          marketCap, logo: profile?.logo || "", sector: profile?.finnhubIndustry || "",
+          pe: profile?.pe || 0, dividendYield: profile?.dividendYield || 0,
+        };
+      }
+    } catch (e) {
+      console.warn(`Finnhub failed for ${c.symbol}:`, e);
+    }
+
+    // Attempt 2: Polygon ticker details + snapshot
+    try {
+      const [tickerData, snapshotData] = await Promise.all([
+        fetchMassive(`/v3/reference/tickers/${c.symbol}`),
+        fetchMassive(`/v2/snapshot/locale/us/markets/stocks/tickers/${c.symbol}`),
+      ]);
+      const ticker = tickerData?.results;
+      const snap = snapshotData?.ticker;
+      if (snap?.day?.c > 0 && ticker?.market_cap > 0) {
+        return {
+          ...baseResult, price: snap.day.c, change: snap.todaysChange || 0,
+          changePercent: snap.todaysChangePerc || 0, marketCap: ticker.market_cap,
+          sector: ticker?.sic_description || "", logo: ticker?.branding?.icon_url || "",
+        };
+      }
+    } catch (e) {
+      console.warn(`Polygon failed for ${c.symbol}:`, e);
+    }
+
+    // Attempt 3: Twelve Data quote
+    try {
+      const tdQuote = await fetchTwelveData("quote", { symbol: c.symbol });
+      if (tdQuote?.close > 0) {
+        return {
+          ...baseResult, price: parseFloat(tdQuote.close),
+          change: parseFloat(tdQuote.change || "0"),
+          changePercent: parseFloat(tdQuote.percent_change || "0"),
+          // Twelve Data doesn't provide market cap directly, estimate if we have shares
+          marketCap: 0, // Will be filled from stale cache if needed
+        };
+      }
+    } catch (e) {
+      console.warn(`TwelveData failed for ${c.symbol}:`, e);
+    }
+
+    return baseResult;
   }
 
-  // Only include companies with a valid market cap, then sort descending
+  // Process in smaller batches with delay between batches
+  for (let i = 0; i < TOP_COMPANIES.length; i += BATCH_SIZE) {
+    const batch = TOP_COMPANIES.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(batch.map(fetchCompanyData));
+    allQuotes.push(...batchResults);
+    // Small delay between batches to avoid rate limits
+    if (i + BATCH_SIZE < TOP_COMPANIES.length) {
+      await new Promise(r => setTimeout(r, 200));
+    }
+  }
+
+  // Merge stale cached data for any companies that failed
+  const staleCacheKey = "market:top_companies:v8";
+  const staleData = await getStaleCached(staleCacheKey) as any[] | null;
+  const staleMap = new Map<string, any>();
+  if (Array.isArray(staleData)) {
+    for (const item of staleData) {
+      staleMap.set(item.symbol, item);
+    }
+  }
+
+  // Fill in missing data from stale cache
+  for (let i = 0; i < allQuotes.length; i++) {
+    const q = allQuotes[i];
+    if (q.marketCap === 0 || q.price === 0) {
+      const stale = staleMap.get(q.symbol);
+      if (stale && stale.marketCap > 0) {
+        allQuotes[i] = { ...stale, stale: true };
+        // Keep fresh price if we got one
+        if (q.price > 0) {
+          allQuotes[i].price = q.price;
+          allQuotes[i].change = q.change;
+          allQuotes[i].changePercent = q.changePercent;
+          allQuotes[i].stale = false;
+        }
+      }
+    }
+  }
+
+  // Include all companies with valid market cap, sort descending
   const validQuotes = allQuotes.filter((q: any) => q.marketCap > 0);
   validQuotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
+
+  // If we got fewer than 80% of expected companies, and have stale data, use stale
+  if (validQuotes.length < TOP_COMPANIES.length * 0.8 && staleData && Array.isArray(staleData) && staleData.length > validQuotes.length) {
+    console.warn(`Only got ${validQuotes.length}/${TOP_COMPANIES.length} companies, using stale cache with ${staleData.length} entries`);
+    // Merge: use fresh data where available, stale for the rest
+    const freshMap = new Map(validQuotes.map((q: any) => [q.symbol, q]));
+    const merged = staleData.map((s: any) => freshMap.get(s.symbol) || { ...s, stale: true });
+    // Add any fresh companies not in stale data
+    for (const q of validQuotes) {
+      if (!staleData.find((s: any) => s.symbol === q.symbol)) merged.push(q);
+    }
+    merged.sort((a: any, b: any) => b.marketCap - a.marketCap);
+    await setCache(cacheKey, merged, "multi", TTL.top_companies);
+    return merged;
+  }
+
   await setCache(cacheKey, validQuotes, "multi", TTL.top_companies);
   return validQuotes;
 }
