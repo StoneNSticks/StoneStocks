@@ -85,23 +85,27 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Market Breadth (20%) — Proxy: top movers ratio */
-  const totalStocks = gainers.length + losers.length;
-  const breadthRatio = totalStocks > 0 ? gainers.length / totalStocks : 0.5;
-  const breadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
+  /* 2. Market Breadth (20%) — McClellan-style advancing vs declining volume proxy */
+  const advancingSum = gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
+  const decliningSum = losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
+  const totalMagnitude = advancingSum + decliningSum;
+  // Net breadth thrust: how much stronger are advances vs declines in magnitude
+  const breadthThrust = totalMagnitude > 0 ? (advancingSum - decliningSum) / totalMagnitude : 0;
+  // Map from [-1, +1] to [0, 100]
+  const breadthScore = Math.min(100, Math.max(0, (breadthThrust + 1) / 2 * 100));
   indicators.push({
     key: "breadth", weight: 0.20,
     label: { de: "Marktbreite (Proxy)", en: "Market Breadth (Proxy)" },
     description: {
-      de: "Proxy basierend auf dem Verhältnis der Top-Gewinner zu Top-Verlierern des Tages. Nicht identisch mit NYSE Advance/Decline, aber ein nützlicher Stimmungsindikator.",
-      en: "Proxy based on the ratio of today's top gainers to top losers. Not identical to NYSE advance/decline data, but a useful sentiment indicator."
+      de: "McClellan-Proxy: Vergleicht die kumulierte Stärke aller Gewinner mit der Stärke aller Verlierer. Nicht nur Anzahl, sondern wie stark die Bewegungen sind. Starke Gewinne bei schwachen Verlusten = Gier.",
+      en: "McClellan-style proxy: Compares the cumulative magnitude of all gainers vs all losers. Not just count, but how strong the moves are. Strong advances with weak declines = greed."
     },
     formula: {
-      de: `Score = (Top-Gewinner / Gesamt Top-Movers) × 100. Aktuell: ${gainers.length} Gewinner von ${totalStocks} Top-Movers.`,
-      en: `Score = (top gainers / total top movers) × 100. Currently: ${gainers.length} gainers out of ${totalStocks} top movers.`
+      de: `Score = ((Σ Gewinne − Σ Verluste) / (Σ Gewinne + Σ Verluste) + 1) / 2 × 100. Gewinne: ${advancingSum.toFixed(1)}%, Verluste: ${decliningSum.toFixed(1)}%.`,
+      en: `Score = ((Σ gains − Σ losses) / (Σ gains + Σ losses) + 1) / 2 × 100. Gains: ${advancingSum.toFixed(1)}%, Losses: ${decliningSum.toFixed(1)}%.`
     },
     score: breadthScore,
-    rawValue: `${gainers.length}/${totalStocks}`,
+    rawValue: `+${advancingSum.toFixed(1)}% / -${decliningSum.toFixed(1)}%`,
     icon: <Activity className="h-4 w-4" />,
   });
 
@@ -162,27 +166,29 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Stock Price Strength (5%) — CNN: 52-week highs vs lows proxy */
-  // Proxy: stocks with gains > 3% approximate "near 52-week highs", losses > 3% approximate "near 52-week lows"
-  const allMovers = [...gainers, ...losers];
-  const nearHighs = allMovers.filter((s: any) => (s.changePercent || 0) > 3).length;
-  const nearLows = allMovers.filter((s: any) => (s.changePercent || 0) < -3).length;
-  const totalHL = nearHighs + nearLows;
-  const highLowRatio = totalHL > 0 ? nearHighs / totalHL : 0.5;
-  const priceStrengthScore = Math.min(100, Math.max(0, highLowRatio * 100));
+  /* 5. Stock Price Strength (5%) — Average gain magnitude vs loss magnitude */
+  const avgGainMag = gainers.length > 0
+    ? gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0) / gainers.length
+    : 0;
+  const avgLossMag = losers.length > 0
+    ? losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0) / losers.length
+    : 0;
+  // Ratio: avgGain / (avgGain + avgLoss). If gains are stronger than losses, ratio > 0.5 → bullish
+  const strengthRatio = (avgGainMag + avgLossMag) > 0 ? avgGainMag / (avgGainMag + avgLossMag) : 0.5;
+  const priceStrengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
   indicators.push({
     key: "price_strength", weight: 0.05,
-    label: { de: "Kursstärke (Proxy)", en: "Stock Price Strength (Proxy)" },
+    label: { de: "Kursstärke", en: "Price Strength" },
     description: {
-      de: "Approximiert die Anzahl der Aktien nahe 52-Wochen-Hochs vs. -Tiefs. Aktien mit >3% Tagesgewinn gelten als 'nahe Hoch', mit >3% Verlust als 'nahe Tief'. Mehr Hochs = Gier, mehr Tiefs = Angst.",
-      en: "Approximates net new 52-week highs vs lows. Stocks with >3% daily gain count as 'near high', >3% loss as 'near low'. More highs than lows is a bullish sign and signals Greed."
+      de: "Vergleicht die durchschnittliche Stärke der Tagesgewinner mit der durchschnittlichen Stärke der Tagesverlierer. Wenn Gewinne im Schnitt stärker ausfallen als Verluste, deutet das auf bullische Marktstimmung hin.",
+      en: "Compares average magnitude of daily gainers vs daily losers. When average gains are stronger than average losses, it signals bullish market sentiment."
     },
     formula: {
-      de: `Score = Nahe-Hochs / (Nahe-Hochs + Nahe-Tiefs) × 100. Hochs: ${nearHighs}, Tiefs: ${nearLows}.`,
-      en: `Score = near highs / (near highs + near lows) × 100. Highs: ${nearHighs}, Lows: ${nearLows}.`
+      de: `Score = Ø Gewinn / (Ø Gewinn + Ø Verlust) × 100. Ø Gewinn: ${avgGainMag.toFixed(2)}%, Ø Verlust: ${avgLossMag.toFixed(2)}%.`,
+      en: `Score = avg gain / (avg gain + avg loss) × 100. Avg gain: ${avgGainMag.toFixed(2)}%, Avg loss: ${avgLossMag.toFixed(2)}%.`
     },
     score: priceStrengthScore,
-    rawValue: `${nearHighs}↑ / ${nearLows}↓`,
+    rawValue: `+${avgGainMag.toFixed(2)}% / -${avgLossMag.toFixed(2)}%`,
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
