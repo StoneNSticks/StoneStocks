@@ -37,7 +37,7 @@ const TTL: Record<string, number> = {
   massive_dividends: 60 * 24 * 7, massive_splits: 60 * 24 * 7,
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
   massive_news: 30, market_news: 15, gainers_losers: 30,
-  most_active: 10, top_companies: 30, currency_rates: 60,
+  most_active: 10, top_companies: 60, currency_rates: 60,
   simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
   commodities: 10,
   insider_transactions: 30,
