@@ -166,27 +166,29 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5. Stock Price Strength (5%) — CNN: 52-week highs vs lows proxy */
-  // Proxy: stocks with gains > 3% approximate "near 52-week highs", losses > 3% approximate "near 52-week lows"
-  const allMovers = [...gainers, ...losers];
-  const nearHighs = allMovers.filter((s: any) => (s.changePercent || 0) > 3).length;
-  const nearLows = allMovers.filter((s: any) => (s.changePercent || 0) < -3).length;
-  const totalHL = nearHighs + nearLows;
-  const highLowRatio = totalHL > 0 ? nearHighs / totalHL : 0.5;
-  const priceStrengthScore = Math.min(100, Math.max(0, highLowRatio * 100));
+  /* 5. Stock Price Strength (5%) — Average gain magnitude vs loss magnitude */
+  const avgGainMag = gainers.length > 0
+    ? gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0) / gainers.length
+    : 0;
+  const avgLossMag = losers.length > 0
+    ? losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0) / losers.length
+    : 0;
+  // Ratio: avgGain / (avgGain + avgLoss). If gains are stronger than losses, ratio > 0.5 → bullish
+  const strengthRatio = (avgGainMag + avgLossMag) > 0 ? avgGainMag / (avgGainMag + avgLossMag) : 0.5;
+  const priceStrengthScore = Math.min(100, Math.max(0, strengthRatio * 100));
   indicators.push({
     key: "price_strength", weight: 0.05,
-    label: { de: "Kursstärke (Proxy)", en: "Stock Price Strength (Proxy)" },
+    label: { de: "Kursstärke", en: "Price Strength" },
     description: {
-      de: "Approximiert die Anzahl der Aktien nahe 52-Wochen-Hochs vs. -Tiefs. Aktien mit >3% Tagesgewinn gelten als 'nahe Hoch', mit >3% Verlust als 'nahe Tief'. Mehr Hochs = Gier, mehr Tiefs = Angst.",
-      en: "Approximates net new 52-week highs vs lows. Stocks with >3% daily gain count as 'near high', >3% loss as 'near low'. More highs than lows is a bullish sign and signals Greed."
+      de: "Vergleicht die durchschnittliche Stärke der Tagesgewinner mit der durchschnittlichen Stärke der Tagesverlierer. Wenn Gewinne im Schnitt stärker ausfallen als Verluste, deutet das auf bullische Marktstimmung hin.",
+      en: "Compares average magnitude of daily gainers vs daily losers. When average gains are stronger than average losses, it signals bullish market sentiment."
     },
     formula: {
-      de: `Score = Nahe-Hochs / (Nahe-Hochs + Nahe-Tiefs) × 100. Hochs: ${nearHighs}, Tiefs: ${nearLows}.`,
-      en: `Score = near highs / (near highs + near lows) × 100. Highs: ${nearHighs}, Lows: ${nearLows}.`
+      de: `Score = Ø Gewinn / (Ø Gewinn + Ø Verlust) × 100. Ø Gewinn: ${avgGainMag.toFixed(2)}%, Ø Verlust: ${avgLossMag.toFixed(2)}%.`,
+      en: `Score = avg gain / (avg gain + avg loss) × 100. Avg gain: ${avgGainMag.toFixed(2)}%, Avg loss: ${avgLossMag.toFixed(2)}%.`
     },
     score: priceStrengthScore,
-    rawValue: `${nearHighs}↑ / ${nearLows}↓`,
+    rawValue: `+${avgGainMag.toFixed(2)}% / -${avgLossMag.toFixed(2)}%`,
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
