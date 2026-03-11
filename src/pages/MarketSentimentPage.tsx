@@ -85,27 +85,25 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Market Breadth (20%) — McClellan-style advancing vs declining volume proxy */
-  const advancingSum = gainers.reduce((s: number, g: any) => s + Math.abs(g.changePercent || 0), 0);
-  const decliningSum = losers.reduce((s: number, l: any) => s + Math.abs(l.changePercent || 0), 0);
-  const totalMagnitude = advancingSum + decliningSum;
-  // Net breadth thrust: how much stronger are advances vs declines in magnitude
-  const breadthThrust = totalMagnitude > 0 ? (advancingSum - decliningSum) / totalMagnitude : 0;
-  // Map from [-1, +1] to [0, 100]
-  const breadthScore = Math.min(100, Math.max(0, (breadthThrust + 1) / 2 * 100));
+  /* 2. Advance/Decline Ratio (15%) — Market participation count */
+  const advCount = gainers.length;
+  const decCount = losers.length;
+  const totalCount = advCount + decCount;
+  const adRatio = totalCount > 0 ? advCount / totalCount : 0.5;
+  const adScore = Math.min(100, Math.max(0, adRatio * 100));
   indicators.push({
-    key: "breadth", weight: 0.20,
-    label: { de: "Marktbreite (Proxy)", en: "Market Breadth (Proxy)" },
+    key: "ad_ratio", weight: 0.15,
+    label: { de: "Advance/Decline Ratio", en: "Advance/Decline Ratio" },
     description: {
-      de: "McClellan-Proxy: Vergleicht die kumulierte Stärke aller Gewinner mit der Stärke aller Verlierer. Nicht nur Anzahl, sondern wie stark die Bewegungen sind. Starke Gewinne bei schwachen Verlusten = Gier.",
-      en: "McClellan-style proxy: Compares the cumulative magnitude of all gainers vs all losers. Not just count, but how strong the moves are. Strong advances with weak declines = greed."
+      de: "Misst die Marktbeteiligung: Wie viele Aktien steigen im Verhältnis zur Gesamtzahl? Hohe Beteiligung = breite Rally = Gier.",
+      en: "Measures market participation: how many stocks are advancing relative to total? High participation = broad rally = greed."
     },
     formula: {
-      de: `Score = ((Σ Gewinne − Σ Verluste) / (Σ Gewinne + Σ Verluste) + 1) / 2 × 100. Gewinne: ${advancingSum.toFixed(1)}%, Verluste: ${decliningSum.toFixed(1)}%.`,
-      en: `Score = ((Σ gains − Σ losses) / (Σ gains + Σ losses) + 1) / 2 × 100. Gains: ${advancingSum.toFixed(1)}%, Losses: ${decliningSum.toFixed(1)}%.`
+      de: `Score = Gewinner / (Gewinner + Verlierer) × 100. ${advCount} Gewinner, ${decCount} Verlierer von ${totalCount} gesamt.`,
+      en: `Score = advancers / (advancers + decliners) × 100. ${advCount} advancers, ${decCount} decliners of ${totalCount} total.`
     },
-    score: breadthScore,
-    rawValue: `+${advancingSum.toFixed(1)}% / -${decliningSum.toFixed(1)}%`,
+    score: adScore,
+    rawValue: `${advCount}↑ / ${decCount}↓`,
     icon: <Activity className="h-4 w-4" />,
   });
 
