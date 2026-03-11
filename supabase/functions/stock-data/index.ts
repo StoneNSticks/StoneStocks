@@ -54,6 +54,13 @@ async function getCached(key: string): Promise<unknown | null> {
   return null;
 }
 
+// Get stale cached data (even if expired) for fallback merging
+async function getStaleCached(key: string): Promise<unknown | null> {
+  const { data } = await supabase.from("api_cache").select("data").eq("cache_key", key).single();
+  if (data) return data.data;
+  return null;
+}
+
 async function setCache(key: string, value: unknown, source: string, ttlMinutes: number) {
   const expires_at = new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString();
   await supabase.from("api_cache").upsert(
