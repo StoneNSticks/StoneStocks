@@ -83,25 +83,39 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Advance/Decline Ratio (15%) — Market participation count */
-  const advCount = gainers.length;
-  const decCount = losers.length;
-  const totalCount = advCount + decCount;
-  const adRatio = totalCount > 0 ? advCount / totalCount : 0.5;
-  const adScore = Math.min(100, Math.max(0, adRatio * 100));
+  /* 2. Risk-On / Risk-Off Ratio (10%) — Cyclical commodities vs gold */
+  const oilInd = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
+  const copperInd = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
+  const goldInd = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
+  const oilChg = oilInd?.changePercent ?? 0;
+  const copperChg = copperInd?.changePercent ?? 0;
+  const goldChgRisk = goldInd?.changePercent ?? 0;
+  const cyclicAvg = (oilChg + copperChg) / 2;
+  const riskOnOffDiff = cyclicAvg - goldChgRisk;
+  const riskOnOffScore = commoditiesStale
+    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
+    : Math.min(100, Math.max(0, ((riskOnOffDiff + 3) / 6) * 100));
   indicators.push({
-    key: "ad_ratio", weight: 0.15,
-    label: { de: "Advance/Decline Ratio", en: "Advance/Decline Ratio" },
+    key: "risk_on_off", weight: 0.10,
+    label: { de: "Risk-On/Risk-Off Ratio", en: "Risk-On / Risk-Off Ratio" },
     description: {
-      de: "Misst die Marktbeteiligung: Wie viele Aktien steigen im Verhältnis zur Gesamtzahl? Hohe Beteiligung = breite Rally = Gier.",
-      en: "Measures market participation: how many stocks are advancing relative to total? High participation = broad rally = greed."
+      de: commoditiesStale
+        ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
+        : "Vergleicht zyklische Rohstoffe (Öl, Kupfer) mit defensivem Gold. Wenn zyklische Assets stärker steigen als Gold, deutet das auf Risikoappetit (Gier) hin.",
+      en: commoditiesStale
+        ? "Commodity data unavailable. Falling back to stock momentum."
+        : "Compares cyclical commodities (oil, copper) against defensive gold. When cyclicals outperform gold, it signals risk appetite (greed)."
     },
     formula: {
-      de: `Score = Gewinner / (Gewinner + Verlierer) × 100. ${advCount} Gewinner, ${decCount} Verlierer von ${totalCount} gesamt.`,
-      en: `Score = advancers / (advancers + decliners) × 100. ${advCount} advancers, ${decCount} decliners of ${totalCount} total.`
+      de: commoditiesStale
+        ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((Ø(Öl, Kupfer) − Gold + 3%) / 6%) × 100. Öl: ${oilChg.toFixed(2)}%, Kupfer: ${copperChg.toFixed(2)}%, Gold: ${goldChgRisk.toFixed(2)}%.`,
+      en: commoditiesStale
+        ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((avg(oil, copper) − gold + 3%) / 6%) × 100. Oil: ${oilChg.toFixed(2)}%, Copper: ${copperChg.toFixed(2)}%, Gold: ${goldChgRisk.toFixed(2)}%.`
     },
-    score: adScore,
-    rawValue: `${advCount}↑ / ${decCount}↓`,
+    score: riskOnOffScore,
+    rawValue: commoditiesStale ? "closed" : `${riskOnOffDiff >= 0 ? "+" : ""}${riskOnOffDiff.toFixed(2)}%`,
     icon: <Activity className="h-4 w-4" />,
   });
 
