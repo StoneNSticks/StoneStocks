@@ -222,40 +222,34 @@ function computeSubIndicators(
     icon: <Zap className="h-4 w-4" />,
   });
 
-  /* 5b. Junk Bond Demand (5%) — CNN: yield spread proxy */
-  // Proxy: spread between risky assets (oil, copper) and safe havens (gold).
-  // Tight spread (risky outperforms safe) = greed; wide spread (safe outperforms risky) = fear.
-  const goldProxy = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
-  const goldChg = goldProxy?.changePercent ?? 0;
-  const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
-  const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
-  // "Junk" = volatile high-beta movers; "Investment grade" = gold (safe haven)
-  const riskyReturn = (topGainerAvg - topLoserAvg) / 2;
-  const yieldSpread = goldChg - riskyReturn; // Positive = flight to safety (fear)
+  /* 5c. Junk Bond Demand (5%) — Gold vs Oil spread proxy */
+  const goldChgJunk = goldInd?.changePercent ?? 0;
+  const oilChgJunk = oilInd?.changePercent ?? 0;
+  const junkSpread = goldChgJunk - oilChgJunk; // Positive = flight to safety (fear)
   const junkBondScore = commoditiesStale
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
-    : Math.min(100, Math.max(0, ((3 - yieldSpread) / 6) * 100));
+    : Math.min(100, Math.max(0, ((3 - junkSpread) / 6) * 100));
   indicators.push({
     key: "junk_bond_demand", weight: 0.05,
     label: { de: "Junk-Bond-Nachfrage (Proxy)", en: "Junk Bond Demand (Proxy)" },
     description: {
       de: commoditiesStale
         ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
-        : "Approximiert den Rendite-Spread zwischen riskanten und sicheren Anlagen. Wenn riskante Assets (High-Beta-Aktien) besser laufen als sichere Häfen (Gold), schrumpft der Spread — ein Zeichen für Gier. Wächst der Spread, steigt die Angst.",
+        : "Approximiert den Rendite-Spread über den Gold-Öl-Spread. Steigt Gold stärker als Öl (positiver Spread), fliehen Anleger in sichere Häfen — Angst. Öl stärker als Gold = Risikoappetit (Gier).",
       en: commoditiesStale
         ? "Commodity data unavailable. Falling back to stock momentum."
-        : "Approximates the yield spread between risky and safe assets. When risky assets (high-beta stocks) outperform safe havens (gold), the spread narrows — a sign of Greed. A wider spread shows more caution and signals Fear."
+        : "Approximates yield spread via gold-oil spread. Gold outperforming oil (positive spread) = flight to safety (fear). Oil outperforming gold = risk appetite (greed)."
     },
     formula: {
       de: commoditiesStale
         ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky-Ø (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
+        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Öl (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
       en: commoditiesStale
         ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky avg (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
+        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Oil (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
     },
     score: junkBondScore,
-    rawValue: commoditiesStale ? "closed" : `${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%`,
+    rawValue: commoditiesStale ? "closed" : `${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%`,
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
