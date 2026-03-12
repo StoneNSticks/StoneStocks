@@ -863,8 +863,8 @@ export default function MarketSentimentPage() {
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, commodities),
-    [indices, commodities]
+    () => computeSubIndicators(indices, commodities, sectors),
+    [indices, commodities, sectors]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
