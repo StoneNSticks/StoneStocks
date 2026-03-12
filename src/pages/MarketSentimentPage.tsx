@@ -871,8 +871,8 @@ export default function MarketSentimentPage() {
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
             {lang === "de"
-              ? "7 Indikatoren mit transparenter Berechnungslogik — klicke auf jeden Indikator für Details"
-              : "7 indicators with transparent calculations — click any indicator for details"}
+              ? "8 Indikatoren mit transparenter Berechnungslogik — klicke auf jeden Indikator für Details"
+              : "8 indicators with transparent calculations — click any indicator for details"}
           </p>
         </motion.div>
 
