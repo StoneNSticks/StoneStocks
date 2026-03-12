@@ -5,13 +5,15 @@
  * equally-weighted indicators (each ~14.3%). Each tracks deviation
  * from average compared to normal divergence. 0 = max fear, 100 = max greed.
  *
- * 1. Market Momentum — S&P 500 vs its 125-day moving average
- * 2. Stock Price Strength — Net new 52-week highs vs lows
- * 3. Stock Price Breadth — Advancing vs declining volume (McClellan)
- * 4. Put & Call Options — Put/Call ratio (inverse fear signal)
- * 5. Junk Bond Demand — Yield spread junk vs investment grade
- * 6. Market Volatility — VIX level vs its 50-day moving average
- * 7. Safe Haven Demand — Stock returns vs Treasury bond returns
+ * 1. Market Momentum (25%) — Average index daily performance
+ * 2. Risk-On/Risk-Off Ratio (10%) — Cyclical commodities vs gold
+ * 3. Volatility Proxy (15%) — Index spread dispersion
+ * 4. Safe Haven Demand (12%) — Stocks vs gold performance
+ * 5. Regional Divergence (10%) — US vs international indices
+ * 6. Index Trend Strength (5%) — Conviction via magnitude of moves
+ * 7. Junk Bond Demand Proxy (5%) — Gold-oil spread
+ * 8. Commodity Risk Appetite (10%) — Oil + copper average
+ * 9. Index Correlation (8%) — Directional alignment of global indices
  */
 
 import { Header } from "@/components/Header";
