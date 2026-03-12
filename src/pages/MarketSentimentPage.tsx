@@ -176,49 +176,50 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5a. Extreme Movers (5%) — Tail behavior */
-  const extremeGainers = gainers.filter((g: any) => (g.changePercent || 0) > 3).length;
-  const extremeLosers = losers.filter((l: any) => (l.changePercent || 0) < -3).length;
-  const totalExtreme = extremeGainers + extremeLosers;
-  const extremeScore = totalExtreme > 0
-    ? Math.min(100, Math.max(0, (extremeGainers / totalExtreme) * 100))
-    : 50;
+  /* 5a. Regional Divergence (10%) — US vs non-US indices */
+  const usSymbols = ["SPX", "IXIC", "DJI"];
+  const usIndices = (indices || []).filter((i: any) => usSymbols.includes(i.indexSymbol) || i.name?.includes("S&P") || i.name?.includes("Nasdaq") || i.name?.includes("Dow"));
+  const intlIndices = (indices || []).filter((i: any) => !usSymbols.includes(i.indexSymbol) && !i.name?.includes("S&P") && !i.name?.includes("Nasdaq") && !i.name?.includes("Dow") && i.changePercent != null);
+  const usAvgChg = usIndices.length > 0 ? usIndices.reduce((s: number, i: any) => s + (i.changePercent || 0), 0) / usIndices.length : 0;
+  const intlAvgChg = intlIndices.length > 0 ? intlIndices.reduce((s: number, i: any) => s + (i.changePercent || 0), 0) / intlIndices.length : 0;
+  const bothPositive = usAvgChg > 0 && intlAvgChg > 0;
+  const alignmentBonus = bothPositive ? 10 : 0;
+  const regionalScore = Math.min(100, Math.max(0, ((usAvgChg + intlAvgChg + 4) / 8) * 100 + alignmentBonus));
   indicators.push({
-    key: "extreme_movers", weight: 0.05,
-    label: { de: "Extreme Bewegungen", en: "Extreme Movers" },
+    key: "regional_divergence", weight: 0.10,
+    label: { de: "Regionale Divergenz", en: "Regional Divergence" },
     description: {
-      de: "Zählt Aktien mit Tagesbewegungen über ±3%. Viele extreme Gewinner = Euphorie (Gier), viele extreme Verlierer = Panik (Angst).",
-      en: "Counts stocks with daily moves exceeding ±3%. Many extreme gainers = euphoria (greed), many extreme losers = panic (fear)."
+      de: "Vergleicht US-Indizes (S&P, Nasdaq, Dow) mit internationalen Indizes (DAX, FTSE, Nikkei, etc.). Globale Einigkeit nach oben = Gier, Divergenz oder gemeinsamer Rückgang = Angst.",
+      en: "Compares US indices (S&P, Nasdaq, Dow) with international indices (DAX, FTSE, Nikkei, etc.). Global alignment upward = greed, divergence or shared decline = fear."
     },
     formula: {
-      de: `Score = Extreme Gewinner / (Extreme Gewinner + Extreme Verlierer) × 100. ${extremeGainers} Gewinner >+3%, ${extremeLosers} Verlierer <-3%.`,
-      en: `Score = extreme gainers / (extreme gainers + extreme losers) × 100. ${extremeGainers} gainers >+3%, ${extremeLosers} losers <-3%.`
+      de: `Score = ((US-Ø + Intl-Ø + 4%) / 8%) × 100${bothPositive ? " + 10 Bonus" : ""}. US: ${usAvgChg.toFixed(2)}% (${usIndices.length} Indizes), Intl: ${intlAvgChg.toFixed(2)}% (${intlIndices.length} Indizes).`,
+      en: `Score = ((US avg + Intl avg + 4%) / 8%) × 100${bothPositive ? " + 10 bonus" : ""}. US: ${usAvgChg.toFixed(2)}% (${usIndices.length} indices), Intl: ${intlAvgChg.toFixed(2)}% (${intlIndices.length} indices).`
     },
-    score: extremeScore,
-    rawValue: `${extremeGainers}↑ / ${extremeLosers}↓`,
-    icon: <Zap className="h-4 w-4" />,
+    score: regionalScore,
+    rawValue: `US ${usAvgChg >= 0 ? "+" : ""}${usAvgChg.toFixed(2)}% / Intl ${intlAvgChg >= 0 ? "+" : ""}${intlAvgChg.toFixed(2)}%`,
+    icon: <Globe className="h-4 w-4" />,
   });
 
-  /* 5b. Market Participation (5%) — Conviction indicator */
-  const significantMovers = [...gainers, ...losers].filter((s: any) => Math.abs(s.changePercent || 0) > 1).length;
-  const allStocks = gainers.length + losers.length;
-  const participationRate = allStocks > 0 ? significantMovers / allStocks : 0.5;
-  const participationBias = avgChange >= 0 ? participationRate : (1 - participationRate);
-  const participationScore = Math.min(100, Math.max(0, participationBias * 100));
+  /* 5b. Index Trend Strength (5%) — Conviction indicator */
+  const trendMagnitude = Math.abs(avgChange);
+  const trendScore = avgChange >= 0
+    ? Math.min(100, 50 + (trendMagnitude / 3) * 50)
+    : Math.max(0, 50 - (trendMagnitude / 3) * 50);
   indicators.push({
-    key: "participation", weight: 0.05,
-    label: { de: "Marktaktivität", en: "Market Participation" },
+    key: "trend_strength", weight: 0.05,
+    label: { de: "Index-Trendstärke", en: "Index Trend Strength" },
     description: {
-      de: "Misst wie viele Aktien sich signifikant bewegen (>1%). Hohe Aktivität bei positiver Tendenz = Überzeugung (Gier). Hohe Aktivität bei negativer Tendenz = Panik (Angst).",
-      en: "Measures how many stocks move significantly (>1%). High activity with positive bias = conviction (greed). High activity with negative bias = panic (fear)."
+      de: "Misst die Überzeugung des Marktes anhand der absoluten Größe der durchschnittlichen Indexbewegung. Große positive Bewegungen = starkes Gier-Signal, große negative = starkes Angst-Signal.",
+      en: "Measures market conviction by the absolute magnitude of average index moves. Large positive moves = strong greed signal, large negative = strong fear signal."
     },
     formula: {
-      de: `${significantMovers} von ${allStocks} Aktien bewegen sich >1% (${(participationRate*100).toFixed(0)}%). Tendenz: ${avgChange >= 0 ? "positiv" : "negativ"}.`,
-      en: `${significantMovers} of ${allStocks} stocks move >1% (${(participationRate*100).toFixed(0)}%). Bias: ${avgChange >= 0 ? "positive" : "negative"}.`
+      de: `Score = ${avgChange >= 0 ? "50 + " : "50 − "}(|${avgChange.toFixed(2)}%| / 3%) × 50 = ${trendScore.toFixed(0)}. Je weiter vom Nullpunkt entfernt, desto stärkeres Signal.`,
+      en: `Score = ${avgChange >= 0 ? "50 + " : "50 − "}(|${avgChange.toFixed(2)}%| / 3%) × 50 = ${trendScore.toFixed(0)}. The further from zero, the stronger the signal.`
     },
-    score: participationScore,
-    rawValue: `${significantMovers}/${allStocks} (${(participationRate*100).toFixed(0)}%)`,
-    icon: <Target className="h-4 w-4" />,
+    score: trendScore,
+    rawValue: `|${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%|`,
+    icon: <Zap className="h-4 w-4" />,
   });
 
   /* 5b. Junk Bond Demand (5%) — CNN: yield spread proxy */
