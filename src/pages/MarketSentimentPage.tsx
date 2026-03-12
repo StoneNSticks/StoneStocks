@@ -5,13 +5,15 @@
  * equally-weighted indicators (each ~14.3%). Each tracks deviation
  * from average compared to normal divergence. 0 = max fear, 100 = max greed.
  *
- * 1. Market Momentum — S&P 500 vs its 125-day moving average
- * 2. Stock Price Strength — Net new 52-week highs vs lows
- * 3. Stock Price Breadth — Advancing vs declining volume (McClellan)
- * 4. Put & Call Options — Put/Call ratio (inverse fear signal)
- * 5. Junk Bond Demand — Yield spread junk vs investment grade
- * 6. Market Volatility — VIX level vs its 50-day moving average
- * 7. Safe Haven Demand — Stock returns vs Treasury bond returns
+ * 1. Market Momentum (25%) — Average index daily performance
+ * 2. Risk-On/Risk-Off Ratio (10%) — Cyclical commodities vs gold
+ * 3. Volatility Proxy (15%) — Index spread dispersion
+ * 4. Safe Haven Demand (12%) — Stocks vs gold performance
+ * 5. Regional Divergence (10%) — US vs international indices
+ * 6. Index Trend Strength (5%) — Conviction via magnitude of moves
+ * 7. Junk Bond Demand Proxy (5%) — Gold-oil spread
+ * 8. Commodity Risk Appetite (10%) — Oil + copper average
+ * 9. Index Correlation (8%) — Directional alignment of global indices
  */
 
 import { Header } from "@/components/Header";
@@ -49,8 +51,6 @@ interface SubIndicator {
 
 function computeSubIndicators(
   indices: any[] | undefined,
-  gainers: any[],
-  losers: any[],
   commodities: any[] | undefined
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
@@ -85,25 +85,39 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Advance/Decline Ratio (15%) — Market participation count */
-  const advCount = gainers.length;
-  const decCount = losers.length;
-  const totalCount = advCount + decCount;
-  const adRatio = totalCount > 0 ? advCount / totalCount : 0.5;
-  const adScore = Math.min(100, Math.max(0, adRatio * 100));
+  /* 2. Risk-On / Risk-Off Ratio (10%) — Cyclical commodities vs gold */
+  const oilInd = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
+  const copperInd = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
+  const goldInd = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
+  const oilChg = oilInd?.changePercent ?? 0;
+  const copperChg = copperInd?.changePercent ?? 0;
+  const goldChgRisk = goldInd?.changePercent ?? 0;
+  const cyclicAvg = (oilChg + copperChg) / 2;
+  const riskOnOffDiff = cyclicAvg - goldChgRisk;
+  const riskOnOffScore = commoditiesStale
+    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
+    : Math.min(100, Math.max(0, ((riskOnOffDiff + 3) / 6) * 100));
   indicators.push({
-    key: "ad_ratio", weight: 0.15,
-    label: { de: "Advance/Decline Ratio", en: "Advance/Decline Ratio" },
+    key: "risk_on_off", weight: 0.10,
+    label: { de: "Risk-On/Risk-Off Ratio", en: "Risk-On / Risk-Off Ratio" },
     description: {
-      de: "Misst die Marktbeteiligung: Wie viele Aktien steigen im Verhältnis zur Gesamtzahl? Hohe Beteiligung = breite Rally = Gier.",
-      en: "Measures market participation: how many stocks are advancing relative to total? High participation = broad rally = greed."
+      de: commoditiesStale
+        ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
+        : "Vergleicht zyklische Rohstoffe (Öl, Kupfer) mit defensivem Gold. Wenn zyklische Assets stärker steigen als Gold, deutet das auf Risikoappetit (Gier) hin.",
+      en: commoditiesStale
+        ? "Commodity data unavailable. Falling back to stock momentum."
+        : "Compares cyclical commodities (oil, copper) against defensive gold. When cyclicals outperform gold, it signals risk appetite (greed)."
     },
     formula: {
-      de: `Score = Gewinner / (Gewinner + Verlierer) × 100. ${advCount} Gewinner, ${decCount} Verlierer von ${totalCount} gesamt.`,
-      en: `Score = advancers / (advancers + decliners) × 100. ${advCount} advancers, ${decCount} decliners of ${totalCount} total.`
+      de: commoditiesStale
+        ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((Ø(Öl, Kupfer) − Gold + 3%) / 6%) × 100. Öl: ${oilChg.toFixed(2)}%, Kupfer: ${copperChg.toFixed(2)}%, Gold: ${goldChgRisk.toFixed(2)}%.`,
+      en: commoditiesStale
+        ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
+        : `Score = ((avg(oil, copper) − gold + 3%) / 6%) × 100. Oil: ${oilChg.toFixed(2)}%, Copper: ${copperChg.toFixed(2)}%, Gold: ${goldChgRisk.toFixed(2)}%.`
     },
-    score: adScore,
-    rawValue: `${advCount}↑ / ${decCount}↓`,
+    score: riskOnOffScore,
+    rawValue: commoditiesStale ? "closed" : `${riskOnOffDiff >= 0 ? "+" : ""}${riskOnOffDiff.toFixed(2)}%`,
     icon: <Activity className="h-4 w-4" />,
   });
 
@@ -164,85 +178,80 @@ function computeSubIndicators(
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
-  /* 5a. Extreme Movers (5%) — Tail behavior */
-  const extremeGainers = gainers.filter((g: any) => (g.changePercent || 0) > 3).length;
-  const extremeLosers = losers.filter((l: any) => (l.changePercent || 0) < -3).length;
-  const totalExtreme = extremeGainers + extremeLosers;
-  const extremeScore = totalExtreme > 0
-    ? Math.min(100, Math.max(0, (extremeGainers / totalExtreme) * 100))
-    : 50;
+  /* 5a. Regional Divergence (10%) — US vs non-US indices */
+  const usSymbols = ["SPX", "IXIC", "DJI"];
+  const usIndices = (indices || []).filter((i: any) => usSymbols.includes(i.indexSymbol) || i.name?.includes("S&P") || i.name?.includes("Nasdaq") || i.name?.includes("Dow"));
+  const intlIndices = (indices || []).filter((i: any) => !usSymbols.includes(i.indexSymbol) && !i.name?.includes("S&P") && !i.name?.includes("Nasdaq") && !i.name?.includes("Dow") && i.changePercent != null);
+  const usAvgChg = usIndices.length > 0 ? usIndices.reduce((s: number, i: any) => s + (i.changePercent || 0), 0) / usIndices.length : 0;
+  const intlAvgChg = intlIndices.length > 0 ? intlIndices.reduce((s: number, i: any) => s + (i.changePercent || 0), 0) / intlIndices.length : 0;
+  const bothPositive = usAvgChg > 0 && intlAvgChg > 0;
+  const alignmentBonus = bothPositive ? 10 : 0;
+  const regionalScore = Math.min(100, Math.max(0, ((usAvgChg + intlAvgChg + 4) / 8) * 100 + alignmentBonus));
   indicators.push({
-    key: "extreme_movers", weight: 0.05,
-    label: { de: "Extreme Bewegungen", en: "Extreme Movers" },
+    key: "regional_divergence", weight: 0.10,
+    label: { de: "Regionale Divergenz", en: "Regional Divergence" },
     description: {
-      de: "Zählt Aktien mit Tagesbewegungen über ±3%. Viele extreme Gewinner = Euphorie (Gier), viele extreme Verlierer = Panik (Angst).",
-      en: "Counts stocks with daily moves exceeding ±3%. Many extreme gainers = euphoria (greed), many extreme losers = panic (fear)."
+      de: "Vergleicht US-Indizes (S&P, Nasdaq, Dow) mit internationalen Indizes (DAX, FTSE, Nikkei, etc.). Globale Einigkeit nach oben = Gier, Divergenz oder gemeinsamer Rückgang = Angst.",
+      en: "Compares US indices (S&P, Nasdaq, Dow) with international indices (DAX, FTSE, Nikkei, etc.). Global alignment upward = greed, divergence or shared decline = fear."
     },
     formula: {
-      de: `Score = Extreme Gewinner / (Extreme Gewinner + Extreme Verlierer) × 100. ${extremeGainers} Gewinner >+3%, ${extremeLosers} Verlierer <-3%.`,
-      en: `Score = extreme gainers / (extreme gainers + extreme losers) × 100. ${extremeGainers} gainers >+3%, ${extremeLosers} losers <-3%.`
+      de: `Score = ((US-Ø + Intl-Ø + 4%) / 8%) × 100${bothPositive ? " + 10 Bonus" : ""}. US: ${usAvgChg.toFixed(2)}% (${usIndices.length} Indizes), Intl: ${intlAvgChg.toFixed(2)}% (${intlIndices.length} Indizes).`,
+      en: `Score = ((US avg + Intl avg + 4%) / 8%) × 100${bothPositive ? " + 10 bonus" : ""}. US: ${usAvgChg.toFixed(2)}% (${usIndices.length} indices), Intl: ${intlAvgChg.toFixed(2)}% (${intlIndices.length} indices).`
     },
-    score: extremeScore,
-    rawValue: `${extremeGainers}↑ / ${extremeLosers}↓`,
+    score: regionalScore,
+    rawValue: `US ${usAvgChg >= 0 ? "+" : ""}${usAvgChg.toFixed(2)}% / Intl ${intlAvgChg >= 0 ? "+" : ""}${intlAvgChg.toFixed(2)}%`,
+    icon: <Globe className="h-4 w-4" />,
+  });
+
+  /* 5b. Index Trend Strength (5%) — Conviction indicator */
+  const trendMagnitude = Math.abs(avgChange);
+  const trendScore = avgChange >= 0
+    ? Math.min(100, 50 + (trendMagnitude / 3) * 50)
+    : Math.max(0, 50 - (trendMagnitude / 3) * 50);
+  indicators.push({
+    key: "trend_strength", weight: 0.05,
+    label: { de: "Index-Trendstärke", en: "Index Trend Strength" },
+    description: {
+      de: "Misst die Überzeugung des Marktes anhand der absoluten Größe der durchschnittlichen Indexbewegung. Große positive Bewegungen = starkes Gier-Signal, große negative = starkes Angst-Signal.",
+      en: "Measures market conviction by the absolute magnitude of average index moves. Large positive moves = strong greed signal, large negative = strong fear signal."
+    },
+    formula: {
+      de: `Score = ${avgChange >= 0 ? "50 + " : "50 − "}(|${avgChange.toFixed(2)}%| / 3%) × 50 = ${trendScore.toFixed(0)}. Je weiter vom Nullpunkt entfernt, desto stärkeres Signal.`,
+      en: `Score = ${avgChange >= 0 ? "50 + " : "50 − "}(|${avgChange.toFixed(2)}%| / 3%) × 50 = ${trendScore.toFixed(0)}. The further from zero, the stronger the signal.`
+    },
+    score: trendScore,
+    rawValue: `|${avgChange >= 0 ? "+" : ""}${avgChange.toFixed(2)}%|`,
     icon: <Zap className="h-4 w-4" />,
   });
 
-  /* 5b. Market Participation (5%) — Conviction indicator */
-  const significantMovers = [...gainers, ...losers].filter((s: any) => Math.abs(s.changePercent || 0) > 1).length;
-  const allStocks = gainers.length + losers.length;
-  const participationRate = allStocks > 0 ? significantMovers / allStocks : 0.5;
-  const participationBias = avgChange >= 0 ? participationRate : (1 - participationRate);
-  const participationScore = Math.min(100, Math.max(0, participationBias * 100));
-  indicators.push({
-    key: "participation", weight: 0.05,
-    label: { de: "Marktaktivität", en: "Market Participation" },
-    description: {
-      de: "Misst wie viele Aktien sich signifikant bewegen (>1%). Hohe Aktivität bei positiver Tendenz = Überzeugung (Gier). Hohe Aktivität bei negativer Tendenz = Panik (Angst).",
-      en: "Measures how many stocks move significantly (>1%). High activity with positive bias = conviction (greed). High activity with negative bias = panic (fear)."
-    },
-    formula: {
-      de: `${significantMovers} von ${allStocks} Aktien bewegen sich >1% (${(participationRate*100).toFixed(0)}%). Tendenz: ${avgChange >= 0 ? "positiv" : "negativ"}.`,
-      en: `${significantMovers} of ${allStocks} stocks move >1% (${(participationRate*100).toFixed(0)}%). Bias: ${avgChange >= 0 ? "positive" : "negative"}.`
-    },
-    score: participationScore,
-    rawValue: `${significantMovers}/${allStocks} (${(participationRate*100).toFixed(0)}%)`,
-    icon: <Target className="h-4 w-4" />,
-  });
-
-  /* 5b. Junk Bond Demand (5%) — CNN: yield spread proxy */
-  // Proxy: spread between risky assets (oil, copper) and safe havens (gold).
-  // Tight spread (risky outperforms safe) = greed; wide spread (safe outperforms risky) = fear.
-  const goldProxy = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
-  const goldChg = goldProxy?.changePercent ?? 0;
-  const topGainerAvg = gainers.slice(0, 5).reduce((s: number, g: any) => s + (g.changePercent || 0), 0) / Math.max(1, Math.min(5, gainers.length));
-  const topLoserAvg = Math.abs(losers.slice(0, 5).reduce((s: number, l: any) => s + (l.changePercent || 0), 0) / Math.max(1, Math.min(5, losers.length)));
-  // "Junk" = volatile high-beta movers; "Investment grade" = gold (safe haven)
-  const riskyReturn = (topGainerAvg - topLoserAvg) / 2;
-  const yieldSpread = goldChg - riskyReturn; // Positive = flight to safety (fear)
+  /* 5c. Junk Bond Demand (5%) — Gold vs Oil spread proxy */
+  const goldChgJunk = goldInd?.changePercent ?? 0;
+  const oilChgJunk = oilInd?.changePercent ?? 0;
+  const junkSpread = goldChgJunk - oilChgJunk; // Positive = flight to safety (fear)
   const junkBondScore = commoditiesStale
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
-    : Math.min(100, Math.max(0, ((3 - yieldSpread) / 6) * 100));
+    : Math.min(100, Math.max(0, ((3 - junkSpread) / 6) * 100));
   indicators.push({
     key: "junk_bond_demand", weight: 0.05,
     label: { de: "Junk-Bond-Nachfrage (Proxy)", en: "Junk Bond Demand (Proxy)" },
     description: {
       de: commoditiesStale
         ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
-        : "Approximiert den Rendite-Spread zwischen riskanten und sicheren Anlagen. Wenn riskante Assets (High-Beta-Aktien) besser laufen als sichere Häfen (Gold), schrumpft der Spread — ein Zeichen für Gier. Wächst der Spread, steigt die Angst.",
+        : "Approximiert den Rendite-Spread über den Gold-Öl-Spread. Steigt Gold stärker als Öl (positiver Spread), fliehen Anleger in sichere Häfen — Angst. Öl stärker als Gold = Risikoappetit (Gier).",
       en: commoditiesStale
         ? "Commodity data unavailable. Falling back to stock momentum."
-        : "Approximates the yield spread between risky and safe assets. When risky assets (high-beta stocks) outperform safe havens (gold), the spread narrows — a sign of Greed. A wider spread shows more caution and signals Fear."
+        : "Approximates yield spread via gold-oil spread. Gold outperforming oil (positive spread) = flight to safety (fear). Oil outperforming gold = risk appetite (greed)."
     },
     formula: {
       de: commoditiesStale
         ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky-Ø (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
+        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Öl (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
       en: commoditiesStale
         ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChg.toFixed(2)}%) − Risky avg (${riskyReturn >= 0 ? "+" : ""}${riskyReturn.toFixed(2)}%) = ${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
+        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Oil (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
     },
     score: junkBondScore,
-    rawValue: commoditiesStale ? "closed" : `${yieldSpread >= 0 ? "+" : ""}${yieldSpread.toFixed(2)}%`,
+    rawValue: commoditiesStale ? "closed" : `${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%`,
     icon: <ShieldAlert className="h-4 w-4" />,
   });
 
@@ -847,8 +856,8 @@ export default function MarketSentimentPage() {
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, gainers, losers, commodities),
-    [indices, gainers, losers, commodities]
+    () => computeSubIndicators(indices, commodities),
+    [indices, commodities]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
@@ -864,8 +873,8 @@ export default function MarketSentimentPage() {
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
             {lang === "de"
-              ? "7 Indikatoren mit transparenter Berechnungslogik — klicke auf jeden Indikator für Details"
-              : "7 indicators with transparent calculations — click any indicator for details"}
+              ? "8 Indikatoren mit transparenter Berechnungslogik — klicke auf jeden Indikator für Details"
+              : "8 indicators with transparent calculations — click any indicator for details"}
           </p>
         </motion.div>
 
