@@ -18,7 +18,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useMarketIndices, useGainersLosers, useTopCompanies } from "@/hooks/useStockData";
+import { useMarketIndices, useGainersLosers, useTopCompanies, useYahooSectors } from "@/hooks/useStockData";
 import { useQuery } from "@tanstack/react-query";
 import { getCommodities } from "@/lib/stockApi";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -51,7 +51,8 @@ interface SubIndicator {
 
 function computeSubIndicators(
   indices: any[] | undefined,
-  commodities: any[] | undefined
+  commodities: any[] | undefined,
+  sectors: any[] | undefined
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
 
@@ -224,35 +225,40 @@ function computeSubIndicators(
     icon: <Zap className="h-4 w-4" />,
   });
 
-  /* 5c. Junk Bond Demand (5%) — Gold vs Oil spread proxy */
-  const goldChgJunk = goldInd?.changePercent ?? 0;
-  const oilChgJunk = oilInd?.changePercent ?? 0;
-  const junkSpread = goldChgJunk - oilChgJunk; // Positive = flight to safety (fear)
-  const junkBondScore = commoditiesStale
-    ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
-    : Math.min(100, Math.max(0, ((3 - junkSpread) / 6) * 100));
+  /* 5c. Sector Rotation (5%) — Cyclical vs Defensive sector ETFs */
+  const cyclicalSymbols = ["XLK", "XLY", "XLF", "XLE"];
+  const defensiveSymbols = ["XLV", "XLP", "XLU", "XLRE"];
+  const cyclicalSectors = (sectors || []).filter((s: any) => cyclicalSymbols.includes(s.symbol));
+  const defensiveSectors = (sectors || []).filter((s: any) => defensiveSymbols.includes(s.symbol));
+  const cyclicalAvgSec = cyclicalSectors.length > 0
+    ? cyclicalSectors.reduce((s: number, sec: any) => s + (sec.changePercent || 0), 0) / cyclicalSectors.length : 0;
+  const defensiveAvgSec = defensiveSectors.length > 0
+    ? defensiveSectors.reduce((s: number, sec: any) => s + (sec.changePercent || 0), 0) / defensiveSectors.length : 0;
+  const sectorSpread = cyclicalAvgSec - defensiveAvgSec;
+  const sectorRotationScore = Math.min(100, Math.max(0, ((sectorSpread + 3) / 6) * 100));
+  const hasSectorData = cyclicalSectors.length > 0 && defensiveSectors.length > 0;
   indicators.push({
-    key: "junk_bond_demand", weight: 0.05,
-    label: { de: "Junk-Bond-Nachfrage (Proxy)", en: "Junk Bond Demand (Proxy)" },
+    key: "sector_rotation", weight: 0.05,
+    label: { de: "Sektorrotation", en: "Sector Rotation" },
     description: {
-      de: commoditiesStale
-        ? "Rohstoffdaten nicht verfügbar. Fallback auf Aktienmomentum."
-        : "Approximiert den Rendite-Spread über den Gold-Öl-Spread. Steigt Gold stärker als Öl (positiver Spread), fliehen Anleger in sichere Häfen — Angst. Öl stärker als Gold = Risikoappetit (Gier).",
-      en: commoditiesStale
-        ? "Commodity data unavailable. Falling back to stock momentum."
-        : "Approximates yield spread via gold-oil spread. Gold outperforming oil (positive spread) = flight to safety (fear). Oil outperforming gold = risk appetite (greed)."
+      de: hasSectorData
+        ? "Vergleicht zyklische Sektoren (Technologie, Konsum, Finanzen, Energie) mit defensiven Sektoren (Gesundheit, Basiskonsumgüter, Versorger, Immobilien). Wenn zyklische Sektoren outperformen = Risikoappetit (Gier)."
+        : "Sektordaten nicht verfügbar. Score auf Neutral gesetzt.",
+      en: hasSectorData
+        ? "Compares cyclical sectors (Tech, Discretionary, Financials, Energy) vs defensive sectors (Healthcare, Staples, Utilities, Real Estate). Cyclicals outperforming = risk appetite (greed)."
+        : "Sector data unavailable. Score set to neutral."
     },
     formula: {
-      de: commoditiesStale
-        ? `Fallback: Score basiert auf Aktien-Momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Öl (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − Spread) / 6) × 100.`,
-      en: commoditiesStale
-        ? `Fallback: Score based on stock momentum (${avgChange.toFixed(2)}%).`
-        : `Spread = Gold (${goldChgJunk.toFixed(2)}%) − Oil (${oilChgJunk.toFixed(2)}%) = ${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%. Score = ((3 − spread) / 6) × 100.`
+      de: hasSectorData
+        ? `Score = ((Zyklisch-Ø − Defensiv-Ø + 3%) / 6%) × 100. Zyklisch: ${cyclicalAvgSec.toFixed(2)}% (${cyclicalSectors.length} Sektoren), Defensiv: ${defensiveAvgSec.toFixed(2)}% (${defensiveSectors.length} Sektoren).`
+        : "Keine Daten verfügbar.",
+      en: hasSectorData
+        ? `Score = ((cyclical avg − defensive avg + 3%) / 6%) × 100. Cyclical: ${cyclicalAvgSec.toFixed(2)}% (${cyclicalSectors.length} sectors), Defensive: ${defensiveAvgSec.toFixed(2)}% (${defensiveSectors.length} sectors).`
+        : "No data available."
     },
-    score: junkBondScore,
-    rawValue: commoditiesStale ? "closed" : `${junkSpread >= 0 ? "+" : ""}${junkSpread.toFixed(2)}%`,
-    icon: <ShieldAlert className="h-4 w-4" />,
+    score: hasSectorData ? sectorRotationScore : 50,
+    rawValue: hasSectorData ? `${sectorSpread >= 0 ? "+" : ""}${sectorSpread.toFixed(2)}%` : "N/A",
+    icon: <Target className="h-4 w-4" />,
   });
 
   /* 6. Commodity Risk Appetite (10%) — Oil + Copper */
@@ -850,14 +856,15 @@ export default function MarketSentimentPage() {
   const { data: indices, isLoading: indicesLoading } = useMarketIndices();
   const { data: glData, isLoading: glLoading } = useGainersLosers();
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
+  const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
 
   const gainers = glData?.gainers || [];
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, commodities),
-    [indices, commodities]
+    () => computeSubIndicators(indices, commodities, sectors),
+    [indices, commodities, sectors]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
