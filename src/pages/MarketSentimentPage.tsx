@@ -51,7 +51,8 @@ interface SubIndicator {
 
 function computeSubIndicators(
   indices: any[] | undefined,
-  commodities: any[] | undefined
+  commodities: any[] | undefined,
+  sectors: any[] | undefined
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
 
