@@ -856,6 +856,7 @@ export default function MarketSentimentPage() {
   const { data: indices, isLoading: indicesLoading } = useMarketIndices();
   const { data: glData, isLoading: glLoading } = useGainersLosers();
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
+  const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
 
   const gainers = glData?.gainers || [];
