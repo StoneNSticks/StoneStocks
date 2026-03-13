@@ -506,6 +506,7 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.realEstateValuationP1") }} />
             </SectionCard>
           </motion.section>
+        </SuperSection>
 
         {/* ═══════════════════════════════════════════════
             OBERSEKTION C: FORTGESCHRITTEN (Advanced)
