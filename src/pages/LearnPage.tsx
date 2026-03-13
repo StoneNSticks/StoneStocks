@@ -1057,6 +1057,26 @@ export default function LearnPage() {
               <WarningBox title={t("learn.warning")}>{lang === "de" ? "MMT ist hochkontrovers und wird von der Mehrheit der Ökonomen kritisch gesehen." : "MMT is highly controversial and viewed critically by most economists."}</WarningBox>
             </SectionCard>
           </motion.section>
+
+          {/* Section 29: Fintech & Digital Finance (NEW) */}
+          <motion.section id="fintech" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={29} title={t("learn.section29Title")} level={t("learn.levelMaster")} />
+            <SectionCard icon={<Binary className="h-5 w-5" />} title={t("learn.roboAdvisorsTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.roboAdvisorsP1") }} />
+            </SectionCard>
+            <SectionCard icon={<BanknoteIcon className="h-5 w-5" />} title={t("learn.neobanksTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.neobanksP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Network className="h-5 w-5" />} title={t("learn.blockchainFinanceTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.blockchainFinanceP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Coins className="h-5 w-5" />} title={t("learn.defiTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.defiP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Zap className="h-5 w-5" />} title={t("learn.paymentInnovationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.paymentInnovationP1") }} />
+            </SectionCard>
+          </motion.section>
         </SuperSection>
 
         {/* Glossary CTA */}
