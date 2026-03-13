@@ -22,6 +22,9 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   "learn.toc26": t("26. Personal Finance & Altersvorsorge", "26. Personal Finance & Retirement"),
   "learn.toc27": t("27. Ökonometrie & Financial Modeling", "27. Econometrics & Financial Modeling"),
   "learn.toc28": t("28. Geldpolitik & Bankensystem", "28. Monetary Policy & Banking"),
+  "learn.toc29": t("29. Fintech & Digitale Finanzen", "29. Fintech & Digital Finance"),
+  "learn.toc30": t("30. Immobilien-Investing", "30. Real Estate Investing"),
+  "learn.toc31": t("31. Steueroptimierung", "31. Tax Optimization Strategies"),
 
   // ══════════════════════════════════════════════════════════════
   // SECTION 17: CORPORATE FINANCE
@@ -352,6 +355,19 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
     "The <strong>COVID-19 crash</strong> (February-March 2020) was the fastest 30% drop in history. The S&P 500 fell 34% in just 22 trading days. Then came one of the fastest recoveries: New all-time highs were reached by August 2020. Drivers: Massive fiscal and monetary policy (rate cuts, $5+ trillion stimulus packages). Lesson: <strong>Panic selling is almost always wrong. The market recovers faster than you think.</strong>"
   ),
 
+  // NEW: Asian Crisis & Crypto Crash
+  "learn.asianCrisisTitle": t("Asienkrise (1997)", "Asian Financial Crisis (1997)"),
+  "learn.asianCrisisP1": t(
+    "Die <strong>Asienkrise 1997</strong> begann mit dem Kollaps des thailändischen Baht und breitete sich auf Südkorea, Indonesien, Malaysia und die Philippinen aus. Ursachen: <strong>Exzessive Kreditvergabe</strong>, Währungsbindungen an den US-Dollar, kurzfristige Auslandsschulden und schwache Bankenaufsicht. Der Thai SET Index fiel um 75%, der koreanische KOSPI um 70%. Der IWF gewährte Notfallkredite über $118 Milliarden. Lektion: <strong>Fixed Exchange Rates und kurzfristige Auslandsschulden sind eine gefährliche Kombination.</strong>",
+    "The <strong>Asian Financial Crisis of 1997</strong> started with the collapse of the Thai Baht and spread to South Korea, Indonesia, Malaysia, and the Philippines. Causes: <strong>Excessive lending</strong>, currency pegs to the US dollar, short-term foreign debt, and weak banking supervision. The Thai SET Index fell 75%, Korea's KOSPI 70%. The IMF granted emergency loans of $118 billion. Lesson: <strong>Fixed exchange rates and short-term foreign debt are a dangerous combination.</strong>"
+  ),
+
+  "learn.cryptoCrash2022Title": t("Krypto-Crash (2022)", "Crypto Crash (2022)"),
+  "learn.cryptoCrash2022P1": t(
+    "Der <strong>Krypto-Crash 2022</strong> vernichtete über $2 Billionen an Marktwert. Bitcoin fiel von $69.000 (November 2021) auf $15.500 (November 2022) – ein Verlust von 77%. Schlüsselereignisse: Zusammenbruch von <strong>Terra/LUNA</strong> (algorithmischer Stablecoin, $60 Mrd. vernichtet), Insolvenz von <strong>Three Arrows Capital</strong> (Hedgefonds), Kollaps von <strong>FTX</strong> (zweitgrößte Kryptobörse, Betrug). Lektion: <strong>Gegenparteirisiko und Leverage im unregulierten Raum können katastrophal sein. Not your keys, not your coins.</strong>",
+    "The <strong>2022 Crypto Crash</strong> wiped out over $2 trillion in market value. Bitcoin fell from $69,000 (November 2021) to $15,500 (November 2022) – a 77% loss. Key events: Collapse of <strong>Terra/LUNA</strong> (algorithmic stablecoin, $60B destroyed), insolvency of <strong>Three Arrows Capital</strong> (hedge fund), collapse of <strong>FTX</strong> (second-largest crypto exchange, fraud). Lesson: <strong>Counterparty risk and leverage in unregulated spaces can be catastrophic. Not your keys, not your coins.</strong>"
+  ),
+
   // ══════════════════════════════════════════════════════════════
   // SECTION 26: PERSONAL FINANCE & RETIREMENT
   // ══════════════════════════════════════════════════════════════
@@ -407,19 +423,19 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   "learn.varModelTitle": t("Value at Risk (VaR)", "Value at Risk (VaR)"),
   "learn.varModelP1": t(
     "<strong>Value at Risk</strong> quantifiziert den maximalen erwarteten Verlust über einen Zeitraum mit einer bestimmten Wahrscheinlichkeit. Beispiel: VaR(95%, 1 Tag) = $1M bedeutet: Mit 95% Wahrscheinlichkeit verlierst du nicht mehr als $1M an einem Tag. Methoden: <strong>Historisch</strong> (vergangene Daten), <strong>Parametrisch</strong> (Normalverteilung annehmen), <strong>Monte Carlo</strong> (Simulation). Kritik: VaR sagt nichts über die Verlusthöhe jenseits des VaR (dafür: <strong>CVaR/Expected Shortfall</strong>).",
-    "<strong>Value at Risk</strong> quantifies the maximum expected loss over a period at a given probability. Example: VaR(95%, 1 day) = $1M means: With 95% probability, you won't lose more than $1M in a day. Methods: <strong>Historical</strong> (past data), <strong>Parametric</strong> (assume normal distribution), <strong>Monte Carlo</strong> (simulation). Criticism: VaR says nothing about loss magnitude beyond VaR (for that: <strong>CVaR/Expected Shortfall</strong>)."
+    "<strong>Value at Risk</strong> quantifies the maximum expected loss over a period at a given probability. Example: VaR(95%, 1 day) = $1M means: With 95% probability, you won't lose more than $1M in one day. Methods: <strong>Historical</strong> (past data), <strong>Parametric</strong> (assume normal distribution), <strong>Monte Carlo</strong> (simulation). Criticism: VaR says nothing about loss magnitude beyond VaR (for that: <strong>CVaR/Expected Shortfall</strong>)."
   ),
 
-  "learn.financialModelingTitle": t("Financial Modeling in Excel/Python", "Financial Modeling in Excel/Python"),
+  "learn.financialModelingTitle": t("Financial Modeling", "Financial Modeling"),
   "learn.financialModelingP1": t(
-    "<strong>Financial Modeling</strong> ist das Erstellen mathematischer Abbilder eines Unternehmens. Standardmodelle: <strong>3-Statement Model</strong> (GuV, Bilanz, Cashflow verbunden), <strong>DCF Model</strong>, <strong>LBO Model</strong>, <strong>M&A/Merger Model</strong>. Best Practices: Klare Struktur (Inputs/Annahmen oben, Berechnungen darunter), Farbcodierung (blau = Input, schwarz = Formel), Szenarioanalyse (Base/Bull/Bear Case).",
-    "<strong>Financial Modeling</strong> creates mathematical representations of a company. Standard models: <strong>3-Statement Model</strong> (P&L, Balance Sheet, Cash Flow linked), <strong>DCF Model</strong>, <strong>LBO Model</strong>, <strong>M&A/Merger Model</strong>. Best practices: Clear structure (inputs/assumptions at top, calculations below), color coding (blue = input, black = formula), scenario analysis (Base/Bull/Bear Case)."
+    "<strong>Financial Modeling</strong> erstellt mathematische Darstellungen der finanziellen Situation eines Unternehmens. <strong>3-Statement-Modell</strong>: Verknüpft GuV, Bilanz und Cashflow. <strong>DCF-Modell</strong>: Projiziert Free Cash Flows. <strong>LBO-Modell</strong>: Für Leveraged Buyouts. <strong>M&A-Modell</strong>: Analysiert Übernahme-Synergien. Best Practices: Klare Formatierung (blau=Input, schwarz=Berechnung), Sensitivitätsanalysen, keine Hardcoded-Zahlen.",
+    "<strong>Financial Modeling</strong> creates mathematical representations of a company's financial situation. <strong>3-Statement Model</strong>: Links P&L, balance sheet, and cash flow. <strong>DCF Model</strong>: Projects free cash flows. <strong>LBO Model</strong>: For leveraged buyouts. <strong>M&A Model</strong>: Analyzes acquisition synergies. Best practices: Clear formatting (blue=input, black=calculation), sensitivity analyses, no hardcoded numbers."
   ),
 
-  "learn.correlationTitle": t("Korrelation & Kovarianz", "Correlation & Covariance"),
+  "learn.correlationTitle": t("Korrelation & Kausalität", "Correlation & Causality"),
   "learn.correlationP1": t(
-    "<strong>Korrelation</strong> misst die lineare Beziehung zwischen zwei Variablen (-1 bis +1). <strong>+1</strong>: Perfekt gleichgerichtet. <strong>0</strong>: Keine lineare Beziehung. <strong>-1</strong>: Perfekt gegenläufig. <strong>Kovarianz</strong> = nicht-normalisierte Version. In der Portfoliotheorie: Niedrig korrelierte Assets reduzieren das Gesamtrisiko. Achtung: Korrelation ≠ Kausalität, und Korrelationen können sich in Krisen dramatisch ändern!",
-    "<strong>Correlation</strong> measures the linear relationship between two variables (-1 to +1). <strong>+1</strong>: Perfectly aligned. <strong>0</strong>: No linear relationship. <strong>-1</strong>: Perfectly inverse. <strong>Covariance</strong> = non-normalized version. In portfolio theory: Low-correlated assets reduce overall risk. Caution: Correlation ≠ causation, and correlations can change dramatically in crises!"
+    "<strong>Korrelation</strong> (ρ, von -1 bis +1) misst den linearen Zusammenhang zwischen zwei Variablen. <strong>Wichtig: Korrelation ≠ Kausalität!</strong> Beispiel: Eisverkauf und Ertrinken korrelieren (Ursache: Sommer). Im Portfolio-Kontext: Niedrige Korrelation zwischen Assets verbessert die Diversifikation. Korrelationen sind instabil und steigen in Krisen (wenn man Diversifikation am meisten braucht).",
+    "<strong>Correlation</strong> (ρ, from -1 to +1) measures the linear relationship between two variables. <strong>Important: Correlation ≠ Causation!</strong> Example: Ice cream sales and drowning correlate (cause: summer). In portfolio context: Low correlation between assets improves diversification. Correlations are unstable and increase during crises (when diversification is needed most)."
   ),
 
   // ══════════════════════════════════════════════════════════════
@@ -429,37 +445,181 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
 
   "learn.moneyCreationTitle": t("Geldschöpfung", "Money Creation"),
   "learn.moneyCreationP1": t(
-    "Die meiste <strong>Geldschöpfung</strong> erfolgt durch Geschäftsbanken, nicht durch Zentralbanken. Wenn eine Bank einen Kredit vergibt, schafft sie neues Giralgeld (Buchgeld). Die Zentralbank kontrolliert diesen Prozess über <strong>Mindestreserveanforderungen</strong>, <strong>Zinssätze</strong> und <strong>Offenmarktgeschäfte</strong>. <strong>Geldmengenaggregate</strong>: M0 (Bargeld), M1 (+Sichteinlagen), M2 (+Termineinlagen), M3 (+Großanleger).",
-    "Most <strong>money creation</strong> happens through commercial banks, not central banks. When a bank issues a loan, it creates new deposit money. The central bank controls this process via <strong>reserve requirements</strong>, <strong>interest rates</strong>, and <strong>open market operations</strong>. <strong>Money supply aggregates</strong>: M0 (cash), M1 (+demand deposits), M2 (+time deposits), M3 (+large deposits)."
+    "Entgegen der populären Vorstellung schaffen <strong>Geschäftsbanken</strong> den Großteil des Geldes durch Kreditvergabe (nicht die Zentralbank). Wenn eine Bank einen Kredit vergibt, erzeugt sie neues Geld per Buchungssatz. Die <strong>Mindestreservepflicht</strong> (0% in der Eurozone seit 2012, 0% in den USA seit 2020) begrenzt dies theoretisch. Der <strong>Geldmultiplikator</strong> = 1/Reservesatz bestimmt die maximale Geldschöpfung.",
+    "Contrary to popular belief, <strong>commercial banks</strong> create most money through lending (not the central bank). When a bank issues a loan, it creates new money through accounting entries. The <strong>minimum reserve requirement</strong> (0% in the Eurozone since 2012, 0% in the US since 2020) theoretically limits this. The <strong>money multiplier</strong> = 1/reserve ratio determines maximum money creation."
   ),
 
-  "learn.centralBankToolsTitle": t("Instrumente der Zentralbanken", "Central Bank Instruments"),
+  "learn.centralBankToolsTitle": t("Instrumente der Zentralbank", "Central Bank Tools"),
   "learn.centralBankToolsP1": t(
-    "Zentralbanken steuern die Wirtschaft mit: <strong>Leitzins</strong> (Fed Funds Rate, EZB-Hauptrefinanzierungssatz): Beeinflusst alle Zinsen. <strong>Offenmarktgeschäfte</strong>: Kauf/Verkauf von Staatsanleihen zur Liquiditätssteuerung. <strong>QE</strong> (Quantitative Easing): Aufkauf von Anleihen zur Senkung langfristiger Zinsen. <strong>QT</strong> (Quantitative Tightening): Abbau der Bilanz. <strong>Forward Guidance</strong>: Kommunikation zukünftiger Geldpolitik zur Erwartungssteuerung.",
-    "Central banks steer the economy with: <strong>Policy rate</strong> (Fed Funds Rate, ECB main refinancing rate): Influences all interest rates. <strong>Open market operations</strong>: Buying/selling government bonds to manage liquidity. <strong>QE</strong> (Quantitative Easing): Purchasing bonds to lower long-term rates. <strong>QT</strong> (Quantitative Tightening): Balance sheet reduction. <strong>Forward Guidance</strong>: Communicating future monetary policy to manage expectations."
+    "<strong>Konventionelle Instrumente</strong>: Leitzins (Fed Funds Rate, EZB-Hauptrefinanzierungssatz), Offenmarktgeschäfte (Kauf/Verkauf von Staatsanleihen), Mindestreserve. <strong>Unkonventionelle Instrumente</strong> (seit 2008): <strong>QE</strong> (Quantitative Easing: massiver Anleihekauf), <strong>Forward Guidance</strong> (Kommunikation zukünftiger Zinspfade), <strong>TLTRO</strong> (gezielte Langfristkredite), <strong>Yield Curve Control</strong> (Japan: Kontrolle der Langfristzinsen).",
+    "<strong>Conventional tools</strong>: Policy rate (Fed Funds Rate, ECB main refinancing rate), open market operations (buying/selling government bonds), reserve requirements. <strong>Unconventional tools</strong> (since 2008): <strong>QE</strong> (Quantitative Easing: massive bond purchases), <strong>forward guidance</strong> (communicating future rate paths), <strong>TLTRO</strong> (targeted long-term loans), <strong>yield curve control</strong> (Japan: controlling long-term rates)."
   ),
 
-  "learn.bankingSystemTitle": t("Das Bankensystem", "The Banking System"),
+  "learn.bankingSystemTitle": t("Bankensystem & Stabilität", "Banking System & Stability"),
   "learn.bankingSystemP1": t(
-    "Banken operieren mit <strong>Fristentransformation</strong>: Sie nehmen kurzfristige Einlagen (Girokonten) und vergeben langfristige Kredite (Hypotheken). Das schafft Gewinne, aber auch Risiken (<strong>Bank Run</strong>: Wenn alle Einleger gleichzeitig abheben wollen). Moderne Sicherungssysteme: <strong>Einlagensicherung</strong> (FDIC: $250k in USA, €100k in EU), <strong>Lender of Last Resort</strong> (Zentralbank als letzte Rettung).",
-    "Banks operate through <strong>maturity transformation</strong>: They take short-term deposits (checking accounts) and make long-term loans (mortgages). This creates profits but also risks (<strong>bank run</strong>: when all depositors want to withdraw simultaneously). Modern safety nets: <strong>deposit insurance</strong> (FDIC: $250k in USA, €100k in EU), <strong>lender of last resort</strong> (central bank as ultimate backstop)."
+    "Das <strong>Bankensystem</strong> basiert auf <strong>Fristentransformation</strong>: Banken nehmen kurzfristige Einlagen und vergeben langfristige Kredite. Das macht sie anfällig für <strong>Bank Runs</strong> (alle Einleger wollen gleichzeitig Geld abheben). Schutzmechanismen: <strong>Einlagensicherung</strong> (100.000€ in EU, $250.000 in USA), <strong>Lender of Last Resort</strong> (Zentralbank als letzter Kreditgeber), <strong>Systemrelevanz</strong> (SIFI: Systemically Important Financial Institutions).",
+    "The <strong>banking system</strong> is based on <strong>maturity transformation</strong>: Banks take short-term deposits and make long-term loans. This makes them vulnerable to <strong>bank runs</strong> (all depositors wanting withdrawals simultaneously). Protection mechanisms: <strong>Deposit insurance</strong> (€100,000 in EU, $250,000 in US), <strong>lender of last resort</strong> (central bank as final lender), <strong>systemic importance</strong> (SIFI: Systemically Important Financial Institutions)."
   ),
 
   "learn.transmissionTitle": t("Transmissionsmechanismus", "Transmission Mechanism"),
   "learn.transmissionP1": t(
-    "Der <strong>Transmissionsmechanismus</strong> beschreibt, wie Geldpolitik die Realwirtschaft beeinflusst: <strong>Zinskanal</strong>: Niedrigere Zinsen → günstigere Kredite → mehr Investition und Konsum. <strong>Vermögenskanal</strong>: Niedrige Zinsen → höhere Aktien-/Immobilienpreise → Wealth Effect. <strong>Kreditkanal</strong>: Banken vergeben mehr Kredite. <strong>Wechselkurskanal</strong>: Niedrigere Zinsen → schwächere Währung → Exportvorteil. Die Wirkung tritt mit Verzögerung ein (6-18 Monate).",
-    "The <strong>transmission mechanism</strong> describes how monetary policy affects the real economy: <strong>Interest rate channel</strong>: Lower rates → cheaper credit → more investment and consumption. <strong>Wealth channel</strong>: Low rates → higher stock/real estate prices → wealth effect. <strong>Credit channel</strong>: Banks issue more loans. <strong>Exchange rate channel</strong>: Lower rates → weaker currency → export advantage. Effects occur with a delay (6-18 months)."
+    "Der <strong>geldpolitische Transmissionsmechanismus</strong> beschreibt, wie Zentralbankentscheidungen die Realwirtschaft beeinflussen: <strong>Zinskanal</strong> (Leitzins → Bankzinsen → Konsum/Investitionen), <strong>Kreditkanal</strong> (Banken vergeben mehr/weniger Kredite), <strong>Vermögenskanal</strong> (Niedrige Zinsen → höhere Aktien-/Immobilienpreise → Wealth Effect), <strong>Wechselkurskanal</strong> (Zinsdifferenzen → Kapitalströme → Wechselkurs → Exporte). Zeitverzögerung: 12-24 Monate.",
+    "The <strong>monetary policy transmission mechanism</strong> describes how central bank decisions affect the real economy: <strong>Interest rate channel</strong> (policy rate → bank rates → consumption/investment), <strong>credit channel</strong> (banks lend more/less), <strong>wealth channel</strong> (low rates → higher stock/real estate prices → wealth effect), <strong>exchange rate channel</strong> (interest differentials → capital flows → exchange rate → exports). Time lag: 12-24 months."
   ),
 
-  "learn.modernMonetaryTitle": t("Moderne Geldtheorie (MMT)", "Modern Monetary Theory (MMT)"),
+  "learn.modernMonetaryTitle": t("Modern Monetary Theory (MMT)", "Modern Monetary Theory (MMT)"),
   "learn.modernMonetaryP1": t(
-    "<strong>MMT</strong> argumentiert, dass Staaten mit eigener Währung nicht 'pleite gehen' können, da sie ihr eigenes Geld drucken. Staatsausgaben sollten sich an der Vollbeschäftigung orientieren, nicht an Defizitgrenzen. Inflation, nicht Verschuldung, ist die relevante Grenze. MMT ist hochkontrovers: Befürworter sehen es als Paradigmenwechsel, Kritiker warnen vor Inflation und Vertrauensverlust.",
-    "<strong>MMT</strong> argues that states with their own currency cannot 'go bankrupt' since they can print their own money. Government spending should target full employment, not deficit limits. Inflation, not debt, is the relevant constraint. MMT is highly controversial: Supporters see it as a paradigm shift, critics warn of inflation and loss of confidence."
+    "<strong>MMT</strong> argumentiert, dass Staaten mit eigener Währung nicht 'pleite gehen' können, da sie Geld drucken können. Steuern dienen demnach nicht der Finanzierung, sondern der Inflationssteuerung. MMT befürwortet fiskalische Defizite bis zur Vollbeschäftigung. Die Inflation ist die einzige echte Beschränkung. Befürworter: Stephanie Kelton. Hauptkritik: Inflationsrisiko, Wechselkurseffekte, politische Anreize zu übermäßiger Verschuldung.",
+    "<strong>MMT</strong> argues that states with their own currency cannot 'go bankrupt' as they can print money. Taxes serve not for financing but for inflation control. MMT advocates fiscal deficits up to full employment. Inflation is the only real constraint. Proponent: Stephanie Kelton. Main criticism: Inflation risk, exchange rate effects, political incentives for excessive debt."
   ),
 
-  // ── Quizzes ──
-  "learn.quizCorporateFinance": t("Quiz: Corporate Finance", "Quiz: Corporate Finance"),
-  "learn.quizAccounting": t("Quiz: Rechnungswesen", "Quiz: Accounting"),
-  "learn.quizValuation": t("Quiz: Bewertung", "Quiz: Valuation"),
-  "learn.quizMarketHistory": t("Quiz: Marktgeschichte", "Quiz: Market History"),
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 29: FINTECH & DIGITAL FINANCE (NEW)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section29Title": t("Fintech & Digitale Finanzen", "Fintech & Digital Finance"),
+
+  "learn.roboAdvisorsTitle": t("Robo-Advisors", "Robo-Advisors"),
+  "learn.roboAdvisorsP1": t(
+    "<strong>Robo-Advisors</strong> sind automatisierte Vermögensverwaltungen, die Portfolios basierend auf Risikofragebögen zusammenstellen und verwalten. Vorteile: Niedrige Kosten (0,25-0,75% p.a.), automatisches Rebalancing, kein Mindestanlagebetrag. Bekannte Anbieter: Scalable Capital, Quirion (DE), Betterment, Wealthfront (USA). Für die meisten Anleger bieten sie eine gute Alternative zur Selbstverwaltung, wobei ein simpler ETF-Sparplan oft noch günstiger ist.",
+    "<strong>Robo-advisors</strong> are automated wealth management services that build and manage portfolios based on risk questionnaires. Advantages: Low costs (0.25-0.75% p.a.), automatic rebalancing, no minimum investment. Notable providers: Scalable Capital, Quirion (DE), Betterment, Wealthfront (US). For most investors, they offer a good alternative to self-management, though a simple ETF savings plan is often even cheaper."
+  ),
+
+  "learn.neobanksTitle": t("Neobanken & Challenger Banks", "Neobanks & Challenger Banks"),
+  "learn.neobanksP1": t(
+    "<strong>Neobanken</strong> sind rein digitale Banken ohne Filialnetz. Sie bieten Konten, Karten und oft auch Trading über Apps an. Vorteile: Keine Kontogebühren, schnelle Eröffnung, moderne UX, internationale Überweisungen zu Spot-Kursen. Nachteile: Oft eingeschränkte Produktpalette, keine persönliche Beratung. Bekannte Anbieter: N26, Revolut, Wise, Chime. Der Markt wächst rasant, aber Profitabilität bleibt für viele eine Herausforderung.",
+    "<strong>Neobanks</strong> are purely digital banks without branch networks. They offer accounts, cards, and often trading through apps. Advantages: No account fees, fast opening, modern UX, international transfers at spot rates. Disadvantages: Often limited product range, no personal advice. Notable providers: N26, Revolut, Wise, Chime. The market is growing rapidly, but profitability remains a challenge for many."
+  ),
+
+  "learn.blockchainFinanceTitle": t("Blockchain im Finanzwesen", "Blockchain in Finance"),
+  "learn.blockchainFinanceP1": t(
+    "<strong>Blockchain-Technologie</strong> verändert das Finanzwesen fundamental: <strong>Tokenisierung</strong> ermöglicht den Handel mit fraktionierten Anteilen an Immobilien, Kunst oder Private Equity. <strong>Smart Contracts</strong> automatisieren Finanzverträge ohne Intermediäre. <strong>Stablecoins</strong> (USDC, USDT) werden für schnelle, günstige Überweisungen genutzt. <strong>CBDCs</strong> (Central Bank Digital Currencies) werden von über 100 Zentralbanken erforscht – der digitale Euro könnte 2027 kommen.",
+    "<strong>Blockchain technology</strong> is fundamentally changing finance: <strong>Tokenization</strong> enables trading fractional shares of real estate, art, or private equity. <strong>Smart contracts</strong> automate financial agreements without intermediaries. <strong>Stablecoins</strong> (USDC, USDT) are used for fast, cheap transfers. <strong>CBDCs</strong> (Central Bank Digital Currencies) are being explored by 100+ central banks – the digital euro could arrive by 2027."
+  ),
+
+  "learn.defiTitle": t("DeFi (Decentralized Finance)", "DeFi (Decentralized Finance)"),
+  "learn.defiP1": t(
+    "<strong>DeFi</strong> repliziert traditionelle Finanzdienstleistungen auf der Blockchain ohne zentrale Intermediäre. <strong>Lending/Borrowing</strong> (Aave, Compound): Verleihe Krypto gegen Zinsen. <strong>DEXs</strong> (Uniswap, Curve): Dezentraler Börsenhandel über Automated Market Makers. <strong>Yield Farming</strong>: Liquidität bereitstellen für hohe Renditen (aber auch hohe Risiken: Smart Contract Bugs, Impermanent Loss, Rug Pulls). DeFi TVL schwankte von $180 Mrd. (2021) auf $40 Mrd. (2023).",
+    "<strong>DeFi</strong> replicates traditional financial services on the blockchain without central intermediaries. <strong>Lending/Borrowing</strong> (Aave, Compound): Lend crypto for interest. <strong>DEXs</strong> (Uniswap, Curve): Decentralized exchange trading via Automated Market Makers. <strong>Yield Farming</strong>: Provide liquidity for high returns (but also high risks: smart contract bugs, impermanent loss, rug pulls). DeFi TVL fluctuated from $180B (2021) to $40B (2023)."
+  ),
+
+  "learn.paymentInnovationTitle": t("Zahlungsinnovationen", "Payment Innovations"),
+  "learn.paymentInnovationP1": t(
+    "Die <strong>Zahlungslandschaft</strong> wandelt sich rasant: <strong>Echtzeit-Zahlungen</strong> (SEPA Instant, FedNow) ermöglichen Überweisungen in Sekunden statt Tagen. <strong>Buy Now Pay Later</strong> (BNPL: Klarna, Affirm) bietet zinsfreie Ratenzahlung – birgt aber Verschuldungsrisiken. <strong>Embedded Finance</strong> integriert Finanzdienstleistungen in Nicht-Finanz-Apps. <strong>Open Banking</strong> (PSD2 in EU) ermöglicht Drittanbietern Zugriff auf Bankdaten mit Kundeneinwilligung.",
+    "The <strong>payments landscape</strong> is rapidly transforming: <strong>Real-time payments</strong> (SEPA Instant, FedNow) enable transfers in seconds instead of days. <strong>Buy Now Pay Later</strong> (BNPL: Klarna, Affirm) offers interest-free installments – but carries debt risks. <strong>Embedded finance</strong> integrates financial services into non-financial apps. <strong>Open Banking</strong> (PSD2 in EU) allows third parties access to bank data with customer consent."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 30: REAL ESTATE INVESTING (NEW)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section30Title": t("Immobilien-Investing", "Real Estate Investing"),
+
+  "learn.realEstateOverviewTitle": t("Immobilien als Anlageklasse", "Real Estate as an Asset Class"),
+  "learn.realEstateOverviewP1": t(
+    "<strong>Immobilien</strong> sind mit ca. $330 Billionen die größte Anlageklasse der Welt. Vorteile: Inflationsschutz (Mieten steigen mit Inflation), stabile Cashflows, Leverage-Möglichkeit (Hypothek), Steuervorteile (Abschreibungen). Nachteile: Illiquidität, hohe Transaktionskosten (5-10%), Klumpenrisiko, Instandhaltungskosten, Mietausfallrisiko. Rendite: Historisch 8-12% p.a. (inkl. Wertsteigerung und Mieteinnahmen).",
+    "<strong>Real estate</strong> at approximately $330 trillion is the world's largest asset class. Advantages: Inflation protection (rents rise with inflation), stable cash flows, leverage possibility (mortgage), tax benefits (depreciation). Disadvantages: Illiquidity, high transaction costs (5-10%), concentration risk, maintenance costs, vacancy risk. Returns: Historically 8-12% p.a. (including appreciation and rental income)."
+  ),
+
+  "learn.directVsIndirectTitle": t("Direkt vs. Indirekt investieren", "Direct vs. Indirect Investment"),
+  "learn.directVsIndirectP1": t(
+    "<strong>Direkte Immobilieninvestition</strong>: Kauf einer Wohnung oder eines Hauses. Volle Kontrolle, aber hoher Kapitalbedarf (20-30% Eigenkapital), Verwaltungsaufwand und Klumpenrisiko. <strong>Indirekte Investition</strong>: <strong>REITs</strong> (börsengehandelte Immobilienfonds), <strong>offene Immobilienfonds</strong> (geringere Volatilität, aber Rückgabefristen), <strong>Crowdinvesting</strong> (ab 100-500€, aber höheres Ausfallrisiko), <strong>Immobilien-ETFs</strong> (breite Streuung, hohe Liquidität).",
+    "<strong>Direct real estate investment</strong>: Buying an apartment or house. Full control, but high capital requirements (20-30% equity), management effort, and concentration risk. <strong>Indirect investment</strong>: <strong>REITs</strong> (exchange-traded real estate funds), <strong>open-ended real estate funds</strong> (lower volatility but redemption periods), <strong>crowdinvesting</strong> (from €100-500, but higher default risk), <strong>real estate ETFs</strong> (broad diversification, high liquidity)."
+  ),
+
+  "learn.reitsDeepTitle": t("REITs im Detail", "REITs in Detail"),
+  "learn.reitsDeepP1": t(
+    "<strong>REITs</strong> (Real Estate Investment Trusts) müssen mindestens 90% ihres Gewinns als Dividende ausschütten. Typen: <strong>Equity REITs</strong> (besitzen und betreiben Immobilien – 95% aller REITs), <strong>Mortgage REITs</strong> (investieren in Hypotheken), <strong>Hybrid REITs</strong> (Kombination). Sektoren: Wohnimmobilien, Büro, Einzelhandel, Logistik, Rechenzentren, Healthcare. Durchschnittliche Dividendenrendite: 3-6%. Korrelation zu Aktien: ~0,6 (moderate Diversifikation).",
+    "<strong>REITs</strong> (Real Estate Investment Trusts) must distribute at least 90% of earnings as dividends. Types: <strong>Equity REITs</strong> (own and operate properties – 95% of all REITs), <strong>Mortgage REITs</strong> (invest in mortgages), <strong>Hybrid REITs</strong> (combination). Sectors: Residential, office, retail, logistics, data centers, healthcare. Average dividend yield: 3-6%. Correlation to stocks: ~0.6 (moderate diversification)."
+  ),
+
+  "learn.realEstateValuationTitle": t("Immobilienbewertung", "Real Estate Valuation"),
+  "learn.realEstateValuationP1": t(
+    "Wichtige Bewertungskennzahlen: <strong>Mietrendite</strong> (Jahresnettomiete/Kaufpreis × 100). Guter Wert: über 5%. <strong>Kaufpreisfaktor</strong> (Kaufpreis/Jahresnettomiete). Unter 20 = günstig, über 30 = teuer. <strong>Cap Rate</strong> (NOI/Immobilienwert). <strong>Cash-on-Cash Return</strong> (Cashflow/eingesetztes Eigenkapital). <strong>Vergleichswertverfahren</strong>: Preise ähnlicher Objekte in der Umgebung. <strong>Ertragswertverfahren</strong>: Barwert der zukünftigen Mieteinnahmen.",
+    "Key valuation metrics: <strong>Rental yield</strong> (annual net rent/purchase price × 100). Good value: above 5%. <strong>Price-to-rent ratio</strong> (purchase price/annual net rent). Below 20 = cheap, above 30 = expensive. <strong>Cap Rate</strong> (NOI/property value). <strong>Cash-on-Cash Return</strong> (cash flow/equity invested). <strong>Comparable sales approach</strong>: Prices of similar properties nearby. <strong>Income approach</strong>: Present value of future rental income."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 31: TAX OPTIMIZATION STRATEGIES (NEW)
+  // ══════════════════════════════════════════════════════════════
+  "learn.section31Title": t("Steueroptimierung", "Tax Optimization Strategies"),
+
+  "learn.taxPlanningOverviewTitle": t("Steuerplanung für Anleger", "Tax Planning for Investors"),
+  "learn.taxPlanningOverviewP1": t(
+    "<strong>Legale Steueroptimierung</strong> ist ein zentraler Faktor für die Nettorendite. Wichtige Hebel: <strong>Sparerpauschbetrag</strong> (1.000€/Person in DE) voll ausschöpfen, <strong>Verlustverrechnung</strong> (Verluste mit Gewinnen verrechnen), <strong>Haltedauer optimieren</strong> (in den USA: Long-term Capital Gains ab 1 Jahr günstiger besteuert), <strong>Asset Location</strong> (steuereffiziente Platzierung: Anleihen in steuergeschützte Konten, Aktien in steuerpflichtige Depots).",
+    "<strong>Legal tax optimization</strong> is a key factor for net returns. Important levers: <strong>Saver's allowance</strong> (€1,000/person in DE) fully utilized, <strong>loss offsetting</strong> (offset losses against gains), <strong>holding period optimization</strong> (in the US: long-term capital gains from 1 year are taxed more favorably), <strong>asset location</strong> (tax-efficient placement: bonds in tax-sheltered accounts, stocks in taxable accounts)."
+  ),
+
+  "learn.taxLossHarvestingAdvTitle": t("Tax-Loss Harvesting Advanced", "Tax-Loss Harvesting Advanced"),
+  "learn.taxLossHarvestingAdvP1": t(
+    "<strong>Tax-Loss Harvesting</strong> geht über einfaches Verkaufen hinaus: <strong>Wash-Sale-Regel</strong> (USA): Du darfst dasselbe Wertpapier nicht innerhalb von 30 Tagen zurückkaufen. Strategie: Verkaufe den Verlust-ETF und kaufe einen ähnlichen (z.B. S&P 500 ETF → Total Market ETF). <strong>Tax-Loss Harvesting Algorithmen</strong> der Robo-Advisors können jährlich 1-2% zusätzliche Rendite durch automatisiertes Harvesting generieren. In Deutschland: Verlustverrechnungstopf wird automatisch beim Broker geführt.",
+    "<strong>Tax-Loss Harvesting</strong> goes beyond simple selling: <strong>Wash-sale rule</strong> (US): You cannot repurchase the same security within 30 days. Strategy: Sell the loss ETF and buy a similar one (e.g., S&P 500 ETF → Total Market ETF). <strong>Tax-loss harvesting algorithms</strong> of robo-advisors can generate 1-2% additional annual returns through automated harvesting. In Germany: Loss offsetting pools are automatically maintained by the broker."
+  ),
+
+  "learn.capitalGainsStrategiesTitle": t("Kapitalertragsstrategien", "Capital Gains Strategies"),
+  "learn.capitalGainsStrategiesP1": t(
+    "Strategien zur Minimierung der Kapitalertragssteuer: <strong>FIFO vs. Specific ID</strong>: In den USA kannst du wählen, welche Anteile du verkaufst (die teuersten zuerst = niedrigerer Gewinn). <strong>Thesaurierende vs. ausschüttende Fonds</strong>: In DE werden seit 2018 beide über die Vorabpauschale besteuert. <strong>Günstigerprüfung</strong> (DE): Bei niedrigem Einkommen kann der persönliche Steuersatz unter 25% liegen. <strong>Steuerstundung</strong>: Gewinne nicht realisieren = keine Steuer. Buy & Hold ist auch steuereffizient.",
+    "Strategies to minimize capital gains tax: <strong>FIFO vs. Specific ID</strong>: In the US, you can choose which shares to sell (most expensive first = lower gain). <strong>Accumulating vs. distributing funds</strong>: In DE, both have been taxed via advance lump sum since 2018. <strong>Favorable assessment</strong> (DE): With low income, your personal tax rate may be below 25%. <strong>Tax deferral</strong>: Not realizing gains = no tax. Buy & Hold is also tax-efficient."
+  ),
+
+  "learn.estatePlanningTitle": t("Erbschaftsplanung", "Estate Planning"),
+  "learn.estatePlanningP1": t(
+    "<strong>Erbschaftsplanung</strong> sichert die steuereffiziente Vermögensübertragung: <strong>Freibeträge</strong> (DE: 400.000€ pro Kind alle 10 Jahre, 500.000€ für Ehepartner). <strong>Schenkungen zu Lebzeiten</strong>: Freibeträge alle 10 Jahre neu nutzen. <strong>Familiengesellschaft</strong>: Strukturierung über GmbH & Co. KG kann Steuern optimieren. <strong>Nießbrauch</strong>: Vermögen übertragen, aber Erträge behalten. <strong>Testament/Erbvertrag</strong>: Unbedingt professionell erstellen lassen! Ohne Testament gilt die gesetzliche Erbfolge, die oft nicht den Wünschen entspricht.",
+    "<strong>Estate planning</strong> ensures tax-efficient wealth transfer: <strong>Exemptions</strong> (DE: €400,000 per child every 10 years, €500,000 for spouses). <strong>Lifetime gifts</strong>: Use exemptions anew every 10 years. <strong>Family company</strong>: Structuring via GmbH & Co. KG can optimize taxes. <strong>Usufruct</strong>: Transfer assets but retain income. <strong>Will/inheritance contract</strong>: Absolutely have it professionally drafted! Without a will, statutory succession applies, which often doesn't match wishes."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 3 EXPANSION: New strategy cards
+  // ══════════════════════════════════════════════════════════════
+  "learn.contrarianTitle": t("Contrarian Investing", "Contrarian Investing"),
+  "learn.contrarianP1": t(
+    "<strong>Contrarian Investing</strong> setzt bewusst gegen den vorherrschenden Markttrend. Wenn alle verkaufen, kauft der Contrarian – und umgekehrt. Die Strategie basiert auf der Überzeugung, dass Märkte zu Übertreibungen neigen und Mean Reversion eintritt. Berühmte Contrarians: Sir John Templeton ('Kaufe bei maximaler Pessimismus'), David Dreman, Howard Marks. Risiko: Der Markt kann länger irrational bleiben als du solvent.",
+    "<strong>Contrarian Investing</strong> deliberately goes against the prevailing market trend. When everyone sells, the contrarian buys – and vice versa. The strategy is based on the belief that markets tend to overreact and mean reversion occurs. Famous contrarians: Sir John Templeton ('Buy at the point of maximum pessimism'), David Dreman, Howard Marks. Risk: The market can stay irrational longer than you can stay solvent."
+  ),
+
+  "learn.sectorRotationTitle": t("Sektorrotation", "Sector Rotation"),
+  "learn.sectorRotationP1": t(
+    "<strong>Sektorrotation</strong> verschiebt Kapital je nach Konjunkturphase in die passenden Sektoren: <strong>Frühaufschwung</strong>: Technologie, Konsumgüter (zyklisch), Finanzen. <strong>Spätaufschwung</strong>: Industrie, Grundstoffe, Energie. <strong>Frührezession</strong>: Versorger, Gesundheit, Basiskonsumgüter. <strong>Spätrezession</strong>: Zurück zu Technologie und Finanzen. Der <strong>Business Cycle</strong> dauert typischerweise 5-10 Jahre. Herausforderung: Den Zyklus korrekt zu timen ist schwierig.",
+    "<strong>Sector rotation</strong> shifts capital into appropriate sectors based on the business cycle: <strong>Early expansion</strong>: Technology, consumer discretionary, financials. <strong>Late expansion</strong>: Industrials, materials, energy. <strong>Early recession</strong>: Utilities, healthcare, consumer staples. <strong>Late recession</strong>: Back to technology and financials. The <strong>business cycle</strong> typically lasts 5-10 years. Challenge: Correctly timing the cycle is difficult."
+  ),
+
+  "learn.coreSatelliteTitle": t("Core-Satellite-Strategie", "Core-Satellite Strategy"),
+  "learn.coreSatelliteP1": t(
+    "Die <strong>Core-Satellite-Strategie</strong> kombiniert passives und aktives Investieren: Der <strong>Core</strong> (60-80% des Portfolios) besteht aus breit diversifizierten, kostengünstigen ETFs (z.B. MSCI World). Die <strong>Satellites</strong> (20-40%) sind gezielte Wetten auf Einzelaktien, Sektoren oder Themen. Vorteile: Niedrige Gesamtkosten, solide Basis, Chance auf Outperformance durch Satellites. Diese Strategie passt für Anleger, die aktiv sein wollen, ohne ihr gesamtes Portfolio zu riskieren.",
+    "The <strong>core-satellite strategy</strong> combines passive and active investing: The <strong>core</strong> (60-80% of portfolio) consists of broadly diversified, low-cost ETFs (e.g., MSCI World). The <strong>satellites</strong> (20-40%) are targeted bets on individual stocks, sectors, or themes. Advantages: Low overall costs, solid foundation, chance of outperformance through satellites. This strategy suits investors who want to be active without risking their entire portfolio."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 8 EXPANSION: MPT practical, Risk Parity
+  // ══════════════════════════════════════════════════════════════
+  "learn.mptPracticalTitle": t("MPT in der Praxis", "MPT in Practice"),
+  "learn.mptPracticalP1": t(
+    "Die <strong>Moderne Portfoliotheorie</strong> in der Praxis: <strong>Efficient Frontier</strong> berechnen mit historischen Renditen und Korrelationen. Problem: <strong>Estimation Error</strong> – historische Daten sind keine perfekten Prädiktoren. Lösungen: <strong>Black-Litterman-Modell</strong> (kombiniert Marktgleichgewicht mit subjektiven Views), <strong>Resampled Efficiency</strong> (Monte Carlo über Inputs), <strong>Minimum Variance Portfolio</strong> (weniger sensitiv gegenüber Schätzfehlern). In der Praxis nutzen viele institutionelle Investoren vereinfachte Faustregeln statt voller MPT-Optimierung.",
+    "<strong>Modern Portfolio Theory</strong> in practice: Calculate <strong>Efficient Frontier</strong> with historical returns and correlations. Problem: <strong>Estimation error</strong> – historical data aren't perfect predictors. Solutions: <strong>Black-Litterman Model</strong> (combines market equilibrium with subjective views), <strong>Resampled Efficiency</strong> (Monte Carlo over inputs), <strong>Minimum Variance Portfolio</strong> (less sensitive to estimation errors). In practice, many institutional investors use simplified rules of thumb rather than full MPT optimization."
+  ),
+
+  "learn.riskParityTitle": t("Risk Parity", "Risk Parity"),
+  "learn.riskParityP1": t(
+    "<strong>Risk Parity</strong> gewichtet Portfoliobestandteile so, dass jede Anlageklasse den gleichen Risikobeitrag (nicht die gleiche Kapitalallokation) liefert. Da Anleihen weniger volatil sind als Aktien, erhalten sie höheres Gewicht (oft gehebelt). Bekanntes Beispiel: Bridgewater's <strong>All Weather Fund</strong> (Ray Dalio). Typische Allokation: ~30% Aktien, ~55% Anleihen, ~15% Rohstoffe/Gold (mit Hebel). Vorteil: Bessere Diversifikation über Marktregime. Nachteil: Funktioniert schlecht bei gleichzeitig steigenden Zinsen und fallenden Aktien.",
+    "<strong>Risk Parity</strong> weights portfolio components so each asset class contributes equal risk (not equal capital allocation). Since bonds are less volatile than stocks, they receive higher weight (often leveraged). Famous example: Bridgewater's <strong>All Weather Fund</strong> (Ray Dalio). Typical allocation: ~30% stocks, ~55% bonds, ~15% commodities/gold (with leverage). Advantage: Better diversification across market regimes. Disadvantage: Performs poorly when rates rise and stocks fall simultaneously."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 14 EXPANSION: Framing, Mental Accounting, Sunk Cost
+  // ══════════════════════════════════════════════════════════════
+  "learn.framingEffectTitle": t("Framing-Effekt", "Framing Effect"),
+  "learn.framingEffectP1": t(
+    "Der <strong>Framing-Effekt</strong> zeigt, dass die Art der Darstellung die Entscheidung beeinflusst: '90% Überlebensrate' klingt besser als '10% Sterblichkeitsrate' – obwohl es dasselbe ist. Im Investmentkontext: Ein Fonds mit '8% Rendite' wird anders wahrgenommen als einer mit '-12% unter dem Benchmark'. Anleger bewerten Gewinne und Verluste relativ zum Referenzpunkt, nicht absolut. Schutz: Immer die rohen Zahlen prüfen und Vergleichsrahmen hinterfragen.",
+    "The <strong>framing effect</strong> shows that presentation affects decisions: '90% survival rate' sounds better than '10% mortality rate' – though identical. In investment context: A fund with '8% return' is perceived differently than one '-12% below benchmark.' Investors evaluate gains and losses relative to reference points, not absolutely. Protection: Always check raw numbers and question the framing."
+  ),
+
+  "learn.mentalAccountingTitle": t("Mentale Buchführung", "Mental Accounting"),
+  "learn.mentalAccountingP1": t(
+    "<strong>Mentale Buchführung</strong> (Richard Thaler, Nobelpreis 2017) beschreibt die Tendenz, Geld in verschiedene 'mentale Konten' zu unterteilen und unterschiedlich zu behandeln. Beispiel: Dividenden werden als 'freies Geld' anders ausgegeben als Kursgewinne. Oder: Gewonnenes Geld wird riskanter investiert als erarbeitetes ('House Money Effect'). Folge: Suboptimale Portfolioentscheidungen, weil jede Position isoliert statt als Gesamtportfolio betrachtet wird.",
+    "<strong>Mental accounting</strong> (Richard Thaler, Nobel Prize 2017) describes the tendency to divide money into different 'mental accounts' and treat them differently. Example: Dividends are spent differently as 'free money' than capital gains. Or: Won money is invested more riskily than earned money ('house money effect'). Consequence: Suboptimal portfolio decisions because each position is viewed in isolation rather than as a total portfolio."
+  ),
+
+  "learn.sunkCostTitle": t("Sunk-Cost-Falle", "Sunk Cost Fallacy"),
+  "learn.sunkCostP1": t(
+    "Die <strong>Sunk-Cost-Falle</strong> lässt uns an Verlusten festhalten, weil wir bereits 'so viel investiert' haben. Beispiel: Du hältst eine Aktie, die 50% gefallen ist, weil du 'dein Geld zurückholen' willst – obwohl die Fundamentaldaten schlecht sind. Rational betrachtet sind vergangene Kosten irrelevant; nur die zukünftige Erwartung zählt. Gegenmittel: Frage dich bei jeder Position: 'Würde ich sie heute zum aktuellen Preis kaufen?' Wenn nein, verkaufe.",
+    "The <strong>sunk cost fallacy</strong> makes us hold onto losses because we've already 'invested so much.' Example: You hold a stock that's fallen 50% because you want to 'get your money back' – despite poor fundamentals. Rationally, past costs are irrelevant; only future expectations matter. Antidote: Ask yourself for each position: 'Would I buy it today at the current price?' If not, sell."
+  ),
 };
