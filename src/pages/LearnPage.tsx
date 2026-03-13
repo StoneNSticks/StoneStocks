@@ -970,7 +970,13 @@ export default function LearnPage() {
             </SectionCard>
             
           </motion.section>
-
+            <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.asianCrisisTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.asianCrisisP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Coins className="h-5 w-5" />} title={t("learn.cryptoCrash2022Title")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.cryptoCrash2022P1") }} />
+            </SectionCard>
+            
           {/* Section 26: Personal Finance & Retirement */}
           <motion.section id="personal-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
             <SectionHeader num={26} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
