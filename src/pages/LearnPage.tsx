@@ -305,6 +305,15 @@ export default function LearnPage() {
             <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.momentumTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.momentumP1") }} />
             </SectionCard>
+            <SectionCard icon={<TrendingDown className="h-5 w-5" />} title={t("learn.contrarianTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.contrarianP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.sectorRotationTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.sectorRotationP1") }} />
+            </SectionCard>
+            <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.coreSatelliteTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.coreSatelliteP1") }} />
+            </SectionCard>
             <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.psychTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.psychP1") }} />
               <div className="rounded-lg bg-muted/50 p-3 italic"><p className="text-sm text-foreground">{t("learn.psychP2")}</p></div>
