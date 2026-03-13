@@ -906,6 +906,23 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.baselP1") }} />
             </SectionCard>
           </motion.section>
+
+          {/* Section 31: Tax Optimization (NEW) */}
+          <motion.section id="steueroptimierung" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={31} title={t("learn.section31Title")} level={t("learn.levelAcademic")} />
+            <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.taxPlanningOverviewTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.taxPlanningOverviewP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.taxLossHarvestingAdvTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.taxLossHarvestingAdvP1") }} />
+            </SectionCard>
+            <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.capitalGainsStrategiesTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.capitalGainsStrategiesP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Shield className="h-5 w-5" />} title={t("learn.estatePlanningTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.estatePlanningP1") }} />
+            </SectionCard>
+          </motion.section>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
