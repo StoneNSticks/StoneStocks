@@ -108,6 +108,7 @@ export default function LearnPage() {
       { label: t("learn.toc7"), href: "#krypto-alternativen" },
       { label: t("learn.toc8"), href: "#portfolio" },
       { label: t("learn.toc9"), href: "#aktienanalyse" },
+      { label: t("learn.toc30"), href: "#immobilien" },
     ]},
     { title: `C: ${t("learn.superC")}`, level: t("learn.levelAdvanced"), items: [
       { label: t("learn.toc10"), href: "#technische-analyse" },
@@ -127,6 +128,7 @@ export default function LearnPage() {
       { label: t("learn.toc20"), href: "#fixed-income-advanced" },
       { label: t("learn.toc21"), href: "#esg" },
       { label: t("learn.toc22"), href: "#regulierung" },
+      { label: t("learn.toc31"), href: "#steueroptimierung" },
     ]},
     { title: `F: ${t("learn.superF")}`, level: t("learn.levelMaster"), items: [
       { label: t("learn.toc23"), href: "#bewertungsmethoden" },
@@ -135,6 +137,7 @@ export default function LearnPage() {
       { label: t("learn.toc26"), href: "#personal-finance" },
       { label: t("learn.toc27"), href: "#okonometrie" },
       { label: t("learn.toc28"), href: "#geldpolitik" },
+      { label: t("learn.toc29"), href: "#fintech" },
     ]},
   ];
 
