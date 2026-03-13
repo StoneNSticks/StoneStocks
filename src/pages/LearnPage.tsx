@@ -707,6 +707,15 @@ export default function LearnPage() {
                 <TermCard term={t("learn.sizeAnomaly")} desc={t("learn.sizeAnomalyDesc")} />
               </div>
             </SectionCard>
+            <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.framingEffectTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.framingEffectP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.mentalAccountingTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.mentalAccountingP1") }} />
+            </SectionCard>
+            <SectionCard icon={<AlertTriangle className="h-5 w-5" />} title={t("learn.sunkCostTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.sunkCostP1") }} />
+            </SectionCard>
             <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.emhTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.emhP1") }} />
             </SectionCard>
