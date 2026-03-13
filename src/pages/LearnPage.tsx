@@ -460,6 +460,12 @@ export default function LearnPage() {
             <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.emergencyFundTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.emergencyFundP1") }} />
             </SectionCard>
+            <SectionCard icon={<FlaskConical className="h-5 w-5" />} title={t("learn.mptPracticalTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.mptPracticalP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.riskParityTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.riskParityP1") }} />
+            </SectionCard>
             
           </motion.section>
 
