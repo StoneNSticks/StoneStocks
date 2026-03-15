@@ -945,7 +945,7 @@ export default function LearnPage() {
 
           {/* Section 24: Alternative Investments Advanced */}
           <motion.section id="alternative-advanced" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={24} title={t("learn.section24Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={26} title={t("learn.section24Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.hedgeFundsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.hedgeFundsP1") }} />
             </SectionCard>
