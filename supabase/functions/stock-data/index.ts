@@ -1187,6 +1187,15 @@ async function handleGainersLosers() {
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.gainers_losers));
+      return stale;
+    }
+  }
+
   try {
     // Try real-time snapshots first (works anytime)
     const [gainersData, losersData] = await Promise.all([
@@ -1220,7 +1229,7 @@ async function handleGainersLosers() {
         losers: losers.filter((s: any) => !isETFByName(s.name)),
         date: new Date().toISOString().split("T")[0],
       };
-      await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+      await setCache(cacheKey, result, "massive", getEffectiveTTL(TTL.gainers_losers));
       return result;
     }
 
@@ -1245,7 +1254,7 @@ async function handleGainersLosers() {
       enrichWithProfileData(rawLosers),
     ]);
     const result = { gainers: enrichedGainers.filter((s: any) => !isETFByName(s.name)), losers: enrichedLosers.filter((s: any) => !isETFByName(s.name)), date: lastDate };
-    await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+    await setCache(cacheKey, result, "massive", getEffectiveTTL(TTL.gainers_losers));
     return result;
   } catch (err) {
     console.error("Gainers/losers error:", err);
@@ -1268,10 +1277,38 @@ function getLastTradingDate(): string {
   return d.toISOString().split("T")[0];
 }
 
+// Check if US stock market is currently open (Mon-Fri 9:30-16:00 ET)
+function isUSMarketOpen(): boolean {
+  const now = new Date();
+  const est = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const day = est.getDay();
+  if (day === 0 || day === 6) return false;
+  const hour = est.getHours();
+  const min = est.getMinutes();
+  const totalMin = hour * 60 + min;
+  return totalMin >= 570 && totalMin < 960; // 9:30 to 16:00
+}
+
+// During off-hours, use very long TTL so we keep last trading session data
+function getEffectiveTTL(baseTTL: number): number {
+  if (isUSMarketOpen()) return baseTTL;
+  // Off-hours: cache for 12 hours (will be refreshed when market opens)
+  return Math.max(baseTTL, 60 * 12);
+}
+
 async function handleMostActive() {
   const cacheKey = "market:most_active:realtime";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
+
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.most_active));
+      return stale;
+    }
+  }
 
   try {
     // Try real-time snapshot
@@ -1287,7 +1324,7 @@ async function handleMostActive() {
         .sort((a: any, b: any) => b.volume - a.volume)
         .slice(0, 15);
       const stocks = (await enrichWithProfileData(rawStocks)).filter((s: any) => !isETFByName(s.name));
-      await setCache(cacheKey, stocks, "massive", TTL.most_active);
+      await setCache(cacheKey, stocks, "massive", getEffectiveTTL(TTL.most_active));
       return stocks;
     }
 
@@ -1304,7 +1341,7 @@ async function handleMostActive() {
       .sort((a: any, b: any) => b.volume - a.volume)
       .slice(0, 15);
     const enrichedStocks = (await enrichWithProfileData(stocks)).filter((s: any) => !isETFByName(s.name));
-    await setCache(cacheKey, enrichedStocks, "massive", TTL.most_active);
+    await setCache(cacheKey, enrichedStocks, "massive", getEffectiveTTL(TTL.most_active));
     return enrichedStocks;
   } catch {
     return [];
@@ -1395,6 +1432,15 @@ async function handleTopCompanies() {
   const cacheKey = "market:top_companies:v8";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
+
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.top_companies));
+      return stale;
+    }
+  }
 
   const BATCH_SIZE = 10; // Smaller batches to reduce rate limit risk
   const allQuotes: any[] = [];
@@ -1531,11 +1577,11 @@ async function handleTopCompanies() {
       if (!staleData.find((s: any) => s.symbol === q.symbol)) merged.push(q);
     }
     merged.sort((a: any, b: any) => b.marketCap - a.marketCap);
-    await setCache(cacheKey, merged, "multi", TTL.top_companies);
+    await setCache(cacheKey, merged, "multi", getEffectiveTTL(TTL.top_companies));
     return merged;
   }
 
-  await setCache(cacheKey, validQuotes, "multi", TTL.top_companies);
+  await setCache(cacheKey, validQuotes, "multi", getEffectiveTTL(TTL.top_companies));
   return validQuotes;
 }
 
