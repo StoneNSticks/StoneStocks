@@ -652,7 +652,7 @@ export default function LearnPage() {
         <SuperSection id="super-d" title={`D: ${t("learn.superD")}`} level={t("learn.levelExpert")} defaultOpen={false}>
           {/* Section 13: Market Microstructure */}
           <motion.section id="microstructure" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={13} title={t("learn.section13Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={14} title={t("learn.section13Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.orderBookTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP2") }} />
