@@ -1433,6 +1433,15 @@ async function handleTopCompanies() {
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.top_companies));
+      return stale;
+    }
+  }
+
   const BATCH_SIZE = 10; // Smaller batches to reduce rate limit risk
   const allQuotes: any[] = [];
   const toFinnhubSymbol = (sym: string) => sym.replace(".", "-");
