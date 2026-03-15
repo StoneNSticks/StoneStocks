@@ -60,13 +60,6 @@ export default function LearnPage() {
   const { read, markRead } = useReadProgress();
 
 
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setShowScrollTop(window.scrollY > 600);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Track which sections are in view
   useEffect(() => {
