@@ -1581,7 +1581,7 @@ async function handleTopCompanies() {
     return merged;
   }
 
-  await setCache(cacheKey, validQuotes, "multi", TTL.top_companies);
+  await setCache(cacheKey, validQuotes, "multi", getEffectiveTTL(TTL.top_companies));
   return validQuotes;
 }
 
