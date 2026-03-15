@@ -716,7 +716,7 @@ export default function LearnPage() {
 
           {/* Section 15: Global Markets & Macro */}
           <motion.section id="macro" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={15} title={t("learn.section15Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={16} title={t("learn.section15Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.centralBanksTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.centralBanksP1") }} />
             </SectionCard>
