@@ -482,24 +482,6 @@ export default function LearnPage() {
           </motion.section>
         </SuperSection>
 
-        {/* Section 30: Real Estate Investing (NEW - in Super B) */}
-        <SuperSection id="super-b2" title="" level="" defaultOpen={false}>
-          <motion.section id="immobilien" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={30} title={t("learn.section30Title")} level={t("learn.levelIntermediate")} />
-            <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.realEstateOverviewTitle")}>
-              <p dangerouslySetInnerHTML={{ __html: t("learn.realEstateOverviewP1") }} />
-            </SectionCard>
-            <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.directVsIndirectTitle")}>
-              <p dangerouslySetInnerHTML={{ __html: t("learn.directVsIndirectP1") }} />
-            </SectionCard>
-            <SectionCard icon={<PieChart className="h-5 w-5" />} title={t("learn.reitsDeepTitle")}>
-              <p dangerouslySetInnerHTML={{ __html: t("learn.reitsDeepP1") }} />
-            </SectionCard>
-            <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.realEstateValuationTitle")}>
-              <p dangerouslySetInnerHTML={{ __html: t("learn.realEstateValuationP1") }} />
-            </SectionCard>
-          </motion.section>
-        </SuperSection>
 
         {/* ═══════════════════════════════════════════════
             OBERSEKTION C: FORTGESCHRITTEN (Advanced)
