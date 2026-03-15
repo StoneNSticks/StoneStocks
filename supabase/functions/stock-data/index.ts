@@ -1324,7 +1324,7 @@ async function handleMostActive() {
         .sort((a: any, b: any) => b.volume - a.volume)
         .slice(0, 15);
       const stocks = (await enrichWithProfileData(rawStocks)).filter((s: any) => !isETFByName(s.name));
-      await setCache(cacheKey, stocks, "massive", TTL.most_active);
+      await setCache(cacheKey, stocks, "massive", getEffectiveTTL(TTL.most_active));
       return stocks;
     }
 
