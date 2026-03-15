@@ -860,7 +860,7 @@ export default function LearnPage() {
 
           {/* Section 21: ESG */}
           <motion.section id="esg" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={21} title={t("learn.section21Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={22} title={t("learn.section21Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Leaf className="h-5 w-5" />} title={t("learn.esgOverviewTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.esgOverviewP1") }} />
             </SectionCard>
