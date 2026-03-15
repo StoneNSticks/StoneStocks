@@ -737,7 +737,7 @@ export default function LearnPage() {
 
           {/* Section 16: Quantitative Analysis (NEW) */}
           <motion.section id="quantitative" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={16} title={t("learn.section16Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={17} title={t("learn.section16Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<FlaskConical className="h-5 w-5" />} title={t("learn.factorModelsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.factorModelsP1") }} />
             </SectionCard>
