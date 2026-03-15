@@ -1268,6 +1268,25 @@ function getLastTradingDate(): string {
   return d.toISOString().split("T")[0];
 }
 
+// Check if US stock market is currently open (Mon-Fri 9:30-16:00 ET)
+function isUSMarketOpen(): boolean {
+  const now = new Date();
+  const est = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const day = est.getDay();
+  if (day === 0 || day === 6) return false;
+  const hour = est.getHours();
+  const min = est.getMinutes();
+  const totalMin = hour * 60 + min;
+  return totalMin >= 570 && totalMin < 960; // 9:30 to 16:00
+}
+
+// During off-hours, use very long TTL so we keep last trading session data
+function getEffectiveTTL(baseTTL: number): number {
+  if (isUSMarketOpen()) return baseTTL;
+  // Off-hours: cache for 12 hours (will be refreshed when market opens)
+  return Math.max(baseTTL, 60 * 12);
+}
+
 async function handleMostActive() {
   const cacheKey = "market:most_active:realtime";
   const cached = await getCached(cacheKey);
