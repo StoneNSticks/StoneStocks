@@ -1254,7 +1254,7 @@ async function handleGainersLosers() {
       enrichWithProfileData(rawLosers),
     ]);
     const result = { gainers: enrichedGainers.filter((s: any) => !isETFByName(s.name)), losers: enrichedLosers.filter((s: any) => !isETFByName(s.name)), date: lastDate };
-    await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+    await setCache(cacheKey, result, "massive", getEffectiveTTL(TTL.gainers_losers));
     return result;
   } catch (err) {
     console.error("Gainers/losers error:", err);
