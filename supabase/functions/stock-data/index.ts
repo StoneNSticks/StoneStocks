@@ -1229,7 +1229,7 @@ async function handleGainersLosers() {
         losers: losers.filter((s: any) => !isETFByName(s.name)),
         date: new Date().toISOString().split("T")[0],
       };
-      await setCache(cacheKey, result, "massive", TTL.gainers_losers);
+      await setCache(cacheKey, result, "massive", getEffectiveTTL(TTL.gainers_losers));
       return result;
     }
 
