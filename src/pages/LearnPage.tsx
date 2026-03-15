@@ -678,7 +678,7 @@ export default function LearnPage() {
 
           {/* Section 14: Behavioral Finance */}
           <motion.section id="behavioral" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={14} title={t("learn.section14Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={15} title={t("learn.section14Title")} level={t("learn.levelExpert")} />
             <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
               <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.behavioralIntro") }} />
             </motion.div>
