@@ -1301,6 +1301,15 @@ async function handleMostActive() {
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.most_active));
+      return stale;
+    }
+  }
+
   try {
     // Try real-time snapshot
     const data = await fetchMassive("/v2/snapshot/locale/us/markets/stocks/tickers", { include_otc: "false" }).catch(() => null);
