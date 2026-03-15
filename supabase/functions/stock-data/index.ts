@@ -1187,6 +1187,15 @@ async function handleGainersLosers() {
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
+  // Off-hours: prefer stale cache from last trading session
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (stale) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.gainers_losers));
+      return stale;
+    }
+  }
+
   try {
     // Try real-time snapshots first (works anytime)
     const [gainersData, losersData] = await Promise.all([
