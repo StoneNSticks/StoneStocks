@@ -1052,7 +1052,7 @@ export default function LearnPage() {
 
           {/* Section 29: Fintech & Digital Finance (NEW) */}
           <motion.section id="fintech" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={29} title={t("learn.section29Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={31} title={t("learn.section29Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Binary className="h-5 w-5" />} title={t("learn.roboAdvisorsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.roboAdvisorsP1") }} />
             </SectionCard>
