@@ -1,43 +1,114 @@
 
 
-## Plan: Fix Glossary Search & Learn Page Bugs
+# Phasen-Status (aktualisiert)
 
-### Issues Found
+## Implementiert ✅
 
-**Glossary Search — 2 bugs:**
+### Phasen 1-10 (Grundfunktionen)
+1. Auth-Seite auf Englisch ✅
+2. ETF/Leveraged-Filter ✅
+3. Waehrungsumrechnung ✅
+4. Social Sharing ✅
+5. Stock Comparison Pro ✅
+6. Backtesting Simulator ✅
+7. AI Chat / Aktien-Assistent ✅
+8. Custom Dashboard ✅
+9. Portfolio Performance Tracking ✅
+10. Erweiterte Alerts ✅
 
-1. **Highlight component broken**: The `Highlight` function creates a regex with the `g` (global) flag, then uses `regex.test(part)` inside a `.map()`. The `g` flag causes `regex.lastIndex` to advance between calls, so every *second* match is missed (alternating highlight/no-highlight). This is a well-known JS regex pitfall.
-   - **Fix**: Remove the `g` flag from the test regex, or use a fresh regex / simple `toLowerCase().includes()` comparison instead of `regex.test()`.
+### Phasen 11-15 (UX & Navigation)
+11. Onboarding Tour ✅ (OnboardingModal)
+12. Keyboard Shortcuts Overlay ✅ (KeyboardShortcutsModal)
+13. Dark/Light/System Theme Picker ✅ (ThemeToggle)
+14. Responsive Bottom Sheet Navigation ✅ (BottomNav)
+15. Breadcrumb Navigation ✅ (StockDetail breadcrumbs)
 
-2. **Highlight threshold too high**: Highlighting only activates when `query.length >= 2`, but search filters from `length >= 1`. Single-character searches show filtered results but no highlighting — inconsistent. Lower to 1 or keep at 2 but match filter threshold.
+### Phasen 17-25 (Marktdaten & Analyse)
+17. Options Chain Viewer ✅ (OptionsChainViewer in StockDetail)
+18. IPO Kalender ✅ (IPOCalendarPage)
+19. Dividend Tracker ✅ (DividendIncomeTracker in PortfolioPage)
+20. Insider Trading Monitor ✅ (InsiderTrades)
+21. Short Interest Tracker ✅ (ShortInterestCard in StockDetail)
+22. Economic Calendar ✅ (EconomicCalendarPage)
+23. Crypto Section ✅ (CryptoPage)
+24. Forex Pairs Dashboard ✅ (ForexPage)
+25. Bond Yields Overview ✅ (BondsPage)
 
-**Learn Page — 3 bugs:**
+### Phasen 26-32 (Charts & Visualisierung)
+29. Heatmap Pro ✅ (MarketHeatmap)
+30. Correlation Matrix ✅ (CorrelationMatrix in ComparePage)
+31. Volume Profile ✅ (VolumeProfile in StockDetail)
 
-1. **Section 30 (Real Estate) is in a broken separate SuperSection** with empty title/level (`title=""`, `level=""`), rendered as a ghost container outside Super B. It should be inside the Super B `SuperSection` alongside sections 6-9.
+### Phasen 33-40 (Portfolio & Tracking)
+35. Tax Loss Harvesting ✅ (TaxLossHarvesting in PortfolioPage)
+36. Portfolio Rebalancing ✅ (PortfolioRebalancing in PortfolioPage)
+37. Risk Analytics ✅ (RiskAnalytics in PortfolioPage)
+38. Dividend Income Tracker ✅ (DividendIncomeTracker in PortfolioPage)
 
-2. **Numbering wrong**: Sections 29, 30, 31 use hardcoded out-of-sequence numbers instead of sequential 10, 11, etc. The TOC auto-numbers via `globalOffset + ii + 1`, so TOC shows correct sequential numbers (1-31) but the actual `SectionHeader num={}` values jump to 29, 30, 31. Need to renumber all sections sequentially: move Real Estate into Super B as section 10, shift everything after by 1, and renumber sections 29→last and 31→second-to-last accordingly.
+### Phasen 41-48 (Social & Community)
+44. Leaderboard ✅ (LeaderboardPage)
+45. Shared Watchlists ✅ (SharedWatchlistPage)
+47. Sentiment Polls ✅ (SentimentVote)
+48. Achievement System ✅ (AchievementBadges in ProfilePage)
 
-3. **Duplicate scroll-to-top button**: LearnPage has its own custom scroll-to-top button (lines 1105-1118) AND the global `BackToTop` component is rendered in `App.tsx`. Remove the LearnPage-local one.
+### Phasen 49-56 (AI & Intelligence)
+49. AI Portfolio Review ✅ (AIPortfolioReview in PortfolioPage)
+50. AI Earnings Preview ✅ (AIEarningsPreview in StockDetail)
+51. AI News Digest ✅ (AINewsDigest in NewsPage)
+52. AI Risk Assessment ✅ (AIRiskAssessment in StockDetail)
+53. AI Sector Rotation ✅ (AISectorRotation in MacroDashboard)
+54. Natural Language Screener ✅ (NLPScreener in ScreenerPage)
+55. AI Technical Analysis ✅ (AITechnicalAnalysis in StockDetail)
+56. AI Competitor Analysis ✅ (AICompetitorAnalysis in StockDetail)
 
-### Changes
+### Phasen 57-62 (Screener & Rankings)
+57. Advanced Screener Filters ✅ (ScreenerPage enhanced)
+60. Magic Formula Ranking ✅ (MagicFormulaRanking in ScreenerPage)
+61. Piotroski F-Score ✅ (PiotroskiScore in ScreenerPage)
+62. Momentum Screener ✅ (MomentumScreener in ScreenerPage)
 
-**File: `src/pages/GlossaryPage.tsx`**
-- Fix `Highlight` component: don't use `regex.test()` with `g` flag — use case-insensitive string comparison or a non-global regex for the test
-- Align highlight threshold with filter threshold
+### Phasen 63-68 (Bildung & Learning)
+63-68: LearnPage, QuizSection, GlossaryPage ✅
 
-**File: `src/pages/LearnPage.tsx`**
-- Move section 30 (Real Estate) inside Super B's `SuperSection`, remove the empty `super-b2` wrapper
-- Renumber all sections sequentially (1-31) matching TOC order: A(1-5), B(6-10), C(11-13), D(14-17), E(18-24), F(25-31)
-- Remove the local scroll-to-top button (lines 63-69 state + lines 1105-1118 JSX) since `BackToTop` in App.tsx already handles this
-- Update all `SectionHeader num={}` values to match the new sequential order
+### Phasen 69-74 (Benachrichtigungen)
+69. Push Notifications ✅ (sw-push.js, push_subscriptions)
+71. Alert History ✅ (AlertHistoryPage)
+74. Earnings Alert Automation ✅ (EarningsNotificationProvider)
 
-### Renumbering Map (TOC order → new SectionHeader num)
+### Phasen 75-80 (Daten & Export)
+75-76. CSV/JSON Export ✅ (ExportButtons, Portfolio CSV)
+78. Data Refresh Controls ✅ (DataRefreshControls)
 
-```text
-Super B: 6=Bonds, 7=Crypto, 8=Portfolio, 9=Analysis, 10=RealEstate (was 30)
-Super C: 11=TA (was 10), 12=Derivatives (was 11), 13=Formulas (was 12)
-Super D: 14=Microstructure (was 13), 15=Behavioral (was 14), 16=Macro (was 15), 17=Quant (was 16)
-Super E: 18=CorpFin (was 17), 19=Accounting (was 18), 20=IntlFin (was 19), 21=FixedIncome (was 20), 22=ESG (was 21), 23=Regulation (was 22), 24=TaxOpt (was 31)
-Super F: 25=Valuation (was 23), 26=AltAdvanced (was 24), 27=History (was 25), 28=PersonalFin (was 26), 29=Econometrics (was 27), 30=MonetaryPolicy (was 28), 31=Fintech (was 29)
-```
+### Phasen 81-86 (Admin & System)
+81. Admin User Management ✅ (AdminPage)
+84. System Status Page ✅ (SystemStatusPage)
 
+### Phasen 87-92 (Performance)
+87. Service Worker Caching ✅ (sw-push.js)
+88. Image Lazy Loading ✅ (loading="lazy" throughout)
+91. Bundle Splitting ✅ (React.lazy routes)
+
+### Phasen 93-100 (Spezial-Features)
+93. Earnings Whisper ✅ (EarningsWhisper in StockDetail)
+94. Screener Heatmap ✅ (ScreenerHeatmap in RankingsPage)
+96. Seasonality Analysis ✅ (SeasonalityChart in StockDetail)
+97. Fair Value Calculator Pro ✅ (MonteCarloFairValue in StockDetail)
+100. PWA Optimierung ✅ (manifest.json, service worker)
+
+---
+
+## Nicht umsetzbar / Verschoben
+16. WebSocket — Erfordert kostenpflichtigen Echtzeit-Feed
+26-28, 32. Candlestick/Drawing/Point&Figure — Erfordert OHLC-Daten
+33-34, 39-40. Multi-Portfolio/Transactions/Import — Erfordert DB-Migrationen
+41-43, 46. Public Profiles/Forum/Follow/Trading Ideas — Erfordert DB-Migrationen
+58-59. Custom Presets/Screener Alerts — localStorage-basiert, niedrige Prioritaet
+64. Paper Trading ✅ (PaperTradingPage bereits vorhanden)
+65-66. Quiz Gamification/Video — Niedrige Prioritaet
+70, 72-73. Email/Smart Alerts/Digest — Erfordert E-Mail-Service
+77. API Dashboard — Intern
+82-83, 85-86. Admin Analytics/Rate Limiting/Audit/Feature Flags — Niedrige Prioritaet
+89-90, 92. Virtual Scrolling/Prefetch/Error Tracking — Performance-Optimierungen
+95. Macro Dashboard Pro ✅ (MacroDashboard mit FRED-Daten)
+98. Telegram Bot — Erfordert Telegram Bot API Setup
+99. Multi-Language — FR, ES, TR Uebersetzungen

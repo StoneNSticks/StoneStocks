@@ -20,13 +20,14 @@ function getGlossary(lang: string): GlossaryTerm[] {
 
 /** Highlight matching text portions */
 function Highlight({ text, query }: { text: string; query: string }) {
-  if (!query || query.length < 2) return <>{text}</>;
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-  const parts = text.split(regex);
+  if (!query || query.length < 1) return <>{text}</>;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const splitRegex = new RegExp(`(${escaped})`, "gi");
+  const parts = text.split(splitRegex);
   return (
     <>
       {parts.map((part, i) =>
-        regex.test(part) ? (
+        part.toLowerCase() === query.toLowerCase() ? (
           <mark key={i} className="bg-primary/20 text-foreground rounded-sm px-0.5">{part}</mark>
         ) : (
           <span key={i}>{part}</span>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical, Leaf, Gavel, CircleDollarSign, History, PiggyBank, Binary, BanknoteIcon, ArrowUp, Calculator } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { BookOpen, TrendingUp, TrendingDown, Landmark, PieChart, BarChart3, DollarSign, Shield, ArrowRight, Target, Layers, CandlestickChart, Brain, Wallet, GraduationCap, Coins, LineChart, Briefcase, AlertTriangle, FileText, Building, Gem, Repeat, BarChart, Scale, Sigma, Globe, Zap, Activity, Eye, Gauge, Network, Link as LinkIcon, ChevronDown, ChevronRight, CheckCircle, Rocket, Search, FlaskConical, Leaf, Gavel, CircleDollarSign, History, PiggyBank, Binary, BanknoteIcon, Calculator } from "lucide-react";
+import { motion } from "framer-motion";
 import { useT } from "@/contexts/LanguageContext";
 import { SectionCard, InfoBox, WarningBox, TermCard, ProConGrid, SectionHeader, FormulaBox, StepList, fadeIn, stagger } from "@/components/learn/LearnComponents";
 
@@ -60,13 +60,6 @@ export default function LearnPage() {
   const { read, markRead } = useReadProgress();
 
 
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setShowScrollTop(window.scrollY > 600);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Track which sections are in view
   useEffect(() => {
@@ -487,12 +480,10 @@ export default function LearnPage() {
             </SectionCard>
             <CalcLink to="/compare" label={lang === "de" ? "Aktienvergleich" : "Stock Compare"} />
           </motion.section>
-        </SuperSection>
 
-        {/* Section 30: Real Estate Investing (NEW - in Super B) */}
-        <SuperSection id="super-b2" title="" level="" defaultOpen={false}>
+          {/* Section 10: Real Estate Investing */}
           <motion.section id="immobilien" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={30} title={t("learn.section30Title")} level={t("learn.levelIntermediate")} />
+            <SectionHeader num={10} title={t("learn.section30Title")} level={t("learn.levelIntermediate")} />
             <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.realEstateOverviewTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.realEstateOverviewP1") }} />
             </SectionCard>
@@ -508,13 +499,14 @@ export default function LearnPage() {
           </motion.section>
         </SuperSection>
 
+
         {/* ═══════════════════════════════════════════════
             OBERSEKTION C: FORTGESCHRITTEN (Advanced)
             ═══════════════════════════════════════════════ */}
         <SuperSection id="super-c" title={`C: ${t("learn.superC")}`} level={t("learn.levelAdvanced")} defaultOpen={false}>
           {/* Section 10: Technical Analysis */}
           <motion.section id="technische-analyse" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={10} title={t("learn.section10Title")} level={t("learn.levelAdvanced")} />
+            <SectionHeader num={11} title={t("learn.section10Title")} level={t("learn.levelAdvanced")} />
             <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
               <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.taIntro") }} />
             </motion.div>
@@ -544,7 +536,7 @@ export default function LearnPage() {
 
           {/* Section 11: Derivatives */}
           <motion.section id="derivate" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={11} title={t("learn.section11Title")} level={t("learn.levelAdvanced")} />
+            <SectionHeader num={12} title={t("learn.section11Title")} level={t("learn.levelAdvanced")} />
             <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
               <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.derivativesIntro") }} />
             </motion.div>
@@ -612,7 +604,7 @@ export default function LearnPage() {
 
           {/* Section 12: Formulas */}
           <motion.section id="formeln" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={12} title={t("learn.section12Title")} level={t("learn.levelAdvanced")} />
+            <SectionHeader num={13} title={t("learn.section12Title")} level={t("learn.levelAdvanced")} />
             <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.dcfTitle")}>
               <p>{t("learn.dcfExplanation").split('.')[0]}.</p>
               <FormulaBox title={t("learn.dcfTitle")} formula={t("learn.dcfFormula")} explanation={t("learn.dcfExplanation")} />
@@ -660,7 +652,7 @@ export default function LearnPage() {
         <SuperSection id="super-d" title={`D: ${t("learn.superD")}`} level={t("learn.levelExpert")} defaultOpen={false}>
           {/* Section 13: Market Microstructure */}
           <motion.section id="microstructure" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={13} title={t("learn.section13Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={14} title={t("learn.section13Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Activity className="h-5 w-5" />} title={t("learn.orderBookTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.orderBookP2") }} />
@@ -686,7 +678,7 @@ export default function LearnPage() {
 
           {/* Section 14: Behavioral Finance */}
           <motion.section id="behavioral" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={14} title={t("learn.section14Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={15} title={t("learn.section14Title")} level={t("learn.levelExpert")} />
             <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
               <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.behavioralIntro") }} />
             </motion.div>
@@ -724,7 +716,7 @@ export default function LearnPage() {
 
           {/* Section 15: Global Markets & Macro */}
           <motion.section id="macro" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={15} title={t("learn.section15Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={16} title={t("learn.section15Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.centralBanksTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.centralBanksP1") }} />
             </SectionCard>
@@ -745,7 +737,7 @@ export default function LearnPage() {
 
           {/* Section 16: Quantitative Analysis (NEW) */}
           <motion.section id="quantitative" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={16} title={t("learn.section16Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={17} title={t("learn.section16Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<FlaskConical className="h-5 w-5" />} title={t("learn.factorModelsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.factorModelsP1") }} />
             </SectionCard>
@@ -767,7 +759,7 @@ export default function LearnPage() {
         <SuperSection id="super-e" title={`E: ${t("learn.superE")}`} level={t("learn.levelAcademic")} defaultOpen={false}>
           {/* Section 17: Corporate Finance */}
           <motion.section id="corporate-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={17} title={t("learn.section17Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={18} title={t("learn.section17Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.capitalStructureTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP2") }} />
@@ -795,7 +787,7 @@ export default function LearnPage() {
 
           {/* Section 18: Accounting & Financial Statements */}
           <motion.section id="rechnungswesen" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={18} title={t("learn.section18Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={19} title={t("learn.section18Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.threeStatementsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.threeStatementsP1") }} />
             </SectionCard>
@@ -824,7 +816,7 @@ export default function LearnPage() {
 
           {/* Section 19: International Finance */}
           <motion.section id="international-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={19} title={t("learn.section19Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={20} title={t("learn.section19Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.forexMarketsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.forexMarketsP1") }} />
             </SectionCard>
@@ -845,7 +837,7 @@ export default function LearnPage() {
 
           {/* Section 20: Fixed Income Advanced */}
           <motion.section id="fixed-income-advanced" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={20} title={t("learn.section20Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={21} title={t("learn.section20Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.durationTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.durationP1") }} />
             </SectionCard>
@@ -868,7 +860,7 @@ export default function LearnPage() {
 
           {/* Section 21: ESG */}
           <motion.section id="esg" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={21} title={t("learn.section21Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={22} title={t("learn.section21Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Leaf className="h-5 w-5" />} title={t("learn.esgOverviewTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.esgOverviewP1") }} />
             </SectionCard>
@@ -887,7 +879,7 @@ export default function LearnPage() {
 
           {/* Section 22: Financial Regulation */}
           <motion.section id="regulierung" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={22} title={t("learn.section22Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={23} title={t("learn.section22Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Gavel className="h-5 w-5" />} title={t("learn.regulatorsTitle")}>
               <div className="grid sm:grid-cols-2 gap-3">
                 <TermCard term={t("learn.sec")} desc={t("learn.secDesc")} />
@@ -909,7 +901,7 @@ export default function LearnPage() {
 
           {/* Section 31: Tax Optimization (NEW) */}
           <motion.section id="steueroptimierung" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={31} title={t("learn.section31Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={24} title={t("learn.section31Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Wallet className="h-5 w-5" />} title={t("learn.taxPlanningOverviewTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.taxPlanningOverviewP1") }} />
             </SectionCard>
@@ -931,7 +923,7 @@ export default function LearnPage() {
         <SuperSection id="super-f" title={`F: ${t("learn.superF")}`} level={t("learn.levelMaster")} defaultOpen={false}>
           {/* Section 23: Valuation Methods */}
           <motion.section id="bewertungsmethoden" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={23} title={t("learn.section23Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={25} title={t("learn.section23Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.multiplesTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.multiplesP1") }} />
             </SectionCard>
@@ -953,7 +945,7 @@ export default function LearnPage() {
 
           {/* Section 24: Alternative Investments Advanced */}
           <motion.section id="alternative-advanced" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={24} title={t("learn.section24Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={26} title={t("learn.section24Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Briefcase className="h-5 w-5" />} title={t("learn.hedgeFundsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.hedgeFundsP1") }} />
             </SectionCard>
@@ -970,7 +962,7 @@ export default function LearnPage() {
 
           {/* Section 25: Market History & Crises */}
           <motion.section id="marktgeschichte" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={25} title={t("learn.section25Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={27} title={t("learn.section25Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<History className="h-5 w-5" />} title={t("learn.tulipManiaTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.tulipManiaP1") }} />
             </SectionCard>
@@ -987,17 +979,17 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.covidCrashP1") }} />
             </SectionCard>
             
-          </motion.section>
             <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.asianCrisisTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.asianCrisisP1") }} />
             </SectionCard>
             <SectionCard icon={<Coins className="h-5 w-5" />} title={t("learn.cryptoCrash2022Title")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.cryptoCrash2022P1") }} />
             </SectionCard>
+          </motion.section>
             
           {/* Section 26: Personal Finance & Retirement */}
           <motion.section id="personal-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={26} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={28} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<PiggyBank className="h-5 w-5" />} title={t("learn.budgetingTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.budgetingP1") }} />
             </SectionCard>
@@ -1018,7 +1010,7 @@ export default function LearnPage() {
 
           {/* Section 27: Econometrics & Financial Modeling */}
           <motion.section id="okonometrie" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={27} title={t("learn.section27Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={29} title={t("learn.section27Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Sigma className="h-5 w-5" />} title={t("learn.regressionTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.regressionP1") }} />
               <FormulaBox title={lang === "de" ? "Lineare Regression" : "Linear Regression"} formula="Y = α + βX + ε" explanation={lang === "de" ? "Y = abhängige Variable, α = Intercept, β = Steigung, X = unabhängige Variable, ε = Fehlerterm." : "Y = dependent variable, α = intercept, β = slope, X = independent variable, ε = error term."} />
@@ -1039,7 +1031,7 @@ export default function LearnPage() {
 
           {/* Section 28: Monetary Policy & Banking */}
           <motion.section id="geldpolitik" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={28} title={t("learn.section28Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={30} title={t("learn.section28Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.moneyCreationTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.moneyCreationP1") }} />
             </SectionCard>
@@ -1060,7 +1052,7 @@ export default function LearnPage() {
 
           {/* Section 29: Fintech & Digital Finance (NEW) */}
           <motion.section id="fintech" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={29} title={t("learn.section29Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={31} title={t("learn.section29Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Binary className="h-5 w-5" />} title={t("learn.roboAdvisorsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.roboAdvisorsP1") }} />
             </SectionCard>
@@ -1102,21 +1094,6 @@ export default function LearnPage() {
         </motion.div>
       </main>
 
-      {/* Side scroll-to-top arrow */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed right-4 top-1/2 -translate-y-1/2 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary transition-colors"
-            aria-label="Scroll to top"
-          >
-            <ArrowUp className="h-4 w-4" />
-          </motion.button>
-        )}
-      </AnimatePresence>
 
       <Footer />
     </div>
