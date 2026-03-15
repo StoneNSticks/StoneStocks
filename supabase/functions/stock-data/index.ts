@@ -1577,7 +1577,7 @@ async function handleTopCompanies() {
       if (!staleData.find((s: any) => s.symbol === q.symbol)) merged.push(q);
     }
     merged.sort((a: any, b: any) => b.marketCap - a.marketCap);
-    await setCache(cacheKey, merged, "multi", TTL.top_companies);
+    await setCache(cacheKey, merged, "multi", getEffectiveTTL(TTL.top_companies));
     return merged;
   }
 
