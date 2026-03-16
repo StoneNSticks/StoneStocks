@@ -494,10 +494,27 @@ const baseTranslations: Record<string, Record<Language, string>> = {
     "The classic rule '100 minus age = stock allocation' is a starting point: A 30-year-old would have 70% stocks, a 60-year-old 40%. Modern approaches are more flexible and consider individual circumstances."
   ),
 
+  "learn.assetAllocTitle": t("Asset Allocation", "Asset Allocation"),
+  "learn.assetAllocP1": t(
+    "Die <strong>Asset Allocation</strong> bestimmt, wie dein Vermögen auf verschiedene Anlageklassen verteilt wird. Studien zeigen, dass die Asset Allocation für über <strong>90% der Renditeunterschiede</strong> zwischen Portfolios verantwortlich ist – wichtiger als die Auswahl einzelner Aktien.",
+    "<strong>Asset allocation</strong> determines how your wealth is distributed across different asset classes. Studies show that asset allocation accounts for over <strong>90% of return differences</strong> between portfolios – more important than individual stock selection."
+  ),
+  "learn.assetAllocModels": t("Beliebte Allokationsmodelle:", "Popular Allocation Models:"),
+  "learn.model6040": t("60/40 Portfolio", "60/40 Portfolio"),
+  "learn.model6040Desc": t("60% Aktien, 40% Anleihen. Klassisches ausgewogenes Portfolio. Bietet gute Rendite bei moderatem Risiko. Funktioniert besonders gut bei negativer Korrelation zwischen Aktien und Anleihen.", "60% stocks, 40% bonds. Classic balanced portfolio. Offers good returns with moderate risk. Works especially well when stocks and bonds are negatively correlated."),
+  "learn.modelAge": t("Altersbasierte Regel", "Age-Based Rule"),
+  "learn.modelAgeDesc": t("100 minus Alter = Aktienquote. Ein 30-Jähriger hätte 70% Aktien. Moderne Variante: 120 minus Alter, da Menschen länger leben und investieren.", "100 minus age = stock allocation. A 30-year-old would have 70% stocks. Modern variant: 120 minus age, as people live and invest longer."),
+  "learn.modelAllWeather": t("All-Weather Portfolio (Ray Dalio)", "All-Weather Portfolio (Ray Dalio)"),
+  "learn.modelAllWeatherDesc": t("30% Aktien, 40% langfristige Anleihen, 15% mittelfristige Anleihen, 7,5% Gold, 7,5% Rohstoffe. Designed für jede Wirtschaftslage. Geringere Schwankungen, aber auch geringere Maximalrendite.", "30% stocks, 40% long-term bonds, 15% intermediate bonds, 7.5% gold, 7.5% commodities. Designed for every economic environment. Lower volatility but also lower maximum returns."),
+
   "learn.rebalancingTitle": t("Rebalancing", "Rebalancing"),
   "learn.rebalancingP1": t(
     "<strong>Rebalancing</strong> bedeutet, dein Portfolio regelmäßig auf die Zielgewichtung zurückzuführen. Wenn Aktien stark gestiegen sind (z.B. von 70% auf 80%), verkaufst du einen Teil und kaufst Anleihen nach. Das erzwingt systematisch \"billig kaufen, teuer verkaufen\".",
     "<strong>Rebalancing</strong> means regularly restoring your portfolio to its target allocation. If stocks have risen strongly (e.g. from 70% to 80%), you sell some and buy bonds. This systematically forces \"buy low, sell high.\""
+  ),
+  "learn.rebalancingP2": t(
+    "Methoden: <strong>Kalenderbasiert</strong> (z.B. einmal pro Quartal oder Jahr) oder <strong>schwellenbasiert</strong> (wenn eine Anlageklasse um mehr als 5% von der Zielgewichtung abweicht). Tipp: Nutze frisches Kapital für Rebalancing, um Transaktionskosten zu minimieren.",
+    "Methods: <strong>Calendar-based</strong> (e.g. once per quarter or year) or <strong>threshold-based</strong> (when an asset class deviates by more than 5% from target allocation). Tip: Use fresh capital for rebalancing to minimize transaction costs."
   ),
   "learn.rebalancingInfo": t(
     "Häufigkeit: Einmal pro Jahr oder wenn Abweichungen größer als 5% von der Zielallokation werden.",
