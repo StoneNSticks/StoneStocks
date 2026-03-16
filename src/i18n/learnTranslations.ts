@@ -445,10 +445,35 @@ const baseTranslations: Record<string, Record<Language, string>> = {
     "Wichtig: Krypto ist hochspekulativ. Experten empfehlen maximal 5 bis 10% des Portfolios in Krypto zu allokieren. Verwahre deine Coins sicher (Hardware Wallet) und investiere nur, was du komplett verlieren kannst.",
     "Important: Crypto is highly speculative. Experts recommend allocating at most 5 to 10% of your portfolio to crypto. Store your coins securely (hardware wallet) and only invest what you can completely afford to lose."
   ),
+  "learn.cryptoTypes": t("Wichtige Kryptowährungen:", "Major Cryptocurrencies:"),
+  "learn.cryptoBtc": t("Bitcoin (BTC)", "Bitcoin (BTC)"),
+  "learn.cryptoBtcDesc": t("Die erste und größte Kryptowährung. Begrenztes Angebot von 21 Millionen Coins. Wird oft als 'digitales Gold' bezeichnet und dient als Wertaufbewahrungsmittel.", "The first and largest cryptocurrency. Limited supply of 21 million coins. Often called 'digital gold' and serves as a store of value."),
+  "learn.cryptoEth": t("Ethereum (ETH)", "Ethereum (ETH)"),
+  "learn.cryptoEthDesc": t("Zweitgrößte Kryptowährung. Ermöglicht Smart Contracts und dezentrale Anwendungen (DeFi, NFTs). Seit 2022 auf Proof-of-Stake umgestellt.", "Second largest cryptocurrency. Enables smart contracts and decentralized applications (DeFi, NFTs). Switched to Proof-of-Stake in 2022."),
+  "learn.cryptoAlt": t("Altcoins", "Altcoins"),
+  "learn.cryptoAltDesc": t("Alle Kryptowährungen außer Bitcoin. Darunter Solana, Cardano, Polkadot und viele weitere. Deutlich höheres Risiko, aber auch höheres Renditepotenzial.", "All cryptocurrencies besides Bitcoin. Including Solana, Cardano, Polkadot and many more. Significantly higher risk but also higher return potential."),
+  "learn.cryptoStable": t("Stablecoins", "Stablecoins"),
+  "learn.cryptoStableDesc": t("An Fiat-Währungen gebundene Kryptos (z.B. USDT, USDC). Sollen den Wert von $1 halten. Nützlich als Zahlungsmittel im Krypto-Ökosystem, aber nicht risikofrei (Terra/LUNA Crash 2022).", "Cryptocurrencies pegged to fiat currencies (e.g. USDT, USDC). Designed to maintain $1 value. Useful as payment in the crypto ecosystem, but not risk-free (Terra/LUNA crash 2022)."),
 
   "learn.alternativesTitle": t("Alternative Anlagen", "Alternative Investments"),
+  "learn.commoditiesTitle": t("Rohstoffe als Anlageklasse", "Commodities as an Asset Class"),
+  "learn.commoditiesP1": t(
+    "<strong>Rohstoffe</strong> umfassen Edelmetalle (Gold, Silber), Energierohstoffe (Öl, Gas), Industriemetalle (Kupfer, Lithium) und Agrarrohstoffe (Weizen, Kaffee). Sie bieten <strong>Inflationsschutz</strong> und geringe Korrelation zu Aktien.",
+    "<strong>Commodities</strong> include precious metals (gold, silver), energy (oil, gas), industrial metals (copper, lithium), and agricultural products (wheat, coffee). They offer <strong>inflation protection</strong> and low correlation to stocks."
+  ),
+  "learn.commoditiesP2": t(
+    "Gold gilt als 'sicherer Hafen' in Krisenzeiten. Am einfachsten investierst du über Rohstoff-ETFs oder ETCs. Direkte Futures-Investments sind für Privatanleger meist zu komplex und riskant.",
+    "Gold is considered a 'safe haven' during crises. The easiest way to invest is through commodity ETFs or ETCs. Direct futures investments are usually too complex and risky for individual investors."
+  ),
   "learn.commodities": t("Rohstoffe", "Commodities"),
   "learn.commoditiesDesc": t("Gold, Silber, Öl, Weizen. Bieten Inflationsschutz und Portfolio-Diversifikation. Am einfachsten über ETFs zugänglich.", "Gold, silver, oil, wheat. Provide inflation protection and portfolio diversification. Most easily accessible through ETFs."),
+  "learn.altInvestTitle": t("Alternative Anlageklassen", "Alternative Asset Classes"),
+  "learn.altP2P": t("P2P-Kredite", "P2P Lending"),
+  "learn.altP2PDesc": t("Direktkredite an Privatpersonen über Plattformen wie Bondora oder Mintos. Renditen von 5 bis 12%, aber erhebliches Ausfallrisiko. Keine Einlagensicherung.", "Direct loans to individuals via platforms like Bondora or Mintos. Returns of 5 to 12%, but significant default risk. No deposit protection."),
+  "learn.altPE": t("Private Equity", "Private Equity"),
+  "learn.altPEDesc": t("Investitionen in nicht-börsennotierte Unternehmen. Hohe Einstiegshürden (oft $250.000+), lange Bindungsfristen (7-10 Jahre), aber historisch überdurchschnittliche Renditen.", "Investments in non-public companies. High entry barriers (often $250,000+), long lock-up periods (7-10 years), but historically above-average returns."),
+  "learn.altCollectibles": t("Sammlerstücke", "Collectibles"),
+  "learn.altCollectiblesDesc": t("Kunst, Wein, Uhren, Sneaker, Oldtimer. Illiquide und schwer zu bewerten, aber potenziell hohe Renditen für Kenner. Keine laufenden Erträge.", "Art, wine, watches, sneakers, vintage cars. Illiquid and hard to value, but potentially high returns for experts. No ongoing income."),
   "learn.p2p": t("P2P-Kredite", "P2P Lending"),
   "learn.p2pDesc": t("Direktkredite an Privatpersonen über Plattformen. Hohe Renditen (5 bis 12%), aber erhebliches Ausfallrisiko.", "Direct loans to individuals via platforms. High returns (5 to 12%), but significant default risk."),
   "learn.collectibles": t("Sammlerstücke", "Collectibles"),
