@@ -533,6 +533,18 @@ const baseTranslations: Record<string, Record<Language, string>> = {
     "Before investing, build an <strong>emergency fund</strong>: 3 to 6 months of expenses in an immediately accessible account. Never invest money needed for rent, insurance, or other fixed costs. Always keep 5 to 10% of your portfolio in cash or short-term bonds for buying opportunities."
   ),
 
+  "learn.mptPracticalTitle": t("Moderne Portfoliotheorie in der Praxis", "Modern Portfolio Theory in Practice"),
+  "learn.mptPracticalP1": t(
+    "Die <strong>MPT</strong> von Harry Markowitz zeigt, dass durch geschickte Kombination verschiedener Anlageklassen das Portfolio-Risiko reduziert werden kann, ohne die erwartete Rendite zu senken. In der Praxis bedeutet das: Investiere nicht nur in Aktien, sondern kombiniere mit Anleihen, Immobilien und Rohstoffen. Die <strong>Efficient Frontier</strong> beschreibt die optimale Kombination für jedes Risikoniveau.",
+    "<strong>MPT</strong> by Harry Markowitz shows that by cleverly combining different asset classes, portfolio risk can be reduced without lowering expected returns. In practice: don't invest only in stocks, but combine with bonds, real estate, and commodities. The <strong>Efficient Frontier</strong> describes the optimal combination for each risk level."
+  ),
+
+  "learn.riskParityTitle": t("Risk Parity", "Risk Parity"),
+  "learn.riskParityP1": t(
+    "<strong>Risk Parity</strong> verteilt das Portfolio nicht nach Kapitalgewichtung, sondern nach <strong>Risikobeitrag</strong>. Jede Anlageklasse soll gleich viel zum Gesamtrisiko beitragen. Da Anleihen weniger volatil sind als Aktien, erhalten sie einen höheren Kapitalanteil (oft mit Hebel). Bridgewater's All-Weather-Strategie basiert auf diesem Prinzip.",
+    "<strong>Risk Parity</strong> allocates the portfolio not by capital weight but by <strong>risk contribution</strong>. Each asset class should contribute equally to total risk. Since bonds are less volatile than stocks, they receive a higher capital share (often leveraged). Bridgewater's All-Weather strategy is based on this principle."
+  ),
+
   // ══════════════════════════════════════════════════════════════
   // SECTION 9: STOCK ANALYSIS IN PRACTICE
   // ══════════════════════════════════════════════════════════════
