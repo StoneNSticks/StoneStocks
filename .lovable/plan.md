@@ -1,80 +1,114 @@
 
 
-## Plan: Rebuild Glossary Search & Fix Learn Page
+# Phasen-Status (aktualisiert)
 
-### 1. Completely New Glossary Search System (`src/pages/GlossaryPage.tsx`)
+## Implementiert ✅
 
-Rewrite from scratch with these features:
+### Phasen 1-10 (Grundfunktionen)
+1. Auth-Seite auf Englisch ✅
+2. ETF/Leveraged-Filter ✅
+3. Waehrungsumrechnung ✅
+4. Social Sharing ✅
+5. Stock Comparison Pro ✅
+6. Backtesting Simulator ✅
+7. AI Chat / Aktien-Assistent ✅
+8. Custom Dashboard ✅
+9. Portfolio Performance Tracking ✅
+10. Erweiterte Alerts ✅
 
-**Fuzzy/Tolerant Search Engine:**
-- Implement Levenshtein distance-based fuzzy matching (tolerate 1-2 typos)
-- Substring matching across term + definition
-- Score-based ranking: exact match > starts-with > substring in term > substring in definition > fuzzy match
-- Synonym awareness: map common abbreviations (KGV <-> P/E, EPS <-> Gewinn pro Aktie, etc.)
+### Phasen 11-15 (UX & Navigation)
+11. Onboarding Tour ✅ (OnboardingModal)
+12. Keyboard Shortcuts Overlay ✅ (KeyboardShortcutsModal)
+13. Dark/Light/System Theme Picker ✅ (ThemeToggle)
+14. Responsive Bottom Sheet Navigation ✅ (BottomNav)
+15. Breadcrumb Navigation ✅ (StockDetail breadcrumbs)
 
-**Letter Filter (fixed):**
-- Completely separate state management: letter filter and search are independent modes
-- Clicking a letter always clears search and filters to that letter
-- Typing in search always clears the letter filter
-- "All" button resets both
+### Phasen 17-25 (Marktdaten & Analyse)
+17. Options Chain Viewer ✅ (OptionsChainViewer in StockDetail)
+18. IPO Kalender ✅ (IPOCalendarPage)
+19. Dividend Tracker ✅ (DividendIncomeTracker in PortfolioPage)
+20. Insider Trading Monitor ✅ (InsiderTrades)
+21. Short Interest Tracker ✅ (ShortInterestCard in StockDetail)
+22. Economic Calendar ✅ (EconomicCalendarPage)
+23. Crypto Section ✅ (CryptoPage)
+24. Forex Pairs Dashboard ✅ (ForexPage)
+25. Bond Yields Overview ✅ (BondsPage)
 
-**Search Suggestions/Autocomplete:**
-- Show top 5 matching terms as dropdown suggestions while typing
-- Click suggestion to scroll to that term
+### Phasen 26-32 (Charts & Visualisierung)
+29. Heatmap Pro ✅ (MarketHeatmap)
+30. Correlation Matrix ✅ (CorrelationMatrix in ComparePage)
+31. Volume Profile ✅ (VolumeProfile in StockDetail)
 
-**Highlight:**
-- Simple string split approach (no regex `g` flag issues)
+### Phasen 33-40 (Portfolio & Tracking)
+35. Tax Loss Harvesting ✅ (TaxLossHarvesting in PortfolioPage)
+36. Portfolio Rebalancing ✅ (PortfolioRebalancing in PortfolioPage)
+37. Risk Analytics ✅ (RiskAnalytics in PortfolioPage)
+38. Dividend Income Tracker ✅ (DividendIncomeTracker in PortfolioPage)
 
-**UI:**
-- Result count display
-- Clear filters button
-- Debounced search input (300ms)
+### Phasen 41-48 (Social & Community)
+44. Leaderboard ✅ (LeaderboardPage)
+45. Shared Watchlists ✅ (SharedWatchlistPage)
+47. Sentiment Polls ✅ (SentimentVote)
+48. Achievement System ✅ (AchievementBadges in ProfilePage)
 
-### 2. Fix Learn Page Missing Translations (`src/i18n/learnTranslations.ts`)
+### Phasen 49-56 (AI & Intelligence)
+49. AI Portfolio Review ✅ (AIPortfolioReview in PortfolioPage)
+50. AI Earnings Preview ✅ (AIEarningsPreview in StockDetail)
+51. AI News Digest ✅ (AINewsDigest in NewsPage)
+52. AI Risk Assessment ✅ (AIRiskAssessment in StockDetail)
+53. AI Sector Rotation ✅ (AISectorRotation in MacroDashboard)
+54. Natural Language Screener ✅ (NLPScreener in ScreenerPage)
+55. AI Technical Analysis ✅ (AITechnicalAnalysis in StockDetail)
+56. AI Competitor Analysis ✅ (AICompetitorAnalysis in StockDetail)
 
-Add all missing translation keys with proper DE/EN content:
+### Phasen 57-62 (Screener & Rankings)
+57. Advanced Screener Filters ✅ (ScreenerPage enhanced)
+60. Magic Formula Ranking ✅ (MagicFormulaRanking in ScreenerPage)
+61. Piotroski F-Score ✅ (PiotroskiScore in ScreenerPage)
+62. Momentum Screener ✅ (MomentumScreener in ScreenerPage)
 
-**Section 7 (Crypto & Alternatives) -- ~20 missing keys:**
-- `learn.cryptoTypes`, `learn.cryptoBtc`, `learn.cryptoBtcDesc`, `learn.cryptoEth`, `learn.cryptoEthDesc`, `learn.cryptoAlt`, `learn.cryptoAltDesc`, `learn.cryptoStable`, `learn.cryptoStableDesc`
-- `learn.commoditiesTitle`, `learn.commoditiesP1`, `learn.commoditiesP2`
-- `learn.altInvestTitle`, `learn.altP2P`, `learn.altP2PDesc`, `learn.altPE`, `learn.altPEDesc`, `learn.altCollectibles`, `learn.altCollectiblesDesc`
+### Phasen 63-68 (Bildung & Learning)
+63-68: LearnPage, QuizSection, GlossaryPage ✅
 
-**Section 8 (Portfolio Management) -- ~12 missing keys:**
-- `learn.assetAllocTitle`, `learn.assetAllocP1`, `learn.assetAllocModels`
-- `learn.model6040`, `learn.model6040Desc`, `learn.modelAge`, `learn.modelAgeDesc`, `learn.modelAllWeather`, `learn.modelAllWeatherDesc`
-- `learn.rebalancingP2`, `learn.mptPracticalTitle`, `learn.mptPracticalP1`, `learn.riskParityTitle`, `learn.riskParityP1`
+### Phasen 69-74 (Benachrichtigungen)
+69. Push Notifications ✅ (sw-push.js, push_subscriptions)
+71. Alert History ✅ (AlertHistoryPage)
+74. Earnings Alert Automation ✅ (EarningsNotificationProvider)
 
-### 3. Fix Learn Page Section Numbering (`src/pages/LearnPage.tsx`)
+### Phasen 75-80 (Daten & Export)
+75-76. CSV/JSON Export ✅ (ExportButtons, Portfolio CSV)
+78. Data Refresh Controls ✅ (DataRefreshControls)
 
-Current `SectionHeader num=` values are off by 1 starting from Section C:
+### Phasen 81-86 (Admin & System)
+81. Admin User Management ✅ (AdminPage)
+84. System Status Page ✅ (SystemStatusPage)
 
-```text
-Current → Correct (matching TOC):
-Section C:  num={11} → 11, num={12} → 12, num={13} → 13  (OK - these are correct!)
-Section D:  num={14} → 14, num={15} → 15, num={16} → 16, num={17} → 17  (OK)
-Section E:  num={18} → 18, num={19} → 19, num={20} → 20, num={21} → 21, num={22} → 22, num={23} → 23, num={24} → 24  (OK)
-Section F:  num={25} → 25, num={26} → 26, num={27} → 27, num={28} → 28, num={29} → 29, num={30} → 30, num={31} → 31  (OK)
-```
+### Phasen 87-92 (Performance)
+87. Service Worker Caching ✅ (sw-push.js)
+88. Image Lazy Loading ✅ (loading="lazy" throughout)
+91. Bundle Splitting ✅ (React.lazy routes)
 
-Wait -- the actual issue is: the SectionHeader nums ARE sequential (1-31), but the **TOC labels** use `learn.toc30` which contains "30. Immobilien-Investing" as hardcoded text. The TOC auto-numbers via `globalOffset + ii + 1`, so position 5 in group B shows "10" but the label text itself says "30.". Fix: update `learn.toc30` to say "10. Immobilien-Investing" and `learn.toc31` to say "24. Steueroptimierung" and `learn.toc29` to say "31. Fintech".
+### Phasen 93-100 (Spezial-Features)
+93. Earnings Whisper ✅ (EarningsWhisper in StockDetail)
+94. Screener Heatmap ✅ (ScreenerHeatmap in RankingsPage)
+96. Seasonality Analysis ✅ (SeasonalityChart in StockDetail)
+97. Fair Value Calculator Pro ✅ (MonteCarloFairValue in StockDetail)
+100. PWA Optimierung ✅ (manifest.json, service worker)
 
-Actually the TOC rendering shows `globalOffset + ii + 1` as the number prefix, but the label ALSO contains a number like "30.". So either remove numbers from labels or fix them.
+---
 
-### 4. Fix TOC Label Numbers (`src/i18n/learnTranslationsExtended.ts`)
-
-The TOC labels contain hardcoded numbers that conflict with the auto-numbering:
-- `learn.toc29`: "29. Fintech..." should be "Fintech & Digitale Finanzen" (no number)  
-- `learn.toc30`: "30. Immobilien..." should be "Immobilien-Investing" (no number)
-- `learn.toc31`: "31. Steueroptimierung" should be "Steueroptimierung" (no number)
-
-Actually, looking at the base translations, ALL toc entries have numbers ("1. Grundlagen", "2. Aktien & ETFs", etc.). So the numbers in the labels match the original section numbering, not the repositioned numbering. Since sections 29/30/31 were moved to positions 10/24/31 respectively, the label numbers are wrong.
-
-**Fix:** Update toc30 to "Immobilien-Investing" (position 10), toc31 to "Steueroptimierung" (position 24), toc29 to "Fintech & Digitale Finanzen" (position 31) -- but remove all hardcoded numbers from ALL toc labels since the TOC auto-numbers them.
-
-### Files to Change
-
-1. **`src/pages/GlossaryPage.tsx`** -- Complete rewrite of search system
-2. **`src/i18n/learnTranslations.ts`** -- Add ~30 missing translation keys for sections 7 & 8
-3. **`src/i18n/learnTranslationsExtended.ts`** -- Fix toc29/30/31 label numbers
-4. **`src/pages/LearnPage.tsx`** -- Verify SectionHeader nums are correct (may need no changes if already sequential)
-
+## Nicht umsetzbar / Verschoben
+16. WebSocket — Erfordert kostenpflichtigen Echtzeit-Feed
+26-28, 32. Candlestick/Drawing/Point&Figure — Erfordert OHLC-Daten
+33-34, 39-40. Multi-Portfolio/Transactions/Import — Erfordert DB-Migrationen
+41-43, 46. Public Profiles/Forum/Follow/Trading Ideas — Erfordert DB-Migrationen
+58-59. Custom Presets/Screener Alerts — localStorage-basiert, niedrige Prioritaet
+64. Paper Trading ✅ (PaperTradingPage bereits vorhanden)
+65-66. Quiz Gamification/Video — Niedrige Prioritaet
+70, 72-73. Email/Smart Alerts/Digest — Erfordert E-Mail-Service
+77. API Dashboard — Intern
+82-83, 85-86. Admin Analytics/Rate Limiting/Audit/Feature Flags — Niedrige Prioritaet
+89-90, 92. Virtual Scrolling/Prefetch/Error Tracking — Performance-Optimierungen
+95. Macro Dashboard Pro ✅ (MacroDashboard mit FRED-Daten)
+98. Telegram Bot — Erfordert Telegram Bot API Setup
+99. Multi-Language — FR, ES, TR Uebersetzungen

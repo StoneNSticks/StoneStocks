@@ -33,22 +33,22 @@ const baseTranslations: Record<string, Record<Language, string>> = {
   "learn.superD": t("Experte", "Expert"),
 
   // ── TOC ──
-  "learn.toc1": t("1. Grundlagen der Finanzen", "1. Financial Basics"),
-  "learn.toc2": t("2. Aktien & ETFs", "2. Stocks & ETFs"),
-  "learn.toc3": t("3. Anlagestrategien", "3. Investment Strategies"),
-  "learn.toc4": t("4. Steuern & Kosten", "4. Taxes & Costs"),
-  "learn.toc5": t("5. Dein erstes Investment", "5. Your First Investment"),
-  "learn.toc6": t("6. Anleihen & Fonds", "6. Bonds & Funds"),
-  "learn.toc7": t("7. Krypto & Alternative Anlagen", "7. Crypto & Alternatives"),
-  "learn.toc8": t("8. Portfoliomanagement", "8. Portfolio Management"),
-  "learn.toc9": t("9. Aktienanalyse in der Praxis", "9. Stock Analysis in Practice"),
-  "learn.toc10": t("10. Technische Analyse", "10. Technical Analysis"),
-  "learn.toc11": t("11. Derivate im Detail", "11. Derivatives in Detail"),
-  "learn.toc12": t("12. Formeln & Expertenwissen", "12. Formulas & Expert Knowledge"),
-  "learn.toc13": t("13. Marktmikrostruktur & Trading", "13. Market Microstructure & Trading"),
-  "learn.toc14": t("14. Verhaltensökonomie & Marktanomalien", "14. Behavioral Finance & Anomalies"),
-  "learn.toc15": t("15. Globale Märkte & Makroökonomie", "15. Global Markets & Macro"),
-  "learn.toc16": t("16. Quantitative Analyse", "16. Quantitative Analysis"),
+  "learn.toc1": t("Grundlagen der Finanzen", "Financial Basics"),
+  "learn.toc2": t("Aktien & ETFs", "Stocks & ETFs"),
+  "learn.toc3": t("Anlagestrategien", "Investment Strategies"),
+  "learn.toc4": t("Steuern & Kosten", "Taxes & Costs"),
+  "learn.toc5": t("Dein erstes Investment", "Your First Investment"),
+  "learn.toc6": t("Anleihen & Fonds", "Bonds & Funds"),
+  "learn.toc7": t("Krypto & Alternative Anlagen", "Crypto & Alternatives"),
+  "learn.toc8": t("Portfoliomanagement", "Portfolio Management"),
+  "learn.toc9": t("Aktienanalyse in der Praxis", "Stock Analysis in Practice"),
+  "learn.toc10": t("Technische Analyse", "Technical Analysis"),
+  "learn.toc11": t("Derivate im Detail", "Derivatives in Detail"),
+  "learn.toc12": t("Formeln & Expertenwissen", "Formulas & Expert Knowledge"),
+  "learn.toc13": t("Marktmikrostruktur & Trading", "Market Microstructure & Trading"),
+  "learn.toc14": t("Verhaltensökonomie & Marktanomalien", "Behavioral Finance & Anomalies"),
+  "learn.toc15": t("Globale Märkte & Makroökonomie", "Global Markets & Macro"),
+  "learn.toc16": t("Quantitative Analyse", "Quantitative Analysis"),
 
   // ── Calculator cross-links ──
   "learn.relatedCalc": t("🧮 Passender Rechner", "🧮 Related Calculator"),
@@ -445,10 +445,35 @@ const baseTranslations: Record<string, Record<Language, string>> = {
     "Wichtig: Krypto ist hochspekulativ. Experten empfehlen maximal 5 bis 10% des Portfolios in Krypto zu allokieren. Verwahre deine Coins sicher (Hardware Wallet) und investiere nur, was du komplett verlieren kannst.",
     "Important: Crypto is highly speculative. Experts recommend allocating at most 5 to 10% of your portfolio to crypto. Store your coins securely (hardware wallet) and only invest what you can completely afford to lose."
   ),
+  "learn.cryptoTypes": t("Wichtige Kryptowährungen:", "Major Cryptocurrencies:"),
+  "learn.cryptoBtc": t("Bitcoin (BTC)", "Bitcoin (BTC)"),
+  "learn.cryptoBtcDesc": t("Die erste und größte Kryptowährung. Begrenztes Angebot von 21 Millionen Coins. Wird oft als 'digitales Gold' bezeichnet und dient als Wertaufbewahrungsmittel.", "The first and largest cryptocurrency. Limited supply of 21 million coins. Often called 'digital gold' and serves as a store of value."),
+  "learn.cryptoEth": t("Ethereum (ETH)", "Ethereum (ETH)"),
+  "learn.cryptoEthDesc": t("Zweitgrößte Kryptowährung. Ermöglicht Smart Contracts und dezentrale Anwendungen (DeFi, NFTs). Seit 2022 auf Proof-of-Stake umgestellt.", "Second largest cryptocurrency. Enables smart contracts and decentralized applications (DeFi, NFTs). Switched to Proof-of-Stake in 2022."),
+  "learn.cryptoAlt": t("Altcoins", "Altcoins"),
+  "learn.cryptoAltDesc": t("Alle Kryptowährungen außer Bitcoin. Darunter Solana, Cardano, Polkadot und viele weitere. Deutlich höheres Risiko, aber auch höheres Renditepotenzial.", "All cryptocurrencies besides Bitcoin. Including Solana, Cardano, Polkadot and many more. Significantly higher risk but also higher return potential."),
+  "learn.cryptoStable": t("Stablecoins", "Stablecoins"),
+  "learn.cryptoStableDesc": t("An Fiat-Währungen gebundene Kryptos (z.B. USDT, USDC). Sollen den Wert von $1 halten. Nützlich als Zahlungsmittel im Krypto-Ökosystem, aber nicht risikofrei (Terra/LUNA Crash 2022).", "Cryptocurrencies pegged to fiat currencies (e.g. USDT, USDC). Designed to maintain $1 value. Useful as payment in the crypto ecosystem, but not risk-free (Terra/LUNA crash 2022)."),
 
   "learn.alternativesTitle": t("Alternative Anlagen", "Alternative Investments"),
+  "learn.commoditiesTitle": t("Rohstoffe als Anlageklasse", "Commodities as an Asset Class"),
+  "learn.commoditiesP1": t(
+    "<strong>Rohstoffe</strong> umfassen Edelmetalle (Gold, Silber), Energierohstoffe (Öl, Gas), Industriemetalle (Kupfer, Lithium) und Agrarrohstoffe (Weizen, Kaffee). Sie bieten <strong>Inflationsschutz</strong> und geringe Korrelation zu Aktien.",
+    "<strong>Commodities</strong> include precious metals (gold, silver), energy (oil, gas), industrial metals (copper, lithium), and agricultural products (wheat, coffee). They offer <strong>inflation protection</strong> and low correlation to stocks."
+  ),
+  "learn.commoditiesP2": t(
+    "Gold gilt als 'sicherer Hafen' in Krisenzeiten. Am einfachsten investierst du über Rohstoff-ETFs oder ETCs. Direkte Futures-Investments sind für Privatanleger meist zu komplex und riskant.",
+    "Gold is considered a 'safe haven' during crises. The easiest way to invest is through commodity ETFs or ETCs. Direct futures investments are usually too complex and risky for individual investors."
+  ),
   "learn.commodities": t("Rohstoffe", "Commodities"),
   "learn.commoditiesDesc": t("Gold, Silber, Öl, Weizen. Bieten Inflationsschutz und Portfolio-Diversifikation. Am einfachsten über ETFs zugänglich.", "Gold, silver, oil, wheat. Provide inflation protection and portfolio diversification. Most easily accessible through ETFs."),
+  "learn.altInvestTitle": t("Alternative Anlageklassen", "Alternative Asset Classes"),
+  "learn.altP2P": t("P2P-Kredite", "P2P Lending"),
+  "learn.altP2PDesc": t("Direktkredite an Privatpersonen über Plattformen wie Bondora oder Mintos. Renditen von 5 bis 12%, aber erhebliches Ausfallrisiko. Keine Einlagensicherung.", "Direct loans to individuals via platforms like Bondora or Mintos. Returns of 5 to 12%, but significant default risk. No deposit protection."),
+  "learn.altPE": t("Private Equity", "Private Equity"),
+  "learn.altPEDesc": t("Investitionen in nicht-börsennotierte Unternehmen. Hohe Einstiegshürden (oft $250.000+), lange Bindungsfristen (7-10 Jahre), aber historisch überdurchschnittliche Renditen.", "Investments in non-public companies. High entry barriers (often $250,000+), long lock-up periods (7-10 years), but historically above-average returns."),
+  "learn.altCollectibles": t("Sammlerstücke", "Collectibles"),
+  "learn.altCollectiblesDesc": t("Kunst, Wein, Uhren, Sneaker, Oldtimer. Illiquide und schwer zu bewerten, aber potenziell hohe Renditen für Kenner. Keine laufenden Erträge.", "Art, wine, watches, sneakers, vintage cars. Illiquid and hard to value, but potentially high returns for experts. No ongoing income."),
   "learn.p2p": t("P2P-Kredite", "P2P Lending"),
   "learn.p2pDesc": t("Direktkredite an Privatpersonen über Plattformen. Hohe Renditen (5 bis 12%), aber erhebliches Ausfallrisiko.", "Direct loans to individuals via platforms. High returns (5 to 12%), but significant default risk."),
   "learn.collectibles": t("Sammlerstücke", "Collectibles"),
@@ -469,10 +494,27 @@ const baseTranslations: Record<string, Record<Language, string>> = {
     "The classic rule '100 minus age = stock allocation' is a starting point: A 30-year-old would have 70% stocks, a 60-year-old 40%. Modern approaches are more flexible and consider individual circumstances."
   ),
 
+  "learn.assetAllocTitle": t("Asset Allocation", "Asset Allocation"),
+  "learn.assetAllocP1": t(
+    "Die <strong>Asset Allocation</strong> bestimmt, wie dein Vermögen auf verschiedene Anlageklassen verteilt wird. Studien zeigen, dass die Asset Allocation für über <strong>90% der Renditeunterschiede</strong> zwischen Portfolios verantwortlich ist – wichtiger als die Auswahl einzelner Aktien.",
+    "<strong>Asset allocation</strong> determines how your wealth is distributed across different asset classes. Studies show that asset allocation accounts for over <strong>90% of return differences</strong> between portfolios – more important than individual stock selection."
+  ),
+  "learn.assetAllocModels": t("Beliebte Allokationsmodelle:", "Popular Allocation Models:"),
+  "learn.model6040": t("60/40 Portfolio", "60/40 Portfolio"),
+  "learn.model6040Desc": t("60% Aktien, 40% Anleihen. Klassisches ausgewogenes Portfolio. Bietet gute Rendite bei moderatem Risiko. Funktioniert besonders gut bei negativer Korrelation zwischen Aktien und Anleihen.", "60% stocks, 40% bonds. Classic balanced portfolio. Offers good returns with moderate risk. Works especially well when stocks and bonds are negatively correlated."),
+  "learn.modelAge": t("Altersbasierte Regel", "Age-Based Rule"),
+  "learn.modelAgeDesc": t("100 minus Alter = Aktienquote. Ein 30-Jähriger hätte 70% Aktien. Moderne Variante: 120 minus Alter, da Menschen länger leben und investieren.", "100 minus age = stock allocation. A 30-year-old would have 70% stocks. Modern variant: 120 minus age, as people live and invest longer."),
+  "learn.modelAllWeather": t("All-Weather Portfolio (Ray Dalio)", "All-Weather Portfolio (Ray Dalio)"),
+  "learn.modelAllWeatherDesc": t("30% Aktien, 40% langfristige Anleihen, 15% mittelfristige Anleihen, 7,5% Gold, 7,5% Rohstoffe. Designed für jede Wirtschaftslage. Geringere Schwankungen, aber auch geringere Maximalrendite.", "30% stocks, 40% long-term bonds, 15% intermediate bonds, 7.5% gold, 7.5% commodities. Designed for every economic environment. Lower volatility but also lower maximum returns."),
+
   "learn.rebalancingTitle": t("Rebalancing", "Rebalancing"),
   "learn.rebalancingP1": t(
     "<strong>Rebalancing</strong> bedeutet, dein Portfolio regelmäßig auf die Zielgewichtung zurückzuführen. Wenn Aktien stark gestiegen sind (z.B. von 70% auf 80%), verkaufst du einen Teil und kaufst Anleihen nach. Das erzwingt systematisch \"billig kaufen, teuer verkaufen\".",
     "<strong>Rebalancing</strong> means regularly restoring your portfolio to its target allocation. If stocks have risen strongly (e.g. from 70% to 80%), you sell some and buy bonds. This systematically forces \"buy low, sell high.\""
+  ),
+  "learn.rebalancingP2": t(
+    "Methoden: <strong>Kalenderbasiert</strong> (z.B. einmal pro Quartal oder Jahr) oder <strong>schwellenbasiert</strong> (wenn eine Anlageklasse um mehr als 5% von der Zielgewichtung abweicht). Tipp: Nutze frisches Kapital für Rebalancing, um Transaktionskosten zu minimieren.",
+    "Methods: <strong>Calendar-based</strong> (e.g. once per quarter or year) or <strong>threshold-based</strong> (when an asset class deviates by more than 5% from target allocation). Tip: Use fresh capital for rebalancing to minimize transaction costs."
   ),
   "learn.rebalancingInfo": t(
     "Häufigkeit: Einmal pro Jahr oder wenn Abweichungen größer als 5% von der Zielallokation werden.",
@@ -489,6 +531,18 @@ const baseTranslations: Record<string, Record<Language, string>> = {
   "learn.emergencyFundP1": t(
     "Bevor du investierst, baue einen <strong>Notfallfonds</strong> auf: 3 bis 6 Monatsausgaben auf einem sofort verfügbaren Konto. Investiere nie Geld, das du für Miete, Versicherungen oder andere fixe Kosten brauchst. Halte immer 5 bis 10% deines Portfolios in Cash oder kurzfristigen Anleihen für Kaufgelegenheiten.",
     "Before investing, build an <strong>emergency fund</strong>: 3 to 6 months of expenses in an immediately accessible account. Never invest money needed for rent, insurance, or other fixed costs. Always keep 5 to 10% of your portfolio in cash or short-term bonds for buying opportunities."
+  ),
+
+  "learn.mptPracticalTitle": t("Moderne Portfoliotheorie in der Praxis", "Modern Portfolio Theory in Practice"),
+  "learn.mptPracticalP1": t(
+    "Die <strong>MPT</strong> von Harry Markowitz zeigt, dass durch geschickte Kombination verschiedener Anlageklassen das Portfolio-Risiko reduziert werden kann, ohne die erwartete Rendite zu senken. In der Praxis bedeutet das: Investiere nicht nur in Aktien, sondern kombiniere mit Anleihen, Immobilien und Rohstoffen. Die <strong>Efficient Frontier</strong> beschreibt die optimale Kombination für jedes Risikoniveau.",
+    "<strong>MPT</strong> by Harry Markowitz shows that by cleverly combining different asset classes, portfolio risk can be reduced without lowering expected returns. In practice: don't invest only in stocks, but combine with bonds, real estate, and commodities. The <strong>Efficient Frontier</strong> describes the optimal combination for each risk level."
+  ),
+
+  "learn.riskParityTitle": t("Risk Parity", "Risk Parity"),
+  "learn.riskParityP1": t(
+    "<strong>Risk Parity</strong> verteilt das Portfolio nicht nach Kapitalgewichtung, sondern nach <strong>Risikobeitrag</strong>. Jede Anlageklasse soll gleich viel zum Gesamtrisiko beitragen. Da Anleihen weniger volatil sind als Aktien, erhalten sie einen höheren Kapitalanteil (oft mit Hebel). Bridgewater's All-Weather-Strategie basiert auf diesem Prinzip.",
+    "<strong>Risk Parity</strong> allocates the portfolio not by capital weight but by <strong>risk contribution</strong>. Each asset class should contribute equally to total risk. Since bonds are less volatile than stocks, they receive a higher capital share (often leveraged). Bridgewater's All-Weather strategy is based on this principle."
   ),
 
   // ══════════════════════════════════════════════════════════════
