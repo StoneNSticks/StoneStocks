@@ -328,6 +328,38 @@ function computeSubIndicators(
     icon: <BarChart2 className="h-4 w-4" />,
   });
 
+  /* 10. Sector Breadth (7%) — How many sectors are positive vs negative */
+  const sectorList = (sectors || []).filter((s: any) => s.changePercent != null && !isNaN(s.changePercent));
+  const posSectors = sectorList.filter((s: any) => s.changePercent > 0).length;
+  const negSectors = sectorList.filter((s: any) => s.changePercent <= 0).length;
+  const totalSectors = sectorList.length;
+  const breadthRatio = totalSectors > 0 ? posSectors / totalSectors : 0.5;
+  const sectorBreadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
+  const hasBreadthData = totalSectors > 0;
+  indicators.push({
+    key: "sector_breadth", weight: 0.07,
+    label: { de: "Sektorbreite", en: "Sector Breadth" },
+    description: {
+      de: hasBreadthData
+        ? `Zählt, wie viele der ${totalSectors} Sektoren im Plus bzw. Minus sind. Viele positive Sektoren = breiter Aufschwung (Gier), wenige = schmale Rally oder Ausverkauf (Angst).`
+        : "Sektordaten nicht verfügbar.",
+      en: hasBreadthData
+        ? `Counts how many of the ${totalSectors} sectors are positive vs negative. Many positive = broad rally (greed), few = narrow rally or sell-off (fear).`
+        : "Sector data unavailable."
+    },
+    formula: {
+      de: hasBreadthData
+        ? `Score = (Positive Sektoren / Gesamt) × 100 = (${posSectors} / ${totalSectors}) × 100 = ${sectorBreadthScore.toFixed(0)}.`
+        : "Keine Daten verfügbar.",
+      en: hasBreadthData
+        ? `Score = (positive sectors / total) × 100 = (${posSectors} / ${totalSectors}) × 100 = ${sectorBreadthScore.toFixed(0)}.`
+        : "No data available."
+    },
+    score: hasBreadthData ? sectorBreadthScore : 50,
+    rawValue: hasBreadthData ? `${posSectors}/${totalSectors} ↑` : "N/A",
+    icon: <BarChart3 className="h-4 w-4" />,
+  });
+
   return indicators;
 }
 
