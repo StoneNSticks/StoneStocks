@@ -251,10 +251,11 @@ function Highlight({ text, query }: { text: string; query: string }) {
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escaped})`, "gi");
   const parts = text.split(regex);
+  const qLower = query.toLowerCase();
   return (
     <>
       {parts.map((part, i) =>
-        regex.test(part) ? (
+        part.toLowerCase() === qLower ? (
           <mark key={i} className="bg-primary/20 text-foreground rounded-sm px-0.5">{part}</mark>
         ) : (
           <span key={i}>{part}</span>
