@@ -1,114 +1,45 @@
 
 
-# Phasen-Status (aktualisiert)
+## Plan: Glossar Desktop-Anpassung & Learn-Page Fixes
 
-## Implementiert ✅
+### 1. Glossar Highlight Bug — Fix `regex.test()` mit `g`-Flag
 
-### Phasen 1-10 (Grundfunktionen)
-1. Auth-Seite auf Englisch ✅
-2. ETF/Leveraged-Filter ✅
-3. Waehrungsumrechnung ✅
-4. Social Sharing ✅
-5. Stock Comparison Pro ✅
-6. Backtesting Simulator ✅
-7. AI Chat / Aktien-Assistent ✅
-8. Custom Dashboard ✅
-9. Portfolio Performance Tracking ✅
-10. Erweiterte Alerts ✅
+**Problem:** Die `Highlight`-Komponente (Zeile 257) nutzt `regex.test(part)` mit dem `gi`-Flag. Das `g`-Flag lässt `lastIndex` hochzählen, wodurch jeder zweite Treffer übersprungen wird.
 
-### Phasen 11-15 (UX & Navigation)
-11. Onboarding Tour ✅ (OnboardingModal)
-12. Keyboard Shortcuts Overlay ✅ (KeyboardShortcutsModal)
-13. Dark/Light/System Theme Picker ✅ (ThemeToggle)
-14. Responsive Bottom Sheet Navigation ✅ (BottomNav)
-15. Breadcrumb Navigation ✅ (StockDetail breadcrumbs)
+**Fix:** `regex.test(part)` durch `part.toLowerCase() === query.toLowerCase()` ersetzen — einfacher String-Vergleich statt Regex.
 
-### Phasen 17-25 (Marktdaten & Analyse)
-17. Options Chain Viewer ✅ (OptionsChainViewer in StockDetail)
-18. IPO Kalender ✅ (IPOCalendarPage)
-19. Dividend Tracker ✅ (DividendIncomeTracker in PortfolioPage)
-20. Insider Trading Monitor ✅ (InsiderTrades)
-21. Short Interest Tracker ✅ (ShortInterestCard in StockDetail)
-22. Economic Calendar ✅ (EconomicCalendarPage)
-23. Crypto Section ✅ (CryptoPage)
-24. Forex Pairs Dashboard ✅ (ForexPage)
-25. Bond Yields Overview ✅ (BondsPage)
+### 2. Glossar Desktop-Layout optimieren
 
-### Phasen 26-32 (Charts & Visualisierung)
-29. Heatmap Pro ✅ (MarketHeatmap)
-30. Correlation Matrix ✅ (CorrelationMatrix in ComparePage)
-31. Volume Profile ✅ (VolumeProfile in StockDetail)
+**Problem:** Auf dem Handy sieht das Glossar gut aus, auf dem Desktop ist das Layout nicht optimal (zu schmal, Buchstaben-Bar kompakt, Ergebnisse nicht ausgenutzt).
 
-### Phasen 33-40 (Portfolio & Tracking)
-35. Tax Loss Harvesting ✅ (TaxLossHarvesting in PortfolioPage)
-36. Portfolio Rebalancing ✅ (PortfolioRebalancing in PortfolioPage)
-37. Risk Analytics ✅ (RiskAnalytics in PortfolioPage)
-38. Dividend Income Tracker ✅ (DividendIncomeTracker in PortfolioPage)
+**Änderungen in `GlossaryPage.tsx`:**
+- `max-w-4xl` auf `max-w-5xl` erweitern
+- Buchstaben-Bar: auf Desktop größere Buttons (`md:px-3 md:py-1.5 md:text-sm`)
+- Ergebnisse: auf Desktop 2-Spalten-Grid (`md:grid md:grid-cols-2 md:gap-3`)
+- Suchfeld: auf Desktop größer (`md:h-12 md:text-base`)
+- Suggestions-Dropdown: auf Desktop breitere Vorschau mit längerer Definition
 
-### Phasen 41-48 (Social & Community)
-44. Leaderboard ✅ (LeaderboardPage)
-45. Shared Watchlists ✅ (SharedWatchlistPage)
-47. Sentiment Polls ✅ (SentimentVote)
-48. Achievement System ✅ (AchievementBadges in ProfilePage)
+### 3. Learn-Page Nummerierung verifizieren
 
-### Phasen 49-56 (AI & Intelligence)
-49. AI Portfolio Review ✅ (AIPortfolioReview in PortfolioPage)
-50. AI Earnings Preview ✅ (AIEarningsPreview in StockDetail)
-51. AI News Digest ✅ (AINewsDigest in NewsPage)
-52. AI Risk Assessment ✅ (AIRiskAssessment in StockDetail)
-53. AI Sector Rotation ✅ (AISectorRotation in MacroDashboard)
-54. Natural Language Screener ✅ (NLPScreener in ScreenerPage)
-55. AI Technical Analysis ✅ (AITechnicalAnalysis in StockDetail)
-56. AI Competitor Analysis ✅ (AICompetitorAnalysis in StockDetail)
+**Aktueller Code-Stand:** Die `SectionHeader num={}`-Werte sind bereits sequentiell 1–31. Falls der User "30" sieht, liegt das an einem Build-Cache. Die Werte werden erneut bestätigt und ggf. nachgebessert:
 
-### Phasen 57-62 (Screener & Rankings)
-57. Advanced Screener Filters ✅ (ScreenerPage enhanced)
-60. Magic Formula Ranking ✅ (MagicFormulaRanking in ScreenerPage)
-61. Piotroski F-Score ✅ (PiotroskiScore in ScreenerPage)
-62. Momentum Screener ✅ (MomentumScreener in ScreenerPage)
+```text
+A: 1-5 ✓  |  B: 6-10 ✓  |  C: 11-13 → aktuell num={11,12,13}
+D: 14-17 → aktuell num={14,15,16,17}
+E: 18-24 → aktuell num={18,19,20,21,22,23,24}
+F: 25-31 → aktuell num={25,26,27,28,29,30,31}
+```
 
-### Phasen 63-68 (Bildung & Learning)
-63-68: LearnPage, QuizSection, GlossaryPage ✅
+**Problem:** Section C startet mit `num={11}` statt `num={11}` — Moment, das IST korrekt. ABER: Die Comments sagen z.B. "Section 10: Technical Analysis" mit `num={11}`. Die Kommentare verwirren, aber die Nummern stimmen.
 
-### Phasen 69-74 (Benachrichtigungen)
-69. Push Notifications ✅ (sw-push.js, push_subscriptions)
-71. Alert History ✅ (AlertHistoryPage)
-74. Earnings Alert Automation ✅ (EarningsNotificationProvider)
+Trotzdem nochmal alle `num={}` Werte explizit durchgehen und bestätigen.
 
-### Phasen 75-80 (Daten & Export)
-75-76. CSV/JSON Export ✅ (ExportButtons, Portfolio CSV)
-78. Data Refresh Controls ✅ (DataRefreshControls)
+### 4. Übersetzungs-Keys für Sektionen 7 & 8
 
-### Phasen 81-86 (Admin & System)
-81. Admin User Management ✅ (AdminPage)
-84. System Status Page ✅ (SystemStatusPage)
+Die Keys existieren bereits in `learnTranslations.ts` (Zeilen 448–508). Falls der User noch rohe Keys sieht, könnte es am Build-Cache liegen. Zur Sicherheit prüfe ich, ob alle genutzten Keys auch definiert sind, und ergänze fehlende.
 
-### Phasen 87-92 (Performance)
-87. Service Worker Caching ✅ (sw-push.js)
-88. Image Lazy Loading ✅ (loading="lazy" throughout)
-91. Bundle Splitting ✅ (React.lazy routes)
+### Dateien
 
-### Phasen 93-100 (Spezial-Features)
-93. Earnings Whisper ✅ (EarningsWhisper in StockDetail)
-94. Screener Heatmap ✅ (ScreenerHeatmap in RankingsPage)
-96. Seasonality Analysis ✅ (SeasonalityChart in StockDetail)
-97. Fair Value Calculator Pro ✅ (MonteCarloFairValue in StockDetail)
-100. PWA Optimierung ✅ (manifest.json, service worker)
+1. **`src/pages/GlossaryPage.tsx`** — Highlight-Fix + Desktop-Layout-Optimierung
+2. **`src/pages/LearnPage.tsx`** — Nummerierung verifizieren, ggf. Kommentare korrigieren
 
----
-
-## Nicht umsetzbar / Verschoben
-16. WebSocket — Erfordert kostenpflichtigen Echtzeit-Feed
-26-28, 32. Candlestick/Drawing/Point&Figure — Erfordert OHLC-Daten
-33-34, 39-40. Multi-Portfolio/Transactions/Import — Erfordert DB-Migrationen
-41-43, 46. Public Profiles/Forum/Follow/Trading Ideas — Erfordert DB-Migrationen
-58-59. Custom Presets/Screener Alerts — localStorage-basiert, niedrige Prioritaet
-64. Paper Trading ✅ (PaperTradingPage bereits vorhanden)
-65-66. Quiz Gamification/Video — Niedrige Prioritaet
-70, 72-73. Email/Smart Alerts/Digest — Erfordert E-Mail-Service
-77. API Dashboard — Intern
-82-83, 85-86. Admin Analytics/Rate Limiting/Audit/Feature Flags — Niedrige Prioritaet
-89-90, 92. Virtual Scrolling/Prefetch/Error Tracking — Performance-Optimierungen
-95. Macro Dashboard Pro ✅ (MacroDashboard mit FRED-Daten)
-98. Telegram Bot — Erfordert Telegram Bot API Setup
-99. Multi-Language — FR, ES, TR Uebersetzungen
