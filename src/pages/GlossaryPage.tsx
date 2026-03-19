@@ -251,10 +251,11 @@ function Highlight({ text, query }: { text: string; query: string }) {
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escaped})`, "gi");
   const parts = text.split(regex);
+  const qLower = query.toLowerCase();
   return (
     <>
       {parts.map((part, i) =>
-        regex.test(part) ? (
+        part.toLowerCase() === qLower ? (
           <mark key={i} className="bg-primary/20 text-foreground rounded-sm px-0.5">{part}</mark>
         ) : (
           <span key={i}>{part}</span>
@@ -398,7 +399,7 @@ export default function GlossaryPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container max-w-4xl py-6 sm:py-10 px-3 sm:px-4 lg:px-8">
+      <main className="container max-w-5xl py-6 sm:py-10 px-3 sm:px-4 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -429,7 +430,7 @@ export default function GlossaryPage() {
             onChange={handleSearchChange}
             onFocus={() => rawSearch.length > 0 && setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
-            className="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-9 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm"
+            className="flex h-10 md:h-12 w-full rounded-md border border-input bg-background pl-9 pr-9 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-base"
           />
           {rawSearch && (
             <button 
@@ -459,8 +460,8 @@ export default function GlossaryPage() {
                   <Search className="h-3 w-3 text-muted-foreground shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="font-medium">{s.term}</span>
-                    <span className="text-xs text-muted-foreground ml-2 truncate">
-                      {s.def.slice(0, 60)}{s.def.length > 60 ? "..." : ""}
+                    <span className="text-xs text-muted-foreground ml-2 truncate hidden sm:inline">
+                      {s.def.slice(0, 100)}{s.def.length > 100 ? "..." : ""}
                     </span>
                   </div>
                   <ArrowRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
@@ -481,10 +482,10 @@ export default function GlossaryPage() {
         )}
 
         {/* Letter filter */}
-        <div className="flex flex-wrap gap-1 mb-6">
+        <div className="flex flex-wrap gap-1 md:gap-1.5 mb-6">
           <button
             onClick={clearAll}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+            className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
               !letter && !rawSearch 
                 ? "bg-primary text-primary-foreground" 
                 : "text-muted-foreground hover:bg-muted"
@@ -496,7 +497,7 @@ export default function GlossaryPage() {
             <button
               key={l}
               onClick={() => handleLetterClick(l)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
                 letter === l 
                   ? "bg-primary text-primary-foreground" 
                   : "text-muted-foreground hover:bg-muted"
@@ -518,7 +519,7 @@ export default function GlossaryPage() {
         </p>
 
         {/* Results */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           {filtered.map(({ term: g }) => (
             <div
               key={g.term}
