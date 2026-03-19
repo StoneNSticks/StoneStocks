@@ -399,7 +399,7 @@ export default function GlossaryPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container max-w-4xl py-6 sm:py-10 px-3 sm:px-4 lg:px-8">
+      <main className="container max-w-5xl py-6 sm:py-10 px-3 sm:px-4 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
