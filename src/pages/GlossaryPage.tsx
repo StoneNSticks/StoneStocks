@@ -430,7 +430,7 @@ export default function GlossaryPage() {
             onChange={handleSearchChange}
             onFocus={() => rawSearch.length > 0 && setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
-            className="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-9 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm"
+            className="flex h-10 md:h-12 w-full rounded-md border border-input bg-background pl-9 pr-9 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-base"
           />
           {rawSearch && (
             <button 
