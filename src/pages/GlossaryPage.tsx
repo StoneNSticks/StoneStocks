@@ -482,10 +482,10 @@ export default function GlossaryPage() {
         )}
 
         {/* Letter filter */}
-        <div className="flex flex-wrap gap-1 mb-6">
+        <div className="flex flex-wrap gap-1 md:gap-1.5 mb-6">
           <button
             onClick={clearAll}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+            className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
               !letter && !rawSearch 
                 ? "bg-primary text-primary-foreground" 
                 : "text-muted-foreground hover:bg-muted"
@@ -497,7 +497,7 @@ export default function GlossaryPage() {
             <button
               key={l}
               onClick={() => handleLetterClick(l)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
                 letter === l 
                   ? "bg-primary text-primary-foreground" 
                   : "text-muted-foreground hover:bg-muted"
