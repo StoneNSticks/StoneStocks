@@ -6,14 +6,15 @@
  * from average compared to normal divergence. 0 = max fear, 100 = max greed.
  *
  * 1. Market Momentum (25%) — Average index daily performance
- * 2. Risk-On/Risk-Off Ratio (10%) — Cyclical commodities vs gold
+ * 2. Risk-On/Risk-Off Ratio (5%) — Cyclical commodities vs gold
  * 3. Volatility Proxy (15%) — Index spread dispersion
- * 4. Safe Haven Demand (12%) — Stocks vs gold performance
+ * 4. Safe Haven Demand (10%) — Stocks vs gold performance
  * 5. Regional Divergence (10%) — US vs international indices
  * 6. Index Trend Strength (5%) — Conviction via magnitude of moves
- * 7. Junk Bond Demand Proxy (5%) — Gold-oil spread
+ * 7. Sector Rotation (5%) — Cyclical vs defensive sectors
  * 8. Commodity Risk Appetite (10%) — Oil + copper average
  * 9. Index Correlation (8%) — Directional alignment of global indices
+ * 10. Sector Breadth (7%) — How many sectors are positive vs negative
  */
 
 import { Header } from "@/components/Header";
