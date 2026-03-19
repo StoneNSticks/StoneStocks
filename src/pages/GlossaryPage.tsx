@@ -460,8 +460,8 @@ export default function GlossaryPage() {
                   <Search className="h-3 w-3 text-muted-foreground shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="font-medium">{s.term}</span>
-                    <span className="text-xs text-muted-foreground ml-2 truncate">
-                      {s.def.slice(0, 60)}{s.def.length > 60 ? "..." : ""}
+                    <span className="text-xs text-muted-foreground ml-2 truncate hidden sm:inline">
+                      {s.def.slice(0, 100)}{s.def.length > 100 ? "..." : ""}
                     </span>
                   </div>
                   <ArrowRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
