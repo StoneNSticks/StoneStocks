@@ -25,6 +25,10 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   "learn.toc29": t("Fintech & Digitale Finanzen", "Fintech & Digital Finance"),
   "learn.toc30": t("Immobilien-Investing", "Real Estate Investing"),
   "learn.toc31": t("Steueroptimierung", "Tax Optimization Strategies"),
+  "learn.toc32": t("Trading-Psychologie & Mindset", "Trading Psychology & Mindset"),
+  "learn.toc33": t("Dividendenstrategien", "Dividend Strategies"),
+  "learn.toc34": t("Faktor-Investing & Smart Beta", "Factor Investing & Smart Beta"),
+  "learn.toc35": t("Altersvorsorge im Detail", "Retirement Planning in Detail"),
 
   // ══════════════════════════════════════════════════════════════
   // SECTION 17: CORPORATE FINANCE
@@ -621,5 +625,121 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   "learn.sunkCostP1": t(
     "Die <strong>Sunk-Cost-Falle</strong> lässt uns an Verlusten festhalten, weil wir bereits 'so viel investiert' haben. Beispiel: Du hältst eine Aktie, die 50% gefallen ist, weil du 'dein Geld zurückholen' willst – obwohl die Fundamentaldaten schlecht sind. Rational betrachtet sind vergangene Kosten irrelevant; nur die zukünftige Erwartung zählt. Gegenmittel: Frage dich bei jeder Position: 'Würde ich sie heute zum aktuellen Preis kaufen?' Wenn nein, verkaufe.",
     "The <strong>sunk cost fallacy</strong> makes us hold onto losses because we've already 'invested so much.' Example: You hold a stock that's fallen 50% because you want to 'get your money back' – despite poor fundamentals. Rationally, past costs are irrelevant; only future expectations matter. Antidote: Ask yourself for each position: 'Would I buy it today at the current price?' If not, sell."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 32: TRADING PSYCHOLOGY & MINDSET
+  // ══════════════════════════════════════════════════════════════
+  "learn.section32Title": t("Trading-Psychologie & Mindset", "Trading Psychology & Mindset"),
+
+  "learn.emotionControlTitle": t("Emotionskontrolle beim Trading", "Emotional Control in Trading"),
+  "learn.emotionControlP1": t(
+    "Die größte Herausforderung beim Trading ist nicht die Strategie, sondern die <strong>Emotionskontrolle</strong>. Angst und Gier sind die beiden Haupttreiber irrationaler Entscheidungen. <strong>Angst</strong> führt zu vorzeitigem Verkaufen bei kleinen Verlusten oder zum Verpassen von Chancen. <strong>Gier</strong> verleitet zu übermäßigem Risiko und dem Halten von Gewinnpositionen zu lange. Professionelle Trader nutzen <strong>regelbasierte Systeme</strong>, um Emotionen aus dem Entscheidungsprozess zu entfernen.",
+    "The biggest challenge in trading isn't strategy but <strong>emotional control</strong>. Fear and greed are the two main drivers of irrational decisions. <strong>Fear</strong> leads to premature selling at small losses or missing opportunities. <strong>Greed</strong> tempts excessive risk-taking and holding winning positions too long. Professional traders use <strong>rule-based systems</strong> to remove emotions from the decision-making process."
+  ),
+
+  "learn.fomoTitle": t("FOMO & Panikverkäufe", "FOMO & Panic Selling"),
+  "learn.fomoP1": t(
+    "<strong>FOMO</strong> (Fear of Missing Out) entsteht, wenn andere Gewinne machen und du nicht dabei bist. Es führt oft zu Käufen nahe dem Hoch. Typische Anzeichen: Du kaufst, weil 'alle darüber reden', nicht wegen Fundamentaldaten. <strong>Panikverkäufe</strong> sind das Gegenstück: Bei einem Crash alles verkaufen, obwohl der langfristige Plan dagegen spricht. Gegenmittel: <strong>Automatische Sparpläne</strong> (DCA), vorher festgelegte Ein-/Ausstiegskriterien und <strong>Nachrichtendiät</strong> in volatilen Phasen.",
+    "<strong>FOMO</strong> (Fear of Missing Out) occurs when others are profiting and you're not. It often leads to buying near the top. Typical signs: You buy because 'everyone's talking about it,' not based on fundamentals. <strong>Panic selling</strong> is the counterpart: Selling everything during a crash despite your long-term plan saying otherwise. Antidotes: <strong>Automatic savings plans</strong> (DCA), predetermined entry/exit criteria, and <strong>news diet</strong> during volatile phases."
+  ),
+
+  "learn.tradingJournalTitle": t("Trading-Journal führen", "Keeping a Trading Journal"),
+  "learn.tradingJournalP1": t(
+    "Ein <strong>Trading-Journal</strong> ist das wichtigste Werkzeug zur Selbstverbesserung. Dokumentiere jeden Trade: <strong>Datum, Symbol, Richtung, Einstieg/Ausstieg, Positionsgröße, Begründung</strong> und vor allem deine <strong>Emotionen</strong>. Wöchentliche Reviews zeigen Muster: Tradest du impulsiv am Montag? Hältst du Verlierer zu lange? Die besten Trader behandeln ihr Journal wie ein Laborbuch und nutzen es, um systematisch besser zu werden.",
+    "A <strong>trading journal</strong> is the most important tool for self-improvement. Document every trade: <strong>date, symbol, direction, entry/exit, position size, rationale</strong>, and most importantly your <strong>emotions</strong>. Weekly reviews reveal patterns: Do you trade impulsively on Mondays? Do you hold losers too long? The best traders treat their journal like a lab notebook and use it to systematically improve."
+  ),
+
+  "learn.tradingRoutineTitle": t("Routinen & Disziplin", "Routines & Discipline"),
+  "learn.tradingRoutineP1": t(
+    "Erfolgreiche Trader folgen festen <strong>Routinen</strong>: <strong>Pre-Market</strong>: Nachrichtenlage prüfen, Key-Levels markieren, Watchlist aktualisieren. <strong>During Market</strong>: Nur geplante Setups traden, Risikomanagement einhalten. <strong>Post-Market</strong>: Journal aktualisieren, Fehler analysieren. Die <strong>2%-Regel</strong> begrenzt das Risiko pro Trade auf 2% des Kontos. <strong>Drawdown-Regeln</strong>: Bei 5-10% Monatsverlust Pause einlegen. Disziplin schlägt Talent.",
+    "Successful traders follow fixed <strong>routines</strong>: <strong>Pre-market</strong>: Check news, mark key levels, update watchlist. <strong>During market</strong>: Only trade planned setups, maintain risk management. <strong>Post-market</strong>: Update journal, analyze mistakes. The <strong>2% rule</strong> limits risk per trade to 2% of the account. <strong>Drawdown rules</strong>: Take a break at 5-10% monthly loss. Discipline beats talent."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 33: DIVIDEND STRATEGIES
+  // ══════════════════════════════════════════════════════════════
+  "learn.section33Title": t("Dividendenstrategien", "Dividend Strategies"),
+
+  "learn.divGrowthVsYieldTitle": t("Dividendenwachstum vs. hohe Rendite", "Dividend Growth vs. High Yield"),
+  "learn.divGrowthVsYieldP1": t(
+    "Zwei grundsätzliche Dividendenstrategien: <strong>Dividend Growth</strong> setzt auf Unternehmen mit niedrigerer aktueller Rendite (1-3%), aber starkem jährlichem Dividendenwachstum (8-15%). Über 10-20 Jahre überholt die Yield-on-Cost oft die High-Yield-Strategie. <strong>High Yield</strong> (4-8%+) liefert sofort hohes Einkommen, birgt aber Risiken: hohe Ausschüttungsquoten, sinkende Dividenden, 'Yield Traps'. Goldene Regel: <strong>Payout Ratio unter 60%</strong> (unter 80% bei REITs) signalisiert Nachhaltigkeit.",
+    "Two fundamental dividend strategies: <strong>Dividend Growth</strong> targets companies with lower current yield (1-3%) but strong annual dividend growth (8-15%). Over 10-20 years, yield-on-cost often surpasses the high-yield strategy. <strong>High Yield</strong> (4-8%+) delivers immediate high income but carries risks: high payout ratios, declining dividends, 'yield traps.' Golden rule: <strong>Payout ratio below 60%</strong> (below 80% for REITs) signals sustainability."
+  ),
+
+  "learn.divAristocratsTitle": t("Dividend Kings & Aristocrats", "Dividend Kings & Aristocrats"),
+  "learn.divAristocratsP1": t(
+    "<strong>Dividend Aristocrats</strong> sind S&P-500-Unternehmen mit mindestens 25 Jahren ununterbrochener Dividendenerhöhung. <strong>Dividend Kings</strong> haben sogar 50+ Jahre in Folge erhöht. Beispiele: Johnson & Johnson, Coca-Cola, Procter & Gamble, 3M. In Deutschland gibt es kein direktes Pendant, aber Unternehmen wie Allianz, Munich Re und BASF haben lange Dividendenhistorien. Diese Aktien bieten <strong>Inflationsschutz</strong> durch wachsende Ausschüttungen und zeigen oft geringere Volatilität.",
+    "<strong>Dividend Aristocrats</strong> are S&P 500 companies with at least 25 consecutive years of dividend increases. <strong>Dividend Kings</strong> have increased for 50+ consecutive years. Examples: Johnson & Johnson, Coca-Cola, Procter & Gamble, 3M. These stocks provide <strong>inflation protection</strong> through growing payouts and often exhibit lower volatility."
+  ),
+
+  "learn.dripTitle": t("DRIP & Compounding", "DRIP & Compounding"),
+  "learn.dripP1": t(
+    "<strong>DRIP</strong> (Dividend Reinvestment Plan) reinvestiert Dividenden automatisch in neue Aktien. Der <strong>Zinseszinseffekt</strong> ist enorm: Eine Aktie mit 3% Dividendenrendite und 7% Dividendenwachstum verdoppelt die Ausschüttung alle 10 Jahre. Nach 30 Jahren DRIP kann die Yield-on-Cost über 20% erreichen. Viele Broker bieten automatische Wiederanlage ohne Gebühren an. Steuerlich werden reinvestierte Dividenden trotzdem als Einkommen behandelt.",
+    "<strong>DRIP</strong> (Dividend Reinvestment Plan) automatically reinvests dividends into new shares. The <strong>compounding effect</strong> is enormous: A stock with 3% dividend yield and 7% dividend growth doubles its payout every 10 years. After 30 years of DRIP, yield-on-cost can exceed 20%. Many brokers offer automatic reinvestment without fees. Tax-wise, reinvested dividends are still treated as income."
+  ),
+
+  "learn.divTaxTitle": t("Steueraspekte bei Dividenden", "Tax Aspects of Dividends"),
+  "learn.divTaxP1": t(
+    "In Deutschland unterliegen Dividenden der <strong>Abgeltungsteuer</strong> (25% + Soli + ggf. Kirchensteuer ≈ 26,375%). Der <strong>Sparerpauschbetrag</strong> (1.000€/Person, 2.000€/Paar) macht einen Teil steuerfrei. Bei ausländischen Dividenden fällt oft <strong>Quellensteuer</strong> an (USA: 30%, mit DBA reduziert auf 15%). <strong>Teilfreistellung</strong>: Bei Aktienfonds-ETFs sind 30% der Erträge steuerfrei. Thesaurierende ETFs verschieben die Steuerlast durch die <strong>Vorabpauschale</strong>.",
+    "In the US, <strong>qualified dividends</strong> are taxed at preferential rates (0%, 15%, or 20% depending on income). <strong>Ordinary dividends</strong> are taxed at regular income rates. Foreign dividends may be subject to <strong>withholding tax</strong>, often reclaimable via tax treaties. In tax-advantaged accounts (401k, IRA, Roth IRA), dividends grow tax-deferred or tax-free. Consider the <strong>tax efficiency</strong> of dividend strategies in taxable vs. tax-advantaged accounts."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 34: FACTOR INVESTING & SMART BETA
+  // ══════════════════════════════════════════════════════════════
+  "learn.section34Title": t("Faktor-Investing & Smart Beta", "Factor Investing & Smart Beta"),
+
+  "learn.factorOverviewTitle": t("Was sind Faktoren?", "What Are Factors?"),
+  "learn.factorOverviewP1": t(
+    "<strong>Faktor-Investing</strong> basiert auf der Erkenntnis, dass bestimmte Merkmale (Faktoren) systematisch höhere Renditen erklären. Die akademische Forschung (Fama & French, Carhart) hat mehrere robuste Faktoren identifiziert: <strong>Value</strong> (günstig bewertete Aktien), <strong>Size</strong> (kleine Unternehmen), <strong>Momentum</strong> (Gewinner bleiben Gewinner), <strong>Quality</strong> (hohe Profitabilität, stabile Gewinne), <strong>Low Volatility</strong> (risikoarme Aktien mit überraschend guter Performance).",
+    "<strong>Factor investing</strong> is based on the finding that certain characteristics (factors) systematically explain higher returns. Academic research (Fama & French, Carhart) has identified several robust factors: <strong>Value</strong> (cheaply valued stocks), <strong>Size</strong> (small companies), <strong>Momentum</strong> (winners keep winning), <strong>Quality</strong> (high profitability, stable earnings), <strong>Low Volatility</strong> (low-risk stocks with surprisingly good performance)."
+  ),
+
+  "learn.valueGrowthTitle": t("Value vs. Growth", "Value vs. Growth"),
+  "learn.valueGrowthP1": t(
+    "<strong>Value-Aktien</strong> haben niedrige KGVs, KBVs und hohe Dividendenrenditen. Historisch haben sie Growth-Aktien langfristig geschlagen (Value Premium ~3% p.a. seit 1926). <strong>Growth-Aktien</strong> wachsen überdurchschnittlich (Umsatz, Gewinn) und werden mit hohen Multiplikatoren gehandelt. Von 2010-2020 dominierten Growth-Aktien (v.a. Tech), was viele am Value-Premium zweifeln ließ. Seit 2022 erlebt Value ein Comeback. Die Wahrheit: Beide Stile haben ihre Zyklen.",
+    "<strong>Value stocks</strong> have low P/E ratios, low P/B ratios, and high dividend yields. Historically, they've beaten growth stocks long-term (value premium ~3% p.a. since 1926). <strong>Growth stocks</strong> grow above average (revenue, earnings) and trade at high multiples. From 2010-2020, growth dominated (especially tech), causing many to question the value premium. Since 2022, value has been making a comeback. The truth: Both styles have their cycles."
+  ),
+
+  "learn.momentumFactorTitle": t("Momentum-Faktor", "Momentum Factor"),
+  "learn.momentumFactorP1": t(
+    "Der <strong>Momentum-Faktor</strong> (Jegadeesh & Titman, 1993) zeigt, dass Aktien mit starker Performance der letzten 6-12 Monate dazu tendieren, weiter zu steigen. <strong>Cross-Sectional Momentum</strong>: Gewinner-Aktien kaufen, Verlierer-Aktien meiden/shorten. <strong>Time-Series Momentum</strong>: In Aufwärtstrends investiert sein, in Abwärtstrends Cash/Absicherung. Risiken: <strong>Momentum Crashes</strong> (plötzliche Reversals, z.B. 2009), hoher Turnover und Transaktionskosten.",
+    "The <strong>momentum factor</strong> (Jegadeesh & Titman, 1993) shows that stocks with strong performance over the past 6-12 months tend to continue rising. <strong>Cross-sectional momentum</strong>: Buy winner stocks, avoid/short loser stocks. <strong>Time-series momentum</strong>: Be invested in uptrends, hold cash/hedge in downtrends. Risks: <strong>Momentum crashes</strong> (sudden reversals, e.g., 2009), high turnover, and transaction costs."
+  ),
+
+  "learn.smartBetaTitle": t("Smart-Beta-ETFs & Multi-Faktor", "Smart Beta ETFs & Multi-Factor"),
+  "learn.smartBetaP1": t(
+    "<strong>Smart-Beta-ETFs</strong> kombinieren die Vorteile von passivem Investieren (niedrige Kosten, Transparenz) mit Faktor-Exposure. Statt nach Marktkapitalisierung zu gewichten, nutzen sie alternative Methoden: <strong>Equal Weight</strong>, <strong>Fundamental Weight</strong> (nach Umsatz/Dividende), <strong>Minimum Volatility</strong>. <strong>Multi-Faktor-Strategien</strong> kombinieren 2-4 Faktoren (z.B. Value + Quality + Momentum) für stabilere Ergebnisse. Kosten: 0,15-0,50% TER vs. 0,05-0,20% für Standard-ETFs.",
+    "<strong>Smart Beta ETFs</strong> combine the advantages of passive investing (low cost, transparency) with factor exposure. Instead of weighting by market cap, they use alternative methods: <strong>Equal Weight</strong>, <strong>Fundamental Weight</strong> (by revenue/dividends), <strong>Minimum Volatility</strong>. <strong>Multi-factor strategies</strong> combine 2-4 factors (e.g., Value + Quality + Momentum) for more stable results. Costs: 0.15-0.50% TER vs. 0.05-0.20% for standard ETFs."
+  ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 35: RETIREMENT PLANNING IN DETAIL
+  // ══════════════════════════════════════════════════════════════
+  "learn.section35Title": t("Altersvorsorge im Detail", "Retirement Planning in Detail"),
+
+  "learn.retirementPillarsTitle": t("Die Säulen der Altersvorsorge", "Pillars of Retirement Planning"),
+  "learn.retirementPillarsP1": t(
+    "In Deutschland basiert die Altersvorsorge auf <strong>drei Säulen</strong>: <strong>1. Gesetzliche Rente</strong> (umlagefinanziert, Rentenniveau ~48%), <strong>2. Betriebliche Altersvorsorge</strong> (bAV, oft mit Arbeitgeberzuschuss), <strong>3. Private Vorsorge</strong> (Riester, Rürup, ETF-Sparpläne). Die Rentenlücke (Differenz zwischen letztem Netto und Rente) beträgt typisch 30-50%. Faustregel: Du brauchst ca. <strong>80% deines letzten Nettoeinkommens</strong> im Ruhestand.",
+    "Retirement planning rests on <strong>multiple pillars</strong>: <strong>1. Social Security</strong> (provides a base income, replacing ~40% of pre-retirement earnings), <strong>2. Employer-sponsored plans</strong> (401k, pension plans, often with employer match), <strong>3. Personal savings</strong> (IRA, Roth IRA, brokerage accounts). The retirement gap (difference between working income and retirement income) is typically 30-50%. Rule of thumb: You need about <strong>80% of pre-retirement income</strong>."
+  ),
+
+  "learn.retirementAccountsTitle": t("Riester, Rürup & bAV", "401(k), IRA & Roth IRA"),
+  "learn.retirementAccountsP1": t(
+    "<strong>Riester-Rente</strong>: Staatlich gefördert (175€ Grundzulage + 300€/Kind), für Arbeitnehmer. Kritik: Hohe Kosten, komplexe Regeln, oft niedrige Renditen. <strong>Rürup-Rente</strong> (Basisrente): Steuerlich absetzbar (2024: 100%), für Selbstständige interessant. Auszahlung nur als Leibrente. <strong>bAV</strong>: Entgeltumwandlung spart Steuern und Sozialabgaben, seit 2019 muss der Arbeitgeber 15% zuschießen. Alternative: <strong>ETF-Sparplan</strong> im eigenen Depot – flexibler, günstiger, keine Zulagen aber volle Kontrolle.",
+    "<strong>401(k)</strong>: Employer-sponsored, pre-tax contributions (2024 limit: $23,000, $30,500 if 50+). Many employers offer matching (free money!). <strong>Traditional IRA</strong>: Tax-deductible contributions, taxed on withdrawal. <strong>Roth IRA</strong>: After-tax contributions, tax-free growth and withdrawals. Income limits apply ($161k single, $240k married). <strong>Roth 401(k)</strong>: Combines 401(k) contribution limits with Roth tax-free withdrawals. Strategy: Roth when your tax rate is low, traditional when high."
+  ),
+
+  "learn.withdrawalTitle": t("Entnahmestrategien", "Withdrawal Strategies"),
+  "learn.withdrawalP1": t(
+    "Die <strong>4%-Regel</strong> (Trinity Study): Im ersten Ruhestandsjahr 4% des Portfolios entnehmen, danach jährlich inflationsangepasst. Bei einem 500.000€-Portfolio wären das 20.000€/Jahr. Historisch hätte das Portfolio 30 Jahre gehalten. Moderne Anpassungen: <strong>Dynamic Withdrawal</strong> (in guten Jahren mehr, in schlechten weniger), <strong>Guardrails-Methode</strong> (Ober-/Untergrenzen), <strong>Bucket-Strategie</strong> (Geld für 1-2 Jahre in Cash, 3-7 Jahre in Anleihen, Rest in Aktien). Wichtig: <strong>Sequence-of-Return-Risk</strong> – schlechte Renditen in den ersten Jahren sind besonders schädlich.",
+    "The <strong>4% rule</strong> (Trinity Study): Withdraw 4% of your portfolio in the first retirement year, then adjust for inflation annually. On a $500,000 portfolio, that's $20,000/year. Historically, the portfolio would have lasted 30 years. Modern adjustments: <strong>Dynamic withdrawal</strong> (more in good years, less in bad), <strong>Guardrails method</strong> (upper/lower bounds), <strong>Bucket strategy</strong> (1-2 years in cash, 3-7 years in bonds, rest in stocks). Important: <strong>Sequence-of-return risk</strong> – poor returns in early years are especially harmful."
+  ),
+
+  "learn.retirementDividendTitle": t("Rente mit Dividenden", "Retirement with Dividends"),
+  "learn.retirementDividendP1": t(
+    "Eine Dividendenstrategie für den Ruhestand: Aufbau eines Portfolios aus <strong>Dividenden-Aristokraten</strong> mit 3-4% Rendite. Ziel: Die Dividenden decken die Lebenshaltungskosten, das Kapital wird nie angetastet. Beispiel: Bei 3.000€/Monat Bedarf brauchst du ca. 1.000.000€ bei 3,6% Rendite. Vorteile: <strong>Kein Kapitalverzehr</strong>, wachsende Einkommen durch Dividendensteigerungen, psychologisch einfacher. Nachteil: Konzentration auf dividendenstarke Sektoren (Versorger, Pharma, Basiskonsumgüter) reduziert Diversifikation.",
+    "A dividend strategy for retirement: Build a portfolio of <strong>Dividend Aristocrats</strong> with 3-4% yield. Goal: Dividends cover living expenses, capital is never touched. Example: With $3,000/month needs, you need about $1,000,000 at 3.6% yield. Advantages: <strong>No capital depletion</strong>, growing income through dividend increases, psychologically easier. Disadvantage: Concentration in dividend-heavy sectors (utilities, pharma, consumer staples) reduces diversification."
   ),
 };
