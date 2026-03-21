@@ -102,6 +102,7 @@ export default function LearnPage() {
       { label: t("learn.toc8"), href: "#portfolio" },
       { label: t("learn.toc9"), href: "#aktienanalyse" },
       { label: t("learn.toc30"), href: "#immobilien" },
+      { label: t("learn.toc33"), href: "#dividendenstrategien" },
     ]},
     { title: `C: ${t("learn.superC")}`, level: t("learn.levelAdvanced"), items: [
       { label: t("learn.toc10"), href: "#technische-analyse" },
@@ -113,6 +114,8 @@ export default function LearnPage() {
       { label: t("learn.toc14"), href: "#behavioral" },
       { label: t("learn.toc15"), href: "#macro" },
       { label: t("learn.toc16"), href: "#quantitative" },
+      { label: t("learn.toc32"), href: "#trading-psychologie" },
+      { label: t("learn.toc34"), href: "#faktor-investing" },
     ]},
     { title: `E: ${t("learn.superE")}`, level: t("learn.levelAcademic"), items: [
       { label: t("learn.toc17"), href: "#corporate-finance" },
@@ -122,6 +125,7 @@ export default function LearnPage() {
       { label: t("learn.toc21"), href: "#esg" },
       { label: t("learn.toc22"), href: "#regulierung" },
       { label: t("learn.toc31"), href: "#steueroptimierung" },
+      { label: t("learn.toc35"), href: "#altersvorsorge" },
     ]},
     { title: `F: ${t("learn.superF")}`, level: t("learn.levelMaster"), items: [
       { label: t("learn.toc23"), href: "#bewertungsmethoden" },
