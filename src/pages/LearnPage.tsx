@@ -772,6 +772,40 @@ export default function LearnPage() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.alphaBetaP1") }} />
             </SectionCard>
           </motion.section>
+
+          {/* Section 32: Trading Psychology & Mindset */}
+          <motion.section id="trading-psychologie" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={33} title={t("learn.section32Title")} level={t("learn.levelExpert")} />
+            <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.emotionControlTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.emotionControlP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Flame className="h-5 w-5" />} title={t("learn.fomoTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.fomoP1") }} />
+            </SectionCard>
+            <SectionCard icon={<ClipboardList className="h-5 w-5" />} title={t("learn.tradingJournalTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.tradingJournalP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.tradingRoutineTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.tradingRoutineP1") }} />
+            </SectionCard>
+          </motion.section>
+
+          {/* Section 34: Factor Investing & Smart Beta */}
+          <motion.section id="faktor-investing" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
+            <SectionHeader num={34} title={t("learn.section34Title")} level={t("learn.levelExpert")} />
+            <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.factorOverviewTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.factorOverviewP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Scale className="h-5 w-5" />} title={t("learn.valueGrowthTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.valueGrowthP1") }} />
+            </SectionCard>
+            <SectionCard icon={<Zap className="h-5 w-5" />} title={t("learn.momentumFactorTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.momentumFactorP1") }} />
+            </SectionCard>
+            <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.smartBetaTitle")}>
+              <p dangerouslySetInnerHTML={{ __html: t("learn.smartBetaP1") }} />
+            </SectionCard>
+          </motion.section>
         </SuperSection>
 
         {/* ═══════════════════════════════════════════════
