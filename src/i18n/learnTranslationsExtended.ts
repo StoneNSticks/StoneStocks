@@ -25,6 +25,10 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
   "learn.toc29": t("Fintech & Digitale Finanzen", "Fintech & Digital Finance"),
   "learn.toc30": t("Immobilien-Investing", "Real Estate Investing"),
   "learn.toc31": t("Steueroptimierung", "Tax Optimization Strategies"),
+  "learn.toc32": t("Trading-Psychologie & Mindset", "Trading Psychology & Mindset"),
+  "learn.toc33": t("Dividendenstrategien", "Dividend Strategies"),
+  "learn.toc34": t("Faktor-Investing & Smart Beta", "Factor Investing & Smart Beta"),
+  "learn.toc35": t("Altersvorsorge im Detail", "Retirement Planning in Detail"),
 
   // ══════════════════════════════════════════════════════════════
   // SECTION 17: CORPORATE FINANCE
