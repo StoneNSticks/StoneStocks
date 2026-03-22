@@ -995,7 +995,7 @@ export default function LearnPage() {
         <SuperSection id="super-f" title={`F: ${t("learn.superF")}`} level={t("learn.levelMaster")} defaultOpen={false}>
           {/* Section 23: Valuation Methods */}
           <motion.section id="bewertungsmethoden" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={25} title={t("learn.section23Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={29} title={t("learn.section23Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.multiplesTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.multiplesP1") }} />
             </SectionCard>
