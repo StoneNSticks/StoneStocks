@@ -814,7 +814,7 @@ export default function LearnPage() {
         <SuperSection id="super-e" title={`E: ${t("learn.superE")}`} level={t("learn.levelAcademic")} defaultOpen={false}>
           {/* Section 17: Corporate Finance */}
           <motion.section id="corporate-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={18} title={t("learn.section17Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={21} title={t("learn.section17Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Building className="h-5 w-5" />} title={t("learn.capitalStructureTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.capitalStructureP2") }} />
