@@ -1061,7 +1061,7 @@ export default function LearnPage() {
             
           {/* Section 26: Personal Finance & Retirement */}
           <motion.section id="personal-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={28} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={32} title={t("learn.section26Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<PiggyBank className="h-5 w-5" />} title={t("learn.budgetingTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.budgetingP1") }} />
             </SectionCard>
