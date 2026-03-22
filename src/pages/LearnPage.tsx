@@ -504,7 +504,7 @@ export default function LearnPage() {
 
           {/* Section 33: Dividend Strategies */}
           <motion.section id="dividendenstrategien" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={32} title={t("learn.section33Title")} level={t("learn.levelIntermediate")} />
+            <SectionHeader num={11} title={t("learn.section33Title")} level={t("learn.levelIntermediate")} />
             <SectionCard icon={<TrendingUp className="h-5 w-5" />} title={t("learn.divGrowthVsYieldTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.divGrowthVsYieldP1") }} />
             </SectionCard>
