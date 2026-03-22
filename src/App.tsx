@@ -49,6 +49,7 @@ const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
+const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
 
 
 const queryClient = new QueryClient({
