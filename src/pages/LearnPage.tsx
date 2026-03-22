@@ -1034,7 +1034,7 @@ export default function LearnPage() {
 
           {/* Section 25: Market History & Crises */}
           <motion.section id="marktgeschichte" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={27} title={t("learn.section25Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={31} title={t("learn.section25Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<History className="h-5 w-5" />} title={t("learn.tulipManiaTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.tulipManiaP1") }} />
             </SectionCard>
