@@ -625,7 +625,7 @@ export default function LearnPage() {
 
           {/* Section 12: Formulas */}
           <motion.section id="formeln" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={13} title={t("learn.section12Title")} level={t("learn.levelAdvanced")} />
+            <SectionHeader num={14} title={t("learn.section12Title")} level={t("learn.levelAdvanced")} />
             <SectionCard icon={<Calculator className="h-5 w-5" />} title={t("learn.dcfTitle")}>
               <p>{t("learn.dcfExplanation").split('.')[0]}.</p>
               <FormulaBox title={t("learn.dcfTitle")} formula={t("learn.dcfFormula")} explanation={t("learn.dcfExplanation")} />
