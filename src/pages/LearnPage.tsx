@@ -1103,7 +1103,7 @@ export default function LearnPage() {
 
           {/* Section 28: Monetary Policy & Banking */}
           <motion.section id="geldpolitik" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={30} title={t("learn.section28Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={34} title={t("learn.section28Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Landmark className="h-5 w-5" />} title={t("learn.moneyCreationTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.moneyCreationP1") }} />
             </SectionCard>
