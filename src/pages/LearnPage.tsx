@@ -973,7 +973,7 @@ export default function LearnPage() {
 
           {/* Section 35: Retirement Planning in Detail */}
           <motion.section id="altersvorsorge" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={35} title={t("learn.section35Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={28} title={t("learn.section35Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<PiggyBank className="h-5 w-5" />} title={t("learn.retirementPillarsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.retirementPillarsP1") }} />
             </SectionCard>
