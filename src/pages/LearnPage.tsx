@@ -871,7 +871,7 @@ export default function LearnPage() {
 
           {/* Section 19: International Finance */}
           <motion.section id="international-finance" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={20} title={t("learn.section19Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={23} title={t("learn.section19Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Globe className="h-5 w-5" />} title={t("learn.forexMarketsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.forexMarketsP1") }} />
             </SectionCard>
