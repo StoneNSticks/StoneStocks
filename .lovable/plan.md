@@ -1,62 +1,80 @@
 
 
-## Plan: Finanzwissen & Glossar erweitern
+## Plan: Polymarket Page + Learn/Glossar Desktop-Fixes
 
-### Übersicht
+### Teil 1: Learn-Page Nummerierung reparieren
 
-Das Finanzwissen hat aktuell 31 Lektionen und das Glossar ~660 DE / ~1000 EN Begriffe. Beides wird substanziell erweitert.
+**Problem:** Die `SectionHeader num={}`-Werte sind völlig durcheinander. Die TOC nummeriert automatisch korrekt (1-35), aber die Section-Nummern springen wild:
+- Section "Real Estate": `num={10}` ✓ aber nutzt `t("learn.section30Title")`
+- Section "Dividendenstrategien": `num={32}` statt `num={11}`
+- Section "Trading-Psychologie": `num={33}` statt `num={18}`
+- Section "Faktor-Investing": `num={34}` statt `num={19}`
+- Section "Geldpolitik": `num={30}` statt `num={30}` (zufällig richtig)
+- Section "Fintech": `num={31}` statt `num={31}` (zufällig richtig)
+- Section "Altersvorsorge": `num={35}` statt `num={25}`
 
-### 1. Neue Lektionen für Finanzwissen (4 neue Kapitel → 35 total)
+**Fix:** Alle `num={}`-Werte strikt sequentiell 1-35 durchnummerieren, passend zur TOC-Reihenfolge:
+- A (Beginner): 1-5
+- B (Intermediate): 6-11 (inkl. Immobilien + Dividenden)
+- C (Advanced): 12-14
+- D (Expert): 15-20 (inkl. Trading-Psychologie + Faktor-Investing)
+- E (Academic): 21-28 (inkl. Steueroptimierung + Altersvorsorge)
+- F (Master): 29-35
 
-Neue Kapitel einfügen, TOC-Gruppen anpassen, SectionHeader-Nummern aktualisieren:
+**Datei:** `src/pages/LearnPage.tsx`
 
-**Kapitel 32: Trading-Psychologie & Mindset** (Gruppe D — Experte)
-- Emotionskontrolle beim Trading, FOMO & Panikverkäufe, Journaling, Routinen
+---
 
-**Kapitel 33: Dividendenstrategien** (Gruppe B — Aufbau)
-- Dividendenwachstum vs. hohe Dividendenrendite, Dividend Kings & Aristocrats, DRIP, Steueraspekte
+### Teil 2: Polymarket Prediction Markets Page
 
-**Kapitel 34: Faktor-Investing & Smart Beta** (Gruppe D — Experte)
-- Value-, Growth-, Momentum-, Quality-, Size-Faktor, Smart-Beta-ETFs, Multi-Faktor-Strategien
+**Neue Seite** `/predictions` mit Live-Daten von den öffentlichen Polymarket APIs.
 
-**Kapitel 35: Altersvorsorge im Detail** (Gruppe E — Akademisch)
-- Riester/Rürup/bAV (DE), 401k/IRA (EN), Entnahmepläne, Leibrenten, Rente mit Dividenden
+#### APIs die genutzt werden (alle kostenlos, kein API-Key nötig):
 
-**Dateien:**
-- `src/pages/LearnPage.tsx` — 4 neue `<motion.section>` Blöcke + TOC-Gruppen erweitern + `num={}`-Werte von 31 auf 35 anpassen
-- `src/i18n/learnTranslations.ts` — ~60 neue Übersetzungs-Keys (DE/EN) für alle 4 Kapitel
-- `src/i18n/learnTranslationsExtended.ts` — TOC-Labels `toc32`–`toc35` ergänzen
+| API | Base URL | Endpoints |
+|-----|----------|-----------|
+| Gamma | gamma-api.polymarket.com | `/events`, `/markets`, `/tags`, `/public-search` |
+| Data | data-api.polymarket.com | `/activity`, `/time-series/{token_id}` |
+| CLOB | clob.polymarket.com | `/book` (orderbook), `/prices` |
 
-### 2. Glossar erweitern (~80 neue Begriffe pro Sprache)
+#### Edge Function (CORS-Proxy)
 
-Neue Begriffe in Kategorien die aktuell unterrepräsentiert sind:
+Da die Polymarket APIs kein CORS erlauben, wird ein Edge Function als Proxy erstellt:
+- `supabase/functions/polymarket-proxy/index.ts`
+- Unterstützt: `/events`, `/markets`, `/tags`, `/public-search`, `/book`, `/prices`, `/time-series`
+- Leitet Anfragen an die richtige Base-URL weiter (Gamma, CLOB, Data)
 
-**Deutsch (`src/data/glossaryDE.ts`):**
-- Trading-Begriffe: Scalping, Swing-Trading, Day-Trading, Paper-Trading, Breakout, Pullback, Gap, Squeeze, Momentum-Trading
-- Verhaltensökonomie: FOMO, Herdentrieb, Recency Bias, Survivorship Bias, Confirmation Bias
-- Moderne Finanzen: Tokenisierung, Fractional Shares, Copy-Trading, Social Trading, Robo-Advisor, Neobroker
-- Makroökonomie: Stagflation, Quantitative Easing, Tapering, Forward Guidance, Fiskaldefizit
-- Steuer/Recht: Sparerpauschbetrag, Freistellungsauftrag, Quellensteuer, Doppelbesteuerungsabkommen, Verlustverrechnungstopf
-- Kennzahlen: PEG-Ratio, Enterprise Value, EBITDA-Marge, Current Ratio, Quick Ratio, Debt-to-Equity
-- Dividenden: Dividendenrendite, Ausschüttungsquote, Ex-Dividende-Tag, Dividenden-Aristokrat, DRIP
-- ~80 Begriffe total
+#### Frontend-Seite Features
 
-**Englisch (`src/data/glossaryEN.ts`):**
-- Entsprechende englische Begriffe + zusätzliche US-spezifische (401k, IRA, SPAC, Regulation, Fiduciary Duty, etc.)
-- ~80 Begriffe total
+**`src/pages/PredictionsPage.tsx`:**
+1. **Trending Markets** — Top-Events nach 24h-Volumen, mit Live-Preisen (Ja/Nein-Wahrscheinlichkeiten)
+2. **Kategoriefilter** — Politik, Crypto, Sport, Wirtschaft, etc. via Tags-API
+3. **Suchfunktion** — Direkte Suche über `/public-search`
+4. **Marktdetail-Cards** — Frage, aktuelle Wahrscheinlichkeit (Preis), Volumen, Liquidität, End-Datum
+5. **Preis-History-Chart** — Zeitreihe über Data-API `/time-series/{token_id}`
+6. **Event-Gruppierung** — Zusammengehörige Märkte unter einem Event gruppiert
+7. **Orderbook-Tiefe** — Bid/Ask-Spread-Anzeige via CLOB `/book`
 
-### 3. Glossar Synonym-Map erweitern
+**`src/hooks/usePolymarket.ts`:**
+- Custom hooks: `usePolymarketEvents`, `usePolymarketSearch`, `usePolymarketTimeSeries`, `usePolymarketBook`
+- React Query mit 60s staleTime
 
-In `src/pages/GlossaryPage.tsx` die Synonym-Maps `SYNONYMS_DE` und `SYNONYMS_EN` um die neuen Begriffe ergänzen (z.B. EBITDA ↔ "Gewinn vor Zinsen, Steuern, Abschreibungen").
+**`src/lib/polymarketApi.ts`:**
+- API-Client der alle Requests über die Edge Function routet
 
-### Dateien-Übersicht
+#### Routing
+- Neue Route `/predictions` in `App.tsx`
+- Link in Navigation/Header hinzufügen
 
-| Datei | Änderung |
-|---|---|
-| `src/pages/LearnPage.tsx` | 4 neue Sektionen + TOC + Nummern |
-| `src/i18n/learnTranslations.ts` | ~60 neue Keys |
-| `src/i18n/learnTranslationsExtended.ts` | 4 neue TOC-Labels |
-| `src/data/glossaryDE.ts` | ~80 neue Begriffe |
-| `src/data/glossaryEN.ts` | ~80 neue Begriffe |
-| `src/pages/GlossaryPage.tsx` | Synonym-Maps erweitern |
+### Dateien
+
+| Datei | Aktion |
+|-------|--------|
+| `src/pages/LearnPage.tsx` | Nummerierung fixen (alle num={} sequentiell) |
+| `supabase/functions/polymarket-proxy/index.ts` | Neuer CORS-Proxy für alle 3 Polymarket APIs |
+| `supabase/config.toml` | Function-Config für polymarket-proxy |
+| `src/lib/polymarketApi.ts` | API-Client |
+| `src/hooks/usePolymarket.ts` | React Query hooks |
+| `src/pages/PredictionsPage.tsx` | Hauptseite mit allen Features |
+| `src/App.tsx` | Route `/predictions` hinzufügen |
 
