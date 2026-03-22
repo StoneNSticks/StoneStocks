@@ -49,6 +49,7 @@ const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
+const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
 
 
 const queryClient = new QueryClient({
@@ -105,6 +106,7 @@ const App = () => (
                   <Route path="/paper-trading" element={<PaperTradingPage />} />
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
+                  <Route path="/predictions" element={<PredictionsPage />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>
