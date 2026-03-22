@@ -934,7 +934,7 @@ export default function LearnPage() {
 
           {/* Section 22: Financial Regulation */}
           <motion.section id="regulierung" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={23} title={t("learn.section22Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={26} title={t("learn.section22Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<Gavel className="h-5 w-5" />} title={t("learn.regulatorsTitle")}>
               <div className="grid sm:grid-cols-2 gap-3">
                 <TermCard term={t("learn.sec")} desc={t("learn.secDesc")} />
