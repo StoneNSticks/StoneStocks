@@ -792,7 +792,7 @@ export default function LearnPage() {
 
           {/* Section 34: Factor Investing & Smart Beta */}
           <motion.section id="faktor-investing" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={34} title={t("learn.section34Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={20} title={t("learn.section34Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Layers className="h-5 w-5" />} title={t("learn.factorOverviewTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.factorOverviewP1") }} />
             </SectionCard>
