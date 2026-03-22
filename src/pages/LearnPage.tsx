@@ -1082,7 +1082,7 @@ export default function LearnPage() {
 
           {/* Section 27: Econometrics & Financial Modeling */}
           <motion.section id="okonometrie" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={29} title={t("learn.section27Title")} level={t("learn.levelMaster")} />
+            <SectionHeader num={33} title={t("learn.section27Title")} level={t("learn.levelMaster")} />
             <SectionCard icon={<Sigma className="h-5 w-5" />} title={t("learn.regressionTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.regressionP1") }} />
               <FormulaBox title={lang === "de" ? "Lineare Regression" : "Linear Regression"} formula="Y = α + βX + ε" explanation={lang === "de" ? "Y = abhängige Variable, α = Intercept, β = Steigung, X = unabhängige Variable, ε = Fehlerterm." : "Y = dependent variable, α = intercept, β = slope, X = independent variable, ε = error term."} />
