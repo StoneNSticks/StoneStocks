@@ -842,7 +842,7 @@ export default function LearnPage() {
 
           {/* Section 18: Accounting & Financial Statements */}
           <motion.section id="rechnungswesen" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={19} title={t("learn.section18Title")} level={t("learn.levelAcademic")} />
+            <SectionHeader num={22} title={t("learn.section18Title")} level={t("learn.levelAcademic")} />
             <SectionCard icon={<FileText className="h-5 w-5" />} title={t("learn.threeStatementsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.threeStatementsP1") }} />
             </SectionCard>
