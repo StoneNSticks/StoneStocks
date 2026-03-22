@@ -775,7 +775,7 @@ export default function LearnPage() {
 
           {/* Section 32: Trading Psychology & Mindset */}
           <motion.section id="trading-psychologie" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={33} title={t("learn.section32Title")} level={t("learn.levelExpert")} />
+            <SectionHeader num={19} title={t("learn.section32Title")} level={t("learn.levelExpert")} />
             <SectionCard icon={<Brain className="h-5 w-5" />} title={t("learn.emotionControlTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.emotionControlP1") }} />
             </SectionCard>
