@@ -527,7 +527,7 @@ export default function LearnPage() {
         <SuperSection id="super-c" title={`C: ${t("learn.superC")}`} level={t("learn.levelAdvanced")} defaultOpen={false}>
           {/* Section 10: Technical Analysis */}
           <motion.section id="technische-analyse" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="space-y-6">
-            <SectionHeader num={11} title={t("learn.section10Title")} level={t("learn.levelAdvanced")} />
+            <SectionHeader num={12} title={t("learn.section10Title")} level={t("learn.levelAdvanced")} />
             <motion.div variants={fadeIn} className="rounded-xl border border-border/60 bg-card p-5 md:p-7">
               <p className="text-muted-foreground text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("learn.taIntro") }} />
             </motion.div>
