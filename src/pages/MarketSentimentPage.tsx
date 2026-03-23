@@ -362,6 +362,29 @@ function computeSubIndicators(
     icon: <BarChart3 className="h-4 w-4" />,
   });
 
+  /* 11. Prediction Market Sentiment (6%) — Polymarket data */
+  const pmScore = polymarketScore ?? 50;
+  const hasPmData = polymarketScore != null;
+  indicators.push({
+    key: "prediction_markets", weight: 0.06,
+    label: { de: "Prognosemarkt-Stimmung", en: "Prediction Market Sentiment" },
+    description: {
+      de: hasPmData
+        ? "Aggregierte Stimmung aus Polymarket-Prognosemärkten. Höhere Werte deuten auf Risikoappetit und Optimismus hin."
+        : "Polymarket-Daten nicht verfügbar. Score auf Neutral gesetzt.",
+      en: hasPmData
+        ? "Aggregated sentiment from Polymarket prediction markets. Higher values indicate risk appetite and optimism."
+        : "Polymarket data unavailable. Score set to neutral."
+    },
+    formula: {
+      de: hasPmData ? `Score = ${pmScore.toFixed(0)} (volumengewichteter Durchschnitt der Top-Märkte).` : "Keine Daten.",
+      en: hasPmData ? `Score = ${pmScore.toFixed(0)} (volume-weighted average of top markets).` : "No data."
+    },
+    score: pmScore,
+    rawValue: hasPmData ? `${pmScore.toFixed(0)}/100` : "N/A",
+    icon: <Activity className="h-4 w-4" />,
+  });
+
   return indicators;
 }
 
