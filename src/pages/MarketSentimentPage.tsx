@@ -34,6 +34,7 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketHeatmap } from "@/components/MarketHeatmap";
 import { SectorPerformance } from "@/components/SectorPerformance";
+import { usePolymarketSentiment } from "@/hooks/usePolymarket";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
