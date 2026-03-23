@@ -893,13 +893,14 @@ export default function MarketSentimentPage() {
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
   const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
+  const { data: polymarketScore } = usePolymarketSentiment();
 
   const gainers = glData?.gainers || [];
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, commodities, sectors),
-    [indices, commodities, sectors]
+    () => computeSubIndicators(indices, commodities, sectors, polymarketScore),
+    [indices, commodities, sectors, polymarketScore]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
