@@ -89,7 +89,7 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Risk-On / Risk-Off Ratio (5%) — Cyclical commodities vs gold */
+  /* 2. Risk-On / Risk-Off Ratio (6%) — Cyclical commodities vs gold */
   const oilInd = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
   const copperInd = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
   const goldInd = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
