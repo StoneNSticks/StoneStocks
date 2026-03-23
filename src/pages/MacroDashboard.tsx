@@ -255,6 +255,9 @@ export default function MacroDashboard() {
           })}
         </div>
 
+        {/* Polymarket Macro Expectations */}
+        <PolymarketMacroModule />
+
         {/* Indicator grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredIndicators.map((indicator) => (
