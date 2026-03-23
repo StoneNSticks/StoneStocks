@@ -35,6 +35,7 @@ import { DividendGrowth } from "@/components/DividendGrowth";
 import { OptionsChainViewer } from "@/components/OptionsChainViewer";
 import { ShortInterestCard } from "@/components/ShortInterestCard";
 import { EarningsWhisper } from "@/components/EarningsWhisper";
+import { PolymarketEarningsSignal } from "@/components/PolymarketEarningsSignal";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
