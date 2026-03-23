@@ -102,7 +102,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((riskOnOffDiff + 3) / 6) * 100));
   indicators.push({
-    key: "risk_on_off", weight: 0.05,
+    key: "risk_on_off", weight: 0.06,
     label: { de: "Risk-On/Risk-Off Ratio", en: "Risk-On / Risk-Off Ratio" },
     description: {
       de: commoditiesStale
