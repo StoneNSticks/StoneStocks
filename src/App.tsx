@@ -50,6 +50,7 @@ const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
 const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
+const PolymarketIntelligencePage = lazy(() => import("./pages/PolymarketIntelligencePage"));
 
 
 const queryClient = new QueryClient({
