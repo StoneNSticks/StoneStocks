@@ -12,17 +12,34 @@ const API_BASES: Record<string, string> = {
   data: "https://data-api.polymarket.com",
 };
 
-// Map endpoint prefixes to the right API
+// Route paths to the correct API base
 function resolveApi(path: string): { base: string; endpoint: string } {
   // CLOB endpoints
-  if (path.startsWith("/book") || path.startsWith("/prices") || path.startsWith("/midpoint") || path.startsWith("/spread")) {
+  if (
+    path.startsWith("/book") ||
+    path.startsWith("/books") ||
+    path.startsWith("/prices") ||
+    path.startsWith("/midpoint") ||
+    path.startsWith("/spread") ||
+    path.startsWith("/last-trade") ||
+    path.startsWith("/tick-size")
+  ) {
     return { base: API_BASES.clob, endpoint: path };
   }
   // Data API endpoints
-  if (path.startsWith("/time-series") || path.startsWith("/activity") || path.startsWith("/positions") || path.startsWith("/leaderboard")) {
+  if (
+    path.startsWith("/prices-history") ||
+    path.startsWith("/time-series") ||
+    path.startsWith("/activity") ||
+    path.startsWith("/positions") ||
+    path.startsWith("/leaderboard") ||
+    path.startsWith("/holders") ||
+    path.startsWith("/open-interest") ||
+    path.startsWith("/trades")
+  ) {
     return { base: API_BASES.data, endpoint: path };
   }
-  // Everything else → Gamma (events, markets, tags, search)
+  // Everything else → Gamma (events, markets, tags, search, series, comments, sports, profiles)
   return { base: API_BASES.gamma, endpoint: path };
 }
 
@@ -53,11 +70,16 @@ serve(async (req) => {
 
     console.log(`Proxying to: ${targetUrl}`);
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch(targetUrl, {
       method: "GET",
       headers: { Accept: "application/json" },
+      signal: controller.signal,
     });
 
+    clearTimeout(timeout);
     const data = await response.text();
 
     return new Response(data, {
@@ -65,6 +87,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": response.headers.get("Content-Type") || "application/json",
+        "Cache-Control": "public, max-age=30",
       },
     });
   } catch (error) {
