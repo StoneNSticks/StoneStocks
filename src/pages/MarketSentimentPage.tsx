@@ -159,7 +159,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven", weight: 0.10,
+    key: "safehaven", weight: 0.06,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
       de: commoditiesStale
