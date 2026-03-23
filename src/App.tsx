@@ -108,6 +108,7 @@ const App = () => (
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
                   <Route path="/predictions" element={<PredictionsPage />} />
+                  <Route path="/polymarket" element={<PolymarketIntelligencePage />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>
