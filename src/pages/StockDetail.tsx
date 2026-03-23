@@ -35,6 +35,7 @@ import { DividendGrowth } from "@/components/DividendGrowth";
 import { OptionsChainViewer } from "@/components/OptionsChainViewer";
 import { ShortInterestCard } from "@/components/ShortInterestCard";
 import { EarningsWhisper } from "@/components/EarningsWhisper";
+import { PolymarketEarningsSignal } from "@/components/PolymarketEarningsSignal";
 import { Building2, Globe, ChevronRight, Home } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { useMemo } from "react";
@@ -321,10 +322,11 @@ const StockDetail = () => {
                 ══════════════════════════════════════════════════════════ */}
             <EarningsCalendar symbols={[upperSymbol]} compact />
 
-            {/* Short Interest + Earnings Whisper */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+            {/* Short Interest + Earnings Whisper + Polymarket Signal */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <ShortInterestCard symbol={upperSymbol} />
               <EarningsWhisper symbol={upperSymbol} />
+              <PolymarketEarningsSignal symbol={upperSymbol} companyName={companyName} />
             </div>
 
             {/* Options Chain */}

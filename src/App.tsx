@@ -50,6 +50,7 @@ const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
 const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
+const PolymarketIntelligencePage = lazy(() => import("./pages/PolymarketIntelligencePage"));
 
 
 const queryClient = new QueryClient({
@@ -107,6 +108,7 @@ const App = () => (
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
                   <Route path="/predictions" element={<PredictionsPage />} />
+                  <Route path="/polymarket" element={<PolymarketIntelligencePage />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>

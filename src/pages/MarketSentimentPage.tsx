@@ -34,6 +34,7 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketHeatmap } from "@/components/MarketHeatmap";
 import { SectorPerformance } from "@/components/SectorPerformance";
+import { usePolymarketSentiment } from "@/hooks/usePolymarket";
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
@@ -53,7 +54,8 @@ interface SubIndicator {
 function computeSubIndicators(
   indices: any[] | undefined,
   commodities: any[] | undefined,
-  sectors: any[] | undefined
+  sectors: any[] | undefined,
+  polymarketScore: number | undefined
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
 
@@ -69,10 +71,10 @@ function computeSubIndicators(
     .map((c: any) => c.changePercent as number);
   const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
 
-  /* 1. Market Momentum (25%) — ✅ Real index data */
+  /* 1. Market Momentum (22%) — ✅ Real index data */
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
-    key: "momentum", weight: 0.25,
+    key: "momentum", weight: 0.22,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
       de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Basiert auf Echtzeit-Indexdaten.",
@@ -87,7 +89,7 @@ function computeSubIndicators(
     icon: <TrendingUp className="h-4 w-4" />,
   });
 
-  /* 2. Risk-On / Risk-Off Ratio (5%) — Cyclical commodities vs gold */
+  /* 2. Risk-On / Risk-Off Ratio (6%) — Cyclical commodities vs gold */
   const oilInd = (commodities || []).find((c: any) => c.name?.includes("Oil") || c.name?.includes("WTI") || c.symbol === "CLUSD");
   const copperInd = (commodities || []).find((c: any) => c.name === "Copper" || c.symbol === "HGUSD");
   const goldInd = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
@@ -100,7 +102,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((riskOnOffDiff + 3) / 6) * 100));
   indicators.push({
-    key: "risk_on_off", weight: 0.05,
+    key: "risk_on_off", weight: 0.06,
     label: { de: "Risk-On/Risk-Off Ratio", en: "Risk-On / Risk-Off Ratio" },
     description: {
       de: commoditiesStale
@@ -157,7 +159,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven", weight: 0.10,
+    key: "safehaven", weight: 0.06,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
       de: commoditiesStale
@@ -358,6 +360,29 @@ function computeSubIndicators(
     score: hasBreadthData ? sectorBreadthScore : 50,
     rawValue: hasBreadthData ? `${posSectors}/${totalSectors} ↑` : "N/A",
     icon: <BarChart3 className="h-4 w-4" />,
+  });
+
+  /* 11. Prediction Market Sentiment (6%) — Polymarket data */
+  const pmScore = polymarketScore ?? 50;
+  const hasPmData = polymarketScore != null;
+  indicators.push({
+    key: "prediction_markets", weight: 0.06,
+    label: { de: "Prognosemarkt-Stimmung", en: "Prediction Market Sentiment" },
+    description: {
+      de: hasPmData
+        ? "Aggregierte Stimmung aus Polymarket-Prognosemärkten. Höhere Werte deuten auf Risikoappetit und Optimismus hin."
+        : "Polymarket-Daten nicht verfügbar. Score auf Neutral gesetzt.",
+      en: hasPmData
+        ? "Aggregated sentiment from Polymarket prediction markets. Higher values indicate risk appetite and optimism."
+        : "Polymarket data unavailable. Score set to neutral."
+    },
+    formula: {
+      de: hasPmData ? `Score = ${pmScore.toFixed(0)} (volumengewichteter Durchschnitt der Top-Märkte).` : "Keine Daten.",
+      en: hasPmData ? `Score = ${pmScore.toFixed(0)} (volume-weighted average of top markets).` : "No data."
+    },
+    score: pmScore,
+    rawValue: hasPmData ? `${pmScore.toFixed(0)}/100` : "N/A",
+    icon: <Activity className="h-4 w-4" />,
   });
 
   return indicators;
@@ -891,13 +916,14 @@ export default function MarketSentimentPage() {
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
   const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
+  const { data: polymarketScore } = usePolymarketSentiment();
 
   const gainers = glData?.gainers || [];
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, commodities, sectors),
-    [indices, commodities, sectors]
+    () => computeSubIndicators(indices, commodities, sectors, polymarketScore),
+    [indices, commodities, sectors, polymarketScore]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
