@@ -1,9 +1,14 @@
 /**
  * polymarketApi — Typed client for all Polymarket APIs via edge function proxy.
  * Routes: Gamma (discovery), CLOB (orderbook/prices), Data (history/stats).
+ * 
+ * MIGRATION NOTE: To move away from Supabase, set VITE_POLYMARKET_PROXY_URL
+ * to your own proxy endpoint (e.g. Express/Cloudflare Worker).
+ * The proxy must accept ?path=/endpoint&param=value and route to the correct
+ * Polymarket API base (gamma-api, clob, data-api).
  */
-const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-const BASE = `https://${PROJECT_ID}.supabase.co/functions/v1/polymarket-proxy`;
+const BASE = import.meta.env.VITE_POLYMARKET_PROXY_URL
+  || `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/polymarket-proxy`;
 
 async function proxyGet<T = unknown>(path: string, params?: Record<string, string>): Promise<T> {
   const url = new URL(BASE);
@@ -146,7 +151,7 @@ export function fetchTimeSeries(tokenId: string, fidelity = 60): Promise<{ histo
 // ── Utility: categorize markets ──
 
 const FINANCE_KEYWORDS = ["fed", "rate", "inflation", "recession", "gdp", "unemployment", "treasury", "interest", "earnings", "stock", "market", "s&p", "nasdaq", "dow", "bitcoin", "btc", "eth", "crypto", "oil", "gold", "economic"];
-const POLITICS_KEYWORDS = ["president", "election", "senate", "congress", "vote", "trump", "biden", "republican", "democrat", "governor", "primary", "political", "war", "nato", "ukraine", "china", "tariff"];
+const POLITICS_KEYWORDS = ["president", "election", "senate", "congress", "vote", "trump", "biden", "republican", "democrat", "governor", "primary", "political", "war", "nato", "ukraine", "china", "tariff", "ceasefire", "iran", "russia", "impeach", "sanction"];
 
 export type MarketCategory = "finance" | "politics" | "crypto" | "other";
 
@@ -158,17 +163,34 @@ export function categorizeMarket(question: string): MarketCategory {
   return "other";
 }
 
-/** Extract a sentiment score (0-100) from a set of markets. Higher = more risk-on/optimistic. */
+// ── Smart Sentiment: polarity-aware scoring ──
+
+const FEAR_KEYWORDS = ["recession", "crash", "default", "impeach", "war", "decline", "collapse", "fail", "crisis", "downgrade", "shutdown", "invasion", "escalat", "sanctions", "tariff", "bear"];
+const GREED_KEYWORDS = ["growth", "rally", "cut", "peace", "deal", "ceasefire", "approval", "rise", "bull", "recovery", "boom", "surplus", "gain", "win"];
+
+function getMarketPolarity(question: string): "fear" | "greed" | "neutral" {
+  const q = question.toLowerCase();
+  const fearScore = FEAR_KEYWORDS.filter(k => q.includes(k)).length;
+  const greedScore = GREED_KEYWORDS.filter(k => q.includes(k)).length;
+  if (fearScore > greedScore) return "fear";
+  if (greedScore > fearScore) return "greed";
+  return "neutral";
+}
+
+/** 
+ * Compute a polarity-aware sentiment score (0-100) from prediction markets.
+ * Focuses on finance and world politics markets only.
+ * Higher = more optimistic/greedy, Lower = more fearful.
+ */
 export function computePolymarketSentiment(markets: PolymarketMarket[]): number {
   if (!markets || markets.length === 0) return 50;
   
-  // Look at financial/economic markets and compute average "yes" probability
-  // weighted by volume — markets with more volume count more
   let totalWeight = 0;
   let weightedSum = 0;
   
   for (const m of markets) {
     const cat = categorizeMarket(m.question);
+    // Only use finance and politics markets for sentiment
     if (cat !== "finance" && cat !== "politics") continue;
     
     try {
@@ -177,9 +199,23 @@ export function computePolymarketSentiment(markets: PolymarketMarket[]): number 
       const vol = Number(m.volume || 0);
       if (vol <= 0) continue;
       
+      const polarity = getMarketPolarity(m.question);
       const weight = Math.log10(vol + 1);
+      
+      let sentimentContribution: number;
+      if (polarity === "fear") {
+        // High "yes" on fear event = more fear = lower score
+        sentimentContribution = (1 - yesPrice) * 100;
+      } else if (polarity === "greed") {
+        // High "yes" on greed event = more greed = higher score
+        sentimentContribution = yesPrice * 100;
+      } else {
+        // Neutral: skip or use mild contribution
+        sentimentContribution = 50;
+      }
+      
       totalWeight += weight;
-      weightedSum += yesPrice * 100 * weight;
+      weightedSum += sentimentContribution * weight;
     } catch { /* skip */ }
   }
   
@@ -209,7 +245,6 @@ export async function searchEarningsMarkets(ticker: string, companyName?: string
     } catch { /* ignore search failures */ }
   }
   
-  // Deduplicate by market id
   const seen = new Set<string>();
   return results.filter(m => {
     if (seen.has(m.id)) return false;
