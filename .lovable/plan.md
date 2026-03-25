@@ -1,73 +1,77 @@
+## Plan: Polymarket Intelligence Overhaul + Fixes
 
-Ziel: Polymarket-Daten zentral sammeln, auswerten und in mehreren Bereichen sichtbar machen (eigene Seite neben Backtest, Sentiment/Fear&Greed, Aktien-Earnings, optional Makro), plus die Learn-Probleme auf Desktop endgültig beheben (Nummerierung + kaputte Keys in Abschnitt 7/8).
+### 1. Polymarket-Seite komplett neu als Statistik-Dashboard (`src/pages/PolymarketIntelligencePage.tsx`)
 
-1) Learn/Finanzwissen stabilisieren (Nummerierung + kaputte 7/8 Inhalte)
-- `src/pages/LearnPage.tsx`
-  - Nummerierung vollständig von einer zentralen Reihenfolge ableiten (kein manuelles Durcheinander zwischen `sectionXXTitle` und `num`).
-  - TOC-Labels vor Ausgabe säubern (falls alte Übersetzungen noch numerische Präfixe tragen), z. B. `30. ...` entfernen.
-  - Für Learn-Seiten einen sicheren Übersetzungs-Wrapper nutzen: Wenn `t(key) === key`, sofort lokaler Fallback-Text (DE/EN) statt Key anzeigen.
-  - Besonders Abschnitt 7/8 absichern (Crypto/Portfolio-Titel, Unterkarten, TermCards), damit niemals `learn.xyz`-Keys sichtbar sind.
-- `src/i18n/learnTranslations.ts` + `src/i18n/learnTranslationsExtended.ts`
-  - Key-Audit für alle in Learn genutzten Keys (inkl. 7/8) und fehlende Einträge ergänzen.
-- Caching-Fix (Desktop-Stale-Bundle)
-  - `vite.config.ts`: Workbox härter auf neue Deploys ausrichten (`cleanupOutdatedCaches`, `clientsClaim`, `skipWaiting`), damit Desktop nicht auf alter Übersetzungsdatei hängen bleibt.
+Aktuell zeigt die Seite nur eine Liste von Events/Markets. Kompletter Umbau zu einem Analytics-Dashboard:
 
-2) Polymarket-Datenschicht auf “alles Relevante” erweitern
-- `supabase/functions/polymarket-proxy/index.ts`
-  - Proxy von “ein paar Endpunkten” auf eine klar allowlist-basierte Multi-API-Routing-Schicht erweitern:
-    - Gamma: events, markets, tags, series, comments, sports, search, profiles
-    - Data: positions, trades/activity, holder/open-interest, leaderboard, builder analytics/timeseries
-    - CLOB: book/books, prices, midpoint, spread, last trade, prices history
-  - GET + POST Unterstützung für Read-Endpoints; Trading-/Order-Write-Endpunkte bewusst nicht im UI aktivieren.
-  - Einheitliches Fehlerformat + Timeouts + CORS auf allen Antworten.
-- `src/lib/polymarketApi.ts`
-  - Typed Funktionen pro Endpoint-Gruppe + Normalizer (politisch/finanziell, Liquidität, Volatilität, Trend).
-- `src/hooks/usePolymarket.ts`
-  - Hooks für Discovery, Preis-/Orderbook-Daten, Marktbreite, Open Interest, Aktivität, “political vs financial sentiment”.
+**Neue Struktur:**
 
-3) Neue Seite neben Backtest (umbenannt von Predictions)
-- Neue Hauptseite (z. B. `src/pages/PolymarketIntelligencePage.tsx`) mit Route `/polymarket` (Alias `/predictions` bleibt für Rückwärtskompatibilität).
-- `src/App.tsx` + `src/components/Header.tsx`
-  - Menüpunkt direkt neben Backtest platzieren.
-  - Name von “Predictions” auf klaren Produktnamen (z. B. “Polymarket Intel” / “Prognose-Intelligence”) umstellen.
-- Seiteninhalt:
-  - Politische Märkte (Top-Trends, größte Wahrscheinlichkeitsänderung, Event-Heat)
-  - Finanz-/Makro-Märkte (Fed, Inflation, Rezession, BTC/ETF etc.)
-  - “Was ist neu” (24h-Delta, Volumen, Liquidität, Open Interest)
-  - Detailpanel mit Preisverlauf + Orderbook-/Spread-Snapshot + Signalbewertung
+- **Aggregierte Statistiken oben**: Sentiment-Gauge (Politik vs. Finanzen), Gesamtvolumen, Trend-Richtung
+- **Politik-Sektion**: Top politische Märkte mit Wahrscheinlichkeits-Trends, Heatmap der Kategorien (Wahlen, Geopolitik, Regulierung)
+- **Finanz-Sektion**: Fed/Inflation/Rezession-Wahrscheinlichkeiten als Karten mit Mini-Sparklines
+- **Trend-Analyse**: Biggest movers (24h Δ), Confidence-Meter (basierend auf Volumen+Liquidität), Kategorie-Verteilung als Donut-Chart
+- **Responsive**: Mobile = gestackte Cards, Desktop = Multi-Column-Grid mit Sidebar-Detail
 
-4) Polymarket in relevante Bereiche integrieren
-- Fear & Greed (`src/pages/MarketSentimentPage.tsx`)
-  - Gewichte anpassen:
-    - Risk-On/Risk-Off: auf 5–7% (Vorschlag: 6%)
-    - Sichere Häfen: auf 5–7% (Vorschlag: 6%)
-  - Neues Subsignal “Prediction Market Sentiment” hinzufügen (aus politischen + finanziellen Polymarket-Events), Gewicht aus frei werdendem Anteil.
-  - Fallback neutral (50), wenn Polymarket temporär keine Daten liefert.
-- Aktienseiten / Quartalszahlen (`src/pages/StockDetail.tsx` + neue Komponente)
-  - Neue Karte “Polymarket Earnings Signal”:
-    - Sucht earnings-relevante Märkte (Ticker + Firmenname + “earnings/beat/miss” Muster)
-    - Zeigt implizite Wahrscheinlichkeit, jüngste Veränderung, Liquidität/Confidence
-  - Karte im Earnings-Bereich neben bestehender Earnings-Analyse einhängen.
-- Makroseite (`src/pages/MacroDashboard.tsx`)
-  - Optionales Modul “Market-Implied Macro Expectations”:
-    - z. B. Wahrscheinlichkeit für Rate Cuts/Inflation-/Rezessions-Events
-    - Nur anzeigen, wenn genügend valide Polymarket-Märkte gefunden werden.
+**Desktop-Layout:** 
 
-5) Technische Details (kompakt)
-- Keine DB-Migration nötig.
-- Fokus auf read-only Marktdaten; keine Trading-Automation.
-- API-Qualitätsschicht:
-  - Score/Confidence aus Volumen, Liquidität, Spread, Datenfrische
-  - Deduplizierung ähnlicher Märkte
-  - Kategorienormalisierung (politics/finance/macro/crypto)
-- Performance:
-  - React Query StaleTimes je Datentyp (Orderbook kürzer, Event-Metadaten länger)
-  - Serverseitiger Proxy reduziert CORS-Probleme und standardisiert Fehler.
+- Volle Breite nutzen, 3-Spalten-Grid für Statistiken
+- Sidebar für Detail-Panel bei Klick
+- Charts größer (h-60 statt h-40)
 
-6) Abnahme/QA
-- Desktop zuerst (dein gemeldetes Problem), dann iPad/Phone:
-  - `/learn`: keine sichtbaren `learn.*`-Keys in Abschnitt 7/8, Nummerierung 1–35 konsistent
-  - `/polymarket`: Daten laden stabil, Filter + Detailpanel + Auswertungen funktionieren
-  - `/sentiment`: neue Gewichte/Indikator korrekt im Composite
-  - `/stock/:symbol`: Earnings-Prediction-Karte erscheint mit sinnvollen Daten/Fallback
-  - `/macro`: neues Polymarket-Makro-Modul nur bei verfügbarer Datenlage
+**Mobile-Layout:**
+
+- Kompakte Cards, swipeable Kategorien
+- Detail als Bottom-Sheet statt Sidebar
+
+### 2. Prediction Market Sentiment im Fear & Greed verbessern (`src/pages/MarketSentimentPage.tsx` + `src/lib/polymarketApi.ts`)
+
+**Problem:** `computePolymarketSentiment()` macht einen generischen volumengewichteten Durchschnitt aller "Yes"-Preise — das ist inhaltlich sinnlos, weil "Yes" bei "Wird es eine Rezession geben?" Angst bedeutet, aber bei "Wird S&P steigen?" Gier.
+
+**Fix — Neuer smarter Algorithmus:**
+
+- Finanz-Märkte mit Sentiment-Polarität klassifizieren:
+  - Negative Events (Rezession, Crash, Rate Hike) → hoher Yes-Preis = FEAR
+  - Positive Events (Rally, Rate Cut, Growth) → hoher Yes-Preis = GREED
+- Politik-Märkte einbeziehen: geopolitische Stabilität/Instabilität als Signal
+- Keywords-basierte Polaritätsbestimmung: `FEAR_KEYWORDS` (recession, crash, war, default, impeach) vs `GREED_KEYWORDS` (growth, cut, rally, peace, deal)
+- Score = gewichteter Mix aus invertierten Fear-Markets + normalen Greed-Markets
+
+### 3. Backend migration-ready machen (`supabase/functions/polymarket-proxy/index.ts`)
+
+Die Edge Function ist bereits ein einfacher HTTP-Proxy. Für Migration:
+
+- Keine Supabase-spezifischen Imports verwenden (nur Standard Deno `serve`)
+- Den Client (`polymarketApi.ts`) so umbauen, dass die Base-URL konfigurierbar ist (ENV-Variable `VITE_POLYMARKET_PROXY_URL` mit Fallback auf aktuelle Supabase-URL)
+- Proxy-Logik dokumentieren, sodass sie als Express/Fastify-Route oder Cloudflare Worker 1:1 portierbar ist
+
+**Änderung in `src/lib/polymarketApi.ts`:**
+
+```typescript
+const BASE = import.meta.env.VITE_POLYMARKET_PROXY_URL 
+  || `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/polymarket-proxy`;
+```
+
+Der gante rest soll auch fertig oder zumindest für eine zukünftige mögliche migration angeoasst werdne (cache, storage, secrets, api keys und alles im backend)
+
+&nbsp;
+
+### 4. Glossar Buchstabenfilter auf PC fixen (`src/pages/GlossaryPage.tsx`)
+
+Die Logik sieht korrekt aus im Code, aber das 2-Spalten-Grid (`md:grid md:grid-cols-2`) zeigt Ergebnisse korrekt. Mögliches Problem: Die Ergebnisliste wird bei Letterfilter nicht korrekt neu gerendert weil `filtered` sowohl `isLetterMode` als auch `isSearchMode` prüft. 
+
+**Fix:** `isLetterMode` Bedingung robuster machen — aktuell ist `isLetterMode = letter !== null && !isSearchMode`. Das stimmt. Aber `filtered` wird über `useMemo` mit `[glossary, debouncedSearch, letter, isSearchMode, isLetterMode, lang]` berechnet — das sollte funktionieren. 
+
+Trotzdem: Die letter-Buttons werden korrekt gehandhabt. Falls es ein visuelles Problem ist, prüfe ich das Grid-Layout und stelle sicher, dass die Ergebnisse korrekt angezeigt werden. Außerdem: auf dem Handy fehlt das `md:grid` → nur `space-y-2`. Das ist korrekt. Auf PC sollte 2-Spalten aktiv sein.
+
+**Sicherheits-Fix:** Alle Ergebnisse im Grid rendern, auch bei Letter-Filter. Falls `filtered` leer ist bei Letter-Klick, könnte das Problem sein dass `glossary` noch leer ist → unwahrscheinlich. Werde die Komponente testen und ggf. die Filterlogik vereinfachen.
+
+### 5. Dateien
+
+
+| Datei                                      | Änderung                                                 |
+| ------------------------------------------ | -------------------------------------------------------- |
+| `src/pages/PolymarketIntelligencePage.tsx` | Komplett neuschreiben als Analytics-Dashboard            |
+| `src/lib/polymarketApi.ts`                 | Smarter Sentiment-Algorithmus + konfigurierbare Base-URL |
+| `src/hooks/usePolymarket.ts`               | Neue Hooks für Kategorie-Stats, Trend-Analyse            |
+| `src/pages/MarketSentimentPage.tsx`        | Prediction-Indikator-Beschreibung aktualisieren          |
+| `src/pages/GlossaryPage.tsx`               | Letter-Filter Desktop-Verhalten verifizieren/fixen       |
