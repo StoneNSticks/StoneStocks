@@ -1535,7 +1535,7 @@ async function handleTopCompanies() {
   }
 
   // Merge stale cached data for any companies that failed
-  const staleCacheKey = "market:top_companies:v8";
+  const staleCacheKey = "market:top_companies:v9";
   const staleData = await getStaleCached(staleCacheKey) as any[] | null;
   const staleMap = new Map<string, any>();
   if (Array.isArray(staleData)) {
