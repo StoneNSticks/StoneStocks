@@ -1429,7 +1429,7 @@ const TOP_COMPANIES = [
 ];
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v8";
+  const cacheKey = "market:top_companies:v9";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
