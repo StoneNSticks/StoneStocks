@@ -1,77 +1,84 @@
-## Plan: Polymarket Intelligence Overhaul + Fixes
+## Plan: Polymarket verstecken + Top Companies Sortierung fixen + Website-weite Verbesserungen
 
-### 1. Polymarket-Seite komplett neu als Statistik-Dashboard (`src/pages/PolymarketIntelligencePage.tsx`)
+### 1. Polymarket komplett verstecken
 
-Aktuell zeigt die Seite nur eine Liste von Events/Markets. Kompletter Umbau zu einem Analytics-Dashboard:
+Alle Polymarket-Inhalte werden aus der UI entfernt (Code bleibt erhalten für spätere Reaktivierung):
 
-**Neue Struktur:**
+`**src/components/Header.tsx**` — Polymarket-Eintrag aus `navItems` entfernen (Zeile 44)
 
-- **Aggregierte Statistiken oben**: Sentiment-Gauge (Politik vs. Finanzen), Gesamtvolumen, Trend-Richtung
-- **Politik-Sektion**: Top politische Märkte mit Wahrscheinlichkeits-Trends, Heatmap der Kategorien (Wahlen, Geopolitik, Regulierung)
-- **Finanz-Sektion**: Fed/Inflation/Rezession-Wahrscheinlichkeiten als Karten mit Mini-Sparklines
-- **Trend-Analyse**: Biggest movers (24h Δ), Confidence-Meter (basierend auf Volumen+Liquidität), Kategorie-Verteilung als Donut-Chart
-- **Responsive**: Mobile = gestackte Cards, Desktop = Multi-Column-Grid mit Sidebar-Detail
+`**src/App.tsx**` — Routes entfernen:
 
-**Desktop-Layout:** 
+- Zeile 52: `PredictionsPage` lazy import
+- Zeile 53: `PolymarketIntelligencePage` lazy import  
+- Zeile 110: `/predictions` Route
+- Zeile 111: `/polymarket` Route
 
-- Volle Breite nutzen, 3-Spalten-Grid für Statistiken
-- Sidebar für Detail-Panel bei Klick
-- Charts größer (h-60 statt h-40)
+`**src/pages/StockDetail.tsx**` — PolymarketEarningsSignal entfernen:
 
-**Mobile-Layout:**
+- Zeile 38: Import entfernen
+- Zeile 329: `<PolymarketEarningsSignal>` aus dem Grid entfernen
 
-- Kompakte Cards, swipeable Kategorien
-- Detail als Bottom-Sheet statt Sidebar
+`**src/pages/MacroDashboard.tsx**` — PolymarketMacroModule entfernen:
 
-### 2. Prediction Market Sentiment im Fear & Greed verbessern (`src/pages/MarketSentimentPage.tsx` + `src/lib/polymarketApi.ts`)
+- Zeile 18: Import entfernen
+- Verwendung der Komponente entfernen
 
-**Problem:** `computePolymarketSentiment()` macht einen generischen volumengewichteten Durchschnitt aller "Yes"-Preise — das ist inhaltlich sinnlos, weil "Yes" bei "Wird es eine Rezession geben?" Angst bedeutet, aber bei "Wird S&P steigen?" Gier.
+---
 
-**Fix — Neuer smarter Algorithmus:**
+### 2. Top Companies nach Market Cap — Sortierung fixen
 
-- Finanz-Märkte mit Sentiment-Polarität klassifizieren:
-  - Negative Events (Rezession, Crash, Rate Hike) → hoher Yes-Preis = FEAR
-  - Positive Events (Rally, Rate Cut, Growth) → hoher Yes-Preis = GREED
-- Politik-Märkte einbeziehen: geopolitische Stabilität/Instabilität als Signal
-- Keywords-basierte Polaritätsbestimmung: `FEAR_KEYWORDS` (recession, crash, war, default, impeach) vs `GREED_KEYWORDS` (growth, cut, rally, peace, deal)
-- Score = gewichteter Mix aus invertierten Fear-Markets + normalen Greed-Markets
+**Problem:** Die Sortierung `b.marketCap - a.marketCap` funktioniert korrekt im Backend, aber wenn Finnhub für einige Unternehmen falsche/fehlende Market Cap Werte liefert (z.B. `0` oder unrealistisch hoch), stimmt die Reihenfolge nicht.
 
-### 3. Backend migration-ready machen (`supabase/functions/polymarket-proxy/index.ts`)
+`**supabase/functions/stock-data/index.ts**` — Verbesserungen:
 
-Die Edge Function ist bereits ein einfacher HTTP-Proxy. Für Migration:
+- Bessere Market Cap Validierung: Minimum-Grenze einführen (z.B. > 1 Milliarde für Top Companies)
+- ADR-Ratio Korrektur verbessern — einige ADRs haben falsche Multiplikatoren
+- Fallback-Logik: Wenn Finnhub marketCap = 0, aber Polygon liefert einen Wert, diesen priorisieren
+- Sortierung nach dem Merge mit Stale-Daten nochmals explizit sicherstellen
+- Cache-Key auf `v9` bumpen um alten fehlerhaften Cache zu invalidieren
 
-- Keine Supabase-spezifischen Imports verwenden (nur Standard Deno `serve`)
-- Den Client (`polymarketApi.ts`) so umbauen, dass die Base-URL konfigurierbar ist (ENV-Variable `VITE_POLYMARKET_PROXY_URL` mit Fallback auf aktuelle Supabase-URL)
-- Proxy-Logik dokumentieren, sodass sie als Express/Fastify-Route oder Cloudflare Worker 1:1 portierbar ist
+`**src/components/TopCompanies.tsx**` — Client-seitige Absicherung:
 
-**Änderung in `src/lib/polymarketApi.ts`:**
+- Zusätzliche Sortierung `companies.sort((a,b) => b.marketCap - a.marketCap)` vor dem Rendern als Safety-Net
 
-```typescript
-const BASE = import.meta.env.VITE_POLYMARKET_PROXY_URL 
-  || `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/polymarket-proxy`;
-```
+---
 
-Der gante rest soll auch fertig oder zumindest für eine zukünftige mögliche migration angeoasst werdne (cache, storage, secrets, api keys und alles im backend)
+### 3. Website-weite Verbesserungen
 
-&nbsp;
+Nach Durchsicht des Codes fallen folgende Verbesserungspunkte auf:
 
-### 4. Glossar Buchstabenfilter auf PC fixen (`src/pages/GlossaryPage.tsx`)
+**Glossar (`src/pages/GlossaryPage.tsx`):**
 
-Die Logik sieht korrekt aus im Code, aber das 2-Spalten-Grid (`md:grid md:grid-cols-2`) zeigt Ergebnisse korrekt. Mögliches Problem: Die Ergebnisliste wird bei Letterfilter nicht korrekt neu gerendert weil `filtered` sowohl `isLetterMode` als auch `isSearchMode` prüft. 
+- Buchstabenfilter auf Mobile verbessern: Buttons scrollbar machen statt Umbruch
+- Letter-Filter-Reset-Button deutlicher gestalten
 
-**Fix:** `isLetterMode` Bedingung robuster machen — aktuell ist `isLetterMode = letter !== null && !isSearchMode`. Das stimmt. Aber `filtered` wird über `useMemo` mit `[glossary, debouncedSearch, letter, isSearchMode, isLetterMode, lang]` berechnet — das sollte funktionieren. 
+**MarketSentimentPage — Gewichte nach Polymarket-Entfernung:**
 
-Trotzdem: Die letter-Buttons werden korrekt gehandhabt. Falls es ein visuelles Problem ist, prüfe ich das Grid-Layout und stelle sicher, dass die Ergebnisse korrekt angezeigt werden. Außerdem: auf dem Handy fehlt das `md:grid` → nur `space-y-2`. Das ist korrekt. Auf PC sollte 2-Spalten aktiv sein.
+- 10 Indikatoren, Gewichte müssen sich auf 100% summieren
+- Vorschlag: Momentum 25%, Volatility 17%, Safe Haven 8%, Regional 10%, Commodity Risk 12%, Index Correlation 10%, Sector Breadth 8%, Risk-On/Off 5%, Trend Strength 5%
 
-**Sicherheits-Fix:** Alle Ergebnisse im Grid rendern, auch bei Letter-Filter. Falls `filtered` leer ist bei Letter-Klick, könnte das Problem sein dass `glossary` noch leer ist → unwahrscheinlich. Werde die Komponente testen und ggf. die Filterlogik vereinfachen.
+**Allgemeine UI-Verbesserungen:**
 
-### 5. Dateien
+- `RankingsPage.tsx`: TopCompanies Sortierungshinweis verbessern
+- Footer/Header: Tote Links aufräumen (keine Polymarket-Referenzen mehr)  
+  
+  
+  
+  
+und bei SEC-filings es so machen, dass es nichtmehr so abgehackt ist zum scrollen sondern der platz besser genutzt wird (es soll nicht nur der halbe platz genutzt werden und dann so ein hässliches scroll fenster
+
+---
+
+### Dateien
 
 
-| Datei                                      | Änderung                                                 |
-| ------------------------------------------ | -------------------------------------------------------- |
-| `src/pages/PolymarketIntelligencePage.tsx` | Komplett neuschreiben als Analytics-Dashboard            |
-| `src/lib/polymarketApi.ts`                 | Smarter Sentiment-Algorithmus + konfigurierbare Base-URL |
-| `src/hooks/usePolymarket.ts`               | Neue Hooks für Kategorie-Stats, Trend-Analyse            |
-| `src/pages/MarketSentimentPage.tsx`        | Prediction-Indikator-Beschreibung aktualisieren          |
-| `src/pages/GlossaryPage.tsx`               | Letter-Filter Desktop-Verhalten verifizieren/fixen       |
+| Datei                                    | Änderung                                          |
+| ---------------------------------------- | ------------------------------------------------- |
+| `src/App.tsx`                            | Polymarket-Routes + Imports entfernen             |
+| `src/components/Header.tsx`              | Polymarket aus Navigation entfernen               |
+| `src/pages/StockDetail.tsx`              | PolymarketEarningsSignal entfernen                |
+| `src/pages/MacroDashboard.tsx`           | PolymarketMacroModule entfernen                   |
+| `src/pages/MarketSentimentPage.tsx`      | Polymarket-Indikator entfernen, Gewichte anpassen |
+| `supabase/functions/stock-data/index.ts` | Top Companies Sortierung/Validierung verbessern   |
+| `src/components/TopCompanies.tsx`        | Client-seitige Sortierungsabsicherung             |
+| `src/pages/GlossaryPage.tsx`             | Buchstabenfilter Mobile-UX verbessern             |
