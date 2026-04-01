@@ -134,7 +134,7 @@ function computeSubIndicators(
     volScore = Math.min(100, Math.max(0, 100 - (spread / 5) * 100));
   }
   indicators.push({
-    key: "volatility", weight: 0.15,
+    key: "volatility", weight: 0.17,
     label: { de: "Volatilität (Proxy)", en: "Volatility (Proxy)" },
     description: {
       de: "Approximation basierend auf der Streuung (Spread) zwischen den Tagesänderungen globaler Indizes. Kein direkter VIX-Wert, aber misst Marktunsicherheit.",
