@@ -1562,8 +1562,9 @@ async function handleTopCompanies() {
     }
   }
 
-  // Include all companies with valid market cap, sort descending
-  const validQuotes = allQuotes.filter((q: any) => q.marketCap > 0);
+  // Include all companies with valid market cap (>1B for top companies), sort descending
+  const MIN_MCAP_TOP = 1e9; // 1 billion minimum
+  const validQuotes = allQuotes.filter((q: any) => q.marketCap >= MIN_MCAP_TOP);
   validQuotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
 
   // If we got fewer than 80% of expected companies, and have stale data, use stale
