@@ -361,29 +361,6 @@ function computeSubIndicators(
     icon: <BarChart3 className="h-4 w-4" />,
   });
 
-  /* 11. Prediction Market Sentiment (6%) — Polymarket data, finance & politics focus */
-  const pmScore = polymarketScore ?? 50;
-  const hasPmData = polymarketScore != null;
-  indicators.push({
-    key: "prediction_markets", weight: 0.06,
-    label: { de: "Prognosemarkt-Stimmung", en: "Prediction Market Sentiment" },
-    description: {
-      de: hasPmData
-        ? "Polaritäts-gewichtete Stimmung aus Finanz- und Weltpolitik-Prognosemärkten. Negative Events (Rezession, Krieg, Crash) werden invertiert, positive Events (Wachstum, Frieden, Zinssenkung) direkt gezählt."
-        : "Polymarket-Daten nicht verfügbar. Score auf Neutral gesetzt.",
-      en: hasPmData
-        ? "Polarity-weighted sentiment from finance and world politics prediction markets. Negative events (recession, war, crash) are inverted, positive events (growth, peace, rate cut) counted directly."
-        : "Polymarket data unavailable. Score set to neutral."
-    },
-    formula: {
-      de: hasPmData ? `Score = ${pmScore.toFixed(0)} (polaritätsbereinigt, volumengewichtet, nur Finanz- & Politik-Märkte).` : "Keine Daten.",
-      en: hasPmData ? `Score = ${pmScore.toFixed(0)} (polarity-adjusted, volume-weighted, finance & politics markets only).` : "No data."
-    },
-    score: pmScore,
-    rawValue: hasPmData ? `${pmScore.toFixed(0)}/100` : "N/A",
-    icon: <Activity className="h-4 w-4" />,
-  });
-
   return indicators;
 }
 
