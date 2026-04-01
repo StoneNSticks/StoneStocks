@@ -528,7 +528,7 @@ export default function GlossaryPage() {
         )}
 
         {/* Letter filter */}
-        <div className="flex flex-wrap gap-1 md:gap-1.5 mb-6">
+        <div className="flex gap-1 md:gap-1.5 mb-6 overflow-x-auto pb-2 scrollbar-hide md:flex-wrap md:overflow-x-visible md:pb-0">
           <button
             onClick={clearAll}
             className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
