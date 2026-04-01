@@ -37,6 +37,9 @@ export function TopCompanies() {
 
   if (!companies || companies.length === 0) return null;
 
+  // Safety net: ensure client-side sort by market cap descending
+  const sorted = [...companies].sort((a: any, b: any) => (b.marketCap || 0) - (a.marketCap || 0));
+
   return (
     <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="flex items-center justify-between mb-4">
@@ -47,7 +50,7 @@ export function TopCompanies() {
         <span className="text-xs text-muted-foreground">{t("top.byMarketCap")}</span>
       </div>
       <div className="space-y-1">
-        {companies.slice(0, 10).map((c: any, i: number) => (
+        {sorted.slice(0, 10).map((c: any, i: number) => (
           <Link key={c.symbol} to={`/stock/${c.symbol}`} className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               {c.logo ? (
