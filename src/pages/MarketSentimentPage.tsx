@@ -338,7 +338,7 @@ function computeSubIndicators(
   const sectorBreadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
   const hasBreadthData = totalSectors > 0;
   indicators.push({
-    key: "sector_breadth", weight: 0.07,
+    key: "sector_breadth", weight: 0.08,
     label: { de: "Sektorbreite", en: "Sector Breadth" },
     description: {
       de: hasBreadthData
