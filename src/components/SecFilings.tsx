@@ -54,7 +54,7 @@ export function SecFilings({ symbol }: { symbol: string }) {
         <h3 className="font-display font-bold text-sm">{t("sec.title")}</h3>
         <Badge variant="secondary" className="text-[10px] ml-auto">{(data as any)?.companyName}</Badge>
       </div>
-      <div className="divide-y divide-border/20 max-h-[400px] overflow-y-auto">
+      <div className="divide-y divide-border/20">
         {filings.slice(0, 20).map((f: any, i: number) => (
           <div key={`${f.form}-${f.filingDate}-${i}`} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/20 transition-colors">
             <Badge className={`text-[10px] font-mono shrink-0 ${FORM_COLORS[f.form] || "bg-muted text-muted-foreground"}`}>

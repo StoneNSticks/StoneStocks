@@ -1,20 +1,20 @@
 /**
  * MarketSentimentPage: Comprehensive market sentiment dashboard.
  *
- * The Fear & Greed Index (modeled after CNN's methodology) uses 7
- * equally-weighted indicators (each ~14.3%). Each tracks deviation
- * from average compared to normal divergence. 0 = max fear, 100 = max greed.
+ * The Fear & Greed Index uses 10 weighted indicators.
+ * Each tracks deviation from average compared to normal divergence.
+ * 0 = max fear, 100 = max greed.
  *
  * 1. Market Momentum (25%) — Average index daily performance
- * 2. Risk-On/Risk-Off Ratio (5%) — Cyclical commodities vs gold
- * 3. Volatility Proxy (15%) — Index spread dispersion
- * 4. Safe Haven Demand (10%) — Stocks vs gold performance
+ * 2. Risk-On/Risk-Off Ratio (6%) — Cyclical commodities vs gold
+ * 3. Volatility Proxy (17%) — Index spread dispersion
+ * 4. Safe Haven Demand (7%) — Stocks vs gold performance
  * 5. Regional Divergence (10%) — US vs international indices
  * 6. Index Trend Strength (5%) — Conviction via magnitude of moves
  * 7. Sector Rotation (5%) — Cyclical vs defensive sectors
  * 8. Commodity Risk Appetite (10%) — Oil + copper average
  * 9. Index Correlation (8%) — Directional alignment of global indices
- * 10. Sector Breadth (7%) — How many sectors are positive vs negative
+ * 10. Sector Breadth (8%) — How many sectors are positive vs negative
  */
 
 import { Header } from "@/components/Header";
@@ -34,7 +34,7 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketHeatmap } from "@/components/MarketHeatmap";
 import { SectorPerformance } from "@/components/SectorPerformance";
-import { usePolymarketSentiment } from "@/hooks/usePolymarket";
+// Polymarket sentiment hidden
 
 const fadeIn = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
@@ -55,7 +55,6 @@ function computeSubIndicators(
   indices: any[] | undefined,
   commodities: any[] | undefined,
   sectors: any[] | undefined,
-  polymarketScore: number | undefined
 ): SubIndicator[] {
   const indicators: SubIndicator[] = [];
 
@@ -71,10 +70,10 @@ function computeSubIndicators(
     .map((c: any) => c.changePercent as number);
   const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
 
-  /* 1. Market Momentum (22%) — ✅ Real index data */
+  /* 1. Market Momentum (25%) — ✅ Real index data */
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
-    key: "momentum", weight: 0.22,
+    key: "momentum", weight: 0.25,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
       de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Basiert auf Echtzeit-Indexdaten.",
@@ -135,7 +134,7 @@ function computeSubIndicators(
     volScore = Math.min(100, Math.max(0, 100 - (spread / 5) * 100));
   }
   indicators.push({
-    key: "volatility", weight: 0.15,
+    key: "volatility", weight: 0.17,
     label: { de: "Volatilität (Proxy)", en: "Volatility (Proxy)" },
     description: {
       de: "Approximation basierend auf der Streuung (Spread) zwischen den Tagesänderungen globaler Indizes. Kein direkter VIX-Wert, aber misst Marktunsicherheit.",
@@ -159,7 +158,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven", weight: 0.06,
+    key: "safehaven", weight: 0.07,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
       de: commoditiesStale
@@ -339,7 +338,7 @@ function computeSubIndicators(
   const sectorBreadthScore = Math.min(100, Math.max(0, breadthRatio * 100));
   const hasBreadthData = totalSectors > 0;
   indicators.push({
-    key: "sector_breadth", weight: 0.07,
+    key: "sector_breadth", weight: 0.08,
     label: { de: "Sektorbreite", en: "Sector Breadth" },
     description: {
       de: hasBreadthData
@@ -360,29 +359,6 @@ function computeSubIndicators(
     score: hasBreadthData ? sectorBreadthScore : 50,
     rawValue: hasBreadthData ? `${posSectors}/${totalSectors} ↑` : "N/A",
     icon: <BarChart3 className="h-4 w-4" />,
-  });
-
-  /* 11. Prediction Market Sentiment (6%) — Polymarket data, finance & politics focus */
-  const pmScore = polymarketScore ?? 50;
-  const hasPmData = polymarketScore != null;
-  indicators.push({
-    key: "prediction_markets", weight: 0.06,
-    label: { de: "Prognosemarkt-Stimmung", en: "Prediction Market Sentiment" },
-    description: {
-      de: hasPmData
-        ? "Polaritäts-gewichtete Stimmung aus Finanz- und Weltpolitik-Prognosemärkten. Negative Events (Rezession, Krieg, Crash) werden invertiert, positive Events (Wachstum, Frieden, Zinssenkung) direkt gezählt."
-        : "Polymarket-Daten nicht verfügbar. Score auf Neutral gesetzt.",
-      en: hasPmData
-        ? "Polarity-weighted sentiment from finance and world politics prediction markets. Negative events (recession, war, crash) are inverted, positive events (growth, peace, rate cut) counted directly."
-        : "Polymarket data unavailable. Score set to neutral."
-    },
-    formula: {
-      de: hasPmData ? `Score = ${pmScore.toFixed(0)} (polaritätsbereinigt, volumengewichtet, nur Finanz- & Politik-Märkte).` : "Keine Daten.",
-      en: hasPmData ? `Score = ${pmScore.toFixed(0)} (polarity-adjusted, volume-weighted, finance & politics markets only).` : "No data."
-    },
-    score: pmScore,
-    rawValue: hasPmData ? `${pmScore.toFixed(0)}/100` : "N/A",
-    icon: <Activity className="h-4 w-4" />,
   });
 
   return indicators;
@@ -916,14 +892,14 @@ export default function MarketSentimentPage() {
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
   const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
-  const { data: polymarketScore } = usePolymarketSentiment();
+  // Polymarket sentiment hidden
 
   const gainers = glData?.gainers || [];
   const losers = glData?.losers || [];
 
   const indicators = useMemo(
-    () => computeSubIndicators(indices, commodities, sectors, polymarketScore),
-    [indices, commodities, sectors, polymarketScore]
+    () => computeSubIndicators(indices, commodities, sectors),
+    [indices, commodities, sectors]
   );
   const compositeScore = useMemo(() => computeCompositeScore(indicators), [indicators]);
 
