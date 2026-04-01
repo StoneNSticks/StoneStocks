@@ -15,7 +15,7 @@ import { LineChart, BarChart3, TrendingUp, TrendingDown, Activity, DollarSign, H
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { PolymarketMacroModule } from "@/components/PolymarketMacroModule";
+// PolymarketMacroModule hidden
 
 interface FredIndicator {
   id: string;
