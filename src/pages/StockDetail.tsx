@@ -322,11 +322,10 @@ const StockDetail = () => {
                 ══════════════════════════════════════════════════════════ */}
             <EarningsCalendar symbols={[upperSymbol]} compact />
 
-            {/* Short Interest + Earnings Whisper + Polymarket Signal */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {/* Short Interest + Earnings Whisper */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <ShortInterestCard symbol={upperSymbol} />
               <EarningsWhisper symbol={upperSymbol} />
-              <PolymarketEarningsSignal symbol={upperSymbol} companyName={companyName} />
             </div>
 
             {/* Options Chain */}

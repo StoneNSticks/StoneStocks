@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
   { to: "/macro", key: "nav.macro", fallback: "Macro", group: "main" },
   { to: "/backtest", key: "nav.backtest", fallback: "Backtest", group: "main" },
   { to: "/learn", key: "nav.learn", group: "main" },
-  { to: "/polymarket", key: "nav.polymarket", fallback: "Polymarket", group: "main" },
+  
 ];
 
 export function Header() {
