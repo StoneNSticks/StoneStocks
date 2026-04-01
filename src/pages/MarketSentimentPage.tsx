@@ -892,7 +892,7 @@ export default function MarketSentimentPage() {
   const { data: commodities } = useQuery({ queryKey: ["commodities"], queryFn: getCommodities, staleTime: 60_000 });
   const { data: sectors } = useYahooSectors();
   const { data: topCo } = useTopCompanies();
-  const { data: polymarketScore } = usePolymarketSentiment();
+  // Polymarket sentiment hidden
 
   const gainers = glData?.gainers || [];
   const losers = glData?.losers || [];
