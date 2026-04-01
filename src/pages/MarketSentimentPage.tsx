@@ -70,10 +70,10 @@ function computeSubIndicators(
     .map((c: any) => c.changePercent as number);
   const commoditiesStale = commodityChanges.length > 0 && commodityChanges.every(c => c === 0);
 
-  /* 1. Market Momentum (22%) — ✅ Real index data */
+  /* 1. Market Momentum (25%) — ✅ Real index data */
   const momentumScore = Math.min(100, Math.max(0, ((avgChange + 3) / 6) * 100));
   indicators.push({
-    key: "momentum", weight: 0.22,
+    key: "momentum", weight: 0.25,
     label: { de: "Markt-Momentum", en: "Market Momentum" },
     description: {
       de: "Durchschnittliche Tagesperformance der großen Indizes (S&P 500, Nasdaq, DAX, etc.). Basiert auf Echtzeit-Indexdaten.",
