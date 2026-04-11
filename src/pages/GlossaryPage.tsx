@@ -539,19 +539,25 @@ export default function GlossaryPage() {
           >
             {lang === "de" ? "Alle" : "All"}
           </button>
-          {letters.map(l => (
-            <button
-              key={l}
-              onClick={() => handleLetterClick(l)}
-              className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
-                letter === l 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              {l}
-            </button>
-          ))}
+          {letters.map(l => {
+            const hasTerms = glossary.some(g => g.term[0].toUpperCase() === l);
+            return (
+              <button
+                key={l}
+                onClick={() => handleLetterClick(l)}
+                className={`px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
+                  letter === l 
+                    ? "bg-primary text-primary-foreground" 
+                    : hasTerms
+                      ? "text-muted-foreground hover:bg-muted"
+                      : "text-muted-foreground/30 cursor-default"
+                }`}
+                disabled={!hasTerms}
+              >
+                {l}
+              </button>
+            );
+          })}
         </div>
 
         {/* Results count */}
