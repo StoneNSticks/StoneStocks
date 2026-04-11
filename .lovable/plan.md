@@ -1,84 +1,87 @@
-## Plan: Polymarket verstecken + Top Companies Sortierung fixen + Website-weite Verbesserungen
+## Plan: Top Companies Fix + Heatmap Expansion + Backend-Portabilität + Website-Audit
 
-### 1. Polymarket komplett verstecken
+### Kernproblem: ~40 der 130 Top Companies fehlen komplett
 
-Alle Polymarket-Inhalte werden aus der UI entfernt (Code bleibt erhalten für spätere Reaktivierung):
+Die API-Antwort enthält nur ~80 Unternehmen. Fehlend: Amazon ($2T), Tesla ($1T), Berkshire ($1T), Walmart, JPMorgan, Visa, Mastercard, Netflix, Costco, Home Depot, Disney, u.v.m.
 
-`**src/components/Header.tsx**` — Polymarket-Eintrag aus `navItems` entfernen (Zeile 44)
-
-`**src/App.tsx**` — Routes entfernen:
-
-- Zeile 52: `PredictionsPage` lazy import
-- Zeile 53: `PolymarketIntelligencePage` lazy import  
-- Zeile 110: `/predictions` Route
-- Zeile 111: `/polymarket` Route
-
-`**src/pages/StockDetail.tsx**` — PolymarketEarningsSignal entfernen:
-
-- Zeile 38: Import entfernen
-- Zeile 329: `<PolymarketEarningsSignal>` aus dem Grid entfernen
-
-`**src/pages/MacroDashboard.tsx**` — PolymarketMacroModule entfernen:
-
-- Zeile 18: Import entfernen
-- Verwendung der Komponente entfernen
+**Ursache:** 130 Unternehmen × 2 Finnhub-Calls pro Batch = 260+ API-Calls. Finnhub rate-limitet bei ~30 calls/sec (Free Tier). Die `fetchWithBackoff` retried bei 429, aber nach max 3 Retries schlägt es fehl → Polygon-Fallback schlägt oft auch fehl → `marketCap = 0` → wird von `MIN_MCAP_TOP` gefiltert.
 
 ---
 
-### 2. Top Companies nach Market Cap — Sortierung fixen
+### 1. Top Companies Datenqualität reparieren (`stock-data/index.ts`)
 
-**Problem:** Die Sortierung `b.marketCap - a.marketCap` funktioniert korrekt im Backend, aber wenn Finnhub für einige Unternehmen falsche/fehlende Market Cap Werte liefert (z.B. `0` oder unrealistisch hoch), stimmt die Reihenfolge nicht.
+**Fix-Strategie: Yahoo Finance als primäre Quelle für Market Cap**
 
-`**supabase/functions/stock-data/index.ts**` — Verbesserungen:
+- Yahoo Finance hat kein Rate-Limit für Chart-Daten und liefert zuverlässig `marketCap` im Meta-Feld
+- Neue Funktion `fetchYahooMarketCap(symbol)` die aus dem bestehenden `fetchYahooQuote` erweitert wird
+- Pro Unternehmen: Yahoo zuerst (price + marketCap), Finnhub nur noch für Logo/Sector/Profile
+- Batch-Größe für Finnhub-Profile-Calls erhöhen, aber Yahoo parallel für Preise nutzen
 
-- Bessere Market Cap Validierung: Minimum-Grenze einführen (z.B. > 1 Milliarde für Top Companies)
-- ADR-Ratio Korrektur verbessern — einige ADRs haben falsche Multiplikatoren
-- Fallback-Logik: Wenn Finnhub marketCap = 0, aber Polygon liefert einen Wert, diesen priorisieren
-- Sortierung nach dem Merge mit Stale-Daten nochmals explizit sicherstellen
-- Cache-Key auf `v9` bumpen um alten fehlerhaften Cache zu invalidieren
+**Konkrete Änderungen:**
 
-`**src/components/TopCompanies.tsx**` — Client-seitige Absicherung:
+- `fetchYahooQuote()` erweitern → auch `meta.marketCap` zurückgeben (Yahoo liefert das)
+- `fetchCompanyData()` umbauen: Yahoo für Preis/MarketCap, Finnhub nur für Logo/Sector
+- Profile-Daten (Logo, Sector) aggressiver cachen (7 Tage TTL) und separat von Preisdaten fetchen
+- Cache-Key auf `v10` bumpen
+- Logos und Sectors in separatem Cache speichern, damit sie nicht bei jedem Price-Update neu gefetcht werden müssen
 
-- Zusätzliche Sortierung `companies.sort((a,b) => b.marketCap - a.marketCap)` vor dem Rendern als Safety-Net
+### 2. Heatmap mit mehr Unternehmen (`ScreenerHeatmap.tsx`)
 
----
+- Von 50 auf 100 Unternehmen erhöhen (`.slice(0, 100)`)
+- Mehr Sektor-Filter: "Consumer Defensive", "Utilities", "Basic Materials", "Real Estate" hinzufügen
+- Sektoren aus den tatsächlichen API-Daten dynamisch extrahieren statt hardcoded
+- Minimum-Größe für Tiles anpassen damit kleine Unternehmen noch lesbar sind
 
-### 3. Website-weite Verbesserungen
+### 3. Backend-Portabilität (`stock-data/index.ts` + `stockApi.ts`)
 
-Nach Durchsicht des Codes fallen folgende Verbesserungspunkte auf:
+`**src/lib/stockApi.ts` — Konfigurierbare Base-URL:**
 
-**Glossar (`src/pages/GlossaryPage.tsx`):**
+```typescript
+const BASE = import.meta.env.VITE_STOCK_API_URL 
+  || `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/stock-data`;
+```
 
-- Buchstabenfilter auf Mobile verbessern: Buttons scrollbar machen statt Umbruch
-- Letter-Filter-Reset-Button deutlicher gestalten
+`**stock-data/index.ts` — Supabase-Abhängigkeiten isolieren:**
 
-**MarketSentimentPage — Gewichte nach Polymarket-Entfernung:**
+- Cache-Layer als austauschbare Schicht: `getCached/setCache` hinter einem Interface, das entweder Supabase-DB oder Redis/Memory nutzt
+- Secrets über `Deno.env.get()` (bereits portabel)
+- CORS-Headers bereits Standard
+- Kommentar-Block am Anfang mit Migrations-Anleitung: "Um auf Express/Cloudflare zu migrieren: 1. Cache-Layer ersetzen, 2. `Deno.serve` durch Express-Handler ersetzen, 3. Env-Vars mappen"
 
-- 10 Indikatoren, Gewichte müssen sich auf 100% summieren
-- Vorschlag: Momentum 25%, Volatility 17%, Safe Haven 8%, Regional 10%, Commodity Risk 12%, Index Correlation 10%, Sector Breadth 8%, Risk-On/Off 5%, Trend Strength 5%
+### 4. Website-weite Verbesserungen
 
-**Allgemeine UI-Verbesserungen:**
+**Footer (`Footer.tsx`):**
 
-- `RankingsPage.tsx`: TopCompanies Sortierungshinweis verbessern
-- Footer/Header: Tote Links aufräumen (keine Polymarket-Referenzen mehr)  
-  
-  
-  
-  
-und bei SEC-filings es so machen, dass es nichtmehr so abgehackt ist zum scrollen sondern der platz besser genutzt wird (es soll nicht nur der halbe platz genutzt werden und dann so ein hässliches scroll fenster
+- "Glossar" durch `t("nav.glossary")` ersetzen (i18n)
+- Impressum/Datenschutz-Links hinzufügen (placeholder)
 
----
+**SEC Filings (`SecFilings.tsx`):**
 
-### Dateien
+- Bereits gefixt (kein scroll container mehr) — verifizieren, aber nur so lange machen wie insider trades kachel daneben, danach cleaner scroll
+
+**GlossaryPage:**
+
+- Letter-Filter Desktop: `md:flex-wrap md:overflow-x-visible` — bereits implementiert, verifizieren
+- Leere Letter-Buttons dimmen wenn keine Begriffe mit diesem Buchstaben existieren aber jetzt system cleaner machen
+
+**MarketSentimentPage:**
+
+- Die Gewichts-Summe der 10 Indikatoren verifizieren (muss exakt 1.0 sein)
+- Indikatoren-Beschreibungen auf Deutsch prüfen
+
+**TopCompanies.tsx:**
+
+- Ranking-Nummer prominenter anzeigen (aktuell `{i + 1}. {c.symbol}` — besser als Badge)
+
+### 5. Dateien
 
 
-| Datei                                    | Änderung                                          |
-| ---------------------------------------- | ------------------------------------------------- |
-| `src/App.tsx`                            | Polymarket-Routes + Imports entfernen             |
-| `src/components/Header.tsx`              | Polymarket aus Navigation entfernen               |
-| `src/pages/StockDetail.tsx`              | PolymarketEarningsSignal entfernen                |
-| `src/pages/MacroDashboard.tsx`           | PolymarketMacroModule entfernen                   |
-| `src/pages/MarketSentimentPage.tsx`      | Polymarket-Indikator entfernen, Gewichte anpassen |
-| `supabase/functions/stock-data/index.ts` | Top Companies Sortierung/Validierung verbessern   |
-| `src/components/TopCompanies.tsx`        | Client-seitige Sortierungsabsicherung             |
-| `src/pages/GlossaryPage.tsx`             | Buchstabenfilter Mobile-UX verbessern             |
+| Datei                                    | Änderung                                                          |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| `supabase/functions/stock-data/index.ts` | Yahoo als primäre MarketCap-Quelle, Profile-Cache separieren, v10 |
+| `src/lib/stockApi.ts`                    | Konfigurierbare Base-URL für Portabilität                         |
+| `src/components/ScreenerHeatmap.tsx`     | 100 Unternehmen, dynamische Sektoren                              |
+| `src/components/TopCompanies.tsx`        | Ranking-Badge verbessern                                          |
+| `src/components/Footer.tsx`              | i18n für "Glossar"                                                |
+| `src/pages/GlossaryPage.tsx`             | Leere Letter dimmen                                               |
+| `src/pages/MarketSentimentPage.tsx`      | Gewichte verifizieren                                             |
