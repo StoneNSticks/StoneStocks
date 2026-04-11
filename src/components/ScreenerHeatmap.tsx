@@ -39,12 +39,24 @@ function formatMcap(n: number): string {
   return `${(n / 1e6).toFixed(0)}M`;
 }
 
-const SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Energy", "Industrials", "Communication Services"];
+const DEFAULT_SECTOR_FILTERS = ["All", "Technology", "Financials", "Healthcare", "Consumer Cyclical", "Energy", "Industrials", "Communication Services", "Consumer Defensive", "Utilities", "Basic Materials", "Real Estate"];
 
 export function ScreenerHeatmap() {
   const { lang } = useLanguage();
   const { data: companies, isLoading } = useTopCompanies();
   const [filter, setFilter] = useState("All");
+
+  // Dynamic sector extraction from actual data
+  const sectorFilters = useMemo(() => {
+    if (!companies) return DEFAULT_SECTOR_FILTERS;
+    const sectors = new Set((companies as any[]).filter((c: any) => c.sector).map((c: any) => c.sector));
+    const ordered = DEFAULT_SECTOR_FILTERS.filter(s => s === "All" || sectors.has(s));
+    // Add any sectors not in default list
+    for (const s of sectors) {
+      if (!ordered.includes(s)) ordered.push(s);
+    }
+    return ordered;
+  }, [companies]);
 
   const items = useMemo(() => {
     if (!companies) return [];
@@ -54,7 +66,7 @@ export function ScreenerHeatmap() {
     }
     return filtered
       .sort((a: any, b: any) => (b.marketCap || 0) - (a.marketCap || 0))
-      .slice(0, 50);
+      .slice(0, 100);
   }, [companies, filter]);
 
   if (isLoading || items.length === 0) return null;
@@ -71,7 +83,7 @@ export function ScreenerHeatmap() {
           <span className="text-[10px] text-muted-foreground font-mono">{items.length} {lang === "de" ? "Aktien" : "stocks"}</span>
         </div>
         <div className="flex flex-wrap gap-1 sm:ml-auto">
-          {SECTOR_FILTERS.map(s => (
+          {sectorFilters.map(s => (
             <button
               key={s}
               onClick={() => setFilter(s)}

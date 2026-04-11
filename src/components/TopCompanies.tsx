@@ -60,7 +60,10 @@ export function TopCompanies() {
               )}
               <div className="min-w-0">
                 <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">{c.name}</div>
-                <div className="text-[11px] text-muted-foreground">{i + 1}. {c.symbol}</div>
+                <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 text-primary text-[9px] font-bold">{i + 1}</span>
+                  {c.symbol}
+                </div>
               </div>
             </div>
             <div className="text-right flex-shrink-0">

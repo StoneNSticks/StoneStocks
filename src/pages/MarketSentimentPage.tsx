@@ -149,7 +149,7 @@ function computeSubIndicators(
     icon: <Waves className="h-4 w-4" />,
   });
 
-  /* 4. Safe Haven Demand (10%) — Gold vs stocks */
+  /* 4. Safe Haven Demand (6%) — Gold vs stocks */
   const gold = (commodities || []).find((c: any) => c.name === "Gold" || c.symbol === "GCUSD");
   const goldChange = gold?.changePercent ?? 0;
   const safeHavenDiff = avgChange - goldChange;
@@ -158,7 +158,7 @@ function computeSubIndicators(
     ? Math.min(100, Math.max(0, ((avgChange + 2) / 4) * 100))
     : Math.min(100, Math.max(0, ((safeHavenDiff + 3) / 6) * 100));
   indicators.push({
-    key: "safehaven", weight: 0.07,
+    key: "safehaven", weight: 0.06,
     label: { de: "Sichere-Häfen-Nachfrage", en: "Safe Haven Demand" },
     description: {
       de: commoditiesStale

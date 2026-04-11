@@ -1,9 +1,18 @@
+/**
+ * Stock API client — configurable base URL for portability.
+ * 
+ * To migrate away from Lovable/Supabase, set VITE_STOCK_API_URL to your own endpoint:
+ *   VITE_STOCK_API_URL=https://your-api.example.com/stock-data
+ * The endpoint must accept the same query parameters (action, symbol, etc.).
+ */
 const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const BASE_URL = import.meta.env.VITE_STOCK_API_URL
+  || `https://${PROJECT_ID}.supabase.co/functions/v1/stock-data`;
 
 async function callStockApi(params: Record<string, string>) {
   const searchParams = new URLSearchParams(params);
-  const url = `https://${PROJECT_ID}.supabase.co/functions/v1/stock-data?${searchParams.toString()}`;
+  const url = `${BASE_URL}?${searchParams.toString()}`;
   const res = await fetch(url, {
     headers: {
       "apikey": ANON_KEY,
