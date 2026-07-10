@@ -1428,25 +1428,28 @@ const TOP_COMPANIES = [
   { symbol: "CCI", name: "Crown Castle" }, { symbol: "EQIX", name: "Equinix" },
 ];
 
-async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v10";
-  const cached = await getCached(cacheKey);
-  if (cached) return cached;
+// Symbols where Yahoo returns bogus/parent-listing marketCap (ADRs of foreign issuers).
+// For these, only Yahoo's PRICE is trusted; marketCap must come from Finnhub.
+const ADR_MCAP_UNSAFE = new Set(["TSM", "BABA", "PDD", "NIO", "JD", "BIDU", "LI", "XPEV", "BILI", "IQ", "TME", "WB", "YUMC", "HTHT", "TAL", "EDU", "FUTU", "TIGR", "DIDI", "SE", "GRAB", "MELI", "NU", "STNE", "PAGS", "TCEHY", "NSRGY", "RHHBY", "SNY", "SAP", "ASML"]);
 
-  // Off-hours: prefer stale cache from last trading session
+async function handleTopCompanies() {
+  const cacheKey = "market:top_companies:v11";
+  const MAX_REASONABLE_MCAP = 5e12;
+  const isSaneMcap = (m: number) => typeof m === "number" && m > 0 && m < MAX_REASONABLE_MCAP;
+  const sanitizeList = (arr: any[]) => Array.isArray(arr) ? arr.filter((q: any) => q && isSaneMcap(q.marketCap)) : [];
+
+  const cached = await getCached(cacheKey);
+  if (cached) return sanitizeList(cached as any[]);
+
+  // Off-hours: prefer stale cache from last trading session (also sanitized)
   if (!isUSMarketOpen()) {
-    const stale = await getStaleCached(cacheKey);
-    if (stale) {
+    const stale = sanitizeList((await getStaleCached(cacheKey)) as any[]);
+    if (stale.length > 0) {
       await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.top_companies));
       return stale;
     }
-    // Also check old v9 cache as fallback
-    const staleV9 = await getStaleCached("market:top_companies:v9");
-    if (staleV9) {
-      await setCache(cacheKey, staleV9, "stale-offhours-v9", getEffectiveTTL(TTL.top_companies));
-      return staleV9;
-    }
   }
+
 
   // ── Profile cache: logos + sectors cached separately for 7 days ──
   const profileCacheKey = "market:top_profiles:v2";
