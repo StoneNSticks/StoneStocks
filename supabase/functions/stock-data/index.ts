@@ -1561,7 +1561,7 @@ async function handleTopCompanies() {
       ]);
       const ticker = tickerData?.results;
       const snap = snapshotData?.ticker;
-      if (snap?.day?.c > 0 && ticker?.market_cap > 0) {
+      if (snap?.day?.c > 0 && isSaneMcap(ticker?.market_cap)) {
         return {
           ...baseResult, price: snap.day.c, change: snap.todaysChange || 0,
           changePercent: snap.todaysChangePerc || 0, marketCap: ticker.market_cap,
