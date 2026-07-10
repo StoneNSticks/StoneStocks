@@ -65,4 +65,4 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open 
+Open vercel.com and everything else will be self-explanatory.
