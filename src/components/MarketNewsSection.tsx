@@ -68,7 +68,13 @@ export function MarketNewsSection({ limit = 8 }: { limit?: number }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
                 {item.related && (
-                  <Link to={`/stock/${item.related}`} onClick={(e) => e.stopPropagation()} className="text-[11px] font-bold text-primary hover:underline">{item.related}</Link>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/stock/${item.related}`); }}
+                    className="text-[11px] font-bold text-primary hover:underline"
+                  >
+                    {item.related}
+                  </button>
                 )}
                 <span className="text-[11px] text-muted-foreground">{item.source}</span>
                 <span className="text-[11px] text-muted-foreground">{item.datetime ? formatDate(new Date(item.datetime * 1000).toISOString()) : ""}</span>
