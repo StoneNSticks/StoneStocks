@@ -3,7 +3,7 @@ import { formatDate } from "@/lib/formatters";
 import { ExternalLink, Newspaper } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "@/components/ErrorState";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useT } from "@/contexts/LanguageContext";
 
 export function MarketNewsSection({ limit = 8 }: { limit?: number }) {
