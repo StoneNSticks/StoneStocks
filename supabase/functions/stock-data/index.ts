@@ -1428,25 +1428,28 @@ const TOP_COMPANIES = [
   { symbol: "CCI", name: "Crown Castle" }, { symbol: "EQIX", name: "Equinix" },
 ];
 
-async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v10";
-  const cached = await getCached(cacheKey);
-  if (cached) return cached;
+// Symbols where Yahoo returns bogus/parent-listing marketCap (ADRs of foreign issuers).
+// For these, only Yahoo's PRICE is trusted; marketCap must come from Finnhub.
+const ADR_MCAP_UNSAFE = new Set(["TSM", "BABA", "PDD", "NIO", "JD", "BIDU", "LI", "XPEV", "BILI", "IQ", "TME", "WB", "YUMC", "HTHT", "TAL", "EDU", "FUTU", "TIGR", "DIDI", "SE", "GRAB", "MELI", "NU", "STNE", "PAGS", "TCEHY", "NSRGY", "RHHBY", "SNY", "SAP", "ASML"]);
 
-  // Off-hours: prefer stale cache from last trading session
+async function handleTopCompanies() {
+  const cacheKey = "market:top_companies:v11";
+  const MAX_REASONABLE_MCAP = 5e12;
+  const isSaneMcap = (m: number) => typeof m === "number" && m > 0 && m < MAX_REASONABLE_MCAP;
+  const sanitizeList = (arr: any[]) => Array.isArray(arr) ? arr.filter((q: any) => q && isSaneMcap(q.marketCap)) : [];
+
+  const cached = await getCached(cacheKey);
+  if (cached) return sanitizeList(cached as any[]);
+
+  // Off-hours: prefer stale cache from last trading session (also sanitized)
   if (!isUSMarketOpen()) {
-    const stale = await getStaleCached(cacheKey);
-    if (stale) {
+    const stale = sanitizeList((await getStaleCached(cacheKey)) as any[]);
+    if (stale.length > 0) {
       await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.top_companies));
       return stale;
     }
-    // Also check old v9 cache as fallback
-    const staleV9 = await getStaleCached("market:top_companies:v9");
-    if (staleV9) {
-      await setCache(cacheKey, staleV9, "stale-offhours-v9", getEffectiveTTL(TTL.top_companies));
-      return staleV9;
-    }
   }
+
 
   // ── Profile cache: logos + sectors cached separately for 7 days ──
   const profileCacheKey = "market:top_profiles:v2";
@@ -1458,7 +1461,7 @@ async function handleTopCompanies() {
 
   const BATCH_SIZE = 15;
   const allQuotes: any[] = [];
-  const MAX_REASONABLE_MCAP = 5e12;
+
 
   // ── Yahoo Finance as PRIMARY source for price + marketCap ──
   async function fetchYahooQuoteData(symbol: string): Promise<{ price: number; change: number; changePercent: number; marketCap: number } | null> {
@@ -1510,15 +1513,18 @@ async function handleTopCompanies() {
   async function fetchCompanyData(c: { symbol: string; name: string }): Promise<any> {
     const baseResult = { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 };
 
-    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap)
+    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap for US-listed)
+    // For flagged foreign ADRs, ignore Yahoo's marketCap (it returns parent-listing cap in local currency).
     const yahoo = await fetchYahooQuoteData(c.symbol);
-    if (yahoo && yahoo.price > 0 && yahoo.marketCap > 0 && yahoo.marketCap < MAX_REASONABLE_MCAP) {
+    const yahooMcapTrusted = yahoo && !ADR_MCAP_UNSAFE.has(c.symbol) && isSaneMcap(yahoo.marketCap);
+    if (yahoo && yahoo.price > 0 && yahooMcapTrusted) {
       const profile = await fetchProfile(c.symbol);
       return {
         ...baseResult, price: yahoo.price, change: yahoo.change, changePercent: yahoo.changePercent,
         marketCap: yahoo.marketCap, logo: profile.logo, sector: profile.sector,
       };
     }
+
 
     // Attempt 2: Finnhub quote + profile
     try {
@@ -1528,7 +1534,7 @@ async function handleTopCompanies() {
         fetchFinnhub("stock/profile2", { symbol: finnhubSym }),
       ]);
       const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
-      if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP && q.c > 0) {
+      if (finnhubMarketCap > 0 && isSaneMcap(finnhubMarketCap) && q.c > 0) {
         profileMap.set(c.symbol, { logo: profile?.logo || "", sector: profile?.finnhubIndustry || "" });
         return {
           ...baseResult, price: q.c, change: q.d || 0, changePercent: q.dp || 0,
@@ -1555,7 +1561,7 @@ async function handleTopCompanies() {
       ]);
       const ticker = tickerData?.results;
       const snap = snapshotData?.ticker;
-      if (snap?.day?.c > 0 && ticker?.market_cap > 0) {
+      if (snap?.day?.c > 0 && isSaneMcap(ticker?.market_cap)) {
         return {
           ...baseResult, price: snap.day.c, change: snap.todaysChange || 0,
           changePercent: snap.todaysChangePerc || 0, marketCap: ticker.market_cap,
@@ -1589,19 +1595,19 @@ async function handleTopCompanies() {
   for (const [k, v] of profileMap) profileObj[k] = v;
   await setCache(profileCacheKey, profileObj, "finnhub", 60 * 24 * 7);
 
-  // Merge stale cached data for any companies that failed
-  const staleData = (await getStaleCached(cacheKey) || await getStaleCached("market:top_companies:v9")) as any[] | null;
+  // Merge stale cached data for any companies that failed — but SANITIZE first
+  // to drop poisoned entries (e.g. old TSM 63T marketCap from Yahoo ADR bug).
+  const rawStale = (await getStaleCached(cacheKey)) as any[] | null;
+  const staleData: any[] = sanitizeList(Array.isArray(rawStale) ? rawStale : []);
   const staleMap = new Map<string, any>();
-  if (Array.isArray(staleData)) {
-    for (const item of staleData) staleMap.set(item.symbol, item);
-  }
+  for (const item of staleData) staleMap.set(item.symbol, item);
 
-  // Fill missing data from stale cache
+  // Fill missing data from stale cache (only sane values pass through)
   for (let i = 0; i < allQuotes.length; i++) {
     const q = allQuotes[i];
     if (q.marketCap === 0 || q.price === 0) {
       const stale = staleMap.get(q.symbol);
-      if (stale && stale.marketCap > 0) {
+      if (stale && isSaneMcap(stale.marketCap)) {
         allQuotes[i] = { ...stale, stale: true };
         if (q.price > 0) {
           allQuotes[i].price = q.price;
@@ -1614,8 +1620,9 @@ async function handleTopCompanies() {
   }
 
   const MIN_MCAP_TOP = 1e9;
-  const validQuotes = allQuotes.filter((q: any) => q.marketCap >= MIN_MCAP_TOP);
+  const validQuotes = allQuotes.filter((q: any) => q.marketCap >= MIN_MCAP_TOP && isSaneMcap(q.marketCap));
   validQuotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
+
 
   // If we got fewer than 80%, merge with stale
   if (validQuotes.length < TOP_COMPANIES.length * 0.8 && staleData && Array.isArray(staleData) && staleData.length > validQuotes.length) {
