@@ -9,6 +9,7 @@ import { useT } from "@/contexts/LanguageContext";
 export function MarketNewsSection({ limit = 8 }: { limit?: number }) {
   const { data: news, isLoading, error, refetch } = useMarketNews();
   const t = useT();
+  const navigate = useNavigate();
 
   if (error && !news) {
     return (
