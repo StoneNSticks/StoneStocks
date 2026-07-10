@@ -1595,19 +1595,19 @@ async function handleTopCompanies() {
   for (const [k, v] of profileMap) profileObj[k] = v;
   await setCache(profileCacheKey, profileObj, "finnhub", 60 * 24 * 7);
 
-  // Merge stale cached data for any companies that failed
-  const staleData = (await getStaleCached(cacheKey) || await getStaleCached("market:top_companies:v9")) as any[] | null;
+  // Merge stale cached data for any companies that failed — but SANITIZE first
+  // to drop poisoned entries (e.g. old TSM 63T marketCap from Yahoo ADR bug).
+  const rawStale = (await getStaleCached(cacheKey)) as any[] | null;
+  const staleData: any[] = sanitizeList(Array.isArray(rawStale) ? rawStale : []);
   const staleMap = new Map<string, any>();
-  if (Array.isArray(staleData)) {
-    for (const item of staleData) staleMap.set(item.symbol, item);
-  }
+  for (const item of staleData) staleMap.set(item.symbol, item);
 
-  // Fill missing data from stale cache
+  // Fill missing data from stale cache (only sane values pass through)
   for (let i = 0; i < allQuotes.length; i++) {
     const q = allQuotes[i];
     if (q.marketCap === 0 || q.price === 0) {
       const stale = staleMap.get(q.symbol);
-      if (stale && stale.marketCap > 0) {
+      if (stale && isSaneMcap(stale.marketCap)) {
         allQuotes[i] = { ...stale, stale: true };
         if (q.price > 0) {
           allQuotes[i].price = q.price;
@@ -1620,8 +1620,9 @@ async function handleTopCompanies() {
   }
 
   const MIN_MCAP_TOP = 1e9;
-  const validQuotes = allQuotes.filter((q: any) => q.marketCap >= MIN_MCAP_TOP);
+  const validQuotes = allQuotes.filter((q: any) => q.marketCap >= MIN_MCAP_TOP && isSaneMcap(q.marketCap));
   validQuotes.sort((a: any, b: any) => b.marketCap - a.marketCap);
+
 
   // If we got fewer than 80%, merge with stale
   if (validQuotes.length < TOP_COMPANIES.length * 0.8 && staleData && Array.isArray(staleData) && staleData.length > validQuotes.length) {
