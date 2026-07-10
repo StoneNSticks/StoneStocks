@@ -1534,7 +1534,7 @@ async function handleTopCompanies() {
         fetchFinnhub("stock/profile2", { symbol: finnhubSym }),
       ]);
       const finnhubMarketCap = (profile?.marketCapitalization || 0) * 1e6;
-      if (finnhubMarketCap > 0 && finnhubMarketCap < MAX_REASONABLE_MCAP && q.c > 0) {
+      if (finnhubMarketCap > 0 && isSaneMcap(finnhubMarketCap) && q.c > 0) {
         profileMap.set(c.symbol, { logo: profile?.logo || "", sector: profile?.finnhubIndustry || "" });
         return {
           ...baseResult, price: q.c, change: q.d || 0, changePercent: q.dp || 0,
