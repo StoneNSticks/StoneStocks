@@ -1461,7 +1461,7 @@ async function handleTopCompanies() {
 
   const BATCH_SIZE = 15;
   const allQuotes: any[] = [];
-  const MAX_REASONABLE_MCAP = 5e12;
+
 
   // ── Yahoo Finance as PRIMARY source for price + marketCap ──
   async function fetchYahooQuoteData(symbol: string): Promise<{ price: number; change: number; changePercent: number; marketCap: number } | null> {
