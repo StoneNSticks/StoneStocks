@@ -1513,15 +1513,18 @@ async function handleTopCompanies() {
   async function fetchCompanyData(c: { symbol: string; name: string }): Promise<any> {
     const baseResult = { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 };
 
-    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap)
+    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap for US-listed)
+    // For flagged foreign ADRs, ignore Yahoo's marketCap (it returns parent-listing cap in local currency).
     const yahoo = await fetchYahooQuoteData(c.symbol);
-    if (yahoo && yahoo.price > 0 && yahoo.marketCap > 0 && yahoo.marketCap < MAX_REASONABLE_MCAP) {
+    const yahooMcapTrusted = yahoo && !ADR_MCAP_UNSAFE.has(c.symbol) && isSaneMcap(yahoo.marketCap);
+    if (yahoo && yahoo.price > 0 && yahooMcapTrusted) {
       const profile = await fetchProfile(c.symbol);
       return {
         ...baseResult, price: yahoo.price, change: yahoo.change, changePercent: yahoo.changePercent,
         marketCap: yahoo.marketCap, logo: profile.logo, sector: profile.sector,
       };
     }
+
 
     // Attempt 2: Finnhub quote + profile
     try {
