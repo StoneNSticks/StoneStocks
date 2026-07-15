@@ -72,10 +72,10 @@ const App = () => (
       <LanguageProvider>
       <CurrencyProvider>
         <TooltipProvider>
-          <ErrorBoundary>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -113,17 +113,18 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-              <OnboardingModal />
-              <EarningsNotificationProvider>
-                <BottomNav />
-              </EarningsNotificationProvider>
-              <BackToTop />
-              <InstallPrompt />
-              <AlertNotifications />
-              <KeyboardShortcutsModal />
-              
-            </BrowserRouter>
-          </ErrorBoundary>
+            </ErrorBoundary>
+            <OnboardingModal />
+            <EarningsNotificationProvider>
+              <BottomNav />
+            </EarningsNotificationProvider>
+            <BackToTop />
+            <InstallPrompt />
+            <AlertNotifications />
+            <KeyboardShortcutsModal />
+            
+          </BrowserRouter>
+
         </TooltipProvider>
       </CurrencyProvider>
       </LanguageProvider>
