@@ -67,7 +67,7 @@ export function MarketClock() {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const localTime = new Date(now).toLocaleTimeString(navigator.language || "en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const localTime = (() => { try { return new Date(now).toLocaleTimeString(safeLocale(), { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }); } catch { return new Date(now).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }); } })();
   const anyOpen = MARKETS.some(isMarketOpen);
 
   return (
