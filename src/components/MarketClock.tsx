@@ -41,9 +41,17 @@ function timeUntil(m: MarketInfo): string {
   return h > 0 ? `${h}h ${mm}m` : `${mm}m`;
 }
 
-function formatLocalTime(tz: string): string {
-  return new Date().toLocaleTimeString(navigator.language || "en-US", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false });
+function safeLocale(): string {
+  const l = typeof navigator !== "undefined" ? navigator.language : "";
+  return l && /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/.test(l) ? l : "en-US";
 }
+
+function formatLocalTime(tz: string): string {
+  try {
+    return new Date().toLocaleTimeString(safeLocale(), { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false });
+  } catch { return new Date().toLocaleTimeString("en-US", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }); }
+}
+
 
 export function MarketClock() {
   const [now, setNow] = useState(() => Date.now());
@@ -59,7 +67,7 @@ export function MarketClock() {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const localTime = new Date(now).toLocaleTimeString(navigator.language || "en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const localTime = (() => { try { return new Date(now).toLocaleTimeString(safeLocale(), { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }); } catch { return new Date(now).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }); } })();
   const anyOpen = MARKETS.some(isMarketOpen);
 
   return (
