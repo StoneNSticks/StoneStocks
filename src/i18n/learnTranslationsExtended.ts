@@ -742,4 +742,63 @@ export const learnTranslationsExtended: Record<string, Record<Language, string>>
     "Eine Dividendenstrategie für den Ruhestand: Aufbau eines Portfolios aus <strong>Dividenden-Aristokraten</strong> mit 3-4% Rendite. Ziel: Die Dividenden decken die Lebenshaltungskosten, das Kapital wird nie angetastet. Beispiel: Bei 3.000€/Monat Bedarf brauchst du ca. 1.000.000€ bei 3,6% Rendite. Vorteile: <strong>Kein Kapitalverzehr</strong>, wachsende Einkommen durch Dividendensteigerungen, psychologisch einfacher. Nachteil: Konzentration auf dividendenstarke Sektoren (Versorger, Pharma, Basiskonsumgüter) reduziert Diversifikation.",
     "A dividend strategy for retirement: Build a portfolio of <strong>Dividend Aristocrats</strong> with 3-4% yield. Goal: Dividends cover living expenses, capital is never touched. Example: With $3,000/month needs, you need about $1,000,000 at 3.6% yield. Advantages: <strong>No capital depletion</strong>, growing income through dividend increases, psychologically easier. Disadvantage: Concentration in dividend-heavy sectors (utilities, pharma, consumer staples) reduces diversification."
   ),
+
+  // ══════════════════════════════════════════════════════════════
+  // SECTION 13 (Derivatives) — additional keys
+  // ══════════════════════════════════════════════════════════════
+  "learn.optionsStrategies": t("Beliebte Optionsstrategien:", "Popular option strategies:"),
+  "learn.coveredCall": t("Covered Call", "Covered Call"),
+  "learn.coveredCallDesc": t(
+    "Du besitzt 100 Aktien und verkaufst darauf einen Call. Du erhältst sofort die Prämie. Wird der Strike überschritten, musst du die Aktien zum Strike verkaufen. Gut für Seitwärtsmärkte und Zusatzeinkommen.",
+    "You own 100 shares and sell a call on them. You collect the premium immediately. If the strike is breached, you must sell the shares at the strike. Good for sideways markets and extra income."
+  ),
+  "learn.protectivePut": t("Protective Put", "Protective Put"),
+  "learn.protectivePutDesc": t(
+    "Du besitzt Aktien und kaufst zusätzlich einen Put als Versicherung. Fällt der Kurs stark, begrenzt der Put den Verlust. Kostet Prämie, schützt aber das Depot in Krisen.",
+    "You own shares and buy a put as insurance. If the price falls sharply, the put caps the loss. Costs premium but protects the portfolio in downturns."
+  ),
+  "learn.straddle": t("Straddle", "Straddle"),
+  "learn.straddleDesc": t(
+    "Kauf eines Calls und eines Puts mit gleichem Strike und Verfall. Profitiert von starken Bewegungen in beide Richtungen (z.B. vor Earnings). Verlust maximal die gezahlte Doppel-Prämie, falls der Kurs stehen bleibt.",
+    "Buy a call and a put with the same strike and expiry. Profits from big moves in either direction (e.g., before earnings). Maximum loss is the combined premium paid if the price stays flat."
+  ),
+  "learn.ironCondor": t("Iron Condor", "Iron Condor"),
+  "learn.ironCondorDesc": t(
+    "Verkauf eines Put-Spreads und eines Call-Spreads außerhalb des aktuellen Kurses. Profitiert, wenn der Kurs in einer Range bleibt. Begrenzter Gewinn (Prämie), begrenzter Verlust (Spread-Breite minus Prämie).",
+    "Sell a put spread and a call spread outside the current price. Profits if the price stays within a range. Limited profit (premium), limited loss (spread width minus premium)."
+  ),
+
+  "learn.futuresP2": t(
+    "Futures werden täglich abgerechnet (Mark-to-Market): Gewinne und Verluste werden dem Margin-Konto sofort gutgeschrieben oder belastet. Rutscht die Margin unter das Wartungslevel, folgt ein <strong>Margin Call</strong>. Wegen des hohen Hebels sind schnelle, große Verluste möglich.",
+    "Futures are settled daily (mark-to-market): gains and losses hit the margin account immediately. If margin drops below the maintenance level, a <strong>margin call</strong> follows. Because of the high leverage, fast and large losses are possible."
+  ),
+
+  "learn.cfdsTitle": t("CFDs (Contracts for Difference)", "CFDs (Contracts for Difference)"),
+  "learn.cfdsP1": t(
+    "Ein <strong>CFD</strong> bildet die Kursbewegung eines Basiswerts 1:1 ab, ohne dass du ihn besitzt. Du handelst nur die Differenz zwischen Einstiegs- und Ausstiegskurs. Über einen Hebel (oft 5x bis 30x) kannst du große Positionen mit wenig Kapital eingehen.",
+    "A <strong>CFD</strong> mirrors the price movement of an underlying 1:1 without you owning it. You trade only the difference between entry and exit price. Leverage (often 5x–30x) lets you take large positions with little capital."
+  ),
+  "learn.cfdsP2": t(
+    "CFDs sind außerbörsliche Produkte, du handelst direkt gegen den Broker. Dadurch entstehen <strong>Emittenten- und Interessenkonflikte</strong>. Zusätzlich fallen Übernacht-Finanzierungskosten an. Laut ESMA-Statistik verlieren rund 70-80% der Privatanleger mit CFDs Geld.",
+    "CFDs are over-the-counter products, you trade directly against the broker. This creates <strong>issuer and conflict-of-interest risk</strong>. Overnight financing costs apply too. Per ESMA data, about 70–80% of retail traders lose money with CFDs."
+  ),
+  "learn.cfdsWarning": t(
+    "CFDs eignen sich nur für erfahrene Trader mit striktem Risikomanagement. Für den Vermögensaufbau sind sie ungeeignet.",
+    "CFDs suit only experienced traders with strict risk management. They are not suitable for long-term wealth building."
+  ),
+
+  "learn.warrantsP2": t(
+    "Wichtige Kennzahlen: <strong>Bezugsverhältnis</strong> (wie viele Optionsscheine für 1 Basiswert), <strong>Hebel</strong> (prozentuale Bewegung des Scheins pro 1% Bewegung des Basiswerts), <strong>Aufgeld</strong> (Prämie über innerem Wert) und <strong>Omega</strong> (effektiver Hebel). Bei Knock-Out-Produkten führt das Erreichen der Barriere zum Totalverlust.",
+    "Key metrics: <strong>Ratio</strong> (how many warrants per 1 underlying), <strong>leverage</strong> (% move of the warrant per 1% move of the underlying), <strong>premium</strong> (over intrinsic value) and <strong>omega</strong> (effective leverage). For knock-out products, hitting the barrier means a total loss."
+  ),
+
+  "learn.certificatesTitle": t("Zertifikate", "Certificates"),
+  "learn.certificatesP1": t(
+    "<strong>Zertifikate</strong> sind Schuldverschreibungen einer Bank mit einer festgelegten Auszahlungsstruktur. Typen: <strong>Discount-Zertifikate</strong> (Kauf mit Abschlag, aber Gewinn gedeckelt), <strong>Bonus-Zertifikate</strong> (Bonus, solange eine Barriere nicht berührt wird), <strong>Index-Zertifikate</strong> (bilden einen Index 1:1 ab, ähnlich einem ETF).",
+    "<strong>Certificates</strong> are bank-issued debt securities with a predefined payout structure. Types: <strong>discount certificates</strong> (bought at a discount, but capped upside), <strong>bonus certificates</strong> (bonus payout as long as a barrier is not touched), <strong>index certificates</strong> (track an index 1:1, similar to an ETF)."
+  ),
+  "learn.certificatesP2": t(
+    "Wichtig: Zertifikate tragen immer ein <strong>Emittentenrisiko</strong>. Geht die emittierende Bank pleite (z.B. Lehman Brothers 2008), sind die Papiere weitgehend wertlos, auch wenn der Basiswert stabil ist. ETFs sind hier sicherer, da sie Sondervermögen darstellen.",
+    "Important: certificates always carry <strong>issuer risk</strong>. If the issuing bank fails (e.g., Lehman Brothers in 2008), the papers are largely worthless even if the underlying is stable. ETFs are safer here because they are ring-fenced fund assets."
+  ),
 };
