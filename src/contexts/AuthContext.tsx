@@ -37,17 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (identifier: string, password: string) => {
     let email = identifier;
-    // If no @ sign, treat as username and look up email
+    // If no @ sign, treat as username and resolve email via edge function
+    // (profiles table is no longer publicly readable).
     if (!identifier.includes("@")) {
-      const { data, error: lookupError } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("username", identifier.toLowerCase())
-        .single();
+      const { data, error: lookupError } = await supabase.functions.invoke("resolve-username", {
+        body: { username: identifier },
+      });
       if (lookupError || !data?.email) {
         return { error: new Error("Username not found.") };
       }
-      email = data.email;
+      email = data.email as string;
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
