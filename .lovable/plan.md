@@ -1,60 +1,41 @@
-## Plan: StoneStocks als Lovable Skill verfügbar machen
+# Health Check: Fixes and Improvements
 
-### Ziel
+A pass over the whole app looking at security, cost/abuse risk, dead code, and UI quality. Findings below are grouped by priority; each item is small and independent, so you can drop any of them.
 
-Ein Projekt-spezifischen Skill-Entwurf erstellen, der das Finanz-Domain-Wissen aus StoneStocks kapselt, damit der Skill im Lovable-Composer dieses Projekts unter „Skills" auftaucht und zukünftige Agenten ihn nutzen können.
+## 1. Backend abuse and cost protection (highest value)
 
-### Wichtige Klarstellung
+The AI-backed backend functions (`ai-recommendations`, `ai-stock-summary`, `news-sentiment`, `stock-chat`) are reachable without any authentication and have no per-user throttling. Anyone who finds the endpoint can burn AI credits and third-party API quota.
 
-Skills leben in Lovable und erscheinen im Composer / Skill-Picker des Projekts. Sie können nicht auf externen Plattformen wie LinkedIn angezeigt werden. Sollte das Ziel tatsächlich LinkedIn-Integration sein, wäre das ein separater Connector-Task (kein Skill).
+Planned:
+- Require a signed-in user for the AI functions (read the caller's token, reject anonymous calls). `stock-data` stays public since the homepage needs it before login.
+- Add a lightweight per-user/per-IP rate limit (in-memory sliding window per function instance) with a clear 429 response, and surface a friendly message in the UI instead of a generic error.
+- Restrict CORS from `*` to the app's own origins.
 
-### Ausgangslage
+## 2. Profile privacy
 
-- Projekt: StoneStocks (Vite/React SPA, Lovable Cloud/Supabase).
-- Projekt-Memory enthält bereits umfangreiche Regeln zu Design, Architektur, Markt-Daten, Fear & Greed, Heatmap, Aktien-Kuratierung, Währungskonvertierung etc.
-- Skills werden in `.agents/skills/{skill-name}/` als Draft angelegt und mit `skills--apply_draft` aktiviert.
+The remaining scanner warning: any signed-in user can read every row of `profiles`, including the `email` column. Planned fix: keep row access but stop exposing emails to other users — a public-safe view/policy that returns only username, display name, and avatar to other users, while a user can still read their own full row. Login by username keeps working through the existing lookup function.
 
-### Schritte
+## 3. Dead code removal
 
-1. **Skill-Prinzipien und Projekt-Memory lesen**
-   - `knowledge://skill/skill-creator/references/principles.md`
-   - `knowledge://skill/skill-creator/references/reference-skills.md`
-   - `mem://index.md` und relevante Memory-Dateien zu Finanz-Wissen.
+These pages are no longer routed but still ship in the repo and confuse future work: `PolymarketIntelligencePage`, `PredictionsPage`, `CryptoPage`, `ForexPage`, `BondsPage`, `CustomDashboard`, `ScreenerPage`, `FloatingChat`, plus `usePolymarket` / `polymarketApi` / the `polymarket-proxy` function. Planned: delete them (Polymarket stays gone per your earlier decision). If you would rather keep them parked, say so and I will skip this section.
 
-2. **Finanz-Domain-Wissen aus dem Projekt extrahieren**
-   - Fear & Greed 10-Indikatoren-Modell und Gewichtung.
-   - Aktien-Kuratierung: ETFs, Hebelprodukte, Zertifikate ausschließen.
-   - Heatmap-Regeln: ~130 Unternehmen, Sektoren, statisches Grid.
-   - Market-Data-Flow: Yahoo Finance (Kurse), Finnhub (Meta), 12h Stale-Cache.
-   - Währungskonvertierung USD/EUR globaler Toggle.
-   - Learn/Glossary: 35 Kapitel, fuzzy Suche, Synonyme.
+## 4. UI and layout quality
 
-3. **Skill-Draft anlegen**
-   - Verzeichnis: `.agents/skills/stonestocks-financial-domain/`
-   - `SKILL.md` mit:
-     - Frontmatter: `name`, `description`, `type: reference`
-     - Kurzbeschreibung, wann die Skill greift.
-     - Kernregeln aus Schritt 2.
-     - Verweis auf `mem://index.md` für Details.
-   - Optional `references/` mit ergänzenden Text-Dateien, falls die Regeln zu umfangreich für eine Datei werden.
+- Company logos across watchlist, portfolio, screener, news, and stock detail have no reserved dimensions, so rows shift as logos load. Add explicit sizing/aspect ratio and a consistent fallback placeholder instead of `display:none` on error.
+- Unify the image error handling into one small `CompanyLogo` component so every list looks the same.
+- Accessibility pass on the most-used screens: labels on icon-only buttons, focus-visible rings, and heading order.
 
-4. **Skill aktivieren**
-   - `skills--apply_draft` mit Pfad `.agents/skills/stonestocks-financial-domain` aufrufen.
-   - Nach erfolgreicher Aktivierung ist der Skill im Projekt-Composer verfügbar.
+## 5. Maintainability
 
-5. **Validierung**
-   - Prüfen, ob `SKILL.md` syntaktisch korrekt ist und die Frontmatter den Vorgaben entspricht.
-   - Sicherstellen, dass keine sensitiven Daten (API-Keys, Service-Role-Key) im Skill-Text landen.
+`LearnPage.tsx` (80K) and `CalculatorPage.tsx` (70K) are single files holding all sections. Planned: split the lesson sections and calculator tabs into per-section modules under `src/components/learn/` and `src/components/calculators/`, with no behaviour change. This also removes the recurring class of numbering/translation bugs by keeping each lesson self-contained.
 
-### Dateien
+## Technical notes
 
-| Datei | Zweck |
-| --- | --- |
-| `.agents/skills/stonestocks-financial-domain/SKILL.md` | Hauptskill-Datei mit Frontmatter und Domain-Wissen |
-| `.agents/skills/stonestocks-financial-domain/references/*.md` | Optionale vertiefende Referenzen |
+- Auth check pattern in functions: read `Authorization`, call `auth.getUser()` with the caller token, 401 on failure; keep `verify_jwt = false` only where the function does its own check or is intentionally public.
+- Rate limiting: `Map<key, timestamps[]>` per isolate, 429 with `Retry-After`; not perfect across isolates but stops casual abuse.
+- Profiles: replace the broad authenticated SELECT policy with an owner-only policy plus a restricted public-facing view exposing non-email columns, and grant on the view.
+- Dead-code removal touches only files with no inbound imports; verified against current routes in `src/App.tsx`.
 
-### Was nicht passiert
+## Suggested order
 
-- Keine funktionale Code-Änderung an der App.
-- Keine API-Keys oder Secrets werden im Skill gespeichert.
-- Keine LinkedIn-Veröffentlichung (das ist kein Skill-Feature).
+1 → 2 → 3 → 4 → 5. Sections 1 and 2 are the ones that actually matter for a public repo and live app.
