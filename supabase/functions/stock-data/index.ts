@@ -1247,8 +1247,8 @@ async function handleGainersLosers() {
 
     // Fallback: grouped daily bars for last trading date
     const lastDate = getLastTradingDate();
-    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" });
-    if (!data?.results?.length) return { gainers: [], losers: [], date: lastDate };
+    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" }).catch(() => null);
+    if (!data?.results?.length) return await yahooGainersLosers(cacheKey, lastDate);
 
     const stocks = data.results
       .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0 && isCommonStock(s.T))
