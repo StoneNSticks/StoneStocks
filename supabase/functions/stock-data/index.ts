@@ -197,6 +197,18 @@ async function fetchYahooChart(symbol: string, interval = "1d", range = "1y"): P
   return res.json();
 }
 
+// Yahoo Finance predefined screener (day gainers/losers) - free, no API key needed.
+// Used as fallback when the Polygon/Massive key is rejected (403) or lacks entitlements.
+async function fetchYahooScreener(scrId: string, count = 25): Promise<any[]> {
+  const url = `https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=${scrId}&count=${count}`;
+  const res = await fetchWithBackoff(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+  });
+  if (!res.ok) throw new Error(`Yahoo Screener error: ${res.status}`);
+  const data = await res.json();
+  return data?.finance?.result?.[0]?.quotes || [];
+}
+
 async function fetchEulerpool(endpoint: string) {
   const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
   const res = await fetch(url);
