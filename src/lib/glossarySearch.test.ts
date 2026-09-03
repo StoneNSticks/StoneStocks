@@ -49,7 +49,8 @@ describe("searchGlossary", () => {
     expect(searchGlossary(index, "", { lang: "de", category: "products" })).toHaveLength(2);
   });
   it("combines search and category filter", () => {
-    const r = searchGlossary(index, "wertpapier", { lang: "de", category: "analysis" });
+    const r = searchGlossary(index, "anleihe", { lang: "de", category: "analysis" });
     expect(r).toHaveLength(0);
   });
+
 });
