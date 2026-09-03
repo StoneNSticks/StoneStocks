@@ -1,3 +1,4 @@
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { useState, useMemo, useCallback } from "react";
 import { PortfolioAnalytics } from "@/components/PortfolioAnalytics";
 import { PortfolioPerformance } from "@/components/PortfolioPerformance";
@@ -91,7 +92,7 @@ function PositionRow({ position, onDelete }: { position: any; onDelete: (id: str
     >
       <Link to={`/stock/${position.symbol}`} className="flex items-center gap-3 flex-1 min-w-0">
         {profile?.logo ? (
-          <img src={profile.logo} alt="" className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          <CompanyLogo src={profile.logo} symbol={position.symbol} size={32} />
         ) : (
           <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
             {position.symbol.slice(0, 2)}

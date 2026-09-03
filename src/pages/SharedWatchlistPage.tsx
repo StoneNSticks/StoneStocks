@@ -2,6 +2,7 @@
  * SharedWatchlistPage — Read-only view of a shared watchlist via URL params.
  * URL: /shared-watchlist?symbols=AAPL,MSFT,GOOG
  */
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -36,7 +37,7 @@ function SharedQuoteRow({ symbol }: { symbol: string }) {
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
       <Link to={`/stock/${symbol}`} className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-4 hover:border-primary/40 hover:shadow-lg transition-all">
         {logo ? (
-          <img src={logo} alt={name} className="h-10 w-10 rounded-xl object-contain bg-background border border-border/40 p-1 shrink-0" />
+          <CompanyLogo src={logo} name={name} size={40} rounded="rounded-xl" />
         ) : (
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <span className="font-mono font-bold text-primary text-xs">{symbol.slice(0, 2)}</span>

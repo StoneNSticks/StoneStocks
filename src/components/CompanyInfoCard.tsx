@@ -1,3 +1,4 @@
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { Building2, Globe, Users, Calendar, MapPin, Banknote, BarChart3, ExternalLink } from "lucide-react";
 import { useT } from "@/contexts/LanguageContext";
 
@@ -31,7 +32,7 @@ export function CompanyInfoCard({ profile, overview, massiveTicker, symbol }: Co
   return (
     <div className="rounded-xl border border-border/60 bg-card p-6">
       <div className="flex items-start gap-4 mb-5">
-        {logo && <img src={logo} alt={name} className="h-14 w-14 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0" />}
+        {logo && <CompanyLogo src={logo} name={name} size={56} rounded="rounded-xl" />}
         <div className="flex-1 min-w-0">
           <h2 className="font-display text-xl font-bold">{name}</h2>
           <p className="text-sm text-muted-foreground">{symbol} · {exchange}</p>

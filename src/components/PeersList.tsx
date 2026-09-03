@@ -1,3 +1,4 @@
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getQuote, getProfile } from "@/lib/stockApi";
@@ -49,11 +50,7 @@ export function PeersList({ peers, currentSymbol }: { peers: string[]; currentSy
           {peerData.map((peer) => (
             <Link key={peer.symbol} to={`/stock/${peer.symbol}`} className="flex items-center gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                {peer.logo ? (
-                  <img src={peer.logo} alt={peer.name} className="w-8 h-8 rounded-lg object-contain bg-background border border-border/40" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                ) : (
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">{peer.symbol.slice(0, 2)}</div>
-                )}
+                <CompanyLogo src={peer.logo} symbol={peer.symbol} name={peer.name} size={32} />
                 <div className="min-w-0">
                   <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors truncate">{peer.name}</div>
                   <div className="text-[11px] text-muted-foreground">{peer.symbol}</div>

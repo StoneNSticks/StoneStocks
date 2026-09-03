@@ -2,6 +2,7 @@
  * ComparePage — Side-by-side stock comparison with tabbed views:
  * Overview (metrics table), Charts (normalized overlay), Financials (grouped bars).
  */
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -91,7 +92,7 @@ function CompareStock({ symbol, onRemove }: { symbol: string; onRemove: () => vo
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="flex items-center gap-3 p-4 border-b border-border/40 bg-muted/30">
         {logo ? (
-          <img src={logo} alt={name} className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-0.5" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          <CompanyLogo src={logo} symbol={symbol} name={name} size={32} />
         ) : (
           <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
             {symbol.slice(0, 2)}

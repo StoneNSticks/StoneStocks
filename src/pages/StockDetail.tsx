@@ -1,6 +1,7 @@
 /**
  * StockDetail — The main stock analysis page.
  */
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -190,7 +191,7 @@ const StockDetail = () => {
                 ══════════════════════════════════════════════════════════ */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border/60 bg-card p-5">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                {logoUrl && <img src={logoUrl} alt={companyName} className="h-12 w-12 rounded-xl object-contain bg-background border border-border/60 p-1.5 flex-shrink-0" loading="lazy" />}
+                {logoUrl && <CompanyLogo src={logoUrl} symbol={symbol} name={companyName} size={48} rounded="rounded-xl" />}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h1 className="font-display text-xl sm:text-2xl font-bold truncate">{companyName}</h1>

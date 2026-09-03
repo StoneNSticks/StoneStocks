@@ -1,3 +1,4 @@
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { Link } from "react-router-dom";
 import { useHiddenGems } from "@/hooks/useStockData";
 import { formatPercent, formatNumber, priceChangeColor, useFormattedCurrency } from "@/lib/formatters";
@@ -40,11 +41,7 @@ export function HiddenGems() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
         {stocks.slice(0, 12).map((s: any) => (
           <Link key={s.symbol} to={`/stock/${s.symbol}`} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-muted group">
-            {s.logo ? (
-              <img src={s.logo} alt={s.name} className="w-9 h-9 rounded-lg object-contain bg-background border border-border/40" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            ) : (
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">{s.symbol?.slice(0, 2)}</div>
-            )}
+            <CompanyLogo src={s.logo} symbol={s.symbol} name={s.name} size={36} />
             <div className="flex-1 min-w-0">
               <div className="font-display font-semibold text-sm group-hover:text-primary transition-colors">{s.name || s.symbol}</div>
               <div className="text-[11px] text-muted-foreground">{s.symbol}</div>

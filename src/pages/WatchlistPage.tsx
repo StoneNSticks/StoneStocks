@@ -1,3 +1,4 @@
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -128,12 +129,7 @@ function WatchlistListRow({
       {/* Symbol + Logo + Name */}
       <Link to={`/stock/${w.symbol}`} className="flex items-center gap-2.5 flex-1 min-w-0">
         {logo ? (
-          <img
-            src={logo}
-            alt=""
-            className="h-8 w-8 rounded-lg object-contain bg-background border border-border/40 p-0.5 shrink-0"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-          />
+          <CompanyLogo src={logo} symbol={w.symbol} size={32} />
         ) : (
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center shrink-0 group-hover:shadow-md group-hover:shadow-primary/10 transition-shadow">
             <span className="font-mono font-bold text-primary text-xs">{w.symbol.slice(0, 2)}</span>
@@ -630,7 +626,7 @@ function GridCard({ w, lang, groups, handleQuoteLoaded }: {
       </div>
       <Link to={`/stock/${w.symbol}`} className="block p-4 text-center relative">
         {logo ? (
-          <img src={logo} alt="" className="h-12 w-12 rounded-xl object-contain bg-background border border-border/40 p-1 mx-auto mb-2 shadow-md" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <CompanyLogo src={logo} symbol={w.symbol} size={48} rounded="rounded-xl" className="mx-auto mb-2 shadow-md" />
         ) : (
           <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/20 mx-auto mb-2 flex items-center justify-center shadow-md shadow-primary/5">
             <span className="font-mono font-bold text-primary text-sm">{w.symbol.slice(0, 2)}</span>

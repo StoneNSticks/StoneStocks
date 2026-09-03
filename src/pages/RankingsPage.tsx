@@ -1,8 +1,7 @@
 /**
  * RankingsPage — Market rankings with Top Companies, Gainers/Losers,
- * Most Active, Sector Performance, and link to Stock Screener.
+ * Most Active and Sector Performance.
  */
-import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TopCompanies } from "@/components/TopCompanies";
@@ -11,10 +10,8 @@ import { MostActive } from "@/components/MostActive";
 import { MarketOverview } from "@/components/MarketOverview";
 import { SectorPerformance } from "@/components/SectorPerformance";
 import { ScreenerHeatmap } from "@/components/ScreenerHeatmap";
-import { Button } from "@/components/ui/button";
 import { useT, useLanguage } from "@/contexts/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { Filter } from "lucide-react";
 
 const RankingsPage = () => {
   const t = useT();
@@ -32,9 +29,6 @@ const RankingsPage = () => {
         </section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-bold">{t("nav.rankings")}</h2>
-          <Button asChild variant="outline" size="sm" className="gap-1.5">
-            <Link to="/screener"><Filter className="h-3.5 w-3.5" />{t("screener.title")}</Link>
-          </Button>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <TopCompanies />
