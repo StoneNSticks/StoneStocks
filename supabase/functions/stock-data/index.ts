@@ -197,6 +197,18 @@ async function fetchYahooChart(symbol: string, interval = "1d", range = "1y"): P
   return res.json();
 }
 
+// Yahoo Finance predefined screener (day gainers/losers) - free, no API key needed.
+// Used as fallback when the Polygon/Massive key is rejected (403) or lacks entitlements.
+async function fetchYahooScreener(scrId: string, count = 25): Promise<any[]> {
+  const url = `https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=${scrId}&count=${count}`;
+  const res = await fetchWithBackoff(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+  });
+  if (!res.ok) throw new Error(`Yahoo Screener error: ${res.status}`);
+  const data = await res.json();
+  return data?.finance?.result?.[0]?.quotes || [];
+}
+
 async function fetchEulerpool(endpoint: string) {
   const url = `https://api.eulerpool.com/api/1${endpoint}${endpoint.includes("?") ? "&" : "?"}token=${EULERPOOL_KEY}`;
   const res = await fetch(url);
@@ -1235,8 +1247,8 @@ async function handleGainersLosers() {
 
     // Fallback: grouped daily bars for last trading date
     const lastDate = getLastTradingDate();
-    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" });
-    if (!data?.results?.length) return { gainers: [], losers: [], date: lastDate };
+    const data = await fetchMassive(`/v2/aggs/grouped/locale/us/market/stocks/${lastDate}`, { adjusted: "true" }).catch(() => null);
+    if (!data?.results?.length) return await yahooGainersLosers(cacheKey, lastDate);
 
     const stocks = data.results
       .filter((s: any) => s.c > 2 && s.v > 200000 && s.o > 0 && isCommonStock(s.T))
@@ -1258,8 +1270,43 @@ async function handleGainersLosers() {
     return result;
   } catch (err) {
     console.error("Gainers/losers error:", err);
-    return { gainers: [], losers: [], date: "" };
+    // Last resort: Yahoo Finance screener (no API key required)
+    try {
+      return await yahooGainersLosers(cacheKey, new Date().toISOString().split("T")[0]);
+    } catch (e2) {
+      console.error("Yahoo gainers/losers fallback failed:", e2);
+      return { gainers: [], losers: [], date: "" };
+    }
   }
+}
+
+// Gainers/losers via Yahoo Finance predefined screeners (fallback when Polygon/Massive is unavailable)
+async function yahooGainersLosers(cacheKey: string, date: string) {
+  const [gainerQuotes, loserQuotes] = await Promise.all([
+    fetchYahooScreener("day_gainers").catch(() => []),
+    fetchYahooScreener("day_losers").catch(() => []),
+  ]);
+  const filterQ = (q: any) =>
+    q.regularMarketPrice > 2 && q.regularMarketVolume > 200000 &&
+    isCommonStock(q.symbol) && !isETFByName(q.shortName || q.longName || "");
+  const mapQ = (q: any) => ({
+    symbol: q.symbol,
+    name: q.shortName || q.longName || q.symbol,
+    price: q.regularMarketPrice || 0,
+    change: q.regularMarketChange || 0,
+    changePercent: q.regularMarketChangePercent || 0,
+    volume: q.regularMarketVolume || 0,
+    logo: "",
+  });
+  const result = {
+    gainers: gainerQuotes.filter(filterQ).map(mapQ).slice(0, 10),
+    losers: loserQuotes.filter(filterQ).map(mapQ).slice(0, 10),
+    date,
+  };
+  if (result.gainers.length || result.losers.length) {
+    await setCache(cacheKey, result, "yahoo", getEffectiveTTL(TTL.gainers_losers));
+  }
+  return result;
 }
 
 function getLastTradingDate(): string {

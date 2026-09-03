@@ -84,7 +84,7 @@ export function LearnSuperC() {
                 <TermCard term={t("learn.ironCondor")} desc={t("learn.ironCondorDesc")} />
               </div>
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Optionsrechner" : "Options Calc"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Optionsrechner" : "Options Calc"} />
             <SectionCard icon={<BarChart className="h-5 w-5" />} title={t("learn.futuresTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.futuresP1") }} />
               <p dangerouslySetInnerHTML={{ __html: t("learn.futuresP2") }} />

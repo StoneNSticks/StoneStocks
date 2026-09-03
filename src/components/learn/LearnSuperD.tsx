@@ -32,7 +32,7 @@ export function LearnSuperD() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.marginP1") }} />
               <WarningBox title={t("learn.warning")}>{t("learn.marginWarning")}</WarningBox>
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Margin-Rechner" : "Margin Calculator"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Margin-Rechner" : "Margin Calculator"} />
           </motion.section>
 
           {/* Section 14: Behavioral Finance */}
@@ -82,7 +82,7 @@ export function LearnSuperD() {
             <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.inflationTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.inflationP1") }} />
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Inflationsrechner" : "Inflation Calculator"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Inflationsrechner" : "Inflation Calculator"} />
             <SectionCard icon={<LineChart className="h-5 w-5" />} title={t("learn.yieldCurveTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.yieldCurveP1") }} />
             </SectionCard>

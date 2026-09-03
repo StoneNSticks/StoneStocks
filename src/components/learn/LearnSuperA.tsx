@@ -103,7 +103,7 @@ export function LearnSuperA() {
               <p>{t("learn.dcaP2")}</p>
               <InfoBox title={t("learn.tipTitle")}>{t("learn.dcaInfo")}</InfoBox>
             </SectionCard>
-            <CalcLink to="/calculator" label="DCA Simulator" />
+            <CalcLink to="/calculators" label="DCA Simulator" />
             <SectionCard icon={<Target className="h-5 w-5" />} title={t("learn.valueTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.valueP1") }} />
               <p>{t("learn.valueP2")}</p>
@@ -116,7 +116,7 @@ export function LearnSuperA() {
               <p dangerouslySetInnerHTML={{ __html: t("learn.dividendStratP1") }} />
               <p>{t("learn.dividendStratP2")}</p>
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Dividenden-Projektion" : "Div. Projector"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Dividenden-Projektion" : "Div. Projector"} />
             <SectionCard icon={<Repeat className="h-5 w-5" />} title={t("learn.momentumTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.momentumP1") }} />
             </SectionCard>
@@ -153,7 +153,7 @@ export function LearnSuperA() {
               <TermCard term={t("learn.taxLossHarvesting")} desc={t("learn.taxLossHarvestingDesc")} />
               <InfoBox title={t("learn.tipTitle")}>{t("learn.taxInfo")}</InfoBox>
             </SectionCard>
-            <CalcLink to="/calculator" label="Tax-Loss Harvesting" />
+            <CalcLink to="/calculators" label="Tax-Loss Harvesting" />
             <SectionCard icon={<DollarSign className="h-5 w-5" />} title={t("learn.costsTitle")}>
               <p dangerouslySetInnerHTML={{ __html: t("learn.costsP1") }} />
               <p>{t("learn.costsP2")}</p>
@@ -164,7 +164,7 @@ export function LearnSuperA() {
               <p>{t("learn.compoundP2")}</p>
               <InfoBox title={t("learn.tipTitle")}>{t("learn.compoundInfo")}</InfoBox>
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Zinseszins" : "Compound Interest"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Zinseszins" : "Compound Interest"} />
             
             <SectionCard icon={<BarChart3 className="h-5 w-5" />} title={t("learn.brokerTitle")}>
               <p>{t("learn.brokerP1")}</p>
@@ -194,7 +194,7 @@ export function LearnSuperA() {
                 <TermCard term={t("learn.starterConservative")} desc={t("learn.starterConservativeDesc")} />
               </div>
             </SectionCard>
-            <CalcLink to="/calculator" label={lang === "de" ? "Portfolio-Wachstum" : "Portfolio Growth"} />
+            <CalcLink to="/calculators" label={lang === "de" ? "Portfolio-Wachstum" : "Portfolio Growth"} />
           </motion.section>
         </SuperSection>
   );
