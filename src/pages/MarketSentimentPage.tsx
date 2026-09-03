@@ -17,6 +17,7 @@
  * 10. Sector Breadth (8%) — How many sectors are positive vs negative
  */
 
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useMarketIndices, useGainersLosers, useTopCompanies, useYahooSectors } from "@/hooks/useStockData";
@@ -647,7 +648,7 @@ function TopMoversMini({ data, title, icon }: { data: any[]; title: string; icon
             <Link key={s.symbol} to={`/stock/${s.symbol}`}
               className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/30 transition-colors">
               <div className="flex items-center gap-2 min-w-0">
-                {s.logo ? <img src={s.logo} alt="" className="h-6 w-6 rounded object-contain bg-background border border-border/40 shrink-0" loading="lazy" /> : null}
+                {s.logo ? <CompanyLogo src={s.logo} symbol={s.symbol} size={24} rounded="rounded" /> : null}
                 <div className="min-w-0">
                   <div className="font-mono font-bold text-sm">{s.symbol}</div>
                   <div className="text-xs text-muted-foreground truncate max-w-[120px]">{s.name}</div>

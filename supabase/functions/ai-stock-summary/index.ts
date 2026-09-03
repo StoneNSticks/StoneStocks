@@ -1,12 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { cors, guardAI } from "../_shared/guard.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 serve(async (req) => {
+  const corsHeaders = cors(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // Require a signed-in user and throttle per user to protect AI credits.
+  const guard = await guardAI(req, { max: 20, windowMs: 60_000 });
+  if ("error" in guard) return guard.error;
 
   try {
     const { symbol, profile, quote, overview, derived, recommendation } = await req.json();

@@ -44,14 +44,14 @@ export default function ProfilePage() {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("display_name, username, email")
+      .select("display_name, username")
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           setDisplayName(data.display_name || "");
           setUsername(data.username || "");
-          setEmail(data.email || user.email || "");
+          setEmail(user.email || "");
         }
         setLoaded(true);
       });

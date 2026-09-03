@@ -15,7 +15,6 @@ import { AlertNotifications } from "@/components/AlertNotifications";
 import { EarningsNotificationProvider } from "@/components/EarningsNotificationProvider";
 import { lazy, Suspense } from "react";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
-// FloatingChat removed
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Lazy-loaded page components for code splitting ──
@@ -35,7 +34,6 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const CommodityDetail = lazy(() => import("./pages/CommodityDetail"));
 const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
 const MarketSentimentPage = lazy(() => import("./pages/MarketSentimentPage"));
-const ScreenerPage = lazy(() => import("./pages/ScreenerPage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ComparePage = lazy(() => import("./pages/ComparePage"));
@@ -49,9 +47,6 @@ const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
-// Polymarket pages hidden
-// const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
-// const PolymarketIntelligencePage = lazy(() => import("./pages/PolymarketIntelligencePage"));
 
 
 const queryClient = new QueryClient({
@@ -84,7 +79,6 @@ const App = () => (
                   <Route path="/index/:symbol" element={<IndexDetail />} />
                   <Route path="/news" element={<NewsPage />} />
                   <Route path="/rankings" element={<RankingsPage />} />
-                  {/* screener removed */}
                   <Route path="/calculators" element={<CalculatorPage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/watchlist" element={<WatchlistPage />} />
@@ -108,7 +102,6 @@ const App = () => (
                   <Route path="/paper-trading" element={<PaperTradingPage />} />
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
-                  {/* Polymarket routes hidden */}
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>
