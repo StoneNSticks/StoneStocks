@@ -16,6 +16,16 @@ import { PositionSize, RiskRewardCalc, OptionsCalc, MarginCalc, BreakEvenCalc } 
 import { FireCalc, LoanCalc, RetirementWithdrawal, SavingsGoalCalc, NetWorthCalc } from "@/components/calculators/planning";
 import { CurrencyConverter, DCASimulator, TaxLossHarvesting, KellyCalc, DividendProjector } from "@/components/calculators/special";
 
+type CalcCategory = "all" | "basics" | "trading" | "planning" | "special";
+
+interface CalcTab {
+  value: string;
+  label: string;
+  icon: React.ReactNode;
+  category: CalcCategory;
+  component: React.ReactNode;
+}
+
 const CalculatorPage = () => {
   const t = useT();
   const { lang } = useLanguage();

@@ -300,18 +300,3 @@ export function DividendProjector() {
     </div>
   );
 }
-
-// ═══════════════════════════════════════════════════
-// MAIN PAGE WITH CATEGORY GROUPING
-// ═══════════════════════════════════════════════════
-
-type CalcCategory = "all" | "basics" | "trading" | "planning" | "special";
-
-interface CalcTab {
-  value: string;
-  label: string;
-  icon: React.ReactNode;
-  category: CalcCategory;
-  component: React.ReactNode;
-}
-
