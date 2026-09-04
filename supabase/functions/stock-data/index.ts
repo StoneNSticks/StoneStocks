@@ -1542,8 +1542,8 @@ const TOP_COMPANIES = [
 const ADR_MCAP_UNSAFE = new Set(["TSM", "BABA", "PDD", "NIO", "JD", "BIDU", "LI", "XPEV", "BILI", "IQ", "TME", "WB", "YUMC", "HTHT", "TAL", "EDU", "FUTU", "TIGR", "DIDI", "SE", "GRAB", "MELI", "NU", "STNE", "PAGS", "TCEHY", "NSRGY", "RHHBY", "SNY", "SAP", "ASML"]);
 
 async function handleTopCompanies() {
-  const cacheKey = "market:top_companies:v11";
-  const MAX_REASONABLE_MCAP = 5e12;
+  const cacheKey = "market:top_companies:v12";
+  const MAX_REASONABLE_MCAP = 1.5e13;
   const isSaneMcap = (m: number) => typeof m === "number" && m > 0 && m < MAX_REASONABLE_MCAP;
   const sanitizeList = (arr: any[]) => Array.isArray(arr) ? arr.filter((q: any) => q && isSaneMcap(q.marketCap)) : [];
 
