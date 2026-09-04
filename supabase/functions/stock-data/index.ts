@@ -132,6 +132,68 @@ async function fetchMassive(endpoint: string, params: Record<string, string> = {
   return res.json();
 }
 
+// ── Yahoo bulk quotes (free, no API key) — needs a cookie + crumb pair ──
+const YAHOO_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+let yahooCreds: { cookie: string; crumb: string; ts: number } | null = null;
+
+async function getYahooCreds(): Promise<{ cookie: string; crumb: string } | null> {
+  if (yahooCreds && Date.now() - yahooCreds.ts < 30 * 60 * 1000) return yahooCreds;
+  try {
+    const res = await fetch("https://fc.yahoo.com", { headers: { "User-Agent": YAHOO_UA }, redirect: "follow" });
+    const setCookie = res.headers.get("set-cookie") || "";
+    await res.body?.cancel();
+    const cookie = setCookie.split(",").map((c) => c.split(";")[0].trim()).filter(Boolean).join("; ");
+    if (!cookie) return null;
+    const cRes = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
+      headers: { "User-Agent": YAHOO_UA, Cookie: cookie },
+    });
+    const crumb = (await cRes.text()).trim();
+    if (!crumb || crumb.length > 32 || crumb.includes("<")) return null;
+    yahooCreds = { cookie, crumb, ts: Date.now() };
+    return yahooCreds;
+  } catch (e) {
+    console.warn("Yahoo crumb fetch failed:", e);
+    return null;
+  }
+}
+
+/** Returns a map of symbol → { price, change, changePercent, marketCap, pe } for up to ~50 symbols per call. */
+async function yahooBulkQuotes(symbols: string[]): Promise<Map<string, any>> {
+  const out = new Map<string, any>();
+  const creds = await getYahooCreds();
+  if (!creds) return out;
+  const CHUNK = 40;
+  for (let i = 0; i < symbols.length; i += CHUNK) {
+    const chunk = symbols.slice(i, i + CHUNK);
+    const yahooSyms = chunk.map((s) => s.replace(".", "-"));
+    try {
+      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(yahooSyms.join(","))}&crumb=${encodeURIComponent(creds.crumb)}`;
+      const res = await fetch(url, { headers: { "User-Agent": YAHOO_UA, Cookie: creds.cookie } });
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) yahooCreds = null;
+        await res.body?.cancel();
+        continue;
+      }
+      const data = await res.json();
+      for (const r of data?.quoteResponse?.result || []) {
+        const original = chunk[yahooSyms.indexOf(r.symbol)] ?? r.symbol;
+        out.set(original, {
+          price: r.regularMarketPrice || 0,
+          change: r.regularMarketChange || 0,
+          changePercent: r.regularMarketChangePercent || 0,
+          marketCap: r.marketCap || 0,
+          pe: r.trailingPE || 0,
+          currency: r.currency || "USD",
+          name: r.longName || r.shortName || "",
+        });
+      }
+    } catch (e) {
+      console.warn("Yahoo bulk quote failed:", e);
+    }
+  }
+  return out;
+}
+
 // Yahoo Finance RSS (free, no API key needed)
 async function fetchYahooRSS(path = ""): Promise<any[]> {
   const url = path
@@ -1509,6 +1571,9 @@ async function handleTopCompanies() {
   const BATCH_SIZE = 15;
   const allQuotes: any[] = [];
 
+  // ── Primary source: one bulk Yahoo quote call for all symbols (price + marketCap, no API key) ──
+  const bulk = await yahooBulkQuotes(TOP_COMPANIES.map((c) => c.symbol));
+
 
   // ── Yahoo Finance as PRIMARY source for price + marketCap ──
   async function fetchYahooQuoteData(symbol: string): Promise<{ price: number; change: number; changePercent: number; marketCap: number } | null> {
@@ -1560,7 +1625,17 @@ async function handleTopCompanies() {
   async function fetchCompanyData(c: { symbol: string; name: string }): Promise<any> {
     const baseResult = { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 };
 
-    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap for US-listed)
+    // Attempt 0: bulk Yahoo quote (already fetched for the whole list, USD marketCap is reliable here)
+    const b = bulk.get(c.symbol);
+    if (b && b.price > 0 && b.currency === "USD" && isSaneMcap(b.marketCap)) {
+      const profile = profileMap.get(c.symbol) || { logo: "", sector: "" };
+      return {
+        ...baseResult, price: b.price, change: b.change, changePercent: b.changePercent,
+        marketCap: b.marketCap, pe: b.pe || 0, logo: profile.logo, sector: profile.sector,
+      };
+    }
+
+    // Attempt 1: Yahoo Finance chart (no rate limit, reliable marketCap for US-listed)
     // For flagged foreign ADRs, ignore Yahoo's marketCap (it returns parent-listing cap in local currency).
     const yahoo = await fetchYahooQuoteData(c.symbol);
     const yahooMcapTrusted = yahoo && !ADR_MCAP_UNSAFE.has(c.symbol) && isSaneMcap(yahoo.marketCap);
