@@ -20,12 +20,6 @@ async function getOrCreateVapidKeys(): Promise<{ publicKey: string; privateKey: 
   if (cached?.value) {
     return cached.value as { publicKey: string; privateKey: JsonWebKey };
   }
-  {
-    const cached = null as { data?: unknown } | null;
-
-    const keys = cached.data as { publicKey: string; privateKey: JsonWebKey };
-    return keys;
-  }
 
   // Generate new ECDSA P-256 key pair
   const keyPair = await crypto.subtle.generateKey(
@@ -42,16 +36,13 @@ async function getOrCreateVapidKeys(): Promise<{ publicKey: string; privateKey: 
 
   const keys = { publicKey: publicKeyB64, privateKey: jwkPrivate };
 
-  // Store in cache (no expiry needed - permanent)
-  const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 * 10).toISOString();
-  await supabase.from("api_cache").upsert({
-    cache_key: "vapid_keys",
-    data: keys,
-    source: "system",
-    expires_at: farFuture,
-  }, { onConflict: "cache_key" });
+  await supabase.from("app_secrets").upsert(
+    { key: "vapid_keys", value: keys },
+    { onConflict: "key" },
+  );
 
   return keys;
+
 }
 
 function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
