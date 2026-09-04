@@ -37,6 +37,76 @@ function urlBase64ToUint8Array(base64Url: string): Uint8Array {
   return arr;
 }
 
+async function postSubscription(sub: PushSubscription): Promise<boolean> {
+  const subJson = sub.toJSON();
+  const session = await supabase.auth.getSession();
+  const token = session.data.session?.access_token;
+  if (!token || !subJson.endpoint || !subJson.keys) return false;
+  const res = await fetch(`${NOTIF_FN_URL}?action=subscribe`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: ANON_KEY,
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ endpoint: subJson.endpoint, keys: subJson.keys }),
+  });
+  return res.ok;
+}
+
+/**
+ * Keeps the push subscription fresh for signed-in users:
+ * re-syncs an existing browser subscription with the backend on load
+ * and re-registers automatically if the browser rotates/expired it.
+ */
+function usePushSubscriptionRenewal(
+  userId: string | undefined,
+  onRenewed: () => void,
+) {
+  useEffect(() => {
+    if (!userId) return;
+    if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    if (Notification.permission !== "granted") return;
+
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+
+    (async () => {
+      const reg = await navigator.serviceWorker.ready;
+      if (cancelled) return;
+
+      // Re-sync current subscription with the backend (covers expired/deleted rows)
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) {
+        const ok = await postSubscription(existing);
+        if (ok && !cancelled) onRenewed();
+      }
+
+      // Browser rotated/expired the subscription -> re-register transparently
+      const handler = async () => {
+        try {
+          const vapidKey = await fetchVapidKey();
+          if (!vapidKey) return;
+          const fresh = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
+          });
+          if (await postSubscription(fresh)) onRenewed();
+        } catch (e) {
+          console.error("Push renewal failed:", e);
+        }
+      };
+      reg.addEventListener("pushsubscriptionchange", handler);
+      cleanup = () => reg.removeEventListener("pushsubscriptionchange", handler);
+    })();
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
+  }, [userId, onRenewed]);
+}
+
 export function usePushSubscription() {
   const { user } = useAuth();
   const [status, setStatus] = useState<PushStatus>("loading");
@@ -55,6 +125,9 @@ export function usePushSubscription() {
       setIsSubscribed(!!sub);
     });
   }, []);
+
+  const handleRenewed = useCallback(() => setIsSubscribed(true), []);
+  usePushSubscriptionRenewal(user?.id, handleRenewed);
 
   const subscribe = useCallback(async () => {
     if (!user) {
@@ -79,24 +152,7 @@ export function usePushSubscription() {
         applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
       });
 
-      const subJson = subscription.toJSON();
-      const session = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
-
-      const res = await fetch(`${NOTIF_FN_URL}?action=subscribe`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: ANON_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          endpoint: subJson.endpoint,
-          keys: subJson.keys,
-        }),
-      });
-
-      if (res.ok) {
+      if (await postSubscription(subscription)) {
         setIsSubscribed(true);
         toast.success("Push-Benachrichtigungen aktiviert! 🔔");
         return true;
