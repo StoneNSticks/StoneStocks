@@ -510,14 +510,25 @@ Deno.serve(async (req) => {
 
     if (action === "check_and_send") {
       // Cron-only: requires the shared secret, never callable from the browser.
-      const cronSecret = Deno.env.get("NOTIFICATIONS_CRON_SECRET");
       const provided = req.headers.get("x-cron-secret");
-      if (!cronSecret || provided !== cronSecret) {
+      const envSecret = Deno.env.get("NOTIFICATIONS_CRON_SECRET");
+      let ok = !!provided && !!envSecret && provided === envSecret;
+      if (!ok && provided) {
+        // Fallback: secret stored backend-only in app_secrets (used by the pg_cron job)
+        const { data: row } = await supabase
+          .from("app_secrets")
+          .select("value")
+          .eq("key", "notifications_cron_secret")
+          .maybeSingle();
+        ok = !!row?.value && provided === row.value;
+      }
+      if (!ok) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
       const result = await checkAndSendEarningsNotifications();
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
