@@ -1,10 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { cors } from "../_shared/guard.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -15,16 +10,15 @@ const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY")!;
 // ---- VAPID Key Management ----
 
 async function getOrCreateVapidKeys(): Promise<{ publicKey: string; privateKey: JsonWebKey }> {
-  // Check cache
+  // Private keys live in app_secrets (service-role only), never in the readable cache table.
   const { data: cached } = await supabase
-    .from("api_cache")
-    .select("data")
-    .eq("cache_key", "vapid_keys")
-    .single();
+    .from("app_secrets")
+    .select("value")
+    .eq("key", "vapid_keys")
+    .maybeSingle();
 
-  if (cached?.data) {
-    const keys = cached.data as { publicKey: string; privateKey: JsonWebKey };
-    return keys;
+  if (cached?.value) {
+    return cached.value as { publicKey: string; privateKey: JsonWebKey };
   }
 
   // Generate new ECDSA P-256 key pair
@@ -42,16 +36,13 @@ async function getOrCreateVapidKeys(): Promise<{ publicKey: string; privateKey: 
 
   const keys = { publicKey: publicKeyB64, privateKey: jwkPrivate };
 
-  // Store in cache (no expiry needed - permanent)
-  const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 * 10).toISOString();
-  await supabase.from("api_cache").upsert({
-    cache_key: "vapid_keys",
-    data: keys,
-    source: "system",
-    expires_at: farFuture,
-  }, { onConflict: "cache_key" });
+  await supabase.from("app_secrets").upsert(
+    { key: "vapid_keys", value: keys },
+    { onConflict: "key" },
+  );
 
   return keys;
+
 }
 
 function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
@@ -427,9 +418,11 @@ async function checkAndSendEarningsNotifications() {
 // ---- Request Handler ----
 
 Deno.serve(async (req) => {
+  const corsHeaders = cors(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
 
   try {
     const url = new URL(req.url);
@@ -516,11 +509,21 @@ Deno.serve(async (req) => {
     }
 
     if (action === "check_and_send") {
+      // Cron-only: requires the shared secret, never callable from the browser.
+      const cronSecret = Deno.env.get("NOTIFICATIONS_CRON_SECRET");
+      const provided = req.headers.get("x-cron-secret");
+      if (!cronSecret || provided !== cronSecret) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       const result = await checkAndSendEarningsNotifications();
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     return new Response(JSON.stringify({ error: "Unknown action" }), {
       status: 400,
