@@ -44,6 +44,24 @@ export type Database = {
         }
         Relationships: []
       }
+      app_secrets: {
+        Row: {
+          created_at: string
+          key: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          value: Json
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       earnings_notifications: {
         Row: {
           earnings_date: string
