@@ -418,9 +418,11 @@ async function checkAndSendEarningsNotifications() {
 // ---- Request Handler ----
 
 Deno.serve(async (req) => {
+  const corsHeaders = cors(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
 
   try {
     const url = new URL(req.url);
