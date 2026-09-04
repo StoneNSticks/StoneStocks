@@ -122,7 +122,7 @@ Return ONLY a JSON array of objects, no other text.`;
     });
   } catch (e) {
     console.error("Sentiment error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

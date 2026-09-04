@@ -2490,9 +2490,9 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("Stock data error:", message);
-    return new Response(JSON.stringify({ error: message }), {
+    // Log the full error (stack included) server-side only.
+    console.error("Stock data error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
