@@ -12,11 +12,9 @@ export function EarningsNotificationProvider({ children }: { children: React.Rea
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       // The push handler is in public/sw-push.js — register it alongside the PWA SW
-      navigator.serviceWorker.ready.then((registration) => {
-        // Service worker is already registered by vite-plugin-pwa
-        // The push events are handled by the main SW
-        console.log("Service worker ready for push notifications");
-      });
+      // Service worker is already registered by vite-plugin-pwa; push events
+      // are handled by the main SW. Nothing to do beyond awaiting readiness.
+      void navigator.serviceWorker.ready;
     }
   }, []);
 

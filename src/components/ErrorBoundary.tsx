@@ -26,7 +26,9 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <h1 className="font-display text-2xl font-bold mb-3">Something went wrong</h1>
             <p className="text-muted-foreground text-sm mb-6">
-              {this.state.error?.message || "An unexpected error occurred."}
+              {import.meta.env.DEV
+                ? this.state.error?.message || "An unexpected error occurred."
+                : "An unexpected error occurred. Please retry or return home."}
             </p>
             <div className="flex items-center justify-center gap-3">
               <Button variant="outline" onClick={() => window.location.reload()} className="gap-2">
