@@ -1,10 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { cors } from "../_shared/guard.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -15,14 +10,19 @@ const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY")!;
 // ---- VAPID Key Management ----
 
 async function getOrCreateVapidKeys(): Promise<{ publicKey: string; privateKey: JsonWebKey }> {
-  // Check cache
+  // Private keys live in app_secrets (service-role only), never in the readable cache table.
   const { data: cached } = await supabase
-    .from("api_cache")
-    .select("data")
-    .eq("cache_key", "vapid_keys")
-    .single();
+    .from("app_secrets")
+    .select("value")
+    .eq("key", "vapid_keys")
+    .maybeSingle();
 
-  if (cached?.data) {
+  if (cached?.value) {
+    return cached.value as { publicKey: string; privateKey: JsonWebKey };
+  }
+  {
+    const cached = null as { data?: unknown } | null;
+
     const keys = cached.data as { publicKey: string; privateKey: JsonWebKey };
     return keys;
   }
