@@ -1625,7 +1625,17 @@ async function handleTopCompanies() {
   async function fetchCompanyData(c: { symbol: string; name: string }): Promise<any> {
     const baseResult = { symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 };
 
-    // Attempt 1: Yahoo Finance (no rate limit, reliable marketCap for US-listed)
+    // Attempt 0: bulk Yahoo quote (already fetched for the whole list, USD marketCap is reliable here)
+    const b = bulk.get(c.symbol);
+    if (b && b.price > 0 && b.currency === "USD" && isSaneMcap(b.marketCap)) {
+      const profile = profileMap.get(c.symbol) || { logo: "", sector: "" };
+      return {
+        ...baseResult, price: b.price, change: b.change, changePercent: b.changePercent,
+        marketCap: b.marketCap, pe: b.pe || 0, logo: profile.logo, sector: profile.sector,
+      };
+    }
+
+    // Attempt 1: Yahoo Finance chart (no rate limit, reliable marketCap for US-listed)
     // For flagged foreign ADRs, ignore Yahoo's marketCap (it returns parent-listing cap in local currency).
     const yahoo = await fetchYahooQuoteData(c.symbol);
     const yahooMcapTrusted = yahoo && !ADR_MCAP_UNSAFE.has(c.symbol) && isSaneMcap(yahoo.marketCap);
