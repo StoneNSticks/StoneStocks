@@ -36,21 +36,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (identifier: string, password: string) => {
-    let email = identifier;
-    // If no @ sign, treat as username and resolve email via edge function
-    // (profiles table is no longer publicly readable).
+    // Username login is verified server-side; the account email is never
+    // exposed to the client, which removes the enumeration surface.
     if (!identifier.includes("@")) {
       const { data, error: lookupError } = await supabase.functions.invoke("resolve-username", {
-        body: { username: identifier },
+        body: { username: identifier, password },
       });
-      if (lookupError || !data?.email) {
-        return { error: new Error("Username not found.") };
+      if (lookupError || !data?.access_token || !data?.refresh_token) {
+        return { error: new Error("Invalid username or password.") };
       }
-      email = data.email as string;
+      const { error } = await supabase.auth.setSession({
+        access_token: data.access_token as string,
+        refresh_token: data.refresh_token as string,
+      });
+      return { error: error as Error | null };
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email: identifier, password });
     return { error: error as Error | null };
   };
+
 
   const signUp = async (emailInput: string | undefined, password: string, username?: string) => {
     const lowerUsername = username ? username.toLowerCase() : undefined;
