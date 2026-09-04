@@ -509,11 +509,21 @@ Deno.serve(async (req) => {
     }
 
     if (action === "check_and_send") {
+      // Cron-only: requires the shared secret, never callable from the browser.
+      const cronSecret = Deno.env.get("NOTIFICATIONS_CRON_SECRET");
+      const provided = req.headers.get("x-cron-secret");
+      if (!cronSecret || provided !== cronSecret) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       const result = await checkAndSendEarningsNotifications();
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     return new Response(JSON.stringify({ error: "Unknown action" }), {
       status: 400,
