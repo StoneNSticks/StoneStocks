@@ -1571,6 +1571,9 @@ async function handleTopCompanies() {
   const BATCH_SIZE = 15;
   const allQuotes: any[] = [];
 
+  // ── Primary source: one bulk Yahoo quote call for all symbols (price + marketCap, no API key) ──
+  const bulk = await yahooBulkQuotes(TOP_COMPANIES.map((c) => c.symbol));
+
 
   // ── Yahoo Finance as PRIMARY source for price + marketCap ──
   async function fetchYahooQuoteData(symbol: string): Promise<{ price: number; change: number; changePercent: number; marketCap: number } | null> {
