@@ -81,7 +81,17 @@ async function maybeCleanupCache() {
 // === Exponential backoff fetch wrapper ===
 async function fetchWithBackoff(url: string, options?: RequestInit, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const res = await fetch(url, options);
+    let res: Response;
+    try {
+      // Hard per-request timeout: a hung upstream must not stall the worker (caused 502s).
+      res = await fetch(url, { ...options, signal: AbortSignal.timeout(8000) });
+    } catch (e) {
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        continue;
+      }
+      throw e;
+    }
     if (res.status === 429 && attempt < maxRetries) {
       const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
       console.warn(`Rate limited on ${url}, retrying in ${delay}ms`);
