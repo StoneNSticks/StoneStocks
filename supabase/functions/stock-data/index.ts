@@ -142,13 +142,26 @@ async function fetchTwelveData(endpoint: string, params: Record<string, string> 
 }
 
 async function fetchMassive(endpoint: string, params: Record<string, string> = {}) {
+  if (Date.now() < massiveDisabledUntil) throw new Error("Massive disabled (circuit open)");
+  const key = getMassiveKey();
+  if (!key) {
+    massiveDisabledUntil = Date.now() + 5 * 60 * 1000;
+    throw new Error("Massive unavailable (no working key)");
+  }
   const url = new URL(`https://api.polygon.io${endpoint}`);
-  url.searchParams.set("apiKey", getMassiveKey());
+  url.searchParams.set("apiKey", key);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetchWithBackoff(url.toString());
-  if (!res.ok) throw new Error(`Massive error: ${res.status}`);
+  const res = await fetchWithBackoff(url.toString(), undefined, 1);
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      massiveBadKeys.add(key);
+      console.warn(`Massive key rejected (${res.status}); ${MASSIVE_KEYS.length - massiveBadKeys.size} key(s) left`);
+    }
+    throw new Error(`Massive error: ${res.status}`);
+  }
   return res.json();
 }
+
 
 // ── Yahoo bulk quotes (free, no API key) — needs a cookie + crumb pair ──
 const YAHOO_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
