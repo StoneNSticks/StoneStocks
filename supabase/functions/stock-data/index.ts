@@ -872,14 +872,44 @@ async function handleMassiveFinancials(symbol: string) {
   return result || [];
 }
 
+// Yahoo chart events: free source for dividend + split history (no API key)
+async function fetchYahooEvents(symbol: string): Promise<{ dividends: any[]; splits: any[] }> {
+  const yahooSym = symbol.replace(".", "-");
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym)}?interval=1mo&range=10y&events=div%2Csplit`;
+  const res = await fetchWithBackoff(url, { headers: { "User-Agent": YAHOO_UA } }, 1);
+  if (!res.ok) throw new Error(`Yahoo events error: ${res.status}`);
+  const data = await res.json();
+  const events = data?.chart?.result?.[0]?.events || {};
+  const dividends = Object.values(events.dividends || {}).map((d: any) => ({
+    cash_amount: d.amount, currency: "USD", dividend_type: "CD",
+    ex_dividend_date: new Date(d.date * 1000).toISOString().split("T")[0],
+    pay_date: null, record_date: null, declaration_date: null,
+    frequency: 4, ticker: symbol, source: "yahoo",
+  })).sort((a: any, b: any) => b.ex_dividend_date.localeCompare(a.ex_dividend_date));
+  const splits = Object.values(events.splits || {}).map((s: any) => ({
+    execution_date: new Date(s.date * 1000).toISOString().split("T")[0],
+    split_from: s.denominator, split_to: s.numerator, ticker: symbol, source: "yahoo",
+  })).sort((a: any, b: any) => b.execution_date.localeCompare(a.execution_date));
+  return { dividends, splits };
+}
+
 async function handleMassiveDividends(symbol: string) {
   const cacheKey = `massive_dividends:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  try {
-    const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
-    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_dividends); return data.results; }
-  } catch (e) { console.warn("Dividends fetch failed:", e); }
+
+  const result = await tryInOrder<any[] | null>([
+    async () => {
+      const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
+      return data?.results?.length ? data.results : null;
+    },
+    async () => {
+      const { dividends } = await fetchYahooEvents(symbol);
+      return dividends.length ? dividends : null;
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_dividends); return result; }
   return [];
 }
 
@@ -887,12 +917,22 @@ async function handleMassiveSplits(symbol: string) {
   const cacheKey = `massive_splits:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  try {
-    const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
-    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_splits); return data.results; }
-  } catch (e) { console.warn("Splits fetch failed:", e); }
+
+  const result = await tryInOrder<any[] | null>([
+    async () => {
+      const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
+      return data?.results?.length ? data.results : null;
+    },
+    async () => {
+      const { splits } = await fetchYahooEvents(symbol);
+      return splits.length ? splits : null;
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_splits); return result; }
   return [];
 }
+
 
 async function handleMassiveAggregates(symbol: string, timespan = "day", from = "", to = "") {
   if (!from) { const d = new Date(); d.setFullYear(d.getFullYear() - 5); from = d.toISOString().split("T")[0]; }
