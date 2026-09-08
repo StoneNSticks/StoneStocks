@@ -1783,15 +1783,23 @@ async function handleTopCompanies() {
     return baseResult;
   }
 
-  // Process in batches with delay
+  // Process in batches with delay, bounded by a wall-clock budget so a cold
+  // request can never run long enough for the worker to be terminated (502).
+  const DEADLINE = Date.now() + 20_000;
   for (let i = 0; i < TOP_COMPANIES.length; i += BATCH_SIZE) {
     const batch = TOP_COMPANIES.slice(i, i + BATCH_SIZE);
+    if (Date.now() > DEADLINE) {
+      // Out of budget: emit placeholders, they get filled from the stale cache below.
+      for (const c of batch) allQuotes.push({ symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 });
+      continue;
+    }
     const batchResults = await Promise.all(batch.map(fetchCompanyData));
     allQuotes.push(...batchResults);
     if (i + BATCH_SIZE < TOP_COMPANIES.length) {
       await new Promise(r => setTimeout(r, 100));
     }
   }
+
 
   // Save profile cache for 7 days
   const profileObj: Record<string, { logo: string; sector: string }> = {};
