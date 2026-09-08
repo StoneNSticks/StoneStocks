@@ -841,7 +841,17 @@ async function handleMassiveTickerDetails(symbol: string) {
         total_employees: c.numEmployees || 0, source: "simfin",
       };
     },
+    // 4. Yahoo quote (free, always available)
+    async () => {
+      const q = (await yahooBulkQuotes([symbol])).get(symbol);
+      if (!q?.name) return null;
+      return {
+        name: q.name, ticker: symbol, market_cap: q.marketCap || 0,
+        currency_name: (q.currency || "USD").toLowerCase(), source: "yahoo",
+      };
+    },
   ], (r) => r != null);
+
 
   if (result) { await setCache(cacheKey, result, "multi", TTL.massive_ticker); return result; }
   return null;
