@@ -850,6 +850,20 @@ async function handleMassiveTickerDetails(symbol: string) {
         currency_name: (q.currency || "USD").toLowerCase(), source: "yahoo",
       };
     },
+    // 5. Yahoo chart meta (no crumb/cookie needed)
+    async () => {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol.replace(".", "-"))}?interval=1d&range=1d`;
+      const res = await fetchWithBackoff(url, { headers: { "User-Agent": YAHOO_UA } }, 1);
+      if (!res.ok) throw new Error(`Yahoo chart error: ${res.status}`);
+      const meta = (await res.json())?.chart?.result?.[0]?.meta;
+      if (!meta) return null;
+      return {
+        name: meta.longName || meta.shortName || symbol, ticker: symbol,
+        market_cap: 0, primary_exchange: meta.fullExchangeName || "",
+        currency_name: (meta.currency || "USD").toLowerCase(), source: "yahoo-chart",
+      };
+    },
+
   ], (r) => r != null);
 
 
