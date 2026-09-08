@@ -18,11 +18,19 @@ const MASSIVE_KEYS = [
 ].filter(Boolean);
 
 let massiveKeyIndex = 0;
-function getMassiveKey(): string {
-  const key = MASSIVE_KEYS[massiveKeyIndex % MASSIVE_KEYS.length];
+// Keys rejected by the provider (401/403) are parked for the lifetime of the worker,
+// so a single bad key does not poison every Nth request.
+const massiveBadKeys = new Set<string>();
+let massiveDisabledUntil = 0;
+
+function getMassiveKey(): string | null {
+  const usable = MASSIVE_KEYS.filter((k) => !massiveBadKeys.has(k));
+  if (usable.length === 0) return null;
+  const key = usable[massiveKeyIndex % usable.length];
   massiveKeyIndex++;
   return key;
 }
+
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -134,13 +142,26 @@ async function fetchTwelveData(endpoint: string, params: Record<string, string> 
 }
 
 async function fetchMassive(endpoint: string, params: Record<string, string> = {}) {
+  if (Date.now() < massiveDisabledUntil) throw new Error("Massive disabled (circuit open)");
+  const key = getMassiveKey();
+  if (!key) {
+    massiveDisabledUntil = Date.now() + 5 * 60 * 1000;
+    throw new Error("Massive unavailable (no working key)");
+  }
   const url = new URL(`https://api.polygon.io${endpoint}`);
-  url.searchParams.set("apiKey", getMassiveKey());
+  url.searchParams.set("apiKey", key);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetchWithBackoff(url.toString());
-  if (!res.ok) throw new Error(`Massive error: ${res.status}`);
+  const res = await fetchWithBackoff(url.toString(), undefined, 1);
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      massiveBadKeys.add(key);
+      console.warn(`Massive key rejected (${res.status}); ${MASSIVE_KEYS.length - massiveBadKeys.size} key(s) left`);
+    }
+    throw new Error(`Massive error: ${res.status}`);
+  }
   return res.json();
 }
+
 
 // ── Yahoo bulk quotes (free, no API key) — needs a cookie + crumb pair ──
 const YAHOO_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -820,7 +841,31 @@ async function handleMassiveTickerDetails(symbol: string) {
         total_employees: c.numEmployees || 0, source: "simfin",
       };
     },
+    // 4. Yahoo quote (free, always available)
+    async () => {
+      const q = (await yahooBulkQuotes([symbol])).get(symbol);
+      if (!q?.name) return null;
+      return {
+        name: q.name, ticker: symbol, market_cap: q.marketCap || 0,
+        currency_name: (q.currency || "USD").toLowerCase(), source: "yahoo",
+      };
+    },
+    // 5. Yahoo chart meta (no crumb/cookie needed)
+    async () => {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol.replace(".", "-"))}?interval=1d&range=1d`;
+      const res = await fetchWithBackoff(url, { headers: { "User-Agent": YAHOO_UA } }, 1);
+      if (!res.ok) throw new Error(`Yahoo chart error: ${res.status}`);
+      const meta = (await res.json())?.chart?.result?.[0]?.meta;
+      if (!meta) return null;
+      return {
+        name: meta.longName || meta.shortName || symbol, ticker: symbol,
+        market_cap: 0, primary_exchange: meta.fullExchangeName || "",
+        currency_name: (meta.currency || "USD").toLowerCase(), source: "yahoo-chart",
+      };
+    },
+
   ], (r) => r != null);
+
 
   if (result) { await setCache(cacheKey, result, "multi", TTL.massive_ticker); return result; }
   return null;
@@ -851,14 +896,44 @@ async function handleMassiveFinancials(symbol: string) {
   return result || [];
 }
 
+// Yahoo chart events: free source for dividend + split history (no API key)
+async function fetchYahooEvents(symbol: string): Promise<{ dividends: any[]; splits: any[] }> {
+  const yahooSym = symbol.replace(".", "-");
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym)}?interval=1mo&range=10y&events=div%2Csplit`;
+  const res = await fetchWithBackoff(url, { headers: { "User-Agent": YAHOO_UA } }, 1);
+  if (!res.ok) throw new Error(`Yahoo events error: ${res.status}`);
+  const data = await res.json();
+  const events = data?.chart?.result?.[0]?.events || {};
+  const dividends = Object.values(events.dividends || {}).map((d: any) => ({
+    cash_amount: d.amount, currency: "USD", dividend_type: "CD",
+    ex_dividend_date: new Date(d.date * 1000).toISOString().split("T")[0],
+    pay_date: null, record_date: null, declaration_date: null,
+    frequency: 4, ticker: symbol, source: "yahoo",
+  })).sort((a: any, b: any) => b.ex_dividend_date.localeCompare(a.ex_dividend_date));
+  const splits = Object.values(events.splits || {}).map((s: any) => ({
+    execution_date: new Date(s.date * 1000).toISOString().split("T")[0],
+    split_from: s.denominator, split_to: s.numerator, ticker: symbol, source: "yahoo",
+  })).sort((a: any, b: any) => b.execution_date.localeCompare(a.execution_date));
+  return { dividends, splits };
+}
+
 async function handleMassiveDividends(symbol: string) {
   const cacheKey = `massive_dividends:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  try {
-    const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
-    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_dividends); return data.results; }
-  } catch (e) { console.warn("Dividends fetch failed:", e); }
+
+  const result = await tryInOrder<any[] | null>([
+    async () => {
+      const data = await fetchMassive("/v3/reference/dividends", { ticker: symbol, limit: "50", order: "desc" });
+      return data?.results?.length ? data.results : null;
+    },
+    async () => {
+      const { dividends } = await fetchYahooEvents(symbol);
+      return dividends.length ? dividends : null;
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_dividends); return result; }
   return [];
 }
 
@@ -866,12 +941,22 @@ async function handleMassiveSplits(symbol: string) {
   const cacheKey = `massive_splits:${symbol}`;
   const cached = await getCached(cacheKey);
   if (cached) return cached;
-  try {
-    const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
-    if (data?.results) { await setCache(cacheKey, data.results, "massive", TTL.massive_splits); return data.results; }
-  } catch (e) { console.warn("Splits fetch failed:", e); }
+
+  const result = await tryInOrder<any[] | null>([
+    async () => {
+      const data = await fetchMassive("/v3/reference/splits", { ticker: symbol });
+      return data?.results?.length ? data.results : null;
+    },
+    async () => {
+      const { splits } = await fetchYahooEvents(symbol);
+      return splits.length ? splits : null;
+    },
+  ], (r) => r != null);
+
+  if (result) { await setCache(cacheKey, result, "multi", TTL.massive_splits); return result; }
   return [];
 }
+
 
 async function handleMassiveAggregates(symbol: string, timespan = "day", from = "", to = "") {
   if (!from) { const d = new Date(); d.setFullYear(d.getFullYear() - 5); from = d.toISOString().split("T")[0]; }
@@ -1712,15 +1797,23 @@ async function handleTopCompanies() {
     return baseResult;
   }
 
-  // Process in batches with delay
+  // Process in batches with delay, bounded by a wall-clock budget so a cold
+  // request can never run long enough for the worker to be terminated (502).
+  const DEADLINE = Date.now() + 20_000;
   for (let i = 0; i < TOP_COMPANIES.length; i += BATCH_SIZE) {
     const batch = TOP_COMPANIES.slice(i, i + BATCH_SIZE);
+    if (Date.now() > DEADLINE) {
+      // Out of budget: emit placeholders, they get filled from the stale cache below.
+      for (const c of batch) allQuotes.push({ symbol: c.symbol, name: c.name, price: 0, change: 0, changePercent: 0, marketCap: 0, logo: "", sector: "", pe: 0, dividendYield: 0 });
+      continue;
+    }
     const batchResults = await Promise.all(batch.map(fetchCompanyData));
     allQuotes.push(...batchResults);
     if (i + BATCH_SIZE < TOP_COMPANIES.length) {
       await new Promise(r => setTimeout(r, 100));
     }
   }
+
 
   // Save profile cache for 7 days
   const profileObj: Record<string, { logo: string; sector: string }> = {};
