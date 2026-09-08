@@ -18,11 +18,19 @@ const MASSIVE_KEYS = [
 ].filter(Boolean);
 
 let massiveKeyIndex = 0;
-function getMassiveKey(): string {
-  const key = MASSIVE_KEYS[massiveKeyIndex % MASSIVE_KEYS.length];
+// Keys rejected by the provider (401/403) are parked for the lifetime of the worker,
+// so a single bad key does not poison every Nth request.
+const massiveBadKeys = new Set<string>();
+let massiveDisabledUntil = 0;
+
+function getMassiveKey(): string | null {
+  const usable = MASSIVE_KEYS.filter((k) => !massiveBadKeys.has(k));
+  if (usable.length === 0) return null;
+  const key = usable[massiveKeyIndex % usable.length];
   massiveKeyIndex++;
   return key;
 }
+
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
