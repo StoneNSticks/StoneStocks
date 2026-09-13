@@ -15,4 +15,8 @@
   <url><loc>https://stone-stock-insight.lovable.app/paper-trading</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://stone-stock-insight.lovable.app/system-status</loc><changefreq>weekly</changefreq><priority>0.3</priority></url>
   <url><loc>https://stone-stock-insight.lovable.app/auth</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://stone-stock-insight.lovable.app/impressum</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://stone-stock-insight.lovable.app/datenschutz</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://stone-stock-insight.lovable.app/agb</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://stone-stock-insight.lovable.app/cookies</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>
