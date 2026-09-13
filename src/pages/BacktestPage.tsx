@@ -211,7 +211,7 @@ export default function BacktestPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8 max-w-5xl">
+      <main id="main-content" className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8 max-w-5xl">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-3">
             <Activity className="h-6 w-6 text-primary" />

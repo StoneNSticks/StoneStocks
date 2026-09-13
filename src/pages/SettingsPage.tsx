@@ -111,9 +111,32 @@ export default function SettingsPage() {
     toast({ title: lang === "de" ? "Alarm gelöscht" : "Alert deleted" });
   };
 
+  const [busy, setBusy] = useState(false);
+
+  const handleExportData = async () => {
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke("account", { body: { action: "export" } });
+    setBusy(false);
+    if (error || !data) { toast({ title: t("settings.deleteFailed") }); return; }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `stonestocks-data-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: t("settings.exportDone") });
+  };
+
   const handleDeleteAccount = async () => {
-    toast({ title: t("settings.deleteNotAvailable") });
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke("account", { body: { action: "delete" } });
+    setBusy(false);
     setShowDelete(false);
+    if (error || !(data as any)?.ok) { toast({ title: t("settings.deleteFailed") }); return; }
+    toast({ title: t("settings.deleteDone") });
+    await signOut();
+    navigate("/");
   };
 
   const handleLogout = async () => {
@@ -144,7 +167,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 max-w-xl px-3 sm:px-4 w-full">
+      <main id="main-content" className="container py-8 max-w-xl px-3 sm:px-4 w-full">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 rounded-xl bg-accent"><Settings className="h-5 w-5 text-accent-foreground" /></div>
           <div>
@@ -262,8 +285,11 @@ export default function SettingsPage() {
 
           {/* Danger Zone */}
           <Section icon={Trash2} title={t("settings.dangerZone")}>
+            <SettingRow label={t("settings.exportData")} desc={t("settings.exportDataDesc")}>
+              <Button variant="outline" size="sm" disabled={busy} onClick={handleExportData}>{t("settings.exportData")}</Button>
+            </SettingRow>
             <SettingRow label={t("settings.deleteAccount")} desc={t("settings.deleteAccountDesc")}>
-              <Button variant="destructive" size="sm" onClick={() => setShowDelete(!showDelete)}>{t("settings.delete")}</Button>
+              <Button variant="destructive" size="sm" disabled={busy} onClick={() => setShowDelete(!showDelete)}>{t("settings.delete")}</Button>
             </SettingRow>
             {showDelete && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive">

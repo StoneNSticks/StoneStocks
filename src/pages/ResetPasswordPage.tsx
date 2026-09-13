@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container flex items-center justify-center py-16">
+        <main id="main-content" className="container flex items-center justify-center py-16">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle>{t("reset.invalidLink")}</CardTitle>
@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container flex items-center justify-center py-16">
+      <main id="main-content" className="container flex items-center justify-center py-16">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">{t("reset.title")}</CardTitle>

@@ -30,13 +30,20 @@ export function NotificationBell() {
           variant="ghost"
           size="icon"
           className="h-8 w-8 relative"
+          aria-label={label}
+          aria-pressed={isSubscribed}
           onClick={() => isSubscribed ? unsubscribe() : subscribe()}
           disabled={status === "denied"}
         >
-          <Icon className={`h-4 w-4 ${isSubscribed ? "text-primary" : "text-muted-foreground"}`} />
+          <Icon aria-hidden="true" className={`h-4 w-4 ${isSubscribed ? "text-primary" : "text-muted-foreground"}`} />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
+      <TooltipContent>
+        <span className="block max-w-[240px]">{label}</span>
+        {!isSubscribed && status !== "denied" && (
+          <span className="mt-1 block max-w-[240px] text-xs opacity-80">{t("consent.pushInfo")}</span>
+        )}
+      </TooltipContent>
     </Tooltip>
   );
 }

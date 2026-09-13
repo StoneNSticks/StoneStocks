@@ -47,6 +47,7 @@ const EconomicCalendarPage = lazy(() => import("./pages/EconomicCalendarPage"));
 const PaperTradingPage = lazy(() => import("./pages/PaperTradingPage"));
 const AlertHistoryPage = lazy(() => import("./pages/AlertHistoryPage"));
 const SystemStatusPage = lazy(() => import("./pages/SystemStatusPage"));
+const LegalPage = lazy(() => import("./pages/LegalPage"));
 
 
 const queryClient = new QueryClient({
@@ -102,6 +103,10 @@ const App = () => (
                   <Route path="/paper-trading" element={<PaperTradingPage />} />
                   <Route path="/alert-history" element={<AlertHistoryPage />} />
                   <Route path="/system-status" element={<SystemStatusPage />} />
+                  <Route path="/impressum" element={<LegalPage slug="imprint" />} />
+                  <Route path="/datenschutz" element={<LegalPage slug="privacy" />} />
+                  <Route path="/agb" element={<LegalPage slug="terms" />} />
+                  <Route path="/cookies" element={<LegalPage slug="cookies" />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>

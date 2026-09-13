@@ -67,7 +67,7 @@ export default function PaperTradingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 px-3 sm:px-4 lg:px-8 max-w-4xl">
+      <main id="main-content" className="container py-6 px-3 sm:px-4 lg:px-8 max-w-4xl">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-accent"><Wallet className="h-6 w-6 text-primary" /></div>

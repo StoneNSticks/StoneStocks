@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [consent, setConsent] = useState(false);
   const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
 
@@ -56,6 +58,7 @@ export default function AuthPage() {
       toast.success(t("auth.signInSuccess"));
       navigate("/");
     } else {
+      if (!consent) { toast.error(t("consent.required")); setLoading(false); return; }
       const trimmed = username.trim();
       if (!trimmed) { toast.error(t("auth.usernameRequired")); setLoading(false); return; }
       if (trimmed.length < 3) { toast.error(t("auth.usernameTooShort")); setLoading(false); return; }
@@ -70,7 +73,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container flex items-center justify-center py-10 sm:py-16 px-3 sm:px-4">
+      <main id="main-content" className="container flex items-center justify-center py-10 sm:py-16 px-3 sm:px-4">
         <Card className="w-full max-w-sm sm:max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">
@@ -105,10 +108,11 @@ export default function AuthPage() {
                   <Label htmlFor="email">{t("auth.emailOptional")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="email" type="email" placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" />
-                  </div>
-                </div>
-              )}
+                     <Input id="email" type="email" placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" aria-describedby="email-hint" />
+                   </div>
+                   <p id="email-hint" className="text-xs text-muted-foreground">{t("consent.emailUse")}</p>
+                 </div>
+               )}
               {showForgot && (
                 <div className="space-y-2">
                   <Label htmlFor="email">{t("auth.email")}</Label>
@@ -124,13 +128,30 @@ export default function AuthPage() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input id="password" type={showPassword ? "text" : "password"} required minLength={6} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 pr-10" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
+                      aria-pressed={showPassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                     </button>
                   </div>
                 </div>
               )}
-              <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
+              {!isLogin && !showForgot && (
+                <div className="flex items-start gap-2.5 rounded-lg bg-muted/40 p-3">
+                  <Checkbox id="consent" checked={consent} onCheckedChange={v => setConsent(v === true)} className="mt-0.5" />
+                  <Label htmlFor="consent" className="text-xs font-normal leading-relaxed text-muted-foreground">
+                    {t("consent.accept")}{" "}
+                    <Link to="/agb" className="text-primary hover:underline">{lang === "de" ? "Nutzungsbedingungen" : "Terms of Use"}</Link>
+                    {" · "}
+                    <Link to="/datenschutz" className="text-primary hover:underline">{lang === "de" ? "Datenschutzerklärung" : "Privacy Policy"}</Link>
+                  </Label>
+                </div>
+              )}
+              <Button type="submit" className="w-full min-h-[44px]" disabled={loading || (!isLogin && !showForgot && !consent)}>
                 {loading ? t("auth.loading") : showForgot ? t("auth.sendLink") : isLogin ? t("auth.signIn") : t("auth.signUp")}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>

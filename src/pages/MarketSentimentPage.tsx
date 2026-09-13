@@ -909,7 +909,7 @@ export default function MarketSentimentPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8 space-y-4 sm:space-y-6">
+      <main id="main-content" className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8 space-y-4 sm:space-y-6">
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center px-2 sm:px-0">
           <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
             {lang === "de" ? "Markt" : "Market"} <span className="text-primary">{lang === "de" ? "Stimmung" : "Pulse"}</span>

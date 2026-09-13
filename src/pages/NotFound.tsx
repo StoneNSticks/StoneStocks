@@ -28,7 +28,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container max-w-2xl py-16 px-4">
+      <main id="main-content" className="container max-w-2xl py-16 px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-6">
           <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/10 shadow-xl mx-auto">
             <span className="font-display text-5xl font-bold text-primary/60">404</span>

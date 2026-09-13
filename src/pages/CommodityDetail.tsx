@@ -129,7 +129,7 @@ export default function CommodityDetail() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
+      <main id="main-content" className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
           <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1"><ArrowLeft className="h-3 w-3" />{t("nav.markets")}</Link>

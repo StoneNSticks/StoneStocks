@@ -71,7 +71,7 @@ const CalculatorPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
+      <main id="main-content" className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2.5 rounded-xl bg-accent shadow-lg shadow-primary/5">
             <Calculator className="h-6 w-6 text-primary" />

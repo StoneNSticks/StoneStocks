@@ -389,7 +389,7 @@ export default function WatchlistPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
+      <main id="main-content" className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
         {/* Terminal-style Header */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/60 shadow-2xl">

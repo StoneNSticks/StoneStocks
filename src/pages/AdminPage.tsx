@@ -67,7 +67,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 max-w-4xl px-3 sm:px-4">
+      <main id="main-content" className="container py-8 max-w-4xl px-3 sm:px-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 rounded-xl bg-primary/10"><Shield className="h-5 w-5 text-primary" /></div>
           <div>

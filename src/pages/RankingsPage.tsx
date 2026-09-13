@@ -23,7 +23,7 @@ const RankingsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
+      <main id="main-content" className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
         <section className="mb-4 sm:mb-6">
           <MarketOverview />
         </section>

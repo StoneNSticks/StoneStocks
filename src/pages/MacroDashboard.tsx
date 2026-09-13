@@ -203,7 +203,7 @@ export default function MacroDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8 max-w-6xl">
+      <main id="main-content" className="container py-4 sm:py-8 px-3 sm:px-4 lg:px-8 max-w-6xl">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2.5 rounded-xl bg-accent shadow-lg shadow-primary/5">
