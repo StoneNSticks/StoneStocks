@@ -89,8 +89,9 @@ export function HiddenGems() {
                 {t("gems.score")} {s.score}/100
               </span>
               <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums">
-                {t("gems.upside")}{" "}
-                {s.upside == null ? t("gems.noTarget") : `${s.upside > 0 ? "+" : ""}${s.upside.toFixed(0)}%`}
+                {s.upside == null
+                  ? t("gems.noTarget")
+                  : `${t("gems.upside")} ${s.upside > 0 ? "+" : ""}${s.upside.toFixed(0)}%`}
               </span>
             </div>
 
@@ -100,7 +101,7 @@ export function HiddenGems() {
 
             <div className="mt-2 grid grid-cols-3 gap-2 border-t border-border/50 pt-2">
               <Metric label={t("gems.pe")} value={fmt(s.pe)} />
-              <Metric label={t("gems.revGrowth")} value={fmt(s.revenueGrowth, "%", 0)} />
+              <Metric label={t("gems.revGrowth")} value={fmt(s.revenueGrowth, "%", Math.abs(s.revenueGrowth ?? 0) < 10 ? 1 : 0)} />
               <Metric label={t("gems.fcfYield")} value={fmt(s.fcfYield, "%")} />
             </div>
           </Link>
