@@ -184,7 +184,7 @@ export default function GlossaryPage() {
           <p className="text-xs text-muted-foreground" aria-live="polite">
             {isDE ? `${results.length} Ergebnisse` : `${results.length} results`}
             {isSearching && results.length > 0 && (
-              <span className="ml-1 text-muted-foreground/60">
+              <span className="ml-1 text-muted-foreground">
                 ({isDE ? "sortiert nach Relevanz, tippfehlertolerant" : "sorted by relevance, typo tolerant"})
               </span>
             )}

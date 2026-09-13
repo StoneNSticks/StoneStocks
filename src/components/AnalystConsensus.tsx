@@ -327,7 +327,7 @@ export function AnalystConsensus({ recommendation, overview, quote }: Props) {
                           <span className={`w-8 text-right font-mono font-semibold ${rowScore >= 3.5 ? "text-chart-2" : rowScore >= 2.0 ? "text-muted-foreground" : "text-destructive"}`}>
                             {rowScore.toFixed(1)}
                           </span>
-                          <span className="w-5 text-right text-muted-foreground/60 font-mono text-[10px]">{rowTotal}</span>
+                          <span className="w-5 text-right text-muted-foreground font-mono text-[10px]">{rowTotal}</span>
                         </div>
                       );
                     })}

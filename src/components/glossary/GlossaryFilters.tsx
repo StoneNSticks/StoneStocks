@@ -44,7 +44,7 @@ export function GlossaryFilters({
             className={`${chip} ${category === c ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground hover:bg-muted"}`}
           >
             {CATEGORY_LABELS[c][lang === "de" ? "de" : "en"]}
-            <span className="ml-1.5 opacity-60">{categoryCounts[c]}</span>
+            <span className="ml-1.5">{categoryCounts[c]}</span>
           </button>
         ))}
       </div>

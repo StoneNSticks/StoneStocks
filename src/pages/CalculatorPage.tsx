@@ -94,7 +94,7 @@ const CalculatorPage = () => {
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
-              {cat.label} {cat.key !== "all" && <span className="ml-1 opacity-60">({tabs.filter(t => t.category === cat.key).length})</span>}
+              {cat.label} {cat.key !== "all" && <span className="ml-1">({tabs.filter(t => t.category === cat.key).length})</span>}
             </button>
           ))}
         </div>

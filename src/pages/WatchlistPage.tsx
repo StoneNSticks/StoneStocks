@@ -144,7 +144,7 @@ function WatchlistListRow({
           </div>
           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
             {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{w.group_name}</span>}
-            {w.note && <span className="text-[9px] text-muted-foreground/60 truncate max-w-[120px]" title={w.note}>📝 {w.note}</span>}
+            {w.note && <span className="text-[9px] text-muted-foreground truncate max-w-[120px]" title={w.note}>📝 {w.note}</span>}
           </div>
         </div>
       </Link>
