@@ -155,6 +155,11 @@
   .text-loss {
     @apply text-[hsl(var(--loss-text))];
   }
+  /* Destructive as text colour needs more lightness than the button background
+     to clear WCAG AA, especially in dark mode. */
+  .text-destructive {
+    color: hsl(var(--loss-text));
+  }
   .bg-gain {
     @apply bg-[hsl(var(--success))];
   }
