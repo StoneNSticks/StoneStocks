@@ -112,7 +112,7 @@ export default function LearnPage() {
     <div className="min-h-screen bg-background">
       <ReadingProgress />
       <Header />
-      <main className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
+      <main id="main-content" className="container max-w-4xl py-8 md:py-12 space-y-12 px-3 sm:px-4 lg:px-8">
         {/* Hero */}
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center space-y-3 relative">
           <a href="/glossary" className="absolute top-0 right-0 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
@@ -156,7 +156,7 @@ export default function LearnPage() {
                           href={item.href}
                           className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                         >
-                          <span className="font-mono text-[10px] w-5 text-center text-muted-foreground/50 group-hover:text-primary transition-colors">
+                          <span className="font-mono text-[10px] w-5 text-center text-muted-foreground group-hover:text-primary transition-colors">
                             {String(globalOffset + ii + 1).padStart(2, "0")}
                           </span>
                           <span className="truncate">{item.label}</span>

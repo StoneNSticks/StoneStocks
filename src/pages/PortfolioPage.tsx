@@ -342,7 +342,7 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-4xl px-3 sm:px-4">
+      <main id="main-content" className="container py-6 sm:py-10 max-w-4xl px-3 sm:px-4">
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-4">

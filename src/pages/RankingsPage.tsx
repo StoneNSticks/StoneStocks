@@ -23,12 +23,12 @@ const RankingsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
+      <main id="main-content" className="container py-4 sm:py-6 px-3 sm:px-4 lg:px-8">
         <section className="mb-4 sm:mb-6">
           <MarketOverview />
         </section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-lg font-bold">{t("nav.rankings")}</h2>
+          <h1 className="font-display text-lg font-bold">{t("nav.rankings")}</h1>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <TopCompanies />
@@ -39,6 +39,7 @@ const RankingsPage = () => {
           <SectorPerformance />
         </div>
         <ScreenerHeatmap />
+        <p className="mt-6 text-[11px] text-muted-foreground">{t("legal.notAdvice")}</p>
       </main>
       <Footer />
     </div>

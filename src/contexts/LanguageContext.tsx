@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode, useMemo } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo } from "react";
 import { learnTranslations } from "@/i18n/learnTranslations";
 
 export type Language = "de" | "en";
@@ -31,6 +31,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLang(l);
     localStorage.setItem("app_lang", l);
   }, []);
+
+  // Keep the document language in sync so screen readers use the right voice.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const allTranslations = useMemo(() => ({ ...translations, ...learnTranslations }), []);
 
@@ -732,4 +737,45 @@ const translations: Record<string, Record<Language, string>> = {
   "nav.leaderboard": { de: "Bestenliste", en: "Leaderboard" },
   "nav.alertHistory": { de: "Alert-Verlauf", en: "Alert History" },
   "nav.systemStatus": { de: "System-Status", en: "System Status" },
+
+  // ── Legal, consent & accessibility ──
+  "legal.disclaimerShort": {
+    de: "Keine Anlageberatung. Alle Kurse und Kennzahlen sind verzögert und ohne Gewähr. Kapitalanlagen bergen das Risiko des Totalverlusts.",
+    en: "Not investment advice. All prices and metrics are delayed and provided without warranty. Investing carries the risk of total loss.",
+  },
+  "legal.notAdvice": {
+    de: "Keine Anlageberatung — automatisch erstellte Auswertung, ohne Gewähr.",
+    en: "Not investment advice — automatically generated evaluation, without warranty.",
+  },
+  "legal.skipToContent": { de: "Zum Inhalt springen", en: "Skip to content" },
+  "consent.accept": {
+    de: "Ich habe die Nutzungsbedingungen und die Datenschutzerklärung gelesen und akzeptiere sie.",
+    en: "I have read and accept the Terms of Use and the Privacy Policy.",
+  },
+  "consent.required": {
+    de: "Bitte akzeptiere die Nutzungsbedingungen und die Datenschutzerklärung.",
+    en: "Please accept the Terms of Use and the Privacy Policy.",
+  },
+  "consent.emailUse": {
+    de: "Freiwillig. Wird nur zum Zurücksetzen des Passworts und für Benachrichtigungen genutzt. Ohne E-Mail ist keine Passwort-Wiederherstellung möglich.",
+    en: "Optional. Used only for password resets and notifications. Without an email address a password cannot be recovered.",
+  },
+  "consent.commentPublic": {
+    de: "Dein Beitrag ist öffentlich sichtbar, zusammen mit deinem Nutzernamen. Bitte keine persönlichen Daten veröffentlichen.",
+    en: "Your post is publicly visible together with your username. Please do not post personal data.",
+  },
+  "consent.pushInfo": {
+    de: "Bei Aktivierung speichert dein Browser eine Zustelladresse, über die Benachrichtigungen gesendet werden. Jederzeit widerrufbar.",
+    en: "When enabled, your browser stores a delivery endpoint used to send notifications. You can revoke this at any time.",
+  },
+  "a11y.showPassword": { de: "Passwort anzeigen", en: "Show password" },
+  "a11y.hidePassword": { de: "Passwort verbergen", en: "Hide password" },
+  "settings.exportData": { de: "Meine Daten herunterladen", en: "Download my data" },
+  "settings.exportDataDesc": {
+    de: "Lädt alle zu deinem Konto gespeicherten Inhalte als JSON-Datei herunter.",
+    en: "Downloads everything stored for your account as a JSON file.",
+  },
+  "settings.exportDone": { de: "Datei wurde erstellt", en: "File created" },
+  "settings.deleteDone": { de: "Konto und Inhalte wurden gelöscht", en: "Account and content deleted" },
+  "settings.deleteFailed": { de: "Löschen fehlgeschlagen. Bitte später erneut versuchen.", en: "Deletion failed. Please try again later." },
 };

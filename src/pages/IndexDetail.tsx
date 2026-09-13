@@ -64,7 +64,7 @@ const IndexDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 px-3 sm:px-4 lg:px-8">
+      <main id="main-content" className="container py-8 px-3 sm:px-4 lg:px-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
           <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1"><Home className="h-3 w-3" />{t("nav.markets")}</Link>
@@ -122,7 +122,7 @@ const IndexDetail = () => {
                   {constituents.map((c, i) => (
                     <Link key={c.symbol} to={`/stock/${c.symbol}`} className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2.5 hover:border-primary/30 hover:bg-muted/30 transition-colors group">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-[10px] font-mono text-muted-foreground/40 w-5">{i + 1}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground w-5">{i + 1}</span>
                         <div>
                           <span className="text-sm font-medium group-hover:text-primary transition-colors">{c.name}</span>
                           <span className="text-xs text-muted-foreground ml-1.5">{c.symbol}</span>

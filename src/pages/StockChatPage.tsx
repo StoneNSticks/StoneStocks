@@ -184,7 +184,7 @@ export default function StockChatPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 container max-w-3xl px-3 sm:px-4 py-4 flex flex-col">
+      <main id="main-content" className="flex-1 container max-w-3xl px-3 sm:px-4 py-4 flex flex-col">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-4">
           <div className="inline-flex items-center gap-2 mb-2">
@@ -303,7 +303,7 @@ export default function StockChatPage() {
           </div>
         </div>
 
-        <p className="text-[10px] text-muted-foreground/50 text-center mt-2">
+        <p className="text-[10px] text-muted-foreground text-center mt-2">
           {lang === "de"
             ? "KI kann Fehler machen. Keine Anlageberatung."
             : "AI can make mistakes. Not financial advice."}

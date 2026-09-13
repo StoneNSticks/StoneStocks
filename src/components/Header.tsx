@@ -66,6 +66,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+      >
+        {t("legal.skipToContent")}
+      </a>
       {/* Row 1: Utility bar */}
       <div className="border-b border-border/40">
         <div className="container flex h-12 items-center gap-4">
@@ -95,7 +101,9 @@ export function Header() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                  <Link to="/glossary"><BookOpen className="h-4 w-4 text-muted-foreground" /></Link>
+                  <Link to="/glossary" aria-label={t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}>
+                    <BookOpen className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}</TooltipContent>

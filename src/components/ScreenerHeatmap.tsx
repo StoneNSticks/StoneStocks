@@ -23,14 +23,14 @@ const SECTOR_COLORS: Record<string, string> = {
 };
 
 function getChangeBg(change: number): string {
-  if (change >= 3) return "hsl(145, 65%, 30%)";
-  if (change >= 1.5) return "hsl(145, 55%, 38%)";
-  if (change >= 0.5) return "hsl(145, 40%, 45%)";
-  if (change >= 0) return "hsl(145, 25%, 50%)";
-  if (change >= -0.5) return "hsl(0, 25%, 50%)";
-  if (change >= -1.5) return "hsl(0, 40%, 45%)";
-  if (change >= -3) return "hsl(0, 55%, 38%)";
-  return "hsl(0, 65%, 30%)";
+  if (change >= 3) return "hsl(145, 68%, 24%)";
+  if (change >= 1.5) return "hsl(145, 60%, 29%)";
+  if (change >= 0.5) return "hsl(145, 45%, 33%)";
+  if (change >= 0) return "hsl(145, 28%, 37%)";
+  if (change >= -0.5) return "hsl(0, 30%, 37%)";
+  if (change >= -1.5) return "hsl(0, 45%, 33%)";
+  if (change >= -3) return "hsl(0, 58%, 30%)";
+  return "hsl(0, 68%, 25%)";
 }
 
 function formatMcap(n: number): string {
@@ -123,11 +123,11 @@ export function ScreenerHeatmap() {
               }}
             >
               <span className="font-mono font-bold text-[11px] leading-none drop-shadow-sm">{ticker}</span>
-              <span className={`text-[10px] font-mono font-semibold ${change >= 0 ? "text-white/90" : "text-white/90"}`}>
+              <span className={`text-[10px] font-mono font-semibold ${change >= 0 ? "text-white" : "text-white"}`}>
                 {change >= 0 ? "+" : ""}{change.toFixed(1)}%
               </span>
               {area > 80 && (
-                <span className="text-[8px] text-white/50 mt-0.5">{formatMcap(c.marketCap)}</span>
+                <span className="text-[8px] text-white mt-0.5">{formatMcap(c.marketCap)}</span>
               )}
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -139,10 +139,10 @@ export function ScreenerHeatmap() {
       {/* Legend */}
       <div className="flex items-center justify-center gap-4 p-3 border-t border-border/20 flex-wrap">
         {[
-          { color: "hsl(0, 55%, 38%)", label: "< -1.5%" },
-          { color: "hsl(0, 25%, 50%)", label: "−0.5%" },
-          { color: "hsl(145, 25%, 50%)", label: "+0.5%" },
-          { color: "hsl(145, 55%, 38%)", label: "> +1.5%" },
+          { color: "hsl(0, 58%, 30%)", label: "< -1.5%" },
+          { color: "hsl(0, 30%, 37%)", label: "−0.5%" },
+          { color: "hsl(145, 28%, 37%)", label: "+0.5%" },
+          { color: "hsl(145, 60%, 29%)", label: "> +1.5%" },
         ].map((item) => (
           <div key={item.label} className="flex items-center gap-1.5">
             <div className="h-3 w-6 rounded-sm" style={{ background: item.color }} />

@@ -147,7 +147,7 @@ export function SentimentGauge() {
                 </div>
               </div>
 
-              <p className="text-[9px] text-muted-foreground/70 leading-relaxed">
+              <p className="text-[9px] text-muted-foreground leading-relaxed">
                 {lang === "de"
                   ? "⚠ Dies ist ein reiner Momentum-Indikator. Die Vollanalyse auf der Stimmungsseite nutzt ein 7-Indikatoren-Modell (Marktbreite, Volatilität, Sichere Häfen, etc.)."
                   : "⚠ This is a momentum-only signal. The full analysis on the Sentiment page uses a 7-indicator model (breadth, volatility, safe havens, etc.)."}

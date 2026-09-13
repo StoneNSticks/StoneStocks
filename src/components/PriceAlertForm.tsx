@@ -157,7 +157,7 @@ export function PriceAlertForm({ symbol, currentPrice }: { symbol: string; curre
           )}
 
           {(!alerts || alerts.length === 0) && !isAdding && (
-            <p className="text-xs text-muted-foreground/50 text-center py-2">
+            <p className="text-xs text-muted-foreground text-center py-2">
               {lang === "de" ? "Keine aktiven Alerts" : "No active alerts"}
             </p>
           )}

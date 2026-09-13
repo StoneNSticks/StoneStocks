@@ -79,7 +79,7 @@ export function GlossaryResults({
         </p>
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground/70">
+            <p className="text-xs text-muted-foreground">
               {lang === "de" ? "Meintest du:" : "Did you mean:"}
             </p>
             <div className="flex flex-wrap justify-center gap-1.5">

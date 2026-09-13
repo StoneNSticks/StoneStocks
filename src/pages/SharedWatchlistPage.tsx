@@ -70,7 +70,7 @@ export default function SharedWatchlistPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-3xl px-3 sm:px-4">
+      <main id="main-content" className="container py-6 sm:py-10 max-w-3xl px-3 sm:px-4">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-3">
             <Eye className="h-6 w-6 text-primary" />

@@ -79,17 +79,22 @@ export function StockComments({ symbol }: { symbol: string }) {
       </h3>
 
       {user && (
-        <div className="flex gap-2 mb-4">
-          <Input
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t("comments.placeholder")}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            maxLength={280}
-          />
-          <Button size="icon" onClick={handleSubmit} disabled={loading || !newComment.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="mb-4 space-y-1.5">
+          <div className="flex gap-2">
+            <Input
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={t("comments.placeholder")}
+              aria-label={t("comments.placeholder")}
+              aria-describedby="comment-public-hint"
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              maxLength={280}
+            />
+            <Button size="icon" aria-label={t("comments.title")} onClick={handleSubmit} disabled={loading || !newComment.trim()}>
+              <Send className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+          <p id="comment-public-hint" className="text-[11px] text-muted-foreground">{t("consent.commentPublic")}</p>
         </div>
       )}
 

@@ -63,7 +63,7 @@ export function MarketNewsSection({ limit = 8 }: { limit?: number }) {
         {news.slice(0, limit).map((item: any, i: number) => (
           <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-lg p-2.5 -mx-1 transition-colors hover:bg-muted group">
             {item.image && (
-              <img src={item.image} alt="" className="w-20 h-14 rounded-lg object-cover flex-shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              <img src={item.image} alt="" aria-hidden="true" className="w-20 h-14 rounded-lg object-cover flex-shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">

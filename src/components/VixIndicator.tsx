@@ -77,8 +77,8 @@ export function VixIndicator() {
             />
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-[9px] text-muted-foreground/60">{lang === "de" ? "Ruhig" : "Calm"}</span>
-            <span className="text-[9px] text-muted-foreground/60">{lang === "de" ? "Volatil" : "Volatile"}</span>
+            <span className="text-[9px] text-muted-foreground">{lang === "de" ? "Ruhig" : "Calm"}</span>
+            <span className="text-[9px] text-muted-foreground">{lang === "de" ? "Volatil" : "Volatile"}</span>
           </div>
         </div>
       </div>

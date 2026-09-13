@@ -311,13 +311,16 @@ export function CommunitySection({ symbol }: { symbol: string }) {
               placeholder={replyTo
                 ? (lang === "de" ? "Antwort schreiben..." : "Write a reply...")
                 : t("comments.placeholder")}
+              aria-label={t("comments.placeholder")}
+              aria-describedby="community-public-hint"
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               maxLength={280}
             />
-            <Button size="icon" onClick={handleSubmit} disabled={loading || !newComment.trim()}>
-              <Send className="h-4 w-4" />
+            <Button size="icon" aria-label={t("comments.title")} onClick={handleSubmit} disabled={loading || !newComment.trim()}>
+              <Send className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
+          <p id="community-public-hint" className="text-[11px] text-muted-foreground">{t("consent.commentPublic")}</p>
         </div>
       )}
 

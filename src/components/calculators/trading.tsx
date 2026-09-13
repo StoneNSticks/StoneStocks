@@ -31,10 +31,10 @@ export function PositionSize() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.portfolioValueLabel")}</Label><Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.riskPerTrade")}</Label><Input type="number" value={risk} onChange={(e) => setRisk(Number(e.target.value))} className="mt-1" step="0.5" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input type="number" value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.stopLoss")}</Label><Input type="number" value={stop} onChange={(e) => setStop(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.portfolioValueLabel")}</Label><Input aria-label={t("calc.portfolioValueLabel")} type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.riskPerTrade")}</Label><Input aria-label={t("calc.riskPerTrade")} type="number" value={risk} onChange={(e) => setRisk(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input aria-label={t("calc.entryPrice")} type="number" value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.stopLoss")}</Label><Input aria-label={t("calc.stopLoss")} type="number" value={stop} onChange={(e) => setStop(Number(e.target.value))} className="mt-1" /></div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <ResultCard label={t("calc.riskAmount")} value={formatMoney(result.riskAmount)} color="text-destructive" />
@@ -66,10 +66,10 @@ export function RiskRewardCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input type="number" value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.stopLoss")}</Label><Input type="number" value={stop} onChange={(e) => setStop(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.targetPrice")}</Label><Input type="number" value={target} onChange={(e) => setTarget(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.shares")}</Label><Input type="number" value={shares} onChange={(e) => setShares(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input aria-label={t("calc.entryPrice")} type="number" value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.stopLoss")}</Label><Input aria-label={t("calc.stopLoss")} type="number" value={stop} onChange={(e) => setStop(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.targetPrice")}</Label><Input aria-label={t("calc.targetPrice")} type="number" value={target} onChange={(e) => setTarget(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.shares")}</Label><Input aria-label={t("calc.shares")} type="number" value={shares} onChange={(e) => setShares(Number(e.target.value))} className="mt-1" /></div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <ResultCard label={t("calc.potentialProfit")} value={formatMoney(result.profit)} color="text-gain" />
@@ -124,10 +124,10 @@ export function OptionsCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.sharePrice")}</Label><Input type="number" value={stockPrice} onChange={(e) => setStockPrice(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.strikePrice")}</Label><Input type="number" value={strike} onChange={(e) => setStrike(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.premium")}</Label><Input type="number" value={premium} onChange={(e) => setPremium(Number(e.target.value))} className="mt-1" step="0.1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.contracts")}</Label><Input type="number" value={contracts} onChange={(e) => setContracts(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.sharePrice")}</Label><Input aria-label={t("calc.sharePrice")} type="number" value={stockPrice} onChange={(e) => setStockPrice(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.strikePrice")}</Label><Input aria-label={t("calc.strikePrice")} type="number" value={strike} onChange={(e) => setStrike(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.premium")}</Label><Input aria-label={t("calc.premium")} type="number" value={premium} onChange={(e) => setPremium(Number(e.target.value))} className="mt-1" step="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.contracts")}</Label><Input aria-label={t("calc.contracts")} type="number" value={contracts} onChange={(e) => setContracts(Number(e.target.value))} className="mt-1" /></div>
         <div>
           <Label className="text-xs text-muted-foreground">{t("calc.optionType")}</Label>
           <div className="flex gap-1 mt-1">
@@ -171,10 +171,10 @@ export function MarginCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.equity")}</Label><Input type="number" value={equity} onChange={(e) => setEquity(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.leverage")}</Label><Input type="number" value={leverage} onChange={(e) => setLeverage(Number(e.target.value))} className="mt-1" step="0.5" min="1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input type="number" value={entryPrice} onChange={(e) => setEntryPrice(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.maintenanceMargin")}</Label><Input type="number" value={maintenance} onChange={(e) => setMaintenance(Number(e.target.value))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.equity")}</Label><Input aria-label={t("calc.equity")} type="number" value={equity} onChange={(e) => setEquity(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.leverage")}</Label><Input aria-label={t("calc.leverage")} type="number" value={leverage} onChange={(e) => setLeverage(Number(e.target.value))} className="mt-1" step="0.5" min="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.entryPrice")}</Label><Input aria-label={t("calc.entryPrice")} type="number" value={entryPrice} onChange={(e) => setEntryPrice(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.maintenanceMargin")}</Label><Input aria-label={t("calc.maintenanceMargin")} type="number" value={maintenance} onChange={(e) => setMaintenance(Number(e.target.value))} className="mt-1" step="1" /></div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <ResultCard label={t("calc.positionSizeResult")} value={formatMoney(positionSize)} color="text-primary" />
@@ -200,7 +200,7 @@ export function BreakEvenCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.lossPercent")}</Label><Input type="number" value={loss} onChange={(e) => setLoss(Math.min(99, Math.max(0, Number(e.target.value))))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.lossPercent")}</Label><Input aria-label={t("calc.lossPercent")} type="number" value={loss} onChange={(e) => setLoss(Math.min(99, Math.max(0, Number(e.target.value))))} className="mt-1" step="1" /></div>
         <ResultCard label={t("calc.recoveryNeeded")} value={`+${customRecovery.toFixed(2)}%`} color="text-gain" />
       </div>
       <div className="rounded-xl border border-border/60 bg-card overflow-hidden">

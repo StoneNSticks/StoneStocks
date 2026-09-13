@@ -181,7 +181,7 @@ export function NotificationCenter() {
                       <p className="text-xs text-muted-foreground">
                         {alert.direction === "above" ? "↑" : "↓"} ${alert.target_price}
                       </p>
-                      <p className="text-[10px] text-muted-foreground/70">
+                      <p className="text-[10px] text-muted-foreground">
                         {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: dateFmtLocale })}
                       </p>
                     </div>
@@ -239,7 +239,7 @@ export function NotificationCenter() {
                     <p className="text-xs text-muted-foreground">
                       Earnings: {new Date(notif.earnings_date).toLocaleDateString(lang === "de" ? "de-DE" : "en-US")}
                     </p>
-                    <p className="text-[10px] text-muted-foreground/70">
+                    <p className="text-[10px] text-muted-foreground">
                       {formatDistanceToNow(new Date(notif.notified_at), { addSuffix: true, locale: dateFmtLocale })}
                     </p>
                   </div>
@@ -255,7 +255,7 @@ export function NotificationCenter() {
 
 function EmptyState({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground/40">
+    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
       {icon}
       <p className="text-sm mt-3">{text}</p>
     </div>

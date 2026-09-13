@@ -121,7 +121,7 @@ function WatchlistListRow({
   return (
     <div className="flex items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors group">
       {/* # */}
-      <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none w-6 shrink-0">{i + 1}</span>
+      <span className="text-[10px] font-mono text-muted-foreground text-center select-none w-6 shrink-0">{i + 1}</span>
 
       {/* Star */}
       <div className="shrink-0"><WatchlistStar symbol={w.symbol} /></div>
@@ -144,7 +144,7 @@ function WatchlistListRow({
           </div>
           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
             {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{w.group_name}</span>}
-            {w.note && <span className="text-[9px] text-muted-foreground/60 truncate max-w-[120px]" title={w.note}>📝 {w.note}</span>}
+            {w.note && <span className="text-[9px] text-muted-foreground truncate max-w-[120px]" title={w.note}>📝 {w.note}</span>}
           </div>
         </div>
       </Link>
@@ -157,7 +157,7 @@ function WatchlistListRow({
 
       {/* Added date */}
       <div className="hidden sm:block text-right shrink-0 w-16">
-        <span className="text-[10px] font-mono text-muted-foreground/50">
+        <span className="text-[10px] font-mono text-muted-foreground">
           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
         </span>
       </div>
@@ -270,7 +270,7 @@ function NoteEditor({ item: wItem, lang }: { item: any; lang: string }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.note ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Notiz" : "Note"}>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.note ? "text-primary" : "text-muted-foreground"}`} title={lang === "de" ? "Notiz" : "Note"}>
           <StickyNote className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
@@ -304,7 +304,7 @@ function GroupEditor({ item: wItem, groups, lang }: { item: any; groups: string[
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.group_name ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Gruppe" : "Group"}>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.group_name ? "text-primary" : "text-muted-foreground"}`} title={lang === "de" ? "Gruppe" : "Group"}>
           <Tag className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
@@ -389,7 +389,7 @@ export default function WatchlistPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
+      <main id="main-content" className="container py-6 sm:py-10 max-w-5xl px-3 sm:px-4">
         {/* Terminal-style Header */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/60 shadow-2xl">
@@ -489,7 +489,7 @@ export default function WatchlistPage() {
                 </motion.div>
               )}
               {user && count > 0 && (
-                <div className="mt-2 text-[10px] font-mono text-muted-foreground/50">
+                <div className="mt-2 text-[10px] font-mono text-muted-foreground">
                   {lang === "de" ? "Sortierung" : "Sort"}: <span className="text-muted-foreground">{sortLabel}</span>
                   {groupFilter && <> · {lang === "de" ? "Gruppe" : "Group"}: <span className="text-primary">{groupFilter}</span></>}
                 </div>
@@ -584,7 +584,7 @@ export default function WatchlistPage() {
         )}
 
         {user && count > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />
@@ -635,7 +635,7 @@ function GridCard({ w, lang, groups, handleQuoteLoaded }: {
         <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
         {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium mt-1 inline-block">{w.group_name}</span>}
         <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
-        <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
+        <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground font-mono">
           <Clock className="h-2.5 w-2.5" />
           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
         </div>

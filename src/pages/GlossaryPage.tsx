@@ -125,7 +125,7 @@ export default function GlossaryPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-      <main className="container max-w-5xl px-3 py-6 sm:px-4 sm:py-10 lg:px-8">
+      <main id="main-content" className="container max-w-5xl px-3 py-6 sm:px-4 sm:py-10 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-accent p-2.5 shadow-lg shadow-primary/5">
@@ -184,7 +184,7 @@ export default function GlossaryPage() {
           <p className="text-xs text-muted-foreground" aria-live="polite">
             {isDE ? `${results.length} Ergebnisse` : `${results.length} results`}
             {isSearching && results.length > 0 && (
-              <span className="ml-1 text-muted-foreground/60">
+              <span className="ml-1 text-muted-foreground">
                 ({isDE ? "sortiert nach Relevanz, tippfehlertolerant" : "sorted by relevance, typo tolerant"})
               </span>
             )}

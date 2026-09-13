@@ -96,10 +96,10 @@ export function DCASimulator() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyContribution")}</Label><Input type="number" value={monthlyAmount} onChange={(e) => setMonthlyAmount(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaMonths")}</Label><Input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.annualReturn")}</Label><Input type="number" value={avgReturn} onChange={(e) => setAvgReturn(Number(e.target.value))} className="mt-1" step="0.5" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaVolatility")}</Label><Input type="number" value={volatility} onChange={(e) => setVolatility(Number(e.target.value))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyContribution")}</Label><Input aria-label={t("calc.monthlyContribution")} type="number" value={monthlyAmount} onChange={(e) => setMonthlyAmount(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaMonths")}</Label><Input aria-label={t("calc.dcaMonths")} type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.annualReturn")}</Label><Input aria-label={t("calc.annualReturn")} type="number" value={avgReturn} onChange={(e) => setAvgReturn(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.dcaVolatility")}</Label><Input aria-label={t("calc.dcaVolatility")} type="number" value={volatility} onChange={(e) => setVolatility(Number(e.target.value))} className="mt-1" step="1" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <ResultCard label={t("calc.totalInvested")} value={formatMoney(totalInvested)} />
@@ -151,7 +151,7 @@ export function TaxLossHarvesting() {
         <ResultCard label={t("calc.estTaxSavings")} value={formatMoney(totalSaving)} color="text-gain" />
       </div>
       <div className="flex items-end gap-3">
-        <div className="flex-1"><Label className="text-xs text-muted-foreground">{t("calc.taxRate")}</Label><Input type="number" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div className="flex-1"><Label className="text-xs text-muted-foreground">{t("calc.taxRate")}</Label><Input aria-label={t("calc.taxRate")} type="number" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
       </div>
       <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
         <div className="grid grid-cols-[1fr_4rem_5rem_5rem_5rem] gap-2 px-4 py-2 bg-muted/40 text-[10px] uppercase font-mono text-muted-foreground">
@@ -207,10 +207,10 @@ export function KellyCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">Gewinnquote (%)</Label><Input type="number" value={winRate} onChange={(e) => setWinRate(Math.min(99, Math.max(1, Number(e.target.value))))} className="mt-1" step="1" /></div>
-        <div><Label className="text-xs text-muted-foreground">Gewinn/Verlust-Ratio</Label><Input type="number" value={winLossRatio} onChange={(e) => setWinLossRatio(Number(e.target.value))} className="mt-1" step="0.1" min="0.1" /></div>
-        <div><Label className="text-xs text-muted-foreground">Kapital ($)</Label><Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">Simulierte Trades</Label><Input type="number" value={trades} onChange={(e) => setTrades(Math.min(100, Math.max(5, Number(e.target.value))))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Gewinnquote (%)</Label><Input aria-label="Gewinnquote (%)" type="number" value={winRate} onChange={(e) => setWinRate(Math.min(99, Math.max(1, Number(e.target.value))))} className="mt-1" step="1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Gewinn/Verlust-Ratio</Label><Input aria-label="Gewinn/Verlust-Ratio" type="number" value={winLossRatio} onChange={(e) => setWinLossRatio(Number(e.target.value))} className="mt-1" step="0.1" min="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Kapital ($)</Label><Input aria-label="Kapital ($)" type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">Simulierte Trades</Label><Input aria-label="Simulierte Trades" type="number" value={trades} onChange={(e) => setTrades(Math.min(100, Math.max(5, Number(e.target.value))))} className="mt-1" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <ResultCard label="Kelly-Anteil" value={`${(kellyFraction * 100).toFixed(1)}%`} color="text-primary" />
@@ -271,8 +271,8 @@ export function DividendProjector() {
         <ResultCard label={t("calc.cumulativeTotal")} value={formatMoney(totalCum)} color="text-gain" />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.divGrowthPerYear")}</Label><Input type="number" value={growthRate} onChange={(e) => setGrowthRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.projectionYears")}</Label><Input type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.divGrowthPerYear")}</Label><Input aria-label={t("calc.divGrowthPerYear")} type="number" value={growthRate} onChange={(e) => setGrowthRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.projectionYears")}</Label><Input aria-label={t("calc.projectionYears")} type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1" /></div>
       </div>
       <div className="rounded-xl border border-border/60 bg-card p-4">
         <ResponsiveContainer width="100%" height={250}>

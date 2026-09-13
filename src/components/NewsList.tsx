@@ -20,7 +20,7 @@ export function NewsList({ news }: { news: any[] }) {
       <div className="space-y-3">
         {news.slice(0, 8).map((item: any, i: number) => (
           <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-lg p-2.5 -mx-2.5 transition-colors hover:bg-muted group">
-            {item.image && <img src={item.image} alt="" className="w-16 h-12 rounded-md object-cover flex-shrink-0" loading="lazy" />}
+            {item.image && <img src={item.image} alt="" aria-hidden="true" className="w-16 h-12 rounded-md object-cover flex-shrink-0" loading="lazy" />}
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">{item.headline}</h4>
               <div className="flex items-center gap-2 mt-1">

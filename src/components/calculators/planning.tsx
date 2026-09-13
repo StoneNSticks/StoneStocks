@@ -40,11 +40,11 @@ export function FireCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.annualExpenses")}</Label><Input type="number" value={expenses} onChange={(e) => setExpenses(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.currentSavings")}</Label><Input type="number" value={savings} onChange={(e) => setSavings(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyContribution")}</Label><Input type="number" value={monthlySavings} onChange={(e) => setMonthlySavings(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.expectedReturn")}</Label><Input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.withdrawalRate")}</Label><Input type="number" value={withdrawal} onChange={(e) => setWithdrawal(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.annualExpenses")}</Label><Input aria-label={t("calc.annualExpenses")} type="number" value={expenses} onChange={(e) => setExpenses(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.currentSavings")}</Label><Input aria-label={t("calc.currentSavings")} type="number" value={savings} onChange={(e) => setSavings(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyContribution")}</Label><Input aria-label={t("calc.monthlyContribution")} type="number" value={monthlySavings} onChange={(e) => setMonthlySavings(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.expectedReturn")}</Label><Input aria-label={t("calc.expectedReturn")} type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.withdrawalRate")}</Label><Input aria-label={t("calc.withdrawalRate")} type="number" value={withdrawal} onChange={(e) => setWithdrawal(Number(e.target.value))} className="mt-1" step="0.5" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <ResultCard label={t("calc.fireNumber")} value={formatMoney(result.needed)} color="text-primary" />
@@ -100,9 +100,9 @@ export function LoanCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.loanAmount")}</Label><Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.interestRate")}</Label><Input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.loanTerm")}</Label><Input type="number" value={termYears} onChange={(e) => setTermYears(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.loanAmount")}</Label><Input aria-label={t("calc.loanAmount")} type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.interestRate")}</Label><Input aria-label={t("calc.interestRate")} type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.loanTerm")}</Label><Input aria-label={t("calc.loanTerm")} type="number" value={termYears} onChange={(e) => setTermYears(Number(e.target.value))} className="mt-1" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <ResultCard label={t("calc.monthlyPayment")} value={formatMoney(result.monthly)} color="text-primary" />
@@ -156,10 +156,10 @@ export function RetirementWithdrawal() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.startingCapital")}</Label><Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyWithdrawal")}</Label><Input type="number" value={monthlyW} onChange={(e) => setMonthlyW(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.expectedReturn")}</Label><Input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.years")}</Label><Input type="number" value={simYears} onChange={(e) => setSimYears(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.startingCapital")}</Label><Input aria-label={t("calc.startingCapital")} type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlyWithdrawal")}</Label><Input aria-label={t("calc.monthlyWithdrawal")} type="number" value={monthlyW} onChange={(e) => setMonthlyW(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.expectedReturn")}</Label><Input aria-label={t("calc.expectedReturn")} type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.years")}</Label><Input aria-label={t("calc.years")} type="number" value={simYears} onChange={(e) => setSimYears(Number(e.target.value))} className="mt-1" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <ResultCard label={t("calc.monthlyWithdrawal")} value={formatMoney(monthlyW)} />
@@ -208,9 +208,9 @@ export function SavingsGoalCalc() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div><Label className="text-xs text-muted-foreground">{t("calc.goalAmount")}</Label><Input type="number" value={goal} onChange={(e) => setGoal(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlySaving")}</Label><Input type="number" value={monthly} onChange={(e) => setMonthly(Number(e.target.value))} className="mt-1" /></div>
-        <div><Label className="text-xs text-muted-foreground">{t("calc.annualReturn")}</Label><Input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.goalAmount")}</Label><Input aria-label={t("calc.goalAmount")} type="number" value={goal} onChange={(e) => setGoal(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.monthlySaving")}</Label><Input aria-label={t("calc.monthlySaving")} type="number" value={monthly} onChange={(e) => setMonthly(Number(e.target.value))} className="mt-1" /></div>
+        <div><Label className="text-xs text-muted-foreground">{t("calc.annualReturn")}</Label><Input aria-label={t("calc.annualReturn")} type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="mt-1" step="0.5" /></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <ResultCard label={t("calc.monthsToGoal")} value={monthsToGoal >= 0 ? `${monthsToGoal} (${(monthsToGoal / 12).toFixed(1)}y)` : "600+"} color="text-primary" />

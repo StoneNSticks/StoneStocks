@@ -103,7 +103,7 @@ export function SectionHeader({ num, title, level }: { num: number; title: strin
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">{num}</div>
       <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">{title}</h2>
       {level && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{level}</span>}
-      <button onClick={copyLink} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground/40 hover:text-primary transition-colors" title="Copy link">
+      <button onClick={copyLink} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-colors" title="Copy link">
         <LinkIcon className="h-3.5 w-3.5" />
       </button>
     </motion.div>
