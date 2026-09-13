@@ -2063,7 +2063,7 @@ async function fetchGemFundamentals(symbol: string) {
     finnhubSector: (profileRes as any)?.finnhubIndustry || "",
   };
 
-  await setCache(cacheKey, data, "finnhub", 60 * 24);
+  await setCache(cacheKey, data, "finnhub", 60 * 24 * 7);
   return data as Record<string, unknown>;
 }
 
@@ -2089,47 +2089,64 @@ async function handleHiddenGems() {
     return q && q.price > 0 && q.marketCap >= MIN_GEM_MCAP && q.marketCap <= MAX_GEM_MCAP;
   });
 
-  // 3. Fundamentals in batches, bounded by a wall-clock budget.
-  const inputs: GemInput[] = [];
-  const DEADLINE = Date.now() + 30_000;
-  const BATCH = 8;
-  for (let i = 0; i < eligible.length; i += BATCH) {
+  // 3. Fundamentals: read everything already cached in one query, then top up a
+  //    bounded slice of missing symbols so we never hit the provider rate limit.
+  const cachedFundamentals = await getCachedMany(eligible.map((c) => `gem_fundamentals:${c.symbol}`));
+  const fundamentals = new Map<string, any>();
+  for (const c of eligible) {
+    const hit = cachedFundamentals.get(`gem_fundamentals:${c.symbol}`);
+    if (hit) fundamentals.set(c.symbol, hit);
+  }
+
+  const missing = eligible.filter((c) => !fundamentals.has(c.symbol));
+  const REFRESH_LIMIT = 24;
+  const BATCH = 4;
+  const DEADLINE = Date.now() + 20_000;
+  const slice = missing.slice(0, REFRESH_LIMIT);
+  for (let i = 0; i < slice.length; i += BATCH) {
     if (Date.now() > DEADLINE) break;
-    const batch = eligible.slice(i, i + BATCH);
+    const batch = slice.slice(i, i + BATCH);
     const rows = await Promise.all(batch.map(async (c) => {
-      const q = quotes.get(c.symbol)!;
-      try {
-        const f: any = await fetchGemFundamentals(c.symbol);
-        const fcfYield = f.fcfPerShare != null && q.price > 0 ? (f.fcfPerShare / q.price) * 100 : null;
-        return {
-          symbol: c.symbol, name: c.name || q.name, sector: c.sector,
-          price: q.price, change: q.change, changePercent: q.changePercent,
-          marketCap: q.marketCap, logo: f.logo || "",
-          pe: f.pe, ps: f.ps, evEbitda: f.ebitdaMultiple, fcfYield,
-          revenueGrowth: f.revenueGrowth, epsGrowth: f.epsGrowth, netMargin: f.netMargin,
-          targetMean: f.targetMean, analystCount: f.analystCount || 0, buyRatio: f.buyRatio || 0,
-          debtToEquity: f.debtToEquity, roe: f.roe,
-          return13w: f.return13w, return26w: f.return26w, high52w: f.high52w,
-        } as GemInput;
-      } catch (e) {
-        console.warn(`Gem fundamentals failed for ${c.symbol}:`, e);
-        return null;
-      }
+      try { return [c.symbol, await fetchGemFundamentals(c.symbol)] as const; }
+      catch (e) { console.warn(`Gem fundamentals failed for ${c.symbol}:`, e); return null; }
     }));
-    for (const r of rows) if (r) inputs.push(r);
-    if (i + BATCH < eligible.length) await new Promise((r) => setTimeout(r, 120));
+    for (const r of rows) if (r) fundamentals.set(r[0], r[1]);
+    if (i + BATCH < slice.length) await new Promise((r) => setTimeout(r, 900));
+  }
+
+  // 4. Build scoring inputs — only for symbols where real fundamentals exist.
+  const inputs: GemInput[] = [];
+  for (const c of eligible) {
+    const f: any = fundamentals.get(c.symbol);
+    const q = quotes.get(c.symbol)!;
+    if (!f) continue;
+    const hasFundamentals = f.pe != null || f.ps != null || f.revenueGrowth != null || f.netMargin != null;
+    if (!hasFundamentals) continue;
+    const fcfYield = f.fcfPerShare != null && q.price > 0 ? (f.fcfPerShare / q.price) * 100 : null;
+    inputs.push({
+      symbol: c.symbol, name: c.name || q.name, sector: c.sector,
+      price: q.price, change: q.change, changePercent: q.changePercent,
+      marketCap: q.marketCap, logo: f.logo || "",
+      pe: f.pe, ps: f.ps, evEbitda: f.ebitdaMultiple, fcfYield,
+      revenueGrowth: f.revenueGrowth, epsGrowth: f.epsGrowth, netMargin: f.netMargin,
+      targetMean: f.targetMean, analystCount: f.analystCount || 0, buyRatio: f.buyRatio || 0,
+      debtToEquity: f.debtToEquity, roe: f.roe,
+      return13w: f.return13w, return26w: f.return26w, high52w: f.high52w,
+    });
   }
 
   const gems = selectGems(inputs, 12, 2);
 
-  if (gems.length === 0) {
-    const stale = await getStaleCached(cacheKey);
-    if (Array.isArray(stale) && stale.length > 0) return stale;
-  }
+  // Coverage is still building up: serve the previous list if it was richer.
+  const stale = await getStaleCached(cacheKey);
+  if (Array.isArray(stale) && stale.length > gems.length) return stale;
+
+  if (gems.length === 0) return [];
 
   await setCache(cacheKey, gems, "multi", TTL.hidden_gems);
   return gems;
 }
+
 
 
 
