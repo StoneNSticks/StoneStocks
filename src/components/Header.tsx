@@ -101,7 +101,9 @@ export function Header() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                  <Link to="/glossary"><BookOpen className="h-4 w-4 text-muted-foreground" /></Link>
+                  <Link to="/glossary" aria-label={t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}>
+                    <BookOpen className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{t("nav.glossary") !== "nav.glossary" ? t("nav.glossary") : "Glossar"}</TooltipContent>
