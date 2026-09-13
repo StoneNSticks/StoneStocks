@@ -71,6 +71,25 @@ async function getStaleCached(key: string): Promise<unknown | null> {
   return null;
 }
 
+/** Batched cache read: one query for many keys. Expired entries are skipped. */
+async function getCachedMany(keys: string[]): Promise<Map<string, unknown>> {
+  const out = new Map<string, unknown>();
+  if (keys.length === 0) return out;
+  const CHUNK = 100;
+  const now = new Date();
+  for (let i = 0; i < keys.length; i += CHUNK) {
+    const { data } = await supabase
+      .from("api_cache")
+      .select("cache_key, data, expires_at")
+      .in("cache_key", keys.slice(i, i + CHUNK));
+    for (const row of data || []) {
+      if (new Date(row.expires_at) > now) out.set(row.cache_key, row.data);
+    }
+  }
+  return out;
+}
+
+
 async function setCache(key: string, value: unknown, source: string, ttlMinutes: number) {
   const expires_at = new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString();
   await supabase.from("api_cache").upsert(
