@@ -99,20 +99,20 @@ export function DCFCalculator({ overview, quote, derived }: DCFCalculatorProps) 
         {/* Inputs */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
-            <Label className="text-[10px] text-muted-foreground">{t("dcf.growthRate")}</Label>
-            <Input type="number" value={growthRate} onChange={(e) => setGrowthRate(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
+            <Label htmlFor="dcf-growth" className="text-[10px] text-muted-foreground">{t("dcf.growthRate")}</Label>
+            <Input id="dcf-growth" type="number" value={growthRate} onChange={(e) => setGrowthRate(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
           </div>
           <div>
-            <Label className="text-[10px] text-muted-foreground">{t("dcf.discountRate")}</Label>
-            <Input type="number" value={discountRate} onChange={(e) => setDiscountRate(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
+            <Label htmlFor="dcf-discount" className="text-[10px] text-muted-foreground">{t("dcf.discountRate")}</Label>
+            <Input id="dcf-discount" type="number" value={discountRate} onChange={(e) => setDiscountRate(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
           </div>
           <div>
-            <Label className="text-[10px] text-muted-foreground">{t("dcf.terminalGrowth")}</Label>
-            <Input type="number" value={terminalGrowth} onChange={(e) => setTerminalGrowth(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
+            <Label htmlFor="dcf-terminal" className="text-[10px] text-muted-foreground">{t("dcf.terminalGrowth")}</Label>
+            <Input id="dcf-terminal" type="number" value={terminalGrowth} onChange={(e) => setTerminalGrowth(Number(e.target.value))} className="mt-1 h-8 text-xs" step={0.5} />
           </div>
           <div>
-            <Label className="text-[10px] text-muted-foreground">{t("dcf.years")}</Label>
-            <Input type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1 h-8 text-xs" min={1} max={20} />
+            <Label htmlFor="dcf-years" className="text-[10px] text-muted-foreground">{t("dcf.years")}</Label>
+            <Input id="dcf-years" type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} className="mt-1 h-8 text-xs" min={1} max={20} />
           </div>
         </div>
 
