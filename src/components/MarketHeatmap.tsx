@@ -39,14 +39,14 @@ const SECTOR_MAP: Record<string, string> = {
 };
 
 function getColor(change: number): string {
-  if (change >= 3) return "hsl(145, 63%, 35%)";
-  if (change >= 1.5) return "hsl(145, 55%, 42%)";
-  if (change >= 0.5) return "hsl(145, 40%, 50%)";
-  if (change >= 0) return "hsl(145, 20%, 55%)";
-  if (change >= -0.5) return "hsl(0, 20%, 55%)";
-  if (change >= -1.5) return "hsl(0, 40%, 50%)";
-  if (change >= -3) return "hsl(0, 55%, 42%)";
-  return "hsl(0, 63%, 35%)";
+  if (change >= 3) return "hsl(145, 68%, 24%)";
+  if (change >= 1.5) return "hsl(145, 60%, 29%)";
+  if (change >= 0.5) return "hsl(145, 45%, 33%)";
+  if (change >= 0) return "hsl(145, 28%, 37%)";
+  if (change >= -0.5) return "hsl(0, 30%, 37%)";
+  if (change >= -1.5) return "hsl(0, 45%, 33%)";
+  if (change >= -3) return "hsl(0, 58%, 30%)";
+  return "hsl(0, 68%, 25%)";
 }
 
 function formatCompact(n: number): string {
@@ -168,10 +168,10 @@ export function MarketHeatmap() {
 
       <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
         {[
-          { color: "hsl(0, 55%, 42%)", label: lang === "de" ? "Verlust" : "Loss" },
-          { color: "hsl(0, 20%, 55%)", label: lang === "de" ? "Leicht −" : "Slight −" },
-          { color: "hsl(145, 20%, 55%)", label: lang === "de" ? "Leicht +" : "Slight +" },
-          { color: "hsl(145, 55%, 42%)", label: lang === "de" ? "Gewinn" : "Gain" },
+          { color: "hsl(0, 58%, 30%)", label: lang === "de" ? "Verlust" : "Loss" },
+          { color: "hsl(0, 30%, 37%)", label: lang === "de" ? "Leicht −" : "Slight −" },
+          { color: "hsl(145, 28%, 37%)", label: lang === "de" ? "Leicht +" : "Slight +" },
+          { color: "hsl(145, 60%, 29%)", label: lang === "de" ? "Gewinn" : "Gain" },
         ].map((item) => (
           <div key={item.label} className="flex items-center gap-1.5">
             <div className="h-2.5 w-2.5 rounded-sm" style={{ background: item.color }} />
