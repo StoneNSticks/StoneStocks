@@ -2042,12 +2042,14 @@ async function fetchGemFundamentals(symbol: string) {
   const buy = latest ? (latest.strongBuy || 0) + (latest.buy || 0) : 0;
   const analystCount = latest ? buy + (latest.hold || 0) + (latest.sell || 0) + (latest.strongSell || 0) : 0;
 
-  const fcfPerShare = num(m.freeCashFlowPerShareTTM);
+  const fcfPerShare = num(m.freeCashFlowPerShareTTM) ?? num(m.cashFlowPerShareTTM) ?? num(m.freeCashFlowPerShareAnnual);
+  const pfcfShare = num(m.pfcfShareTTM) ?? num(m.pfcfShareAnnual);
   const data = {
     pe: num(m.peBasicExclExtraTTM) ?? num(m.peTTM) ?? num(m.peNormalizedAnnual),
     ps: num(m.psTTM) ?? num(m.psAnnual),
     ebitdaMultiple: num(m.enterpriseValueOverEBITDATTM),
     fcfPerShare,
+    pfcfShare,
     revenueGrowth: num(m.revenueGrowthTTMYoy) ?? num(m.revenueGrowthQuarterlyYoy),
     epsGrowth: num(m.epsGrowthTTMYoy) ?? num(m.epsGrowthQuarterlyYoy),
     netMargin: num(m.netProfitMarginTTM) ?? num(m.netProfitMarginAnnual),
@@ -2122,7 +2124,7 @@ async function handleHiddenGems() {
     if (!f) continue;
     const hasFundamentals = f.pe != null || f.ps != null || f.revenueGrowth != null || f.netMargin != null;
     if (!hasFundamentals) continue;
-    const fcfYield = f.fcfPerShare != null && q.price > 0 ? (f.fcfPerShare / q.price) * 100 : null;
+    const fcfYield = f.fcfPerShare != null && q.price > 0 ? (f.fcfPerShare / q.price) * 100 : (f.pfcfShare != null && f.pfcfShare > 0 ? 100 / f.pfcfShare : null);
     inputs.push({
       symbol: c.symbol, name: c.name || q.name, sector: c.sector,
       price: q.price, change: q.change, changePercent: q.changePercent,
