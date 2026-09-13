@@ -162,6 +162,7 @@ export function FairValue({ quote, overview, derived, recommendation }: FairValu
           })}
         </div>
       </div>
+      <p className="mt-3 text-[11px] text-muted-foreground">{t("legal.notAdvice")}</p>
     </div>
   );
 }
