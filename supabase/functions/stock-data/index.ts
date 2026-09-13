@@ -2025,11 +2025,10 @@ const num = (v: unknown): number | null => {
   return typeof n === "number" && isFinite(n) ? n : null;
 };
 
-/** Per-symbol fundamentals, cached for a day so the 6h refresh stays cheap. */
+/** Per-symbol fundamentals, cached for a week; refreshed incrementally. */
 async function fetchGemFundamentals(symbol: string) {
   const cacheKey = `gem_fundamentals:${symbol}`;
-  const cached = await getCached(cacheKey);
-  if (cached) return cached as Record<string, unknown>;
+
 
   const [metricRes, recRes, targetRes, profileRes] = await Promise.all([
     fetchFinnhub("stock/metric", { symbol, metric: "all" }).catch(() => null),
