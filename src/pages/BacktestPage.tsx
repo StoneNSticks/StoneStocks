@@ -187,7 +187,7 @@ export default function BacktestPage() {
     const P = ({ label, value, onChange, min, max, step }: { label: string; value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number }) => (
       <div>
         <label className="text-[10px] font-medium text-muted-foreground mb-1 block">{label}</label>
-        <Input type="number" value={value} onChange={e => onChange(Number(e.target.value))} className="h-8 rounded-lg text-xs" min={min} max={max} step={step} />
+        <Input type="number" aria-label={label} value={value} onChange={e => onChange(Number(e.target.value))} className="h-8 rounded-lg text-xs" min={min} max={max} step={step} />
       </div>
     );
 
@@ -258,7 +258,7 @@ export default function BacktestPage() {
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                 {lang === "de" ? "Startkapital ($)" : "Initial Capital ($)"}
               </label>
-              <Input type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value) || 10000)} className="h-10 rounded-xl text-sm" />
+              <Input type="number" aria-label={lang === "de" ? "Startkapital ($)" : "Initial Capital ($)"} value={capital} onChange={(e) => setCapital(Number(e.target.value) || 10000)} className="h-10 rounded-xl text-sm" />
             </div>
           </div>
 
