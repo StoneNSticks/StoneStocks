@@ -128,6 +128,7 @@ export function HiddenGems() {
           ))}
         </div>
       )}
+      <p className="mt-3 text-[11px] text-muted-foreground">{t("legal.notAdvice")}</p>
     </div>
   );
 }
