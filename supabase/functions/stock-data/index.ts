@@ -1,4 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { HIDDEN_GEM_CANDIDATES, selectGems, MIN_GEM_MCAP, MAX_GEM_MCAP, type GemInput } from "./hiddenGems.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
