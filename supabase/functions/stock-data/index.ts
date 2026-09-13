@@ -48,7 +48,7 @@ const TTL: Record<string, number> = {
   massive_aggs: 60 * 4, massive_snapshot: 5, massive_related: 60 * 24 * 7,
   massive_news: 30, market_news: 15, gainers_losers: 30,
   most_active: 10, top_companies: 60, currency_rates: 60,
-  simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 30,
+  simfin_statements: 60 * 24 * 7, eulerpool_profile: 60 * 24 * 7, hidden_gems: 60 * 6,
   commodities: 10,
   insider_transactions: 30,
   earnings_calendar: 60 * 12,
@@ -2028,7 +2028,6 @@ async function fetchGemFundamentals(symbol: string) {
   const data = {
     pe: num(m.peBasicExclExtraTTM) ?? num(m.peTTM) ?? num(m.peNormalizedAnnual),
     ps: num(m.psTTM) ?? num(m.psAnnual),
-    evEbitda: num(m["currentEv/freeCashFlowTTM"]) != null ? null : null,
     ebitdaMultiple: num(m.enterpriseValueOverEBITDATTM),
     fcfPerShare,
     revenueGrowth: num(m.revenueGrowthTTMYoy) ?? num(m.revenueGrowthQuarterlyYoy),
