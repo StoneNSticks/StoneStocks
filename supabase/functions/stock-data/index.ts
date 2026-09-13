@@ -2099,7 +2099,7 @@ async function handleHiddenGems() {
   }
 
   const missing = eligible.filter((c) => !fundamentals.has(c.symbol));
-  const REFRESH_LIMIT = 24;
+  const REFRESH_LIMIT = 60;
   const BATCH = 4;
   const DEADLINE = Date.now() + 20_000;
   const slice = missing.slice(0, REFRESH_LIMIT);
