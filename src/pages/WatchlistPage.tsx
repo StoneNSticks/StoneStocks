@@ -157,7 +157,7 @@ function WatchlistListRow({
 
       {/* Added date */}
       <div className="hidden sm:block text-right shrink-0 w-16">
-        <span className="text-[10px] font-mono text-muted-foreground/50">
+        <span className="text-[10px] font-mono text-muted-foreground">
           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric", year: "2-digit" })}
         </span>
       </div>
@@ -489,7 +489,7 @@ export default function WatchlistPage() {
                 </motion.div>
               )}
               {user && count > 0 && (
-                <div className="mt-2 text-[10px] font-mono text-muted-foreground/50">
+                <div className="mt-2 text-[10px] font-mono text-muted-foreground">
                   {lang === "de" ? "Sortierung" : "Sort"}: <span className="text-muted-foreground">{sortLabel}</span>
                   {groupFilter && <> · {lang === "de" ? "Gruppe" : "Group"}: <span className="text-primary">{groupFilter}</span></>}
                 </div>
@@ -635,7 +635,7 @@ function GridCard({ w, lang, groups, handleQuoteLoaded }: {
         <span className="font-mono font-bold text-sm group-hover:text-primary transition-colors block truncate">{w.symbol}</span>
         {w.group_name && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium mt-1 inline-block">{w.group_name}</span>}
         <div className="mt-2"><WatchlistQuote symbol={w.symbol} onQuoteLoaded={handleQuoteLoaded(w.symbol)} /></div>
-        <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground/50 font-mono">
+        <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-muted-foreground font-mono">
           <Clock className="h-2.5 w-2.5" />
           {new Date(w.created_at).toLocaleDateString(lang === "de" ? "de-DE" : "en-US", { month: "short", day: "numeric" })}
         </div>

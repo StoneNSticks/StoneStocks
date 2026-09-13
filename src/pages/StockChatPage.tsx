@@ -303,7 +303,7 @@ export default function StockChatPage() {
           </div>
         </div>
 
-        <p className="text-[10px] text-muted-foreground/50 text-center mt-2">
+        <p className="text-[10px] text-muted-foreground text-center mt-2">
           {lang === "de"
             ? "KI kann Fehler machen. Keine Anlageberatung."
             : "AI can make mistakes. Not financial advice."}

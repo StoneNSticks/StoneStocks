@@ -43,7 +43,7 @@ export function GlossaryTermCard({ term, slug, query, lang, highlighted }: Props
           type="button"
           onClick={copyLink}
           aria-label={lang === "de" ? "Link kopieren" : "Copy link"}
-          className="shrink-0 rounded-md p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:text-primary focus-visible:opacity-100 group-hover:opacity-100"
+          className="shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus-visible:opacity-100 group-hover:opacity-100"
         >
           {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Link2 className="h-3.5 w-3.5" />}
         </button>
