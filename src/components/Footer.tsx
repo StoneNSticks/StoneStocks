@@ -21,7 +21,7 @@ export function Footer() {
             ))}
           </nav>
         </div>
-        <p className="text-[11px] leading-relaxed text-muted-foreground/90 text-center sm:text-left">
+        <p className="text-[11px] leading-relaxed text-muted-foreground text-center sm:text-left">
           {t("legal.disclaimerShort")}
         </p>
       </div>
