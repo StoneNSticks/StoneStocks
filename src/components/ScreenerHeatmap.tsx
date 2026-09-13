@@ -127,7 +127,7 @@ export function ScreenerHeatmap() {
                 {change >= 0 ? "+" : ""}{change.toFixed(1)}%
               </span>
               {area > 80 && (
-                <span className="text-[8px] text-white/80 mt-0.5">{formatMcap(c.marketCap)}</span>
+                <span className="text-[8px] text-white mt-0.5">{formatMcap(c.marketCap)}</span>
               )}
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
