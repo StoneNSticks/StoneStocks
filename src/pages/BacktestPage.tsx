@@ -86,7 +86,7 @@ function MetricCard({ label, value, suffix, icon: Icon, color }: { label: string
 }
 
 export default function BacktestPage() {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   usePageTitle(
     lang === "de" ? "Backtesting Simulator" : "Backtesting Simulator",
