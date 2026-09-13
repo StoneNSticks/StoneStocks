@@ -98,8 +98,8 @@ export default function PaperTradingPage() {
 
         <div className="rounded-xl border border-border/60 bg-card p-4 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div><Label className="text-xs text-muted-foreground">Symbol</Label><Input placeholder="AAPL" value={symbol} onChange={e => setSymbol(e.target.value)} className="mt-1" /></div>
-            <div><Label className="text-xs text-muted-foreground">{lang === "de" ? "Anzahl" : "Shares"}</Label><Input type="number" placeholder="10" value={shares} onChange={e => setShares(e.target.value)} className="mt-1" /></div>
+            <div><Label className="text-xs text-muted-foreground">Symbol</Label><Input aria-label="Symbol" placeholder="AAPL" value={symbol} onChange={e => setSymbol(e.target.value)} className="mt-1" /></div>
+            <div><Label className="text-xs text-muted-foreground">{lang === "de" ? "Anzahl" : "Shares"}</Label><Input aria-label={lang === "de" ? "Anzahl" : "Shares"} type="number" placeholder="10" value={shares} onChange={e => setShares(e.target.value)} className="mt-1" /></div>
             <div className="flex items-end"><Button onClick={handleBuy} className="w-full gap-1"><Plus className="h-4 w-4" />{lang === "de" ? "Kaufen" : "Buy"}</Button></div>
             <div className="text-xs text-muted-foreground flex items-end pb-2">{symbol.toUpperCase() && MOCK_PRICES[symbol.toUpperCase()] ? `$${MOCK_PRICES[symbol.toUpperCase()].toFixed(2)}` : ""}</div>
           </div>
