@@ -86,6 +86,9 @@
 
     --success: 145 63% 42%;
     --success-foreground: 0 0% 100%;
+    --gain-text: 145 58% 58%;
+    --loss-text: 0 84% 71%;
+
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
