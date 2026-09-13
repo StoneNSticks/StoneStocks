@@ -121,7 +121,7 @@ function WatchlistListRow({
   return (
     <div className="flex items-center gap-2 px-4 py-3 border-b border-border/20 hover:bg-muted/30 transition-colors group">
       {/* # */}
-      <span className="text-[10px] font-mono text-muted-foreground/40 text-center select-none w-6 shrink-0">{i + 1}</span>
+      <span className="text-[10px] font-mono text-muted-foreground text-center select-none w-6 shrink-0">{i + 1}</span>
 
       {/* Star */}
       <div className="shrink-0"><WatchlistStar symbol={w.symbol} /></div>
@@ -270,7 +270,7 @@ function NoteEditor({ item: wItem, lang }: { item: any; lang: string }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.note ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Notiz" : "Note"}>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.note ? "text-primary" : "text-muted-foreground"}`} title={lang === "de" ? "Notiz" : "Note"}>
           <StickyNote className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
@@ -304,7 +304,7 @@ function GroupEditor({ item: wItem, groups, lang }: { item: any; groups: string[
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.group_name ? "text-primary" : "text-muted-foreground/40"}`} title={lang === "de" ? "Gruppe" : "Group"}>
+        <button className={`p-1 rounded-md hover:bg-muted transition-colors ${wItem.group_name ? "text-primary" : "text-muted-foreground"}`} title={lang === "de" ? "Gruppe" : "Group"}>
           <Tag className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
@@ -584,7 +584,7 @@ export default function WatchlistPage() {
         )}
 
         {user && count > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground/40 uppercase tracking-wider">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex items-center justify-center gap-4 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />

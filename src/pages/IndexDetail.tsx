@@ -122,7 +122,7 @@ const IndexDetail = () => {
                   {constituents.map((c, i) => (
                     <Link key={c.symbol} to={`/stock/${c.symbol}`} className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2.5 hover:border-primary/30 hover:bg-muted/30 transition-colors group">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-[10px] font-mono text-muted-foreground/40 w-5">{i + 1}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground w-5">{i + 1}</span>
                         <div>
                           <span className="text-sm font-medium group-hover:text-primary transition-colors">{c.name}</span>
                           <span className="text-xs text-muted-foreground ml-1.5">{c.symbol}</span>

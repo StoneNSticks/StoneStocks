@@ -60,7 +60,7 @@ export function SearchBar({ compact = false }: { compact?: boolean }) {
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => { setOpen(true); setRecentSearches(getRecentSearches()); }}
           placeholder={compact ? t("search.placeholder") : t("search.placeholderFull")}
-          className={`${compact ? "pl-8 pr-8 h-9 text-sm rounded-lg" : "pl-10 pr-10 h-12 rounded-xl text-base"} bg-card border-border/60 placeholder:text-muted-foreground/70 focus-visible:ring-primary/30`}
+          className={`${compact ? "pl-8 pr-8 h-9 text-sm rounded-lg" : "pl-10 pr-10 h-12 rounded-xl text-base"} bg-card border-border/60 placeholder:text-muted-foreground focus-visible:ring-primary/30`}
         />
         {query && (
           <button onClick={() => { setQuery(""); setOpen(false); }} className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground ${compact ? "right-2.5" : "right-3"}`}>
