@@ -39,6 +39,7 @@ const RankingsPage = () => {
           <SectorPerformance />
         </div>
         <ScreenerHeatmap />
+        <p className="mt-6 text-[11px] text-muted-foreground">{t("legal.notAdvice")}</p>
       </main>
       <Footer />
     </div>
