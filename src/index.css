@@ -30,8 +30,6 @@
 
     --success: 145 63% 42%;
     --success-foreground: 0 0% 100%;
-    --gain-text: 145 58% 58%;
-    --loss-text: 0 84% 71%;
     /* Text-only variants tuned for WCAG AA contrast on the page background */
     --gain-text: 145 70% 27%;
     --loss-text: 0 74% 42%;
