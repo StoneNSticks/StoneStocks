@@ -28,9 +28,9 @@ export default function LegalPage({ slug }: { slug: LegalSlug }) {
         {CONTACT_MISSING && (
           <div
             role="note"
-            className="mt-6 flex gap-3 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive"
+            className="mt-6 flex gap-3 rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-foreground"
           >
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
             <p>
               {lang === "de"
                 ? "Hinweis an den Betreiber: Die Kontaktadresse ist noch ein Platzhalter. Bitte in src/i18n/legalContent.ts durch eine erreichbare E-Mail-Adresse ersetzen."
