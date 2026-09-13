@@ -1999,55 +1999,121 @@ async function handleCommodityHistory(name: string, period: string) {
   }
 }
 
-// === Hidden Gems - stocks with strong buy consensus + positive momentum ===
-const HIDDEN_GEM_CANDIDATES = [
-  { symbol: "PLTR", name: "Palantir" }, { symbol: "SOFI", name: "SoFi Technologies" },
-  { symbol: "NET", name: "Cloudflare" }, { symbol: "DDOG", name: "Datadog" },
-  { symbol: "CRWD", name: "CrowdStrike" }, { symbol: "SNOW", name: "Snowflake" },
-  { symbol: "AFRM", name: "Affirm" }, { symbol: "RBLX", name: "Roblox" },
-  { symbol: "U", name: "Unity Software" }, { symbol: "PINS", name: "Pinterest" },
-  { symbol: "ROKU", name: "Roku" }, { symbol: "COIN", name: "Coinbase" },
-  { symbol: "TTD", name: "The Trade Desk" }, { symbol: "MDB", name: "MongoDB" },
-  { symbol: "ZS", name: "Zscaler" }, { symbol: "BILL", name: "Bill Holdings" },
-];
+// === Hidden Gems — undervalued growth candidates below mega-cap size ===
+
+const num = (v: unknown): number | null => {
+  const n = typeof v === "string" ? parseFloat(v) : (v as number);
+  return typeof n === "number" && isFinite(n) ? n : null;
+};
+
+/** Per-symbol fundamentals, cached for a day so the 6h refresh stays cheap. */
+async function fetchGemFundamentals(symbol: string) {
+  const cacheKey = `gem_fundamentals:${symbol}`;
+  const cached = await getCached(cacheKey);
+  if (cached) return cached as Record<string, unknown>;
+
+  const [metricRes, recRes, targetRes, profileRes] = await Promise.all([
+    fetchFinnhub("stock/metric", { symbol, metric: "all" }).catch(() => null),
+    fetchFinnhub("stock/recommendation", { symbol }).catch(() => []),
+    fetchFinnhub("stock/price-target", { symbol }).catch(() => null),
+    fetchFinnhub("stock/profile2", { symbol }).catch(() => null),
+  ]);
+
+  const m = (metricRes as any)?.metric || {};
+  const latest = Array.isArray(recRes) && recRes.length > 0 ? (recRes[0] as any) : null;
+  const buy = latest ? (latest.strongBuy || 0) + (latest.buy || 0) : 0;
+  const analystCount = latest ? buy + (latest.hold || 0) + (latest.sell || 0) + (latest.strongSell || 0) : 0;
+
+  const fcfPerShare = num(m.freeCashFlowPerShareTTM);
+  const data = {
+    pe: num(m.peBasicExclExtraTTM) ?? num(m.peTTM) ?? num(m.peNormalizedAnnual),
+    ps: num(m.psTTM) ?? num(m.psAnnual),
+    evEbitda: num(m["currentEv/freeCashFlowTTM"]) != null ? null : null,
+    ebitdaMultiple: num(m.enterpriseValueOverEBITDATTM),
+    fcfPerShare,
+    revenueGrowth: num(m.revenueGrowthTTMYoy) ?? num(m.revenueGrowthQuarterlyYoy),
+    epsGrowth: num(m.epsGrowthTTMYoy) ?? num(m.epsGrowthQuarterlyYoy),
+    netMargin: num(m.netProfitMarginTTM) ?? num(m.netProfitMarginAnnual),
+    debtToEquity: num(m["totalDebt/totalEquityQuarterly"]) ?? num(m["totalDebt/totalEquityAnnual"]),
+    roe: num(m.roeTTM) ?? num(m.roeRfy),
+    return13w: num(m["13WeekPriceReturnDaily"]),
+    return26w: num(m["26WeekPriceReturnDaily"]),
+    high52w: num(m["52WeekHigh"]),
+    targetMean: num((targetRes as any)?.targetMean) ?? num((targetRes as any)?.targetMedian),
+    analystCount,
+    buyRatio: analystCount > 0 ? buy / analystCount : 0,
+    logo: (profileRes as any)?.logo || "",
+    finnhubSector: (profileRes as any)?.finnhubIndustry || "",
+  };
+
+  await setCache(cacheKey, data, "finnhub", 60 * 24);
+  return data as Record<string, unknown>;
+}
 
 async function handleHiddenGems() {
-  const cacheKey = "market:hidden_gems:v1";
+  const cacheKey = "market:hidden_gems:v2";
   const cached = await getCached(cacheKey);
   if (cached) return cached;
 
-  const results = await Promise.all(
-    HIDDEN_GEM_CANDIDATES.map(async (c) => {
+  if (!isUSMarketOpen()) {
+    const stale = await getStaleCached(cacheKey);
+    if (Array.isArray(stale) && stale.length > 0) {
+      await setCache(cacheKey, stale, "stale-offhours", getEffectiveTTL(TTL.hidden_gems));
+      return stale;
+    }
+  }
+
+  // 1. One bulk quote call for the whole universe (price + market cap).
+  const quotes = await yahooBulkQuotes(HIDDEN_GEM_CANDIDATES.map((c) => c.symbol));
+
+  // 2. Keep only the size band we care about before spending fundamental calls.
+  const eligible = HIDDEN_GEM_CANDIDATES.filter((c) => {
+    const q = quotes.get(c.symbol);
+    return q && q.price > 0 && q.marketCap >= MIN_GEM_MCAP && q.marketCap <= MAX_GEM_MCAP;
+  });
+
+  // 3. Fundamentals in batches, bounded by a wall-clock budget.
+  const inputs: GemInput[] = [];
+  const DEADLINE = Date.now() + 30_000;
+  const BATCH = 8;
+  for (let i = 0; i < eligible.length; i += BATCH) {
+    if (Date.now() > DEADLINE) break;
+    const batch = eligible.slice(i, i + BATCH);
+    const rows = await Promise.all(batch.map(async (c) => {
+      const q = quotes.get(c.symbol)!;
       try {
-        const [q, rec, profile] = await Promise.all([
-          fetchFinnhub("quote", { symbol: c.symbol }).catch(() => null),
-          fetchFinnhub("stock/recommendation", { symbol: c.symbol }).catch(() => []),
-          fetchFinnhub("stock/profile2", { symbol: c.symbol }).catch(() => null),
-        ]);
-        const latest = Array.isArray(rec) && rec.length > 0 ? rec[0] : null;
-        const buyScore = latest ? (latest.strongBuy || 0) + (latest.buy || 0) : 0;
-        const totalAnalysts = latest ? buyScore + (latest.hold || 0) + (latest.sell || 0) + (latest.strongSell || 0) : 0;
-        const buyRatio = totalAnalysts > 0 ? buyScore / totalAnalysts : 0;
+        const f: any = await fetchGemFundamentals(c.symbol);
+        const fcfYield = f.fcfPerShare != null && q.price > 0 ? (f.fcfPerShare / q.price) * 100 : null;
         return {
-          symbol: c.symbol, name: c.name,
-          price: q?.c || 0, change: q?.d || 0, changePercent: q?.dp || 0,
-          logo: profile?.logo || "",
-          buyRatio, buyScore, totalAnalysts,
-        };
-      } catch {
+          symbol: c.symbol, name: c.name || q.name, sector: c.sector,
+          price: q.price, change: q.change, changePercent: q.changePercent,
+          marketCap: q.marketCap, logo: f.logo || "",
+          pe: f.pe, ps: f.ps, evEbitda: f.ebitdaMultiple, fcfYield,
+          revenueGrowth: f.revenueGrowth, epsGrowth: f.epsGrowth, netMargin: f.netMargin,
+          targetMean: f.targetMean, analystCount: f.analystCount || 0, buyRatio: f.buyRatio || 0,
+          debtToEquity: f.debtToEquity, roe: f.roe,
+          return13w: f.return13w, return26w: f.return26w, high52w: f.high52w,
+        } as GemInput;
+      } catch (e) {
+        console.warn(`Gem fundamentals failed for ${c.symbol}:`, e);
         return null;
       }
-    })
-  );
+    }));
+    for (const r of rows) if (r) inputs.push(r);
+    if (i + BATCH < eligible.length) await new Promise((r) => setTimeout(r, 120));
+  }
 
-  const gems = results
-    .filter((r): r is NonNullable<typeof r> => r != null && r.price > 0 && r.buyRatio > 0.5)
-    .sort((a, b) => b.buyRatio - a.buyRatio)
-    .slice(0, 12);
+  const gems = selectGems(inputs, 12, 2);
 
-  await setCache(cacheKey, gems, "finnhub", 30);
+  if (gems.length === 0) {
+    const stale = await getStaleCached(cacheKey);
+    if (Array.isArray(stale) && stale.length > 0) return stale;
+  }
+
+  await setCache(cacheKey, gems, "multi", TTL.hidden_gems);
   return gems;
 }
+
 
 
 function calculateDerivedMetrics(overview: Record<string, string> | null, quote: Record<string, number> | null, symbol?: string) {
