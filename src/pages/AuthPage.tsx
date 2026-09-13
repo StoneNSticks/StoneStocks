@@ -74,6 +74,7 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main id="main-content" className="container flex items-center justify-center py-10 sm:py-16 px-3 sm:px-4">
+        <h1 className="sr-only">{showForgot ? t("auth.resetPassword") : isLogin ? t("auth.signIn") : t("auth.signUp")}</h1>
         <Card className="w-full max-w-sm sm:max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="font-display text-2xl">
