@@ -84,7 +84,26 @@ const translations: Record<string, Record<Language, string>> = {
 
   // ── HiddenGems ──
   "gems.title": { de: "Geheimtipps", en: "Hidden Gems" },
-  "gems.subtitle": { de: "Starke Kaufempfehlung mit Momentum", en: "Strong buy consensus with momentum" },
+  "gems.subtitle": { de: "Unterbewertet mit Wachstumspotenzial", en: "Undervalued with growth potential" },
+  "gems.upside": { de: "Potenzial", en: "Upside" },
+  "gems.score": { de: "Punktzahl", en: "Score" },
+  "gems.pe": { de: "KGV", en: "P/E" },
+  "gems.revGrowth": { de: "Umsatzwachstum", en: "Revenue growth" },
+  "gems.fcfYield": { de: "FCF-Rendite", en: "FCF yield" },
+  "gems.explain": { de: "Wie die Punktzahl entsteht", en: "How the score works" },
+  "gems.valuation": { de: "Unterbewertung", en: "Valuation" },
+  "gems.growth": { de: "Wachstum", en: "Growth" },
+  "gems.analysts": { de: "Analysten-Potenzial", en: "Analyst upside" },
+  "gems.quality": { de: "Bilanzqualität", en: "Balance sheet" },
+  "gems.momentum": { de: "Momentum", en: "Momentum" },
+  "gems.reason.cheapPE": { de: "Günstige Bewertung", en: "Cheap valuation" },
+  "gems.reason.growth": { de: "Starkes Umsatzwachstum", en: "Strong revenue growth" },
+  "gems.reason.upside": { de: "Hohes Kursziel-Potenzial", en: "High analyst upside" },
+  "gems.reason.cashflow": { de: "Hohe Cashflow-Rendite", en: "High cash flow yield" },
+  "gems.reason.profitability": { de: "Hohe Kapitalrendite", en: "High return on equity" },
+  "gems.reason.balanced": { de: "Ausgewogenes Gesamtbild", en: "Balanced overall profile" },
+  "gems.noTarget": { de: "Kein Kursziel", en: "No target" },
+
 
   // ── MarketNewsSection ──
   "news.title": { de: "Marktnachrichten", en: "Market News" },
