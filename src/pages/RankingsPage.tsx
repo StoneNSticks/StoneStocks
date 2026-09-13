@@ -28,7 +28,7 @@ const RankingsPage = () => {
           <MarketOverview />
         </section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-lg font-bold">{t("nav.rankings")}</h2>
+          <h1 className="font-display text-lg font-bold">{t("nav.rankings")}</h1>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <TopCompanies />
