@@ -123,7 +123,8 @@ export function computeUpside(g: GemInput): number | null {
 export function passesFilters(g: GemInput): boolean {
   if (!g.price || g.price < 3) return false;
   if (!g.marketCap || g.marketCap < MIN_GEM_MCAP || g.marketCap > MAX_GEM_MCAP) return false;
-  if (g.analystCount < 3) return false;
+  // Too thinly covered to trust the analyst tilt (0 = data unavailable, not disqualifying)
+  if (g.analystCount > 0 && g.analystCount < 3) return false;
   // Heavily indebted and burning cash
   if (g.fcfYield != null && g.fcfYield < 0 && g.debtToEquity != null && g.debtToEquity > 150) return false;
   // Collapsed without any growth to justify a turnaround
